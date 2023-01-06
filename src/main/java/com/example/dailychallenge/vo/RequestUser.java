@@ -1,11 +1,9 @@
-package com.example.dailychallenge.dto;
+package com.example.dailychallenge.vo;
 
 import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
 
 @Data
-public class UserDto {
+public class RequestUser {
     private String userName;
     private String email;
     private String password;
