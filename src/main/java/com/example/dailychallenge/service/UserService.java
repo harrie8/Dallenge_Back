@@ -72,4 +72,11 @@ public class UserService implements UserDetailsService {
 
         findUser.update(userEditor);
     }
+
+    public void delete(Long userId) {
+        User findUser = userRepository.findById(userId)
+                .orElseThrow(UserNotFound::new);
+
+        userRepository.delete(findUser);
+    }
 }

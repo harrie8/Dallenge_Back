@@ -1,0 +1,31 @@
+### 1. 회원 가입
+POST 127.0.0.1:8080/user/new
+Content-Type: application/json
+
+{
+  "userName": "a",
+  "email": "a@a.com",
+  "password": "123",
+  "info": "memo"
+}
+
+### 2. 로그인
+
+### 3. 회원 정보 수정
+PUT 127.0.0.1:8080/user/1
+Content-Type: application/json
+Authorization: token
+
+{
+  "userName": "editUserName",
+  "email": "edit@edit.com",
+  "password": "789",
+  "info": "editInfo"
+}
+
+### 4. 회원 삭제
+DELETE 127.0.0.1:8080/user/1
+Content-Type: application/json
+Authorization: token
+
+### 5. 로그아웃

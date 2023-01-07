@@ -12,6 +12,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.example.dailychallenge.dto.UserDto;
 import com.example.dailychallenge.entity.User;
 import com.example.dailychallenge.exception.UserNotFound;
+import com.example.dailychallenge.repository.UserRepository;
 import com.example.dailychallenge.vo.RequestUpdateUser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.HashMap;
@@ -35,6 +36,8 @@ class UserServiceTest {
 
     @Autowired
     private UserService userService;
+    @Autowired
+    private UserRepository userRepository;
     @Autowired
     private MockMvc mockMvc;
     @Autowired
@@ -121,5 +124,16 @@ class UserServiceTest {
         assertThatThrownBy(() -> userService.updateUser(userId, requestUpdateUser, passwordEncoder))
                 .isInstanceOf(UserNotFound.class)
                 .hasMessage("존재하지 않는 회원입니다.");
+    }
+
+    @Test
+    @DisplayName("회원 삭제 테스트")
+    public void deleteUserTest(){
+        User savedUser = userService.saveUser(createUser(), passwordEncoder);
+        Long userId = savedUser.getId();
+
+        userService.delete(userId);
+
+        assertEquals(0, userRepository.count());
     }
 }

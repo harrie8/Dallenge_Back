@@ -1,5 +1,6 @@
 package com.example.dailychallenge.controller;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -61,6 +62,20 @@ class UserControllerTest {
                         .header("authorization", "token")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("회원 삭제 api 테스트")
+    public void deleteUserTest() throws Exception {
+        User savedUser = userService.saveUser(createUser(), passwordEncoder);
+        Long userId = savedUser.getId();
+
+        mockMvc.perform(delete("/user/{userId}", userId)
+                        .header("authorization", "token")
+                        .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andDo(print());

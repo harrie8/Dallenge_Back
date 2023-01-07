@@ -11,6 +11,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -43,12 +44,21 @@ public class UserController {
      * JWT token 값은 header에 임의로 설정해놨습니다
      */
     @PutMapping("/user/{userId}")
-    public void createUser(@PathVariable Long userId,
+    public void updateUser(@PathVariable Long userId,
                            @RequestBody @Valid RequestUpdateUser requestUpdateUser,
                            @RequestHeader String authorization) {
 
         if (authorization.equals("token")) {
             userService.updateUser(userId, requestUpdateUser, passwordEncoder);
+        }
+    }
+
+    @DeleteMapping("/user/{userId}")
+    public void deleteUser(@PathVariable Long userId,
+                           @RequestHeader String authorization) {
+
+        if (authorization.equals("token")) {
+            userService.delete(userId);
         }
     }
 }
