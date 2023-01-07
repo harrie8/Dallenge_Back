@@ -1,0 +1,22 @@
+= dailyChallenge API
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+:sectlinks:
+
+== 회원 수정
+
+=== 요청
+
+include::{snippets}/user-update/http-request.adoc[]
+
+include::{snippets}/user-update/path-parameters.adoc[]
+
+include::{snippets}/user-update/request-fields.adoc[]
+
+=== 응답
+
+include::{snippets}/user-update/http-response.adoc[]
+
