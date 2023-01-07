@@ -2,7 +2,6 @@ package com.example.dailychallenge.config;
 
 import com.example.dailychallenge.service.UserService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
@@ -12,9 +11,6 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.util.matcher.AndRequestMatcher;
-
-import javax.servlet.Filter;
 
 @Configuration
 @EnableWebSecurity
@@ -32,7 +28,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .hasIpAddress("127.0.0.1") // 배포 후 변경 ( IP 제한 )
                 .and()
                 .addFilter(getAuthenticationFilter()); // 이 필터를 통과시킨 데이터에 한해서만 권한 부여
-//        httpSecurity.httpBasic().disable(); -> 403 떠서 그냥 ..("/user/**").permitAll() 로 테스트했습니다
     }
 
     @Override // 인증

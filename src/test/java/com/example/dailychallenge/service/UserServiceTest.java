@@ -1,8 +1,21 @@
 package com.example.dailychallenge.service;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import com.example.dailychallenge.dto.UserDto;
 import com.example.dailychallenge.entity.User;
+import com.example.dailychallenge.exception.UserNotFound;
+import com.example.dailychallenge.vo.RequestUpdateUser;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.HashMap;
+import java.util.Map;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,14 +26,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.HashMap;
-import java.util.Map;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @Transactional
@@ -77,5 +82,44 @@ class UserServiceTest {
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andDo(print());
+    }
+
+    @Test
+    @DisplayName("회원 정보 수정 테스트")
+    public void updateUserTest(){
+        User savedUser = userService.saveUser(createUser(), passwordEncoder);
+        RequestUpdateUser requestUpdateUser = RequestUpdateUser.builder()
+                .email("edit@edit.com")
+                .userName("editName")
+                .info("editInfo")
+                .password("789")
+                .build();
+
+        userService.updateUser(savedUser.getId(), requestUpdateUser, passwordEncoder);
+
+        assertEquals(savedUser.getEmail(), requestUpdateUser.getEmail());
+        assertEquals(savedUser.getUserName(), requestUpdateUser.getUserName());
+        assertEquals(savedUser.getInfo(), requestUpdateUser.getInfo());
+        assertAll(
+                () -> assertNotEquals(savedUser.getPassword(), requestUpdateUser.getPassword()),
+                () -> assertTrue(passwordEncoder.matches(requestUpdateUser.getPassword(), savedUser.getPassword()))
+        );
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 회원 정보 수정 테스트")
+    public void updateNotExistUser(){
+        User savedUser = userService.saveUser(createUser(), passwordEncoder);
+        RequestUpdateUser requestUpdateUser = RequestUpdateUser.builder()
+                .email("edit@edit.com")
+                .userName("editName")
+                .info("editInfo")
+                .password("789")
+                .build();
+        Long userId = savedUser.getId() + 1;
+
+        assertThatThrownBy(() -> userService.updateUser(userId, requestUpdateUser, passwordEncoder))
+                .isInstanceOf(UserNotFound.class)
+                .hasMessage("존재하지 않는 회원입니다.");
     }
 }

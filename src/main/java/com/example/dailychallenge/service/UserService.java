@@ -1,8 +1,12 @@
 package com.example.dailychallenge.service;
 
 import com.example.dailychallenge.dto.UserDto;
+import com.example.dailychallenge.dto.UserEditor;
 import com.example.dailychallenge.entity.User;
+import com.example.dailychallenge.exception.UserNotFound;
 import com.example.dailychallenge.repository.UserRepository;
+import com.example.dailychallenge.vo.RequestUpdateUser;
+import java.util.ArrayList;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -11,8 +15,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.ArrayList;
 
 @Service @Transactional
 @RequiredArgsConstructor
@@ -54,4 +56,20 @@ public class UserService implements UserDetailsService {
      * 회원 가입 시 중복 회원 예외 처리
      * 로그인 실패 시 예외 처리 ( 1. 비밀번호, 2. 없는 회원 )
      */
+
+
+    public void updateUser(Long userId, RequestUpdateUser requestUpdateUser, PasswordEncoder passwordEncoder) {
+        User findUser = userRepository.findById(userId)
+                .orElseThrow(UserNotFound::new);
+
+        UserEditor.UserEditorBuilder editorBuilder = findUser.toEditor();
+        UserEditor userEditor = editorBuilder
+                .userName(requestUpdateUser.getUserName())
+                .email(requestUpdateUser.getEmail())
+                .password(passwordEncoder.encode(requestUpdateUser.getPassword()))
+                .info(requestUpdateUser.getInfo())
+                .build();
+
+        findUser.update(userEditor);
+    }
 }

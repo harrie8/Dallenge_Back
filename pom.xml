@@ -85,6 +85,13 @@
 			<artifactId>modelmapper</artifactId>
 			<version>2.3.9</version>
 		</dependency>
+
+		<!--	Spring Boot Validation 적용	-->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-validation</artifactId>
+			<version>3.0.1</version>
+		</dependency>
 	</dependencies>
 
 	<build>
