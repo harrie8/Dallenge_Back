@@ -37,7 +37,7 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.CREATED).body(responseUser);
     }
 
-    // login 은 spring securiy 활용 -> url: 127.0.0.1:8080/login
+    // login 은 spring security 활용 -> url: 127.0.0.1:8080/login
 
     /**
      * url에서 new, update, delete는 http 메서드로 대체 가능하지 않을까?

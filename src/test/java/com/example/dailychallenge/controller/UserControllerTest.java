@@ -1,7 +1,6 @@
 package com.example.dailychallenge.controller;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -9,6 +8,7 @@ import com.example.dailychallenge.dto.UserDto;
 import com.example.dailychallenge.entity.User;
 import com.example.dailychallenge.service.UserService;
 import com.example.dailychallenge.vo.RequestUpdateUser;
+import com.example.dailychallenge.vo.RequestUser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -20,6 +20,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @SpringBootTest
 @Transactional
@@ -36,6 +39,7 @@ class UserControllerTest {
     @Autowired
     ObjectMapper objectMapper;
 
+
     public UserDto createUser(){
         UserDto userDto = new UserDto();
         userDto.setEmail("test1234@test.com");
@@ -43,6 +47,41 @@ class UserControllerTest {
         userDto.setInfo("testInfo");
         userDto.setPassword("1234");
         return userDto;
+    }
+
+    @Test
+    @DisplayName("회원가입 테스트")
+    public void newUserTest() throws Exception {
+        RequestUser requestUser = RequestUser.builder()
+                .userName("GilDong")
+                .email("test@test.com")
+                .password("1234")
+                .info("testInfo")
+                .build();
+
+        mockMvc.perform(post("/user/new")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(requestUser))
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isCreated())
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("로그인 테스트")
+    public void loginUserTest() throws Exception {
+        Map<String, String> loginData = new HashMap<>();
+        loginData.put("email", "test1234@test.com");
+        loginData.put("password", "1234");
+
+        userService.saveUser(createUser(),passwordEncoder);
+
+        mockMvc.perform(post("/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(loginData))
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andDo(print());
     }
 
     @Test

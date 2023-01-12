@@ -38,12 +38,10 @@ class UserServiceTest {
     private UserService userService;
     @Autowired
     private UserRepository userRepository;
-    @Autowired
-    private MockMvc mockMvc;
+
     @Autowired
     PasswordEncoder passwordEncoder;
-    @Autowired
-    ObjectMapper objectMapper;
+
 
     public UserDto createUser(){
         UserDto userDto = new UserDto();
@@ -70,22 +68,6 @@ class UserServiceTest {
         );
     }
 
-    @Test
-    @DisplayName("로그인 테스트")
-    public void loginUserTest() throws Exception {
-        Map<String, String> loginData = new HashMap<>();
-        loginData.put("email", "test1234@test.com");
-        loginData.put("password", "1234");
-
-        userService.saveUser(createUser(),passwordEncoder);
-
-        mockMvc.perform(post("/login")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(loginData))
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andDo(print());
-    }
 
     @Test
     @DisplayName("회원 정보 수정 테스트")
