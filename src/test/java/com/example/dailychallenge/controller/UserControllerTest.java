@@ -37,7 +37,7 @@ class UserControllerTest {
     @Autowired
     PasswordEncoder passwordEncoder;
     @Autowired
-    ObjectMapper objectMapper;
+    private ObjectMapper objectMapper;
 
 
     public UserDto createUser(){

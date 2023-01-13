@@ -2,9 +2,9 @@ package com.example.dailychallenge.controller;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.put;
-import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
-import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.restdocs.snippet.Attributes.key;
@@ -14,7 +14,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.example.dailychallenge.dto.UserDto;
 import com.example.dailychallenge.entity.User;
 import com.example.dailychallenge.service.UserService;
+import com.example.dailychallenge.vo.RequestLogin;
 import com.example.dailychallenge.vo.RequestUpdateUser;
+import com.example.dailychallenge.vo.RequestUser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -23,10 +25,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
 import org.springframework.restdocs.RestDocumentationExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -51,6 +58,72 @@ public class UserControllerDocTest {
         userDto.setInfo("testInfo");
         userDto.setPassword("1234");
         return userDto;
+    }
+
+    @Test
+    @DisplayName("회원 가입")
+    void registerUser() throws Exception {
+        RequestUser requestUser = RequestUser.builder()
+                .userName("GilDong")
+                .email("test@test.com")
+                .password("1234")
+                .info("testInfo")
+                .build();
+
+        String json = objectMapper.writeValueAsString(requestUser);
+
+        mockMvc.perform(post("/user/new")
+                        .contentType(APPLICATION_JSON)
+                        .content(json)
+                        .accept(APPLICATION_JSON))
+                .andExpect(status().isCreated())
+                .andDo(print())
+                .andDo(document("user-register",
+                        requestFields(
+                                fieldWithPath("userName").description("이름")
+                                        .attributes(key("constraint").value("회원 이름을 입력해주세요.")),
+                                fieldWithPath("email").description("이메일")
+                                        .attributes(key("constraint").value("회원 이메일을 입력해주세요.")),
+                                fieldWithPath("password").description("비밀번호")
+                                        .attributes(key("constraint").value("회원 비밀번호를 입력해주세요.")),
+                                fieldWithPath("info").description("소개글")
+                                        .attributes(key("constraint").value("회원 소개글을 입력해주세요."))
+                        ),
+                        responseFields(
+                                fieldWithPath("email").description("회원가입 성공한 email"),
+                                fieldWithPath("userName").description("회원가입 성공한 username"),
+                                fieldWithPath("info").description("회원가입 성공한 info")
+                        )
+                ));
+    }
+
+    @Test
+    @DisplayName("로그인")
+    public void loginUser() throws Exception {
+        userService.saveUser(createUser(),passwordEncoder);
+
+        RequestLogin requestLogin = RequestLogin.builder()
+                .email("test1234@test.com")
+                .password("1234")
+                .build();
+
+
+        String json = objectMapper.writeValueAsString(requestLogin);
+
+        mockMvc.perform(post("/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andDo(print())
+                .andDo(document("user-login",
+                        requestFields(
+                                fieldWithPath("email").description("이메일")
+                                        .attributes(key("constraint").value("회원 이메일을 입력해주세요.")),
+                                fieldWithPath("password").description("비밀번호")
+                                        .attributes(key("constraint").value("회원 비밀번호를 입력해주세요."))
+                        )
+                ));
     }
 
     @Test
