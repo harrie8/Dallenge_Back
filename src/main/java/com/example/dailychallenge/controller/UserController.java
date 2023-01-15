@@ -1,20 +1,25 @@
 package com.example.dailychallenge.controller;
 
 import com.example.dailychallenge.dto.UserDto;
-import com.example.dailychallenge.entity.UserImg;
-import com.example.dailychallenge.service.UserImgService;
 import com.example.dailychallenge.service.UserService;
 import com.example.dailychallenge.vo.RequestUpdateUser;
 import com.example.dailychallenge.vo.RequestUser;
 import com.example.dailychallenge.vo.ResponseUser;
-import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.json.simple.parser.JSONParser;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
@@ -24,6 +29,10 @@ public class UserController {
     private final UserService userService;
     private final PasswordEncoder passwordEncoder;
 
+    @GetMapping("/testCors")
+    public String cors() {
+        return "ok";
+    }
 
     @PostMapping("/user/new")
     public ResponseEntity createUser(@RequestBody RequestUser requestUser) throws Exception {
