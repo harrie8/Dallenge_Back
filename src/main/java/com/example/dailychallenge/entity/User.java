@@ -1,12 +1,9 @@
 package com.example.dailychallenge.entity;
 
 import com.example.dailychallenge.dto.UserEditor;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+
+import javax.persistence.*;
+
 import lombok.Data;
 
 @Entity @Table(name = "users") // user 예약어라 users로 변경
@@ -20,6 +17,9 @@ public class User {
     private String email;
     private String info;
     private String password;
+
+    @OneToOne(mappedBy = "users", cascade = CascadeType.ALL)
+    private UserImg userImg;
 
     public UserEditor.UserEditorBuilder toEditor() {
         return UserEditor.builder()

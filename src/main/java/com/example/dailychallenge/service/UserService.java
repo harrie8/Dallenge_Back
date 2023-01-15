@@ -3,29 +3,49 @@ package com.example.dailychallenge.service;
 import com.example.dailychallenge.dto.UserDto;
 import com.example.dailychallenge.dto.UserEditor;
 import com.example.dailychallenge.entity.User;
+import com.example.dailychallenge.entity.UserImg;
 import com.example.dailychallenge.exception.UserNotFound;
 import com.example.dailychallenge.repository.UserRepository;
 import com.example.dailychallenge.vo.RequestUpdateUser;
 import java.util.ArrayList;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service @Transactional
 @RequiredArgsConstructor
 public class UserService implements UserDetailsService {
     private final UserRepository userRepository;
+    private final UserImgService userImgService;
 
-    public User saveUser(UserDto userDto, PasswordEncoder passwordEncoder) {
+    MultipartFile createMultipartFiles() throws Exception {
+        String path = "C:/spring_study/image/profile/";
+        String imageName = "image.jpg";
+        MockMultipartFile multipartFile = new MockMultipartFile(path, imageName,
+                "image/jpg", new byte[]{1, 2, 3, 4});
+        return multipartFile;
+    }
+
+    public User saveUser(UserDto userDto, PasswordEncoder passwordEncoder) throws Exception {
         ModelMapper mapper = new ModelMapper();
         User user = mapper.map(userDto, User.class);
         user.setPassword(passwordEncoder.encode(userDto.getPassword())); // 비밀번호 암호화해서 저장
         userRepository.save(user);
+
+        UserImg userImg = new UserImg();
+        userImg.setUsers(user);
+        userImgService.saveUserImg(userImg,createMultipartFiles());
+
+        /** to do  ↑
+         * 디폴트 이미지 저장
+         */
         return user;
     }
 
@@ -58,9 +78,13 @@ public class UserService implements UserDetailsService {
      */
 
 
-    public void updateUser(Long userId, RequestUpdateUser requestUpdateUser, PasswordEncoder passwordEncoder) {
+    public void updateUser(Long userId, RequestUpdateUser requestUpdateUser,
+                           PasswordEncoder passwordEncoder,
+                           MultipartFile userImgFile) throws Exception {
         User findUser = userRepository.findById(userId)
                 .orElseThrow(UserNotFound::new);
+
+        userImgService.updateUserImg(findUser.getUserImg().getId(),userImgFile);
 
         UserEditor.UserEditorBuilder editorBuilder = findUser.toEditor();
         UserEditor userEditor = editorBuilder
@@ -79,4 +103,5 @@ public class UserService implements UserDetailsService {
 
         userRepository.delete(findUser);
     }
+
 }

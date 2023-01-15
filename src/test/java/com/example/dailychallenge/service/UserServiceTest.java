@@ -23,10 +23,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 @SpringBootTest
 @Transactional
@@ -52,9 +54,18 @@ class UserServiceTest {
         return userDto;
     }
 
+    /** 프로필 이미지 추가한 후 **/
+    MultipartFile createMultipartFiles() throws Exception {
+        String path = "C:/spring_study/image/profile/";
+        String imageName = "image.jpg";
+        MockMultipartFile multipartFile = new MockMultipartFile(path, imageName,
+                "image/jpg", new byte[]{1, 2, 3, 4});
+        return multipartFile;
+    }
+
     @Test
     @DisplayName("회원가입 테스트")
-    public void saveUserTest(){
+    public void saveUserTest() throws Exception {
         UserDto userDto = createUser();
         User savedUser = userService.saveUser(userDto,passwordEncoder);
 
@@ -71,8 +82,9 @@ class UserServiceTest {
 
     @Test
     @DisplayName("회원 정보 수정 테스트")
-    public void updateUserTest(){
+    public void updateUserTest() throws Exception {
         User savedUser = userService.saveUser(createUser(), passwordEncoder);
+        MultipartFile multipartFile = createMultipartFiles();
         RequestUpdateUser requestUpdateUser = RequestUpdateUser.builder()
                 .email("edit@edit.com")
                 .userName("editName")
@@ -80,7 +92,7 @@ class UserServiceTest {
                 .password("789")
                 .build();
 
-        userService.updateUser(savedUser.getId(), requestUpdateUser, passwordEncoder);
+        userService.updateUser(savedUser.getId(), requestUpdateUser, passwordEncoder,multipartFile);
 
         assertEquals(savedUser.getEmail(), requestUpdateUser.getEmail());
         assertEquals(savedUser.getUserName(), requestUpdateUser.getUserName());
@@ -93,8 +105,9 @@ class UserServiceTest {
 
     @Test
     @DisplayName("존재하지 않는 회원 정보 수정 테스트")
-    public void updateNotExistUser(){
+    public void updateNotExistUser() throws Exception {
         User savedUser = userService.saveUser(createUser(), passwordEncoder);
+        MultipartFile multipartFile = createMultipartFiles();
         RequestUpdateUser requestUpdateUser = RequestUpdateUser.builder()
                 .email("edit@edit.com")
                 .userName("editName")
@@ -103,14 +116,14 @@ class UserServiceTest {
                 .build();
         Long userId = savedUser.getId() + 1;
 
-        assertThatThrownBy(() -> userService.updateUser(userId, requestUpdateUser, passwordEncoder))
+        assertThatThrownBy(() -> userService.updateUser(userId, requestUpdateUser, passwordEncoder,multipartFile))
                 .isInstanceOf(UserNotFound.class)
                 .hasMessage("존재하지 않는 회원입니다.");
     }
 
     @Test
     @DisplayName("회원 삭제 테스트")
-    public void deleteUserTest(){
+    public void deleteUserTest() throws Exception {
         User savedUser = userService.saveUser(createUser(), passwordEncoder);
         Long userId = savedUser.getId();
 
