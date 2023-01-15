@@ -32,7 +32,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.csrf().disable();
 
         http.authorizeRequests().antMatchers("/**")
-                .hasIpAddress("127.0.0.1") // 배포 후 변경 ( IP 제한 )
+//                .hasIpAddress("127.0.0.1") // 배포 후 변경 ( IP 제한 )
+                .permitAll()
                 .and()
                 .addFilter(getAuthenticationFilter()); // 이 필터를 통과시킨 데이터에 한해서만 권한 부여
 
