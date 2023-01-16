@@ -13,6 +13,9 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @Configuration
 @EnableWebSecurity
@@ -35,6 +38,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 //                .hasIpAddress("127.0.0.1") // 배포 후 변경 ( IP 제한 )
                 .permitAll()
                 .and()
+                .cors().configurationSource(corsConfigurationSource())
+                .and()
                 .addFilter(getAuthenticationFilter()); // 이 필터를 통과시킨 데이터에 한해서만 권한 부여
 
     }
@@ -46,15 +51,29 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     // 인증 처리
+
     public AuthenticationFilter getAuthenticationFilter() throws Exception {
         AuthenticationFilter authenticationFilter = new AuthenticationFilter(
                 authenticationManager(), userService,env);
 
         return authenticationFilter;
     }
-
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+
+        configuration.addAllowedOriginPattern("*");
+        configuration.addAllowedHeader("*");
+        configuration.addAllowedMethod("*");
+        configuration.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
     }
 }
