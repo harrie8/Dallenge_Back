@@ -5,28 +5,20 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.example.dailychallenge.dto.UserDto;
 import com.example.dailychallenge.entity.User;
 import com.example.dailychallenge.exception.UserNotFound;
 import com.example.dailychallenge.repository.UserRepository;
 import com.example.dailychallenge.vo.RequestUpdateUser;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import java.util.HashMap;
-import java.util.Map;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -92,7 +84,7 @@ class UserServiceTest {
                 .password("789")
                 .build();
 
-        userService.updateUser(savedUser.getId(), requestUpdateUser, passwordEncoder,multipartFile);
+        userService.updateUser(savedUser.getId(), requestUpdateUser, passwordEncoder);
 
         assertEquals(savedUser.getEmail(), requestUpdateUser.getEmail());
         assertEquals(savedUser.getUserName(), requestUpdateUser.getUserName());
@@ -116,7 +108,7 @@ class UserServiceTest {
                 .build();
         Long userId = savedUser.getId() + 1;
 
-        assertThatThrownBy(() -> userService.updateUser(userId, requestUpdateUser, passwordEncoder,multipartFile))
+        assertThatThrownBy(() -> userService.updateUser(userId, requestUpdateUser, passwordEncoder))
                 .isInstanceOf(UserNotFound.class)
                 .hasMessage("존재하지 않는 회원입니다.");
     }

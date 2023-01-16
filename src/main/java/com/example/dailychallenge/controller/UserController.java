@@ -5,8 +5,8 @@ import com.example.dailychallenge.service.UserService;
 import com.example.dailychallenge.vo.RequestUpdateUser;
 import com.example.dailychallenge.vo.RequestUser;
 import com.example.dailychallenge.vo.ResponseUser;
+import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.json.simple.parser.JSONParser;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,9 +17,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequiredArgsConstructor
@@ -47,18 +45,19 @@ public class UserController {
      */
     @PutMapping("/user/{userId}")
     public void updateUser(@PathVariable Long userId,
-//                           @RequestBody @Valid RequestUpdateUser requestUpdateUser,
-                           @RequestParam("data") String updateData,
-                           @RequestHeader String authorization,
-                           @RequestParam("userImgFile") MultipartFile multipartFile) throws Exception {
+                           @RequestBody @Valid RequestUpdateUser requestUpdateUser,
+//                           @RequestParam("data") String updateData,
+                           @RequestHeader String authorization
+//                           @RequestParam("userImgFile") MultipartFile multipartFile
+    ) throws Exception {
 
         // update user data 랑 image 같이 받으려고하다보니 parameter 로 받게 되었습니다
-        JSONParser parser = new JSONParser();
-        Object obj = parser.parse( updateData );
-        RequestUpdateUser requestUpdateUser = new ModelMapper().map(obj, RequestUpdateUser.class);
+//        JSONParser parser = new JSONParser();
+//        Object obj = parser.parse( updateData );
+//        RequestUpdateUser requestUpdateUser = new ModelMapper().map(obj, RequestUpdateUser.class);
 
         if (authorization.equals("token")) {
-            userService.updateUser(userId, requestUpdateUser, passwordEncoder,multipartFile);
+            userService.updateUser(userId, requestUpdateUser, passwordEncoder);
         }
     }
 

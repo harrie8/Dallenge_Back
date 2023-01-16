@@ -11,7 +11,7 @@ public class RequestUser {
 //    private String info;
 
     @Builder
-    public RequestUser(String userName, String email, String password, String info) {
+    public RequestUser(String userName, String email, String password) {
         this.userName = userName;
         this.email = email;
         this.password = password;

@@ -4,7 +4,9 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.put;
-import static org.springframework.restdocs.payload.PayloadDocumentation.*;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.restdocs.snippet.Attributes.key;
@@ -30,10 +32,6 @@ import org.springframework.restdocs.RestDocumentationExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-
-import java.util.HashMap;
-import java.util.Map;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -67,7 +65,6 @@ public class UserControllerDocTest {
                 .userName("GilDong")
                 .email("test@test.com")
                 .password("1234")
-                .info("testInfo")
                 .build();
 
         String json = objectMapper.writeValueAsString(requestUser);
@@ -85,9 +82,7 @@ public class UserControllerDocTest {
                                 fieldWithPath("email").description("이메일")
                                         .attributes(key("constraint").value("회원 이메일을 입력해주세요.")),
                                 fieldWithPath("password").description("비밀번호")
-                                        .attributes(key("constraint").value("회원 비밀번호를 입력해주세요.")),
-                                fieldWithPath("info").description("소개글")
-                                        .attributes(key("constraint").value("회원 소개글을 입력해주세요."))
+                                        .attributes(key("constraint").value("회원 비밀번호를 입력해주세요."))
                         ),
                         responseFields(
                                 fieldWithPath("email").description("회원가입 성공한 email"),

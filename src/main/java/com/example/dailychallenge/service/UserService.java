@@ -41,7 +41,7 @@ public class UserService implements UserDetailsService {
 
         UserImg userImg = new UserImg();
         userImg.setUsers(user);
-        userImgService.saveUserImg(userImg,createMultipartFiles());
+//        userImgService.saveUserImg(userImg,createMultipartFiles());
 
         /** to do  ↑
          * 디폴트 이미지 저장
@@ -79,12 +79,11 @@ public class UserService implements UserDetailsService {
 
 
     public void updateUser(Long userId, RequestUpdateUser requestUpdateUser,
-                           PasswordEncoder passwordEncoder,
-                           MultipartFile userImgFile) throws Exception {
+                           PasswordEncoder passwordEncoder) throws Exception {
         User findUser = userRepository.findById(userId)
                 .orElseThrow(UserNotFound::new);
 
-        userImgService.updateUserImg(findUser.getUserImg().getId(),userImgFile);
+//        userImgService.updateUserImg(findUser.getUserImg().getId(),userImgFile);
 
         UserEditor.UserEditorBuilder editorBuilder = findUser.toEditor();
         UserEditor userEditor = editorBuilder
