@@ -78,7 +78,6 @@ class UserServiceTest {
         User savedUser = userService.saveUser(createUser(), passwordEncoder);
         MultipartFile multipartFile = createMultipartFiles();
         RequestUpdateUser requestUpdateUser = RequestUpdateUser.builder()
-                .email("edit@edit.com")
                 .userName("editName")
                 .info("editInfo")
                 .password("789")
@@ -86,7 +85,6 @@ class UserServiceTest {
 
         userService.updateUser(savedUser.getId(), requestUpdateUser, passwordEncoder);
 
-        assertEquals(savedUser.getEmail(), requestUpdateUser.getEmail());
         assertEquals(savedUser.getUserName(), requestUpdateUser.getUserName());
         assertEquals(savedUser.getInfo(), requestUpdateUser.getInfo());
         assertAll(
@@ -101,7 +99,6 @@ class UserServiceTest {
         User savedUser = userService.saveUser(createUser(), passwordEncoder);
         MultipartFile multipartFile = createMultipartFiles();
         RequestUpdateUser requestUpdateUser = RequestUpdateUser.builder()
-                .email("edit@edit.com")
                 .userName("editName")
                 .info("editInfo")
                 .password("789")
