@@ -2,6 +2,7 @@ package com.example.dailychallenge.controller;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.put;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
@@ -127,7 +128,6 @@ public class UserControllerDocTest {
         Long userId = savedUser.getId();
         RequestUpdateUser requestUpdateUser = RequestUpdateUser.builder()
                 .userName("editName")
-                .email("edit@edit.com")
                 .password("789")
                 .info("editInfo")
                 .build();
@@ -147,12 +147,29 @@ public class UserControllerDocTest {
                         requestFields(
                                 fieldWithPath("userName").description("이름")
                                         .attributes(key("constraint").value("회원 이름을 입력해주세요.")),
-                                fieldWithPath("email").description("이메일")
-                                        .attributes(key("constraint").value("회원 이메일을 입력해주세요.")),
                                 fieldWithPath("password").description("비밀번호")
                                         .attributes(key("constraint").value("회원 비밀번호를 입력해주세요.")),
                                 fieldWithPath("info").description("소개글")
                                         .attributes(key("constraint").value("회원 소개글을 입력해주세요."))
+                        )
+                ));
+    }
+
+    @Test
+    @DisplayName("회원 삭제")
+    void deleteUser() throws Exception {
+        User savedUser = userService.saveUser(createUser(), passwordEncoder);
+        Long userId = savedUser.getId();
+
+        mockMvc.perform(delete("/user/{userId}", userId)
+                        .header("authorization", "token")
+                        .contentType(APPLICATION_JSON)
+                        .accept(APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andDo(print())
+                .andDo(document("user-delete",
+                        pathParameters(
+                                parameterWithName("userId").description("회원 ID")
                         )
                 ));
     }

@@ -12,9 +12,6 @@ import lombok.ToString;
 public class RequestUpdateUser {
     @NotBlank(message = "이름을 입력해주세요.")
     private String userName;
-    @NotBlank(message = "이메일을 입력해주세요.")
-
-    private String email;
     @NotBlank(message = "비밀번호를 입력해주세요.")
 
     private String password;
@@ -26,9 +23,8 @@ public class RequestUpdateUser {
     }
 
     @Builder
-    public RequestUpdateUser(String userName, String email, String password, String info) {
+    public RequestUpdateUser(String userName, String password, String info) {
         this.userName = userName;
-        this.email = email;
         this.password = password;
         this.info = info;
     }

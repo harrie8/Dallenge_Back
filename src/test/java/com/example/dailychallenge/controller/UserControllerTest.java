@@ -91,7 +91,6 @@ class UserControllerTest {
         Long userId = savedUser.getId();
         RequestUpdateUser requestUpdateUser = RequestUpdateUser.builder()
                 .userName("editName")
-                .email("edit@edit.com")
                 .password("789")
                 .info("editInfo")
                 .build();

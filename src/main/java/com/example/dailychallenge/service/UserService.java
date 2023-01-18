@@ -88,7 +88,6 @@ public class UserService implements UserDetailsService {
         UserEditor.UserEditorBuilder editorBuilder = findUser.toEditor();
         UserEditor userEditor = editorBuilder
                 .userName(requestUpdateUser.getUserName())
-                .email(requestUpdateUser.getEmail())
                 .password(passwordEncoder.encode(requestUpdateUser.getPassword()))
                 .info(requestUpdateUser.getInfo())
                 .build();
