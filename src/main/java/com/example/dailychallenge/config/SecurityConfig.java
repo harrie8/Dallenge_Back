@@ -41,6 +41,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override // 정적페이지 인증 X
     public void configure(WebSecurity web){
         web.ignoring().requestMatchers(PathRequest.toStaticResources().atCommonLocations());
+
     }
 
     @Override // 권한
@@ -48,7 +49,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.csrf().disable();
         http.formLogin().disable();
 
-        http.authorizeRequests().antMatchers("/user/login","/user/new").permitAll()
+        http.authorizeRequests().antMatchers("/user/login","/user/new","/api-doc.html").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .exceptionHandling().authenticationEntryPoint((request, response, authException) -> {
