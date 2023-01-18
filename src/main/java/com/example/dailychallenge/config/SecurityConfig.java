@@ -1,21 +1,28 @@
 package com.example.dailychallenge.config;
 
 import com.example.dailychallenge.service.UserService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @Configuration
 @EnableWebSecurity
@@ -23,7 +30,13 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final UserService userService;
-    private final Environment env;
+    private final JwtRequestFilter jwtRequestFilter;
+
+    @Bean
+    @Override
+    public AuthenticationManager authenticationManagerBean() throws Exception {
+        return super.authenticationManagerBean();
+    }
 
     @Override // 정적페이지 인증 X
     public void configure(WebSecurity web){
@@ -33,31 +46,33 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override // 권한
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable();
+        http.formLogin().disable();
 
-        http.authorizeRequests().antMatchers("/**")
-//                .hasIpAddress("127.0.0.1") // 배포 후 변경 ( IP 제한 )
-                .permitAll()
+        http.authorizeRequests().antMatchers("/user/login","/user/new").permitAll()
+                .anyRequest().authenticated()
                 .and()
-                .cors().configurationSource(corsConfigurationSource())
+                .exceptionHandling().authenticationEntryPoint((request, response, authException) -> {
+                    Map<String, Object> responseMap = new HashMap<>();
+                    ObjectMapper mapper = new ObjectMapper();
+                    response.setStatus(401);
+                    responseMap.put("error", true);
+                    responseMap.put("message", "Unauthorized");
+                    response.setHeader("content-type","application/json");
+                    String responseMsg = mapper.writeValueAsString(responseMap);
+                    response.getWriter().write(responseMsg);
+                })
                 .and()
-                .addFilter(getAuthenticationFilter()); // 이 필터를 통과시킨 데이터에 한해서만 권한 부여
-
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and()
+                .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
+        http.cors().configurationSource(corsConfigurationSource());
     }
-
 
     @Override // 인증
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.userDetailsService(userService).passwordEncoder(passwordEncoder());
     }
 
-    // 인증 처리
-
-    public AuthenticationFilter getAuthenticationFilter() throws Exception {
-        AuthenticationFilter authenticationFilter = new AuthenticationFilter(
-                authenticationManager(), userService,env);
-
-        return authenticationFilter;
-    }
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
