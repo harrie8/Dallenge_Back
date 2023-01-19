@@ -16,11 +16,17 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.example.dailychallenge.dto.UserDto;
 import com.example.dailychallenge.entity.User;
+import com.example.dailychallenge.repository.UserRepository;
 import com.example.dailychallenge.service.UserService;
 import com.example.dailychallenge.vo.RequestLogin;
 import com.example.dailychallenge.vo.RequestUpdateUser;
 import com.example.dailychallenge.vo.RequestUser;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.HashMap;
+import java.util.Map;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -33,6 +39,8 @@ import org.springframework.restdocs.RestDocumentationExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -40,6 +48,8 @@ import org.springframework.test.web.servlet.MockMvc;
 @ExtendWith(RestDocumentationExtension.class)
 @TestPropertySource(locations = "classpath:application-test.properties")
 public class UserControllerDocTest {
+    private final static String TOKEN_PREFIX = "Bearer ";
+    private final static String TOKEN = "token";
 
     @Autowired
     private UserService userService;
@@ -49,8 +59,15 @@ public class UserControllerDocTest {
     private PasswordEncoder passwordEncoder;
     @Autowired
     private ObjectMapper objectMapper;
+    @Autowired
+    UserRepository userRepository;
 
-    public UserDto createUser(){
+    @BeforeEach
+    void beforeEach() {
+        userRepository.deleteAll();
+    }
+
+    public UserDto createUser() {
         UserDto userDto = new UserDto();
         userDto.setEmail("test1234@test.com");
         userDto.setUserName("홍길동");
@@ -95,17 +112,16 @@ public class UserControllerDocTest {
     @Test
     @DisplayName("로그인")
     public void loginUser() throws Exception {
-        userService.saveUser(createUser(),passwordEncoder);
+        userService.saveUser(createUser(), passwordEncoder);
 
         RequestLogin requestLogin = RequestLogin.builder()
                 .email("test1234@test.com")
                 .password("1234")
                 .build();
 
-
         String json = objectMapper.writeValueAsString(requestLogin);
 
-        mockMvc.perform(post("/login")
+        mockMvc.perform(post("/user/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json)
                         .accept(MediaType.APPLICATION_JSON))
@@ -117,6 +133,11 @@ public class UserControllerDocTest {
                                         .attributes(key("constraint").value("회원 이메일을 입력해주세요.")),
                                 fieldWithPath("password").description("비밀번호")
                                         .attributes(key("constraint").value("회원 비밀번호를 입력해주세요."))
+                        ),
+                        responseFields(
+                                fieldWithPath("error").description("인증에 성공하면 false"),
+                                fieldWithPath("message").description("로그인 성공 여부 메시지"),
+                                fieldWithPath("token").description("인증 토큰 값")
                         )
                 ));
     }
@@ -134,7 +155,7 @@ public class UserControllerDocTest {
 
         String json = objectMapper.writeValueAsString(requestUpdateUser);
         mockMvc.perform(put("/user/{userId}", userId)
-                        .header("authorization", "token")
+                        .header("Authorization", getToken())
                         .contentType(APPLICATION_JSON)
                         .content(json)
                         .accept(APPLICATION_JSON))
@@ -162,7 +183,7 @@ public class UserControllerDocTest {
         Long userId = savedUser.getId();
 
         mockMvc.perform(delete("/user/{userId}", userId)
-                        .header("authorization", "token")
+                        .header("Authorization", getToken())
                         .contentType(APPLICATION_JSON)
                         .accept(APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -172,5 +193,25 @@ public class UserControllerDocTest {
                                 parameterWithName("userId").description("회원 ID")
                         )
                 ));
+    }
+
+    // 회원 정보 수정, 회원 삭제할 때 헤더에 token값을 주기 위한 메서드입니다.
+    private String getToken() throws Exception {
+        Map<String, String> loginData = new HashMap<>();
+        loginData.put("email", "test1234@test.com");
+        loginData.put("password", "1234");
+
+        ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders.post("/user/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(loginData))
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+
+        String contentAsString = resultActions.andReturn().getResponse().getContentAsString();
+        JSONParser jsonParser = new JSONParser();
+        JSONObject jsonObject = (JSONObject) jsonParser.parse(contentAsString);
+        String token = (String) jsonObject.get(TOKEN);
+
+        return TOKEN_PREFIX + token;
     }
 }

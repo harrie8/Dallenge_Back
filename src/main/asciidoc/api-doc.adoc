@@ -6,55 +6,10 @@
 :toclevels: 2
 :sectlinks:
 
-== 회원 가입
+NOTE::
+* 회원 가입, 로그인을 제외한 요청은 `인증` 이 필요합니다
+* 토큰 검증할 때 토큰은 Bearer로 시작해야 합니다.
+** ex) Authorization: Bearer eyJhbGciOiJIUzI1NiJ9....
 
-=== 요청
-
-include::{snippets}/user-register/http-request.adoc[]
-
-include::{snippets}/user-register/request-fields.adoc[]
-
-=== 응답
-
-include::{snippets}/user-register/http-response.adoc[]
-
-
-== 로그인
-
-=== 요청
-
-include::{snippets}/user-login/http-request.adoc[]
-
-include::{snippets}/user-login/request-fields.adoc[]
-
-=== 응답
-
-include::{snippets}/user-login/http-response.adoc[]
-
-
-== 회원 수정
-
-=== 요청
-
-include::{snippets}/user-update/http-request.adoc[]
-
-include::{snippets}/user-update/path-parameters.adoc[]
-
-include::{snippets}/user-update/request-fields.adoc[]
-
-=== 응답
-
-include::{snippets}/user-update/http-response.adoc[]
-
-== 회원 삭제
-
-=== 요청
-
-include::{snippets}/user-delete/http-request.adoc[]
-
-include::{snippets}/user-delete/path-parameters.adoc[]
-
-=== 응답
-
-include::{snippets}/user-delete/http-response.adoc[]
+include::User-API.adoc[]
 

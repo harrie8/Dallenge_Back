@@ -1,0 +1,61 @@
+[[User-API]]
+== 회원 API
+
+[[User-회원-가입]]
+=== 회원 가입
+
+==== 요청
+
+include::{snippets}/user-register/http-request.adoc[]
+
+include::{snippets}/user-register/request-fields.adoc[]
+
+==== 응답
+
+include::{snippets}/user-register/http-response.adoc[]
+
+
+[[User-로그인]]
+=== 로그인
+
+==== 요청
+
+include::{snippets}/user-login/http-request.adoc[]
+
+include::{snippets}/user-login/request-fields.adoc[]
+
+==== 응답
+
+응답값 중 `token` 은 인증에 사용됩니다.
+
+include::{snippets}/user-login/http-response.adoc[]
+
+
+[[User-회원-정보-수정]]
+=== 회원 정보 수정
+
+==== 요청
+
+include::{snippets}/user-update/http-request.adoc[]
+
+include::{snippets}/user-update/path-parameters.adoc[]
+
+include::{snippets}/user-update/request-fields.adoc[]
+
+==== 응답
+
+include::{snippets}/user-update/http-response.adoc[]
+
+
+[[User-회원-삭제]]
+=== 회원 삭제
+
+==== 요청
+
+include::{snippets}/user-delete/http-request.adoc[]
+
+include::{snippets}/user-delete/path-parameters.adoc[]
+
+==== 응답
+
+include::{snippets}/user-delete/http-response.adoc[]
