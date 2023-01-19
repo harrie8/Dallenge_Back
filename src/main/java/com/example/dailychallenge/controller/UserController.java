@@ -1,16 +1,14 @@
 package com.example.dailychallenge.controller;
 
 import com.example.dailychallenge.dto.UserDto;
-import com.example.dailychallenge.entity.User;
-import com.example.dailychallenge.repository.UserRepository;
 import com.example.dailychallenge.service.UserService;
 import com.example.dailychallenge.utils.JwtTokenUtil;
 import com.example.dailychallenge.vo.RequestLogin;
 import com.example.dailychallenge.vo.RequestUpdateUser;
 import com.example.dailychallenge.vo.RequestUser;
 import com.example.dailychallenge.vo.ResponseUser;
-
-import javax.persistence.EntityNotFoundException;
+import java.util.HashMap;
+import java.util.Map;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -21,12 +19,12 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
@@ -63,28 +61,28 @@ public class UserController {
                 responseMap.put("token", token);
                 return ResponseEntity.ok(responseMap);
             } else {
+                // 로그인 되지 않은 사용자인 경우
                 responseMap.put("error", true);
                 responseMap.put("message", "Invalid Credentials");
                 return ResponseEntity.status(401).body(responseMap);
             }
         } catch (Exception e) {
+            // 아이디, 비밀번호 틀린 경우
+            responseMap.put("error", true);
+            responseMap.put("message", "이메일 또는 비밀번호가 일치하지 않습니다.");
             return ResponseEntity.status(500).body(responseMap);
         }
     }
 
     /**
-     * url에서 new, update, delete는 http 메서드로 대체 가능하지 않을까?
-     * JWT token 값은 header에 임의로 설정해놨습니다
-     *
      * 2023-01-18
      * jwt 검증하는 필터를 추가해서 token 값은 파라미터로 받아오지 않아도 될 것 같습니다
      * 다만, 로그인 시 토큰 발급 후 body 에 담아 보냅니다
      */
     @PutMapping("/user/{userId}")
     public void updateUser(@PathVariable Long userId,
-                           @RequestBody @Valid RequestUpdateUser requestUpdateUser,
+                           @RequestBody @Valid RequestUpdateUser requestUpdateUser
 //                           @RequestParam("data") String updateData,
-                           @RequestHeader String authorization
 //                           @RequestParam("userImgFile") MultipartFile multipartFile
     ) throws Exception {
 
@@ -94,17 +92,12 @@ public class UserController {
 //        RequestUpdateUser requestUpdateUser = new ModelMapper().map(obj, RequestUpdateUser.class);
 
         userService.updateUser(userId, requestUpdateUser, passwordEncoder);
-//        if (authorization.equals("token")) {
-//        }
     }
 
     @DeleteMapping("/user/{userId}")
-    public void deleteUser(@PathVariable Long userId,
-                           @RequestHeader String authorization) {
+    public void deleteUser(@PathVariable Long userId) {
 
         userService.delete(userId);
-//        if (authorization.equals("token")) {
-//        }
     }
 
 }

@@ -5,16 +5,33 @@ Content-Type: application/json
 {
   "userName": "a",
   "email": "a@a.com",
-  "password": "123",
-  "info": "memo"
+  "password": "123"
 }
 
 ### 2. 로그인
+POST 127.0.0.1:8080/user/login
+Content-Type: application/json
+
+{
+  "email": "a@a.com",
+  "password": "123"
+}
+
+> {%
+ client.test("Validate", function() { // Validate라는 이름의 테스트를 수행
+     client.assert(response.status === 200, "Response status is not 200"); // 응답값이 200이면 통과
+     client.assert(response.contentType.mimeType === "application/json", "Expected 'application/json'"); // 응답값이 application/json이면 토과
+     client.assert(response.body.token.trim().length > 0); // 토큰 길이가 0보다 크면 통과
+
+     client.log(response.body.token); // 토큰 값 로깅, body에는 응답 받은 json이 객체 형식으로 저장된다. 즉 {token: "value"} 형식으로 token값이 넘어온다
+     client.global.set("token", response.body.token); // 토큰 값을 다른 테스트에서도 사용할 수 있게 global set
+ })
+ %}
 
 ### 3. 회원 정보 수정
 PUT 127.0.0.1:8080/user/1
 Content-Type: application/json
-Authorization: token
+Authorization: Bearer {{token}}
 
 {
   "userName": "editUserName",
@@ -26,6 +43,6 @@ Authorization: token
 ### 4. 회원 삭제
 DELETE 127.0.0.1:8080/user/1
 Content-Type: application/json
-Authorization: token
+Authorization: Bearer {{token}}
 
 ### 5. 로그아웃

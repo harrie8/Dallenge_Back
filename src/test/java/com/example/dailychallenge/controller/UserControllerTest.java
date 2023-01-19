@@ -14,6 +14,8 @@ import com.example.dailychallenge.vo.RequestUser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.HashMap;
 import java.util.Map;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +25,7 @@ import org.springframework.http.MediaType;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest
@@ -30,18 +33,20 @@ import org.springframework.transaction.annotation.Transactional;
 @AutoConfigureMockMvc
 @TestPropertySource(locations = "classpath:application-test.properties")
 class UserControllerTest {
+    private final static String TOKEN_PREFIX = "Bearer ";
+    private final static String TOKEN = "token";
 
+    @Autowired
+    PasswordEncoder passwordEncoder;
     @Autowired
     private UserService userService;
     @Autowired
     private MockMvc mockMvc;
     @Autowired
-    PasswordEncoder passwordEncoder;
-    @Autowired
     private ObjectMapper objectMapper;
 
 
-    public UserDto createUser(){
+    public UserDto createUser() {
         UserDto userDto = new UserDto();
         userDto.setEmail("test1234@test.com");
         userDto.setUserName("홍길동");
@@ -74,9 +79,9 @@ class UserControllerTest {
         loginData.put("email", "test1234@test.com");
         loginData.put("password", "1234");
 
-        userService.saveUser(createUser(),passwordEncoder);
+        userService.saveUser(createUser(), passwordEncoder);
 
-        mockMvc.perform(post("/login")
+        mockMvc.perform(post("/user/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(loginData))
                         .accept(MediaType.APPLICATION_JSON))
@@ -97,7 +102,7 @@ class UserControllerTest {
 
         String json = objectMapper.writeValueAsString(requestUpdateUser);
         mockMvc.perform(put("/user/{userId}", userId)
-                        .header("authorization", "token")
+                        .header("Authorization", getToken())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json)
                         .accept(MediaType.APPLICATION_JSON))
@@ -112,10 +117,29 @@ class UserControllerTest {
         Long userId = savedUser.getId();
 
         mockMvc.perform(delete("/user/{userId}", userId)
-                        .header("authorization", "token")
+                        .header("Authorization", getToken())
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andDo(print());
+    }
+
+    private String getToken() throws Exception {
+        Map<String, String> loginData = new HashMap<>();
+        loginData.put("email", "test1234@test.com");
+        loginData.put("password", "1234");
+
+        ResultActions resultActions = mockMvc.perform(post("/user/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(loginData))
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+
+        String contentAsString = resultActions.andReturn().getResponse().getContentAsString();
+        JSONParser jsonParser = new JSONParser();
+        JSONObject jsonObject = (JSONObject) jsonParser.parse(contentAsString);
+        String token = (String) jsonObject.get(TOKEN);
+
+        return TOKEN_PREFIX + token;
     }
 }
