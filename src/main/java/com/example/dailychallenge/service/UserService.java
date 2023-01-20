@@ -72,6 +72,10 @@ public class UserService implements UserDetailsService {
         return userDto;
     }
 
+    public User findByEmail(String email) {
+        return userRepository.findByEmail(email);
+    }
+
     /** to do
      * 회원 가입 시 중복 회원 예외 처리
      * 로그인 실패 시 예외 처리 ( 1. 비밀번호, 2. 없는 회원 )

@@ -137,7 +137,10 @@ public class UserControllerDocTest {
                         responseFields(
                                 fieldWithPath("error").description("인증에 성공하면 false"),
                                 fieldWithPath("message").description("로그인 성공 여부 메시지"),
-                                fieldWithPath("token").description("인증 토큰 값")
+                                fieldWithPath("token").description("인증 토큰 값"),
+                                fieldWithPath("userId").description("회원 식별자"),
+                                fieldWithPath("userName").description("회원 닉네임")
+
                         )
                 ));
     }

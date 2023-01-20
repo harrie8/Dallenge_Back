@@ -1,6 +1,7 @@
 package com.example.dailychallenge.controller;
 
 import com.example.dailychallenge.dto.UserDto;
+import com.example.dailychallenge.entity.User;
 import com.example.dailychallenge.service.UserService;
 import com.example.dailychallenge.utils.JwtTokenUtil;
 import com.example.dailychallenge.vo.RequestLogin;
@@ -55,10 +56,13 @@ public class UserController {
             ));
             if (auth.isAuthenticated()) {
                 UserDetails userDetails = userService.loadUserByUsername(requestLogin.getEmail());
+                User user = userService.findByEmail(requestLogin.getEmail());
                 String token = jwtTokenUtil.generateToken(userDetails);
                 responseMap.put("error", false);
                 responseMap.put("message", "Logged In");
                 responseMap.put("token", token);
+                responseMap.put("userId", user.getId());
+                responseMap.put("userName", user.getUserName());
                 return ResponseEntity.ok(responseMap);
             } else {
                 // 로그인 되지 않은 사용자인 경우
