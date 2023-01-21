@@ -5,9 +5,11 @@ import com.example.dailychallenge.dto.UserEditor;
 import javax.persistence.*;
 
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity @Table(name = "users") // user 예약어라 users로 변경
-@Data
+@Getter @Setter // Test 시 @toString 때문에 StackOverflow 발생하여 변경
 public class User {
 
     @Id @Column(name = "user_id")

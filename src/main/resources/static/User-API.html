@@ -574,9 +574,9 @@ Pragma: no-cache
 Expires: 0
 Strict-Transport-Security: max-age=31536000 ; includeSubDomains
 X-Frame-Options: DENY
-Content-Length: 229
+Content-Length: 193
 
-{"error":false,"message":"Logged In","userName":"홍길동","userId":1,"token":"eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0MTIzNEB0ZXN0LmNvbSIsImlhdCI6MTY3NDE5NDQxOSwiZXhwIjoxNjc0MjEyNDE5fQ.DyRM_IDB1Nd_GLDHeAmlfg0oHNdSUopTUksYi6Qt8as"}</code></pre>
+{"userId":1,"token":"eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0MTIzNEB0ZXN0LmNvbSIsImlhdCI6MTY3NDI5MjcxNCwiZXhwIjoxNjc0MzEwNzE0fQ.AoPUdx4mKwGVZFOVrQ3eQeMlB6XllyWJXco3DwD0Hpg","userName":"홍길동"}</code></pre>
 </div>
 </div>
 </div>
@@ -587,14 +587,22 @@ Content-Length: 229
 <h4 id="_요청_3">요청</h4>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight nowrap"><code class="language-http" data-lang="http">PUT /user/3 HTTP/1.1
-Content-Type: application/json;charset=UTF-8
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0MTIzNEB0ZXN0LmNvbSIsImlhdCI6MTY3NDE5NDQxOSwiZXhwIjoxNjc0MjEyNDE5fQ.DyRM_IDB1Nd_GLDHeAmlfg0oHNdSUopTUksYi6Qt8as
+<pre class="highlight nowrap"><code class="language-http" data-lang="http">POST /user/1 HTTP/1.1
+Content-Type: multipart/form-data;charset=UTF-8; boundary=6o2knFse3p53ty9dmcQvWAIx1zInP11uCfbm
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0MTIzNEB0ZXN0LmNvbSIsImlhdCI6MTY3NDI4OTU5NiwiZXhwIjoxNjc0MzA3NTk2fQ.25mRFD6DO0jqFiudGz96Sm4N34i-4oCsFcVTp1ms-z8
 Accept: application/json
-Content-Length: 58
 Host: api.dailychallenge.com
 
-{"userName":"editName","password":"789","info":"editInfo"}</code></pre>
+--6o2knFse3p53ty9dmcQvWAIx1zInP11uCfbm
+Content-Disposition: form-data; name=data
+
+{"userName":"editName","password":"789","info":"editInfo"}
+--6o2knFse3p53ty9dmcQvWAIx1zInP11uCfbm
+Content-Disposition: form-data; name=userImgFile; filename=editImage.jpg
+Content-Type: image/jpg
+
+
+--6o2knFse3p53ty9dmcQvWAIx1zInP11uCfbm--</code></pre>
 </div>
 </div>
 <table class="tableblock frame-all grid-all stretch">
@@ -673,9 +681,9 @@ X-Frame-Options: DENY</code></pre>
 <h4 id="_요청_4">요청</h4>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight nowrap"><code class="language-http" data-lang="http">DELETE /user/4 HTTP/1.1
+<pre class="highlight nowrap"><code class="language-http" data-lang="http">DELETE /user/5 HTTP/1.1
 Content-Type: application/json;charset=UTF-8
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0MTIzNEB0ZXN0LmNvbSIsImlhdCI6MTY3NDE5NDQyMCwiZXhwIjoxNjc0MjEyNDIwfQ.dx8D9Qay1aLwal8C6d_V-WKFugXsd10UznhHkAhKhm4
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0MTIzNEB0ZXN0LmNvbSIsImlhdCI6MTY3NDI5MjcxNSwiZXhwIjoxNjc0MzEwNzE1fQ.-cwp94-dELPhFc-2xEyqBr384HjfzEVdBw6zHzTFJlE
 Accept: application/json
 Host: api.dailychallenge.com</code></pre>
 </div>

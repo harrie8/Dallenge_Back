@@ -2,12 +2,13 @@ package com.example.dailychallenge.entity;
 
 import lombok.Data;
 import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.*;
 
 @Entity
 @Table(name = "user_img")
-@Data
+@Getter @Setter
 public class UserImg {
     @Id @Column(name = "user_img_id")
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -17,7 +18,7 @@ public class UserImg {
     private String oriImgName; // 원본 이미지 파일명
     private String imgUrl; // 이미지 조회 경로
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User users;
 

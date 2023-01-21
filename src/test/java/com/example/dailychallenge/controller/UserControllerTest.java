@@ -1,8 +1,6 @@
 package com.example.dailychallenge.controller;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -12,6 +10,8 @@ import com.example.dailychallenge.service.UserService;
 import com.example.dailychallenge.vo.RequestUpdateUser;
 import com.example.dailychallenge.vo.RequestUser;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import org.json.simple.JSONObject;
@@ -19,14 +19,24 @@ import org.json.simple.parser.JSONParser;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.mock.web.MockPart;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.test.web.servlet.request.MockMultipartHttpServletRequestBuilder;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.request.RequestPostProcessor;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
+import javax.servlet.http.Part;
 
 @SpringBootTest
 @Transactional
@@ -44,6 +54,8 @@ class UserControllerTest {
     private MockMvc mockMvc;
     @Autowired
     private ObjectMapper objectMapper;
+    @Value("${userImgLocation}")
+    private String userImgLocation;
 
 
     public UserDto createUser() {
@@ -53,6 +65,14 @@ class UserControllerTest {
         userDto.setInfo("testInfo");
         userDto.setPassword("1234");
         return userDto;
+    }
+
+    MockMultipartFile createMultipartFiles() throws Exception {
+        String path = "userImgFile";
+        String imageName = "editImage.jpg";
+        MockMultipartFile multipartFile = new MockMultipartFile(path, imageName,
+                "image/jpg", new byte[]{1, 2, 3, 4});
+        return multipartFile;
     }
 
     @Test
@@ -100,14 +120,37 @@ class UserControllerTest {
                 .info("editInfo")
                 .build();
 
-        String json = objectMapper.writeValueAsString(requestUpdateUser);
-        mockMvc.perform(put("/user/{userId}", userId)
-                        .header("Authorization", getToken())
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(json)
-                        .accept(MediaType.APPLICATION_JSON))
+        MockMultipartFile userImgFile = createMultipartFiles();
+        String data = objectMapper.writeValueAsString(requestUpdateUser);
+
+        MockMultipartHttpServletRequestBuilder builder =
+                MockMvcRequestBuilders.multipart("/user/{userId}",userId);
+        builder.with(new RequestPostProcessor() {
+            @Override
+            public MockHttpServletRequest postProcessRequest(MockHttpServletRequest request) {
+                request.setMethod("PUT");
+                return request;
+            }
+        });
+
+        mockMvc.perform(builder
+                        .file(userImgFile)
+                        .param("data",data)
+                .header("Authorization",getToken())
+                .contentType(MediaType.MULTIPART_FORM_DATA)
+                .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andDo(print());
+
+
+//        mockMvc.perform(put("/user/{userId}", userId)
+//                        .header("Authorization", getToken())
+//                        .contentType(MediaType.APPLICATION_JSON)
+//                        .content(json)
+//                        .accept(MediaType.APPLICATION_JSON))
+//                .andExpect(status().isOk())
+//                .andDo(print());
+
     }
 
     @Test

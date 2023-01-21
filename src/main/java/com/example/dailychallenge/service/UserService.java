@@ -10,6 +10,7 @@ import com.example.dailychallenge.vo.RequestUpdateUser;
 import java.util.ArrayList;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -24,9 +25,11 @@ import org.springframework.web.multipart.MultipartFile;
 public class UserService implements UserDetailsService {
     private final UserRepository userRepository;
     private final UserImgService userImgService;
+    @Value("${userImgLocation}")
+    private String userImgLocation;
 
     MultipartFile createMultipartFiles() throws Exception {
-        String path = "C:/spring_study/image/profile/";
+        String path = userImgLocation+ "/";
         String imageName = "image.jpg";
         MockMultipartFile multipartFile = new MockMultipartFile(path, imageName,
                 "image/jpg", new byte[]{1, 2, 3, 4});
@@ -41,7 +44,7 @@ public class UserService implements UserDetailsService {
 
         UserImg userImg = new UserImg();
         userImg.setUsers(user);
-//        userImgService.saveUserImg(userImg,createMultipartFiles());
+        userImgService.saveUserImg(userImg, createMultipartFiles());
 
         /** to do  ↑
          * 디폴트 이미지 저장
@@ -81,13 +84,13 @@ public class UserService implements UserDetailsService {
      * 로그인 실패 시 예외 처리 ( 1. 비밀번호, 2. 없는 회원 )
      */
 
-
     public void updateUser(Long userId, RequestUpdateUser requestUpdateUser,
-                           PasswordEncoder passwordEncoder) throws Exception {
+                           PasswordEncoder passwordEncoder,
+                           MultipartFile userImgFile) throws Exception {
         User findUser = userRepository.findById(userId)
                 .orElseThrow(UserNotFound::new);
 
-//        userImgService.updateUserImg(findUser.getUserImg().getId(),userImgFile);
+        userImgService.updateUserImg(findUser.getUserImg().getId(), userImgFile);
 
         UserEditor.UserEditorBuilder editorBuilder = findUser.toEditor();
         UserEditor userEditor = editorBuilder

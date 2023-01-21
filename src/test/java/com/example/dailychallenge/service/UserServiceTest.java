@@ -9,11 +9,13 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import com.example.dailychallenge.dto.UserDto;
 import com.example.dailychallenge.entity.User;
 import com.example.dailychallenge.exception.UserNotFound;
+import com.example.dailychallenge.repository.UserImgRepository;
 import com.example.dailychallenge.repository.UserRepository;
 import com.example.dailychallenge.vo.RequestUpdateUser;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockMultipartFile;
@@ -32,9 +34,14 @@ class UserServiceTest {
     private UserService userService;
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private UserImgRepository userImgRepository;
 
     @Autowired
     PasswordEncoder passwordEncoder;
+
+    @Value("${userImgLocation}")
+    private String userImgLocation;
 
 
     public UserDto createUser(){
@@ -48,8 +55,8 @@ class UserServiceTest {
 
     /** 프로필 이미지 추가한 후 **/
     MultipartFile createMultipartFiles() throws Exception {
-        String path = "C:/spring_study/image/profile/";
-        String imageName = "image.jpg";
+        String path = userImgLocation+"/";
+        String imageName = "editImage.jpg";
         MockMultipartFile multipartFile = new MockMultipartFile(path, imageName,
                 "image/jpg", new byte[]{1, 2, 3, 4});
         return multipartFile;
@@ -83,13 +90,16 @@ class UserServiceTest {
                 .password("789")
                 .build();
 
-        userService.updateUser(savedUser.getId(), requestUpdateUser, passwordEncoder);
+        userService.updateUser(savedUser.getId(), requestUpdateUser, passwordEncoder, multipartFile);
 
-        assertEquals(savedUser.getUserName(), requestUpdateUser.getUserName());
-        assertEquals(savedUser.getInfo(), requestUpdateUser.getInfo());
+        User editUser = userService.findByEmail(savedUser.getEmail());
+        System.out.println("editUser>>>"+editUser.toString());
+
+        assertEquals(editUser.getUserName(), requestUpdateUser.getUserName());
+        assertEquals(editUser.getInfo(), requestUpdateUser.getInfo());
         assertAll(
-                () -> assertNotEquals(savedUser.getPassword(), requestUpdateUser.getPassword()),
-                () -> assertTrue(passwordEncoder.matches(requestUpdateUser.getPassword(), savedUser.getPassword()))
+                () -> assertNotEquals(editUser.getPassword(), requestUpdateUser.getPassword()),
+                () -> assertTrue(passwordEncoder.matches(requestUpdateUser.getPassword(), editUser.getPassword()))
         );
     }
 
@@ -105,7 +115,7 @@ class UserServiceTest {
                 .build();
         Long userId = savedUser.getId() + 1;
 
-        assertThatThrownBy(() -> userService.updateUser(userId, requestUpdateUser, passwordEncoder))
+        assertThatThrownBy(() -> userService.updateUser(userId, requestUpdateUser, passwordEncoder, multipartFile))
                 .isInstanceOf(UserNotFound.class)
                 .hasMessage("존재하지 않는 회원입니다.");
     }
@@ -119,5 +129,6 @@ class UserServiceTest {
         userService.delete(userId);
 
         assertEquals(0, userRepository.count());
+        assertEquals(0,userImgRepository.count());
     }
 }
