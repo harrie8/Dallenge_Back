@@ -1,13 +1,18 @@
 package com.example.dailychallenge.controller;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON;
-import static org.springframework.http.MediaType.MULTIPART_FORM_DATA;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.multipart;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
-import static org.springframework.restdocs.request.RequestDocumentation.*;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.partWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
+import static org.springframework.restdocs.request.RequestDocumentation.requestParameters;
+import static org.springframework.restdocs.request.RequestDocumentation.requestParts;
 import static org.springframework.restdocs.snippet.Attributes.key;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -33,21 +38,14 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
-import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.restdocs.RestDocumentationExtension;
-import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
-import org.springframework.test.web.servlet.request.MockMultipartHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.request.RequestPostProcessor;
-import org.springframework.web.multipart.MultipartFile;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -161,8 +159,8 @@ public class UserControllerDocTest{
                 ));
     }
 
-//    @Test
-//    @DisplayName("회원 정보 수정")
+    @Test
+    @DisplayName("회원 정보 수정")
     void updateUser() throws Exception {
         User savedUser = userService.saveUser(createUser(), passwordEncoder);
         Long userId = savedUser.getId();
@@ -174,29 +172,49 @@ public class UserControllerDocTest{
                 .build();
 
         MockMultipartFile userImgFile = createMultipartFiles();
-        String json = objectMapper.writeValueAsString(requestUpdateUser);
+        String data = objectMapper.writeValueAsString(requestUpdateUser);
 
-        mockMvc.perform(put("/user/{userId}",userId)
-            /** 파일 넣어줘야 하는데 multipart는 디폴트가 post 전송, put으로는 파잍 전송 X => 어떡하죠... **/
-                    .param("data",json)
-                    .header("Authorization",getToken())
-                    .contentType(MULTIPART_FORM_DATA)
-                    .accept(APPLICATION_JSON))
+        mockMvc.perform(multipart("/user/{userId}", userId)
+                        .file(userImgFile)
+                        .param("data", data)
+                        .header("Authorization", getToken())
+                        .contentType(MediaType.MULTIPART_FORM_DATA)
+                        .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andDo(print())
                 .andDo(document("user-update",
                         pathParameters(
                                 parameterWithName("userId").description("회원 ID")
                         ),
+                        requestParts(
+                                partWithName("userImgFile").description("회원 프로필 이미지").optional()
+                        ),
                         requestParameters(
-                                parameterWithName("data").description("editData"),
-                                parameterWithName("userImgFile").description("회원 프로필 이미지").optional()
-                        )));
+                                parameterWithName("data").description("회원 정보 수정 데이터")
+                        )
+                ));
+
+//        mockMvc.perform(put("/user/{userId}",userId)
+//            /** 파일 넣어줘야 하는데 multipart는 디폴트가 post 전송, put으로는 파잍 전송 X => 어떡하죠... **/
+//                    .param("data",data)
+//                    .header("Authorization",getToken())
+//                    .contentType(MULTIPART_FORM_DATA)
+//                    .accept(APPLICATION_JSON))
+//                .andExpect(status().isOk())
+//                .andDo(print())
+//                .andDo(document("user-update",
+//                        pathParameters(
+//                                parameterWithName("userId").description("회원 ID")
+//                        ),
+//                        requestParameters(
+//                                parameterWithName("data").description("editData"),
+//                                parameterWithName("userImgFile").description("회원 프로필 이미지").optional()
+//                        )));
 
 //        mockMvc.perform(put("/user/{userId}", userId)
 //                        .header("Authorization", getToken())
 //                        .contentType(APPLICATION_JSON)
-//                        .content(json)
+//                        .content(data)
 //                        .accept(APPLICATION_JSON))
 //                .andExpect(status().isOk())
 //                .andDo(print())

@@ -38,9 +38,14 @@ include::{snippets}/user-login/http-response.adoc[]
 
 include::{snippets}/user-update/http-request.adoc[]
 
+- Path Parameter
 include::{snippets}/user-update/path-parameters.adoc[]
 
-include::{snippets}/user-update/request-fields.adoc[]
+- URL Parameter
+include::{snippets}/user-update/request-parameters.adoc[]
+
+- Form Data
+include::{snippets}/user-update/request-parts.adoc[]
 
 ==== 응답
 

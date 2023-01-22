@@ -4,11 +4,11 @@ import com.example.dailychallenge.dto.UserDto;
 import com.example.dailychallenge.entity.User;
 import com.example.dailychallenge.service.UserService;
 import com.example.dailychallenge.utils.JwtTokenUtil;
-import com.example.dailychallenge.vo.*;
-
-import java.util.HashMap;
-import java.util.Map;
-import javax.validation.Valid;
+import com.example.dailychallenge.vo.RequestLogin;
+import com.example.dailychallenge.vo.RequestUpdateUser;
+import com.example.dailychallenge.vo.RequestUser;
+import com.example.dailychallenge.vo.ResponseLoginUser;
+import com.example.dailychallenge.vo.ResponseUser;
 import lombok.RequiredArgsConstructor;
 import org.json.simple.parser.JSONParser;
 import org.modelmapper.ModelMapper;
@@ -19,7 +19,12 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
@@ -80,7 +85,7 @@ public class UserController {
      * multipart()로 요청 시 디폴트 메서드가 POST 라서 에러 발생
      * put()으로 요청 시 file upload 가 불가합니다 ㅜㅜ 계속 찾아는 보고 있는데 잘 안되서 일단 주석 달아놨습니다 !
      */
-    @PutMapping("/user/{userId}")
+    @PostMapping("/user/{userId}")
     public void updateUser(@PathVariable Long userId,
 //                           @RequestBody @Valid RequestUpdateUser requestUpdateUser,
                            @RequestParam("data") String updateData,

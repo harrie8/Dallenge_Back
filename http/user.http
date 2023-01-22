@@ -29,16 +29,12 @@ Content-Type: application/json
  %}
 
 ### 3. 회원 정보 수정
-PUT 127.0.0.1:8080/user/1
-Content-Type: application/json
+POST 127.0.0.1:8080/user/1?data={"userName":"editName","password":"789","info":"editInfo"}
+Content-Type: multipart/form-data; boundary=boundary
 Authorization: Bearer {{token}}
 
-{
-  "userName": "editUserName",
-  "email": "edit@edit.com",
-  "password": "789",
-  "info": "editInfo"
-}
+--boundary
+Content-Disposition: form-data; name="userImgFile"; filename="editImage.jpg
 
 ### 4. 회원 삭제
 DELETE 127.0.0.1:8080/user/1
