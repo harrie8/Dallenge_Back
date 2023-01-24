@@ -41,8 +41,9 @@ public class UserController {
         ModelMapper mapper = new ModelMapper();
 
         UserDto userDto = mapper.map(requestUser, UserDto.class);
-        userService.saveUser(userDto, passwordEncoder);
+        User savedUser = userService.saveUser(userDto, passwordEncoder);
         ResponseUser responseUser = mapper.map(userDto, ResponseUser.class);
+        responseUser.setUserId(savedUser.getId());
 
         return ResponseEntity.status(HttpStatus.CREATED).body(responseUser);
     }

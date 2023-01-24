@@ -121,7 +121,8 @@ public class UserControllerDocTest{
                         ),
                         responseFields(
                                 fieldWithPath("email").description("회원가입 성공한 email"),
-                                fieldWithPath("userName").description("회원가입 성공한 username")
+                                fieldWithPath("userName").description("회원가입 성공한 username"),
+                                fieldWithPath("userId").description("회원가입 성공한 userId")
                         )
                 ));
     }
