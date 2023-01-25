@@ -1,7 +1,9 @@
 package com.example.dailychallenge.controller;
 
 import com.example.dailychallenge.dto.UserDto;
+import com.example.dailychallenge.entity.ProviderUser;
 import com.example.dailychallenge.entity.User;
+import com.example.dailychallenge.entity.social.OAuth2ProviderUser;
 import com.example.dailychallenge.service.UserService;
 import com.example.dailychallenge.utils.JwtTokenUtil;
 import com.example.dailychallenge.vo.RequestLogin;
@@ -17,15 +19,17 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
+import org.springframework.security.oauth2.core.user.OAuth2User;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.security.Principal;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -75,17 +79,6 @@ public class UserController {
         }
     }
 
-    /***
-     * 2023-01-20 ** File Upload
-     * 파일 업로드 bytes 안넘기고 multipart 로 넘기는 걸로 수정했습니다 !
-     * 경로는 이제 코드 상에서 수정할 필요없고 properties 부분만 변경해서 테스트 하시면 될 것 같습니다
-     * postman 에서 요청 시 form-data 로 요청하여 동작 확인하였습니다
-     *
-     * ** Issue
-     * ControllerRestDocsTest 에 적어놨는데,
-     * multipart()로 요청 시 디폴트 메서드가 POST 라서 에러 발생
-     * put()으로 요청 시 file upload 가 불가합니다 ㅜㅜ 계속 찾아는 보고 있는데 잘 안되서 일단 주석 달아놨습니다 !
-     */
     @PostMapping("/user/{userId}")
     public void updateUser(@PathVariable Long userId,
 //                           @RequestBody @Valid RequestUpdateUser requestUpdateUser,
@@ -104,6 +97,22 @@ public class UserController {
     @DeleteMapping("/user/{userId}")
     public void deleteUser(@PathVariable Long userId) {
         userService.delete(userId);
+    }
+
+
+    /**
+     * 2023-01-25
+     * google 로그인 구현했는데 현재 redirect url이 localhost:8080~ 으로 되어있어서
+     * 로그인 url은 ip가 아닌 http://localhost:8080/oauth2/authorization/google 로 해주셔야 합니다
+     * >> aws의 경우 http://ec2-52-78-166-208.ap-northeast-2.compute.amazonaws.com:8080/login/oauth2/code/google
+     * 로그인(/회원가입) 성공하면 /api/user 로 넘어가서 데이터 확인합니다
+     * db 저장까지 완료했는데 회원가입 이후 jwt 토큰을 통해 인증을 받을지 어쩔지 정해야할 것 같습니다
+     * ++이미지 url을 받아올지 말지도 정해야할 것 같습니다
+     */
+    @GetMapping("/api/user") // TEST
+    public Authentication user(Authentication authentication, @AuthenticationPrincipal OAuth2User oAuth2User) {
+        System.out.println("authentication = " + authentication + ", oAuth2User = " + oAuth2User);
+        return authentication;
     }
 
 }

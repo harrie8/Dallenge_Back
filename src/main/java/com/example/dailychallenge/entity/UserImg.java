@@ -11,7 +11,7 @@ import javax.persistence.*;
 @Getter @Setter
 public class UserImg {
     @Id @Column(name = "user_img_id")
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String imgName; // 이미지 파일명

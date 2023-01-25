@@ -28,7 +28,6 @@ public class FileService {
 
         // 서버에 저장하는 파일명
         String savedFileName = createStoreFileName(originalFilename);
-
         multipartFile.transferTo(new File(getFullPath(savedFileName))); // 저장
 
         return savedFileName;

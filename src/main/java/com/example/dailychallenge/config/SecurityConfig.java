@@ -1,5 +1,6 @@
 package com.example.dailychallenge.config;
 
+import com.example.dailychallenge.service.CustomOAuth2UserService;
 import com.example.dailychallenge.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.HashMap;
@@ -15,8 +16,10 @@ import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.authority.mapping.GrantedAuthoritiesMapper;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -29,6 +32,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final UserService userService;
     private final JwtRequestFilter jwtRequestFilter;
+    private final CustomOAuth2UserService customOAuth2UserService;
 
     @Bean
     @Override
@@ -39,7 +43,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override // 정적페이지 인증 X
     public void configure(WebSecurity web){
         web.ignoring().requestMatchers(PathRequest.toStaticResources().atCommonLocations());
-
     }
 
     @Override // 권한
@@ -47,9 +50,18 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.csrf().disable();
         http.formLogin().disable();
 
-        http.authorizeRequests().antMatchers("/user/login","/user/new","/**.html","/images/**").permitAll()
-                .anyRequest().authenticated()
-                .and()
+        http.
+                authorizeRequests()
+                .antMatchers("/user/{userId:[\\d+]}").authenticated()
+//                .antMatchers("/user/login","/user/new","/**.html","/images/**","/","/token/**","/login/**","/oauth2/**","/api/user").permitAll()
+                .anyRequest().permitAll()
+            .and()
+                .oauth2Login()
+                .defaultSuccessUrl("/api/user")
+                .userInfoEndpoint()
+                .userService(customOAuth2UserService);
+
+        http
                 .exceptionHandling().authenticationEntryPoint((request, response, authException) -> {
                     Map<String, Object> responseMap = new HashMap<>();
                     ObjectMapper mapper = new ObjectMapper();
@@ -60,10 +72,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     String responseMsg = mapper.writeValueAsString(responseMap);
                     response.getWriter().write(responseMsg);
                 })
-                .and()
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+//                .and()
+//                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
                 .and()
                 .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
+
+        http.logout().logoutSuccessUrl("/");
         http.cors().configurationSource(corsConfigurationSource());
     }
 
@@ -90,4 +104,5 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         source.registerCorsConfiguration("/**", configuration);
         return source;
     }
+
 }

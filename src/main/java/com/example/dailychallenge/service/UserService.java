@@ -2,6 +2,7 @@ package com.example.dailychallenge.service;
 
 import com.example.dailychallenge.dto.UserDto;
 import com.example.dailychallenge.dto.UserEditor;
+import com.example.dailychallenge.entity.ProviderUser;
 import com.example.dailychallenge.entity.User;
 import com.example.dailychallenge.entity.UserImg;
 import com.example.dailychallenge.exception.UserNotFound;
@@ -66,15 +67,6 @@ public class UserService implements UserDetailsService {
         );
     }
 
-    public UserDto getUserDetailsByEmail(String email) {
-        User user = userRepository.findByEmail(email);
-        if (user == null) {
-            throw new UsernameNotFoundException(email);
-        }
-        UserDto userDto = new ModelMapper().map(user, UserDto.class);
-        return userDto;
-    }
-
     public User findByEmail(String email) {
         return userRepository.findByEmail(email);
     }
@@ -107,6 +99,16 @@ public class UserService implements UserDetailsService {
                 .orElseThrow(UserNotFound::new);
 
         userRepository.delete(findUser);
+    }
+
+    public void saveSocialUser(String registrationId, ProviderUser providerUser){
+        ModelMapper mapper = new ModelMapper();
+        User user = new User();
+        user.setRegistrationId(registrationId);
+        user.setUserName(providerUser.getUserName());
+        user.setEmail(providerUser.getEmail());
+        user.setPassword(providerUser.getPassword());
+        userRepository.save(user);
     }
 
 }

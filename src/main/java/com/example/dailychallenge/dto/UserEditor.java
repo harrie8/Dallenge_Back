@@ -7,7 +7,6 @@ import lombok.Getter;
 public class UserEditor {
 
     // 수정할 수 있는 필드들만 정의
-
     private final String userName;
     private final String email;
     private final String password;

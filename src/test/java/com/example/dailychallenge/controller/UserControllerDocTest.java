@@ -195,43 +195,6 @@ public class UserControllerDocTest{
                         )
                 ));
 
-//        mockMvc.perform(put("/user/{userId}",userId)
-//            /** 파일 넣어줘야 하는데 multipart는 디폴트가 post 전송, put으로는 파잍 전송 X => 어떡하죠... **/
-//                    .param("data",data)
-//                    .header("Authorization",getToken())
-//                    .contentType(MULTIPART_FORM_DATA)
-//                    .accept(APPLICATION_JSON))
-//                .andExpect(status().isOk())
-//                .andDo(print())
-//                .andDo(document("user-update",
-//                        pathParameters(
-//                                parameterWithName("userId").description("회원 ID")
-//                        ),
-//                        requestParameters(
-//                                parameterWithName("data").description("editData"),
-//                                parameterWithName("userImgFile").description("회원 프로필 이미지").optional()
-//                        )));
-
-//        mockMvc.perform(put("/user/{userId}", userId)
-//                        .header("Authorization", getToken())
-//                        .contentType(APPLICATION_JSON)
-//                        .content(data)
-//                        .accept(APPLICATION_JSON))
-//                .andExpect(status().isOk())
-//                .andDo(print())
-//                .andDo(document("user-update",
-//                        pathParameters(
-//                                parameterWithName("userId").description("회원 ID")
-//                        ),
-//                        requestFields(
-//                                fieldWithPath("userName").description("이름")
-//                                        .attributes(key("constraint").value("회원 이름을 입력해주세요.")),
-//                                fieldWithPath("password").description("비밀번호")
-//                                        .attributes(key("constraint").value("회원 비밀번호를 입력해주세요.")),
-//                                fieldWithPath("info").description("소개글")
-//                                        .attributes(key("constraint").value("회원 소개글을 입력해주세요."))
-//                        )
-//                ));
     }
 
     @Test

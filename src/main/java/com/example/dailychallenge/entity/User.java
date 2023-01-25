@@ -13,12 +13,14 @@ import lombok.Setter;
 public class User {
 
     @Id @Column(name = "user_id")
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String userName;
     private String email;
     private String info;
     private String password;
+
+    private String registrationId;
 
     @OneToOne(mappedBy = "users", cascade = CascadeType.ALL)
     private UserImg userImg;

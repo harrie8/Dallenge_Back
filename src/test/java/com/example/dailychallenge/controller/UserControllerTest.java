@@ -1,7 +1,6 @@
 package com.example.dailychallenge.controller;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -28,9 +27,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.request.MockMultipartHttpServletRequestBuilder;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.request.RequestPostProcessor;
 import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest
@@ -118,17 +114,7 @@ class UserControllerTest {
         MockMultipartFile userImgFile = createMultipartFiles();
         String data = objectMapper.writeValueAsString(requestUpdateUser);
 
-        MockMultipartHttpServletRequestBuilder builder =
-                MockMvcRequestBuilders.multipart("/user/{userId}",userId);
-        builder.with(new RequestPostProcessor() {
-            @Override
-            public MockHttpServletRequest postProcessRequest(MockHttpServletRequest request) {
-                request.setMethod("POST");
-                return request;
-            }
-        });
-
-        mockMvc.perform(builder
+        mockMvc.perform(multipart("/user/{userId}",userId)
                         .file(userImgFile)
                         .param("data",data)
                 .header("Authorization",getToken())
@@ -136,15 +122,6 @@ class UserControllerTest {
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andDo(print());
-
-
-//        mockMvc.perform(put("/user/{userId}", userId)
-//                        .header("Authorization", getToken())
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .content(json)
-//                        .accept(MediaType.APPLICATION_JSON))
-//                .andExpect(status().isOk())
-//                .andDo(print());
 
     }
 
