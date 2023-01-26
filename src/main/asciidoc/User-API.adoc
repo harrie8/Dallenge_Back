@@ -4,27 +4,13 @@
 [[User-회원-가입]]
 === 회원 가입
 
-==== 요청
-
-include::{snippets}/user-register/http-request.adoc[]
-
-include::{snippets}/user-register/request-fields.adoc[]
-
-==== 응답
-
-include::{snippets}/user-register/http-response.adoc[]
+operation::user-register[snippets='http-request,request-fields,http-response']
 
 
 [[User-로그인]]
 === 로그인
 
-==== 요청
-
-include::{snippets}/user-login/http-request.adoc[]
-
-include::{snippets}/user-login/request-fields.adoc[]
-
-==== 응답
+operation::user-login[snippets='http-request,request-fields']
 
 응답값 중 `token` 은 인증에 사용됩니다.
 
@@ -34,28 +20,10 @@ include::{snippets}/user-login/http-response.adoc[]
 [[User-회원-정보-수정]]
 === 회원 정보 수정
 
-==== 요청
-
-include::{snippets}/user-update/http-request.adoc[]
-
-include::{snippets}/user-update/path-parameters.adoc[]
-
-include::{snippets}/user-update/request-parts.adoc[]
-
-==== 응답
-
-include::{snippets}/user-update/http-response.adoc[]
+operation::user-update[snippets='http-request,path-parameters,request-parts,http-response']
 
 
 [[User-회원-삭제]]
 === 회원 삭제
 
-==== 요청
-
-include::{snippets}/user-delete/http-request.adoc[]
-
-include::{snippets}/user-delete/path-parameters.adoc[]
-
-==== 응답
-
-include::{snippets}/user-delete/http-response.adoc[]
+operation::user-delete[snippets='http-request,path-parameters,http-response']

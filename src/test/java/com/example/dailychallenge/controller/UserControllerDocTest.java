@@ -5,6 +5,10 @@ import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.docu
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.multipart;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessRequest;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessResponse;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.removeHeaders;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
@@ -51,10 +55,11 @@ import org.springframework.test.web.servlet.ResultActions;
 @AutoConfigureRestDocs(uriScheme = "https", uriHost = "api.dailychallenge.com", uriPort = 443)
 @ExtendWith(RestDocumentationExtension.class)
 @TestPropertySource(locations = "classpath:application-test.properties")
-public class UserControllerDocTest{
+public class UserControllerDocTest {
     private final static String TOKEN_PREFIX = "Bearer ";
     private final static String TOKEN = "token";
-
+    @Autowired
+    UserRepository userRepository;
     @Autowired
     private UserService userService;
     @Autowired
@@ -63,9 +68,6 @@ public class UserControllerDocTest{
     private PasswordEncoder passwordEncoder;
     @Autowired
     private ObjectMapper objectMapper;
-    @Autowired
-    UserRepository userRepository;
-
     @Value("${userImgLocation}")
     private String userImgLocation;
 
@@ -110,6 +112,10 @@ public class UserControllerDocTest{
                 .andExpect(status().isCreated())
                 .andDo(print())
                 .andDo(document("user-register",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(
+                                removeHeaders("Vary", "X-Content-Type-Options", "X-XSS-Protection", "Pragma", "Expires",
+                                        "Strict-Transport-Security", "X-Frame-Options"), prettyPrint()),
                         requestFields(
                                 fieldWithPath("userName").description("이름")
                                         .attributes(key("constraint").value("회원 이름을 입력해주세요.")),
@@ -145,6 +151,11 @@ public class UserControllerDocTest{
                 .andExpect(status().isOk())
                 .andDo(print())
                 .andDo(document("user-login",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(
+                                removeHeaders("Vary", "X-Content-Type-Options", "X-XSS-Protection", "Cache-Control",
+                                        "Pragma", "Expires",
+                                        "Strict-Transport-Security", "X-Frame-Options"), prettyPrint()),
                         requestFields(
                                 fieldWithPath("email").description("이메일")
                                         .attributes(key("constraint").value("회원 이메일을 입력해주세요.")),
@@ -186,6 +197,11 @@ public class UserControllerDocTest{
                 .andExpect(status().isOk())
                 .andDo(print())
                 .andDo(document("user-update",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(
+                                removeHeaders("Vary", "X-Content-Type-Options", "X-XSS-Protection", "Pragma", "Expires",
+
+                                        "Strict-Transport-Security", "X-Frame-Options"), prettyPrint()),
                         pathParameters(
                                 parameterWithName("userId").description("회원 ID")
                         ),
@@ -210,6 +226,11 @@ public class UserControllerDocTest{
                 .andExpect(status().isOk())
                 .andDo(print())
                 .andDo(document("user-delete",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(
+                                removeHeaders("Vary", "X-Content-Type-Options", "X-XSS-Protection", "Cache-Control",
+                                        "Pragma", "Expires",
+                                        "Strict-Transport-Security", "X-Frame-Options"), prettyPrint()),
                         pathParameters(
                                 parameterWithName("userId").description("회원 ID")
                         )
