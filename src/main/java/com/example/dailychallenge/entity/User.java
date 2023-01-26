@@ -1,10 +1,18 @@
 package com.example.dailychallenge.entity;
 
 import com.example.dailychallenge.dto.UserEditor;
-
-import javax.persistence.*;
-
-import lombok.Data;
+import com.example.dailychallenge.entity.challenge.UserChallenge;
+import java.util.ArrayList;
+import java.util.List;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -24,6 +32,9 @@ public class User {
 
     @OneToOne(mappedBy = "users", cascade = CascadeType.ALL)
     private UserImg userImg;
+
+    @OneToMany(mappedBy = "challenge")
+    private List<UserChallenge> userChallenges = new ArrayList<>();
 
     public UserEditor.UserEditorBuilder toEditor() {
         return UserEditor.builder()
