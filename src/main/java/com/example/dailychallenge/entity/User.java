@@ -39,14 +39,12 @@ public class User {
     public UserEditor.UserEditorBuilder toEditor() {
         return UserEditor.builder()
                 .userName(userName)
-                .email(email)
                 .info(info)
                 .password(password);
     }
 
     public void update(UserEditor userEditor) {
         userName = userEditor.getUserName();
-        email = userEditor.getEmail();
         info = userEditor.getInfo();
         password = userEditor.getPassword();
     }

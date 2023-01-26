@@ -11,7 +11,6 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.response
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.partWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
-import static org.springframework.restdocs.request.RequestDocumentation.requestParameters;
 import static org.springframework.restdocs.request.RequestDocumentation.requestParts;
 import static org.springframework.restdocs.snippet.Attributes.key;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -25,6 +24,7 @@ import com.example.dailychallenge.vo.RequestLogin;
 import com.example.dailychallenge.vo.RequestUpdateUser;
 import com.example.dailychallenge.vo.RequestUser;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import org.json.simple.JSONObject;
@@ -45,7 +45,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -166,18 +165,21 @@ public class UserControllerDocTest{
         User savedUser = userService.saveUser(createUser(), passwordEncoder);
         Long userId = savedUser.getId();
 
-        RequestUpdateUser requestUpdateUser = RequestUpdateUser.builder()
+        RequestUpdateUser requestUpdateUserBuild = RequestUpdateUser.builder()
                 .userName("editName")
                 .password("789")
                 .info("editInfo")
                 .build();
 
         MockMultipartFile userImgFile = createMultipartFiles();
-        String data = objectMapper.writeValueAsString(requestUpdateUser);
+        String data = objectMapper.writeValueAsString(requestUpdateUserBuild);
+        MockMultipartFile requestUpdateUser = new MockMultipartFile("requestUpdateUser", "requestUpdateUser",
+                "application/json", data.getBytes(
+                StandardCharsets.UTF_8));
 
         mockMvc.perform(multipart("/user/{userId}", userId)
+                        .file(requestUpdateUser)
                         .file(userImgFile)
-                        .param("data", data)
                         .header("Authorization", getToken())
                         .contentType(MediaType.MULTIPART_FORM_DATA)
                         .accept(MediaType.APPLICATION_JSON))
@@ -188,10 +190,8 @@ public class UserControllerDocTest{
                                 parameterWithName("userId").description("회원 ID")
                         ),
                         requestParts(
-                                partWithName("userImgFile").description("회원 프로필 이미지").optional()
-                        ),
-                        requestParameters(
-                                parameterWithName("data").description("회원 정보 수정 데이터")
+                                partWithName("requestUpdateUser").description("회원 정보 수정 데이터(JSON)"),
+                                partWithName("userImgFile").description("회원 프로필 이미지(FILE)").optional()
                         )
                 ));
 
@@ -222,7 +222,7 @@ public class UserControllerDocTest{
         loginData.put("email", "test1234@test.com");
         loginData.put("password", "1234");
 
-        ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders.post("/user/login")
+        ResultActions resultActions = mockMvc.perform(post("/user/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(loginData))
                         .accept(MediaType.APPLICATION_JSON))

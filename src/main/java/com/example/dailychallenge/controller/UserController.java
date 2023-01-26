@@ -81,7 +81,7 @@ public class UserController {
     @PostMapping("/user/{userId}")
     public void updateUser(@PathVariable Long userId,
                            @RequestPart @Valid RequestUpdateUser requestUpdateUser,
-                           @RequestPart(value = "userImgFile") MultipartFile multipartFile) throws Exception {
+                           @RequestPart(value = "userImgFile", required = false) MultipartFile multipartFile) throws Exception {
 
         userService.updateUser(userId, requestUpdateUser, passwordEncoder, multipartFile);
     }

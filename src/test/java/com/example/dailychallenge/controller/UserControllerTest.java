@@ -1,6 +1,8 @@
 package com.example.dailychallenge.controller;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -10,6 +12,7 @@ import com.example.dailychallenge.service.UserService;
 import com.example.dailychallenge.vo.RequestUpdateUser;
 import com.example.dailychallenge.vo.RequestUser;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import org.json.simple.JSONObject;
@@ -21,7 +24,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.TestPropertySource;
@@ -105,24 +107,26 @@ class UserControllerTest {
     public void updateUserTest() throws Exception {
         User savedUser = userService.saveUser(createUser(), passwordEncoder);
         Long userId = savedUser.getId();
-        RequestUpdateUser requestUpdateUser = RequestUpdateUser.builder()
+        RequestUpdateUser requestUpdateUserBuild = RequestUpdateUser.builder()
                 .userName("editName")
                 .password("789")
                 .info("editInfo")
                 .build();
 
         MockMultipartFile userImgFile = createMultipartFiles();
-        String data = objectMapper.writeValueAsString(requestUpdateUser);
+        String data = objectMapper.writeValueAsString(requestUpdateUserBuild);
+        MockMultipartFile requestUpdateUser = new MockMultipartFile("requestUpdateUser", "requestUpdateUser",
+                "application/json", data.getBytes(
+                StandardCharsets.UTF_8));
 
-        mockMvc.perform(multipart("/user/{userId}",userId)
+        mockMvc.perform(multipart("/user/{userId}", userId)
                         .file(userImgFile)
-                        .param("data",data)
-                .header("Authorization",getToken())
-                .contentType(MediaType.MULTIPART_FORM_DATA)
-                .accept(MediaType.APPLICATION_JSON))
+                        .file(requestUpdateUser)
+                        .header("Authorization", getToken())
+                        .contentType(MediaType.MULTIPART_FORM_DATA)
+                        .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andDo(print());
-
     }
 
     @Test
