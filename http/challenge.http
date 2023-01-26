@@ -1,0 +1,50 @@
+### 1. 회원가입
+POST 127.0.0.1:8080/user/new
+Content-Type: application/json
+
+{
+  "userName": "a",
+  "email": "a@a.com",
+  "password": "123"
+}
+
+### 2. 로그인
+POST 127.0.0.1:8080/user/login
+Content-Type: application/json
+
+{
+  "email": "a@a.com",
+  "password": "123"
+}
+
+> {%
+ client.test("Validate", function() { // Validate라는 이름의 테스트를 수행
+     client.assert(response.status === 200, "Response status is not 200"); // 응답값이 200이면 통과
+     client.assert(response.contentType.mimeType === "application/json", "Expected 'application/json'"); // 응답값이 application/json이면 토과
+     client.assert(response.body.token.trim().length > 0); // 토큰 길이가 0보다 크면 통과
+
+     client.log(response.body.token); // 토큰 값 로깅, body에는 응답 받은 json이 객체 형식으로 저장된다. 즉 {token: "value"} 형식으로 token값이 넘어온다
+     client.global.set("token", response.body.token); // 토큰 값을 다른 테스트에서도 사용할 수 있게 global set
+ })
+ %}
+
+### 1. 챌린지 생성
+POST 127.0.0.1:8080/challenge/new
+Content-Type: multipart/form-data; boundary=boundary
+Authorization: Bearer {{token}}
+Accept: application/json
+
+--boundary
+Content-Disposition: form-data; name="challengeImgFile"; filename="editImage.jpg
+
+--boundary
+Content-Disposition: form-data; name="requestCreateChallenge"
+Content-Type: application/json
+
+{
+  "title": "제목 입니다.",
+  "content": "내용 입니다.",
+  "challengeCategory": "공부",
+  "challengeLocation": "실내",
+  "challengeDuration": "10분 이내"
+}

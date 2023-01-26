@@ -6,15 +6,15 @@ import lombok.Data;
 
 @Data
 public class RequestCreateChallenge {
-    @NotBlank
+    @NotBlank(message = "제목을 입력해주세요.")
     private String title;
-    @NotBlank
+    @NotBlank(message = "내용을 입력해주세요.")
     private String content;
-    @NotBlank
+    @NotBlank(message = "챌린지 카테고리를 입력해주세요.")
     private String challengeCategory;
-    @NotBlank
+    @NotBlank(message = "챌린지 장소를 입력해주세요.")
     private String challengeLocation;
-    @NotBlank
+    @NotBlank(message = "챌린지 기간을 입력해주세요.")
     private String challengeDuration;
 
     @Builder

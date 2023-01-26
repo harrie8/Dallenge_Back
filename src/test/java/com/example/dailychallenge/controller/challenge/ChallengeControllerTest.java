@@ -1,5 +1,6 @@
 package com.example.dailychallenge.controller.challenge;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -10,6 +11,7 @@ import com.example.dailychallenge.entity.challenge.ChallengeStatus;
 import com.example.dailychallenge.service.UserService;
 import com.example.dailychallenge.vo.RequestCreateChallenge;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import org.json.simple.JSONObject;
@@ -57,8 +59,8 @@ class ChallengeControllerTest {
     }
 
     MockMultipartFile createMultipartFiles() throws Exception {
-        String path = "userImgFile";
-        String imageName = "editImage.jpg";
+        String path = "challengeImgFile";
+        String imageName = "challengeImage.jpg";
         MockMultipartFile multipartFile = new MockMultipartFile(path, imageName,
                 "image/jpg", new byte[]{1, 2, 3, 4});
         return multipartFile;
@@ -75,12 +77,17 @@ class ChallengeControllerTest {
                 .challengeLocation("실내")
                 .challengeDuration("10분 이내")
                 .build();
+        MockMultipartFile challengeImgFile = createMultipartFiles();
 
         String json = objectMapper.writeValueAsString(requestCreatChallenge);
-        mockMvc.perform(post("/challenge/new")
+        MockMultipartFile requestCreateChallenge = new MockMultipartFile("requestCreateChallenge", "requestCreateChallenge",
+                "application/json", json.getBytes(
+                StandardCharsets.UTF_8));
+        mockMvc.perform(multipart("/challenge/new")
+                        .file(challengeImgFile)
+                        .file(requestCreateChallenge)
                         .header("Authorization", getToken())
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(json)
+                        .contentType(MediaType.MULTIPART_FORM_DATA)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.title").value(requestCreatChallenge.getTitle()))

@@ -12,10 +12,13 @@ import com.example.dailychallenge.service.UserService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 @SpringBootTest
 @Transactional
@@ -28,6 +31,8 @@ public class ChallengeServiceTest {
     private UserService userService;
     @Autowired
     private PasswordEncoder passwordEncoder;
+    @Value("${userImgLocation}")
+    private String challengeImgLocation;
 
     public UserDto createUser() {
         UserDto userDto = new UserDto();
@@ -36,6 +41,14 @@ public class ChallengeServiceTest {
         userDto.setInfo("testInfo");
         userDto.setPassword("1234");
         return userDto;
+    }
+
+    MultipartFile createMultipartFiles() throws Exception {
+        String path = challengeImgLocation +"/";
+        String imageName = "challengeImage.jpg";
+        MockMultipartFile multipartFile = new MockMultipartFile(path, imageName,
+                "image/jpg", new byte[]{1, 2, 3, 4});
+        return multipartFile;
     }
 
     @Test
@@ -50,8 +63,9 @@ public class ChallengeServiceTest {
                 .challengeLocation(ChallengeLocation.INDOOR.getDescription())
                 .challengeDuration(ChallengeDuration.WITHIN_TEN_MINUTES.getDescription())
                 .build();
+        MultipartFile challengeImg = createMultipartFiles();
 
-        Challenge challenge = challengeService.saveChallenge(challengeDto);
+        Challenge challenge = challengeService.saveChallenge(challengeDto, challengeImg);
 
         assertEquals(challengeDto.getTitle(), challenge.getTitle());
         assertEquals(challengeDto.getContent(), challenge.getContent());
