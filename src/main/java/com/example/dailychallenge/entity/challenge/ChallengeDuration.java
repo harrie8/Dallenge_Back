@@ -2,6 +2,8 @@ package com.example.dailychallenge.entity.challenge;
 
 import com.example.dailychallenge.exception.challenge.ChallengeDurationNotFound;
 import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.Getter;
 
 @Getter
@@ -27,5 +29,11 @@ public enum ChallengeDuration {
 
     private boolean isSameDescription(String description) {
         return this.description.equals(description);
+    }
+
+    public static List<String> getDescriptions() {
+        return Arrays.stream(values())
+                .map(ChallengeDuration::getDescription)
+                .collect(Collectors.toUnmodifiableList());
     }
 }

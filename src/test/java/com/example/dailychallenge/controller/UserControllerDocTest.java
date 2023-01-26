@@ -11,6 +11,7 @@ import static org.springframework.restdocs.operation.preprocess.Preprocessors.pr
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.removeHeaders;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.requestPartFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.partWithName;
@@ -115,7 +116,8 @@ public class UserControllerDocTest {
                         preprocessRequest(prettyPrint()),
                         preprocessResponse(
                                 removeHeaders("Vary", "X-Content-Type-Options", "X-XSS-Protection", "Pragma", "Expires",
-                                        "Strict-Transport-Security", "X-Frame-Options"), prettyPrint()),
+                                        "Cache-Control", "Strict-Transport-Security", "X-Frame-Options"),
+                                prettyPrint()),
                         requestFields(
                                 fieldWithPath("userName").description("이름")
                                         .attributes(key("constraint").value("회원 이름을 입력해주세요.")),
@@ -154,8 +156,8 @@ public class UserControllerDocTest {
                         preprocessRequest(prettyPrint()),
                         preprocessResponse(
                                 removeHeaders("Vary", "X-Content-Type-Options", "X-XSS-Protection", "Cache-Control",
-                                        "Pragma", "Expires",
-                                        "Strict-Transport-Security", "X-Frame-Options"), prettyPrint()),
+                                        "Pragma", "Expires", "Strict-Transport-Security", "X-Frame-Options"),
+                                prettyPrint()),
                         requestFields(
                                 fieldWithPath("email").description("이메일")
                                         .attributes(key("constraint").value("회원 이메일을 입력해주세요.")),
@@ -200,14 +202,19 @@ public class UserControllerDocTest {
                         preprocessRequest(prettyPrint()),
                         preprocessResponse(
                                 removeHeaders("Vary", "X-Content-Type-Options", "X-XSS-Protection", "Pragma", "Expires",
-
-                                        "Strict-Transport-Security", "X-Frame-Options"), prettyPrint()),
+                                        "Cache-Control", "Strict-Transport-Security", "X-Frame-Options"),
+                                prettyPrint()),
                         pathParameters(
                                 parameterWithName("userId").description("회원 ID")
                         ),
                         requestParts(
                                 partWithName("requestUpdateUser").description("회원 정보 수정 데이터(JSON)"),
                                 partWithName("userImgFile").description("회원 프로필 이미지(FILE)").optional()
+                        ),
+                        requestPartFields("requestUpdateUser",
+                                fieldWithPath("userName").description("회원 이름"),
+                                fieldWithPath("password").description("회원 비밀번호"),
+                                fieldWithPath("info").description("자기소개 글")
                         )
                 ));
 

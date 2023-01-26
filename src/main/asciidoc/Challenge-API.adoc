@@ -1,0 +1,23 @@
+[[Challenge-API]]
+== 챌린지 API
+
+[[Challenge-챌린지-생성]]
+=== 챌린지 생성
+
+operation::challenge-create[snippets='http-request']
+
+==== 요청값
+
+====
+include::{snippets}/challenge-create/request-parts.adoc[]
+
+requestCreateChallenge - 챌린지 정보 데이터(JSON)
+include::{snippets}/challenge-create/request-part-requestCreateChallenge-fields.adoc[]
+
+challengeImgFile - 챌린지 이미지 파일(FILE) +
+.jpg 형식의 이미지 파일을 지원합니다.
+
+====
+
+
+operation::challenge-create[snippets='http-response']

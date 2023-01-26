@@ -13,3 +13,5 @@ NOTE::
 
 include::User-API.adoc[]
 
+include::Challenge-API.adoc[]
+

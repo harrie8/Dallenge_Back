@@ -20,8 +20,26 @@ include::{snippets}/user-login/http-response.adoc[]
 [[User-회원-정보-수정]]
 === 회원 정보 수정
 
-operation::user-update[snippets='http-request,path-parameters,request-parts,http-response']
+==== HTTP request
 
+include::{snippets}/user-update/http-request.adoc[]
+
+==== 요청값
+
+====
+include::{snippets}/user-update/request-parts.adoc[]
+
+requestUpdateUser - 회원 정보 수정 데이터(JSON)
+include::{snippets}/user-update/request-part-requestUpdateUser-fields.adoc[]
+
+userImgFile - 회원 프로필 이미지(FILE) +
+.jpg 형식의 이미지 파일을 지원합니다.
+
+====
+
+==== HTTP response
+
+include::{snippets}/user-update/http-response.adoc[]
 
 [[User-회원-삭제]]
 === 회원 삭제
