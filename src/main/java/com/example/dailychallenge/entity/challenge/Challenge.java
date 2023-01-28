@@ -7,6 +7,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -39,10 +40,10 @@ public class Challenge {
     private ChallengeDuration challengeDuration;
 
     // 이미지 업로드 기능 추가하기
-    @OneToOne(mappedBy = "challenge", cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "challenge", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private ChallengeImg challengeImg;
 
-    @OneToMany(mappedBy = "challenge")
+    @OneToMany(mappedBy = "challenge", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<UserChallenge> userChallenges = new ArrayList<>();
 
     @Builder
@@ -58,5 +59,16 @@ public class Challenge {
 
     public void setChallengeImg(ChallengeImg challengeImg) {
         this.challengeImg = challengeImg;
+    }
+
+    @Override
+    public String toString() {
+        return "Challenge{" +
+                "title='" + title + '\'' +
+                ", content='" + content + '\'' +
+                ", challengeCategory=" + challengeCategory +
+                ", challengeLocation=" + challengeLocation +
+                ", challengeDuration=" + challengeDuration +
+                '}';
     }
 }
