@@ -1,4 +1,4 @@
-package com.example.dailychallenge.controller;
+package com.example.dailychallenge.controller.users;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
@@ -7,8 +7,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.example.dailychallenge.dto.UserDto;
-import com.example.dailychallenge.entity.User;
-import com.example.dailychallenge.service.UserService;
+import com.example.dailychallenge.entity.users.User;
+import com.example.dailychallenge.service.users.UserService;
 import com.example.dailychallenge.vo.RequestUpdateUser;
 import com.example.dailychallenge.vo.RequestUser;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -47,8 +47,7 @@ class UserControllerTest {
     private MockMvc mockMvc;
     @Autowired
     private ObjectMapper objectMapper;
-    @Value("${userImgLocation}")
-    private String userImgLocation;
+
 
 
     public UserDto createUser() {

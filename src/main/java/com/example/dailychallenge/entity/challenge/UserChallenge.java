@@ -1,6 +1,6 @@
 package com.example.dailychallenge.entity.challenge;
 
-import com.example.dailychallenge.entity.User;
+import com.example.dailychallenge.entity.users.User;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;

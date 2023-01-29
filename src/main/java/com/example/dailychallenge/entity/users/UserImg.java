@@ -1,14 +1,16 @@
-package com.example.dailychallenge.entity;
+package com.example.dailychallenge.entity.users;
 
-import lombok.Data;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
 
 @Entity
 @Table(name = "user_img")
-@Getter @Setter
+@NoArgsConstructor
+@Getter
 public class UserImg {
     @Id @Column(name = "user_img_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,10 +24,13 @@ public class UserImg {
     @JoinColumn(name = "user_id")
     private User users;
 
+    public void saveUser(User user) {
+        this.users = user;
+    }
+
     public void updateUserImg(String oriImgName, String imgName, String imgUrl) {
         this.oriImgName = oriImgName;
         this.imgName = imgName;
         this.imgUrl = imgUrl;
     }
-
 }

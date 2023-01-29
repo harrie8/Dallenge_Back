@@ -1,6 +1,6 @@
-package com.example.dailychallenge.service;
+package com.example.dailychallenge.service.social;
 
-import com.example.dailychallenge.entity.ProviderUser;
+import com.example.dailychallenge.entity.social.ProviderUser;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;

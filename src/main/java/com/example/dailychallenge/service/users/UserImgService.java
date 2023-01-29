@@ -1,19 +1,15 @@
-package com.example.dailychallenge.service;
+package com.example.dailychallenge.service.users;
 
-import com.example.dailychallenge.entity.User;
-import com.example.dailychallenge.entity.UserImg;
+import com.example.dailychallenge.entity.users.UserImg;
 import com.example.dailychallenge.repository.UserImgRepository;
-import com.example.dailychallenge.repository.UserRepository;
+import com.example.dailychallenge.service.FileService;
 import com.querydsl.core.util.StringUtils;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.EntityNotFoundException;
-import java.util.List;
 
 
 @Service
@@ -38,7 +34,7 @@ public class UserImgService {
         // 이미지 정보 저장
         userImg.updateUserImg(oriImgName,imgName,imgUrl);
         userImgRepository.save(userImg);
-        userImg.getUsers().setUserImg(userImg);
+        userImg.getUsers().saveDefaultImg(userImg);
 
     }
 

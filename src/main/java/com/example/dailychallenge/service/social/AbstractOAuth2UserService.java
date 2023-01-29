@@ -1,9 +1,10 @@
-package com.example.dailychallenge.service;
+package com.example.dailychallenge.service.social;
 
 import com.example.dailychallenge.entity.social.GoogleUser;
-import com.example.dailychallenge.entity.ProviderUser;
-import com.example.dailychallenge.entity.User;
+import com.example.dailychallenge.entity.social.ProviderUser;
+import com.example.dailychallenge.entity.users.User;
 import com.example.dailychallenge.repository.UserRepository;
+import com.example.dailychallenge.service.users.UserService;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;

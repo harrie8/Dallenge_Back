@@ -3,14 +3,14 @@ package com.example.dailychallenge.service.challenge;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.example.dailychallenge.dto.UserDto;
-import com.example.dailychallenge.entity.User;
+import com.example.dailychallenge.entity.users.User;
 import com.example.dailychallenge.entity.challenge.Challenge;
 import com.example.dailychallenge.entity.challenge.ChallengeCategory;
 import com.example.dailychallenge.entity.challenge.ChallengeDuration;
 import com.example.dailychallenge.entity.challenge.ChallengeLocation;
 import com.example.dailychallenge.entity.challenge.ChallengeStatus;
 import com.example.dailychallenge.entity.challenge.UserChallenge;
-import com.example.dailychallenge.service.UserService;
+import com.example.dailychallenge.service.users.UserService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,8 +1,7 @@
 package com.example.dailychallenge.dto;
 
+import com.example.dailychallenge.entity.users.User;
 import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
 
 @Data
 public class UserDto {
@@ -11,4 +10,5 @@ public class UserDto {
     private String password;
     private String info;
     private String provider;
+
 }

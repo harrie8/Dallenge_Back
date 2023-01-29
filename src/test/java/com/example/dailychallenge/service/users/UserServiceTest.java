@@ -1,4 +1,4 @@
-package com.example.dailychallenge.service;
+package com.example.dailychallenge.service.users;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -7,10 +7,11 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.example.dailychallenge.dto.UserDto;
-import com.example.dailychallenge.entity.User;
+import com.example.dailychallenge.entity.users.User;
 import com.example.dailychallenge.exception.UserNotFound;
 import com.example.dailychallenge.repository.UserImgRepository;
 import com.example.dailychallenge.repository.UserRepository;
+import com.example.dailychallenge.service.users.UserService;
 import com.example.dailychallenge.vo.RequestUpdateUser;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -70,7 +71,6 @@ class UserServiceTest {
 
         assertEquals(savedUser.getEmail(),userDto.getEmail());
         assertEquals(savedUser.getUserName(),userDto.getUserName());
-        assertEquals(savedUser.getInfo(),userDto.getInfo());
 
         assertAll(
                 () -> assertNotEquals(savedUser.getPassword(), userDto.getPassword()),

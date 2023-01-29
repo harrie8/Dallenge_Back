@@ -1,6 +1,6 @@
 package com.example.dailychallenge.service.challenge;
 
-import com.example.dailychallenge.entity.User;
+import com.example.dailychallenge.entity.users.User;
 import com.example.dailychallenge.entity.challenge.Challenge;
 import com.example.dailychallenge.entity.challenge.ChallengeStatus;
 import com.example.dailychallenge.entity.challenge.UserChallenge;

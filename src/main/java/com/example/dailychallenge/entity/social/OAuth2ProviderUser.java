@@ -1,6 +1,5 @@
 package com.example.dailychallenge.entity.social;
 
-import com.example.dailychallenge.entity.ProviderUser;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;

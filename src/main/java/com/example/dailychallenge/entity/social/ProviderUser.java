@@ -1,4 +1,4 @@
-package com.example.dailychallenge.entity;
+package com.example.dailychallenge.entity.social;
 
 import org.springframework.security.core.GrantedAuthority;
 

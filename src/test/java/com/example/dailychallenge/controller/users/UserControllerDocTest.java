@@ -1,4 +1,4 @@
-package com.example.dailychallenge.controller;
+package com.example.dailychallenge.controller.users;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
@@ -22,9 +22,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.example.dailychallenge.dto.UserDto;
-import com.example.dailychallenge.entity.User;
+import com.example.dailychallenge.entity.users.User;
 import com.example.dailychallenge.repository.UserRepository;
-import com.example.dailychallenge.service.UserService;
+import com.example.dailychallenge.service.users.UserService;
 import com.example.dailychallenge.vo.RequestLogin;
 import com.example.dailychallenge.vo.RequestUpdateUser;
 import com.example.dailychallenge.vo.RequestUser;
@@ -69,8 +69,7 @@ public class UserControllerDocTest {
     private PasswordEncoder passwordEncoder;
     @Autowired
     private ObjectMapper objectMapper;
-    @Value("${userImgLocation}")
-    private String userImgLocation;
+
 
 
     @BeforeEach

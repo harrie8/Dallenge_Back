@@ -1,10 +1,10 @@
-package com.example.dailychallenge.service;
+package com.example.dailychallenge.service.users;
 
 import com.example.dailychallenge.dto.UserDto;
 import com.example.dailychallenge.dto.UserEditor;
-import com.example.dailychallenge.entity.ProviderUser;
-import com.example.dailychallenge.entity.User;
-import com.example.dailychallenge.entity.UserImg;
+import com.example.dailychallenge.entity.social.ProviderUser;
+import com.example.dailychallenge.entity.users.User;
+import com.example.dailychallenge.entity.users.UserImg;
 import com.example.dailychallenge.exception.UserNotFound;
 import com.example.dailychallenge.repository.UserRepository;
 import com.example.dailychallenge.vo.RequestUpdateUser;
@@ -38,18 +38,20 @@ public class UserService implements UserDetailsService {
     }
 
     public User saveUser(UserDto userDto, PasswordEncoder passwordEncoder) throws Exception {
-        ModelMapper mapper = new ModelMapper();
-        User user = mapper.map(userDto, User.class);
-        user.setPassword(passwordEncoder.encode(userDto.getPassword())); // 비밀번호 암호화해서 저장
+
+        User user = User.builder()
+                .userName(userDto.getUserName())
+                .email(userDto.getEmail())
+                .password(passwordEncoder.encode(userDto.getPassword()))
+                .registrationId(userDto.getProvider())
+                .build();
+
         userRepository.save(user);
 
         UserImg userImg = new UserImg();
-        userImg.setUsers(user);
+        userImg.saveUser(user);
         userImgService.saveUserImg(userImg, createMultipartFiles());
 
-        /** to do  ↑
-         * 디폴트 이미지 저장
-         */
         return user;
     }
 
@@ -71,10 +73,6 @@ public class UserService implements UserDetailsService {
         return userRepository.findByEmail(email);
     }
 
-    /** to do
-     * 회원 가입 시 중복 회원 예외 처리
-     * 로그인 실패 시 예외 처리 ( 1. 비밀번호, 2. 없는 회원 )
-     */
 
     public void updateUser(Long userId, RequestUpdateUser requestUpdateUser,
                            PasswordEncoder passwordEncoder,
@@ -102,13 +100,13 @@ public class UserService implements UserDetailsService {
     }
 
     public void saveSocialUser(String registrationId, ProviderUser providerUser){
-        ModelMapper mapper = new ModelMapper();
-        User user = new User();
-        user.setRegistrationId(registrationId);
-        user.setUserName(providerUser.getUserName());
-        user.setEmail(providerUser.getEmail());
-        user.setPassword(providerUser.getPassword());
+        User user = User.builder()
+                .userName(providerUser.getUserName())
+                .email(providerUser.getEmail())
+                .password(providerUser.getPassword())
+                .registrationId(registrationId)
+                .build();
+
         userRepository.save(user);
     }
-
 }

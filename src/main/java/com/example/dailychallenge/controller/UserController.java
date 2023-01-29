@@ -1,8 +1,8 @@
 package com.example.dailychallenge.controller;
 
 import com.example.dailychallenge.dto.UserDto;
-import com.example.dailychallenge.entity.User;
-import com.example.dailychallenge.service.UserService;
+import com.example.dailychallenge.entity.users.User;
+import com.example.dailychallenge.service.users.UserService;
 import com.example.dailychallenge.utils.JwtTokenUtil;
 import com.example.dailychallenge.vo.RequestLogin;
 import com.example.dailychallenge.vo.RequestUpdateUser;
@@ -93,13 +93,9 @@ public class UserController {
 
 
     /**
-     * 2023-01-25
-     * google 로그인 구현했는데 현재 redirect url이 localhost:8080~ 으로 되어있어서
-     * 로그인 url은 ip가 아닌 http://localhost:8080/oauth2/authorization/google 로 해주셔야 합니다
-     * >> aws의 경우 http://ec2-52-78-166-208.ap-northeast-2.compute.amazonaws.com:8080/login/oauth2/code/google
-     * 로그인(/회원가입) 성공하면 /api/user 로 넘어가서 데이터 확인합니다
-     * db 저장까지 완료했는데 회원가입 이후 jwt 토큰을 통해 인증을 받을지 어쩔지 정해야할 것 같습니다
-     * ++이미지 url을 받아올지 말지도 정해야할 것 같습니다
+     * 2023-01-29
+     * aws 구글 로그인 url : http://ec2-52-78-166-208.ap-northeast-2.compute.amazonaws.com:8080/oauth2/authorization/google
+     * local 구글 로그인 url : http://localhost:8080/oauth2/authorization/google
      */
     @GetMapping("/api/user") // TEST
     public Authentication user(Authentication authentication, @AuthenticationPrincipal OAuth2User oAuth2User) {
