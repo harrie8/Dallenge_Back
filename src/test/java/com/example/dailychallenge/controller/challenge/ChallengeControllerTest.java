@@ -1,5 +1,6 @@
 package com.example.dailychallenge.controller.challenge;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -8,11 +9,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.example.dailychallenge.dto.UserDto;
 import com.example.dailychallenge.entity.challenge.ChallengeStatus;
-import com.example.dailychallenge.service.UserService;
+import com.example.dailychallenge.entity.hashtag.Hashtag;
+import com.example.dailychallenge.service.users.UserService;
 import com.example.dailychallenge.vo.RequestCreateChallenge;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -24,11 +28,16 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.mock.web.MockPart;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+
+import javax.servlet.http.Part;
 
 @SpringBootTest
 @Transactional
@@ -46,8 +55,7 @@ class ChallengeControllerTest {
     private MockMvc mockMvc;
     @Autowired
     private ObjectMapper objectMapper;
-    @Value("${userImgLocation}")
-    private String userImgLocation;
+
 
     public UserDto createUser() {
         UserDto userDto = new UserDto();
@@ -66,6 +74,8 @@ class ChallengeControllerTest {
         return multipartFile;
     }
 
+
+
     @Test
     @DisplayName("챌린지 생성 테스트")
     public void createChallengeTest() throws Exception {
@@ -82,10 +92,17 @@ class ChallengeControllerTest {
         String json = objectMapper.writeValueAsString(requestCreatChallenge);
         MockMultipartFile requestCreateChallenge = new MockMultipartFile("requestCreateChallenge", "requestCreateChallenge",
                 "application/json", json.getBytes(
-                StandardCharsets.UTF_8));
+                UTF_8));
+
+        MockPart tag1 = new MockPart("\"hashtagDto\"", "tag1".getBytes(UTF_8));
+        MockPart tag2 = new MockPart("\"hashtagDto\"", "tag2".getBytes(UTF_8));
+
+
         mockMvc.perform(multipart("/challenge/new")
                         .file(challengeImgFile)
                         .file(requestCreateChallenge)
+                        .part(tag1)
+                        .part(tag2)
                         .header("Authorization", getToken())
                         .contentType(MediaType.MULTIPART_FORM_DATA)
                         .accept(MediaType.APPLICATION_JSON))

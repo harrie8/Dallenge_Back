@@ -1,5 +1,6 @@
 package com.example.dailychallenge.controller.challenge;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessRequest;
@@ -8,8 +9,7 @@ import static org.springframework.restdocs.operation.preprocess.Preprocessors.pr
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.removeHeaders;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestPartFields;
-import static org.springframework.restdocs.request.RequestDocumentation.partWithName;
-import static org.springframework.restdocs.request.RequestDocumentation.requestParts;
+import static org.springframework.restdocs.request.RequestDocumentation.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -21,7 +21,7 @@ import com.example.dailychallenge.entity.challenge.ChallengeDuration;
 import com.example.dailychallenge.entity.challenge.ChallengeLocation;
 import com.example.dailychallenge.entity.challenge.ChallengeStatus;
 import com.example.dailychallenge.repository.UserRepository;
-import com.example.dailychallenge.service.UserService;
+import com.example.dailychallenge.service.users.UserService;
 import com.example.dailychallenge.service.challenge.ChallengeService;
 import com.example.dailychallenge.vo.RequestCreateChallenge;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -40,7 +40,9 @@ import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDoc
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.http.codec.multipart.Part;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.mock.web.MockPart;
 import org.springframework.restdocs.RestDocumentationExtension;
 import org.springframework.restdocs.snippet.Attributes;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -112,12 +114,17 @@ public class ChallengeControllerDocTest {
                 "application/json", json.getBytes(
                 StandardCharsets.UTF_8));
 
+        MockPart tag1 = new MockPart("\"hashtagDto\"", "tag1".getBytes(UTF_8));
+        MockPart tag2 = new MockPart("\"hashtagDto\"", "tag2".getBytes(UTF_8));
+
         String challengeCategoryDescriptions = String.join(", ", ChallengeCategory.getDescriptions());
         String challengeLocationDescriptions = String.join(", ", ChallengeLocation.getDescriptions());
         String challengeDurationDescriptions = String.join(", ", ChallengeDuration.getDescriptions());
         mockMvc.perform(multipart("/challenge/new")
                         .file(requestCreateChallenge)
                         .file(challengeImgFile)
+                        .part(tag1)
+                        .part(tag2)
                         .header("Authorization", getToken())
                         .contentType(MediaType.MULTIPART_FORM_DATA)
                         .accept(MediaType.APPLICATION_JSON))
@@ -137,7 +144,8 @@ public class ChallengeControllerDocTest {
                                 prettyPrint()),
                         requestParts(
                                 partWithName("requestCreateChallenge").description("챌린지 정보 데이터(JSON)"),
-                                partWithName("challengeImgFile").description("챌린지 이미지 파일(FILE)").optional()
+                                partWithName("challengeImgFile").description("챌린지 이미지 파일(FILE)").optional(),
+                                partWithName("\"hashtagDto\"").description("해시태그 데이터(LIST)").optional()
                         ),
                         requestPartFields("requestCreateChallenge",
                                 fieldWithPath("title").description("제목"),

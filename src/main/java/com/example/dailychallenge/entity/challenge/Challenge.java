@@ -14,6 +14,8 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+
+import com.example.dailychallenge.entity.hashtag.ChallengeHashtag;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -45,6 +47,9 @@ public class Challenge {
 
     @OneToMany(mappedBy = "challenge", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<UserChallenge> userChallenges = new ArrayList<>();
+
+    @OneToMany(mappedBy = "challenge",cascade = CascadeType.ALL)
+    private List<ChallengeHashtag> challengeHashtags = new ArrayList<>();
 
     @Builder
     public Challenge(String title, String content, ChallengeCategory challengeCategory,

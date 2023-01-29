@@ -9,6 +9,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.persistence.EntityNotFoundException;
+
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -27,5 +29,9 @@ public class ChallengeService {
         challengeImgService.saveChallengeImg(challengeImg, challengeImgFile);
 
         return challenge;
+    }
+
+    public Challenge findById(Long id) {
+        return challengeRepository.findById(id).orElseThrow(EntityNotFoundException::new);
     }
 }
