@@ -1,6 +1,7 @@
 package com.example.dailychallenge.service.challenge;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.example.dailychallenge.dto.ChallengeDto;
 import com.example.dailychallenge.dto.UserDto;
@@ -8,6 +9,7 @@ import com.example.dailychallenge.entity.challenge.Challenge;
 import com.example.dailychallenge.entity.challenge.ChallengeCategory;
 import com.example.dailychallenge.entity.challenge.ChallengeDuration;
 import com.example.dailychallenge.entity.challenge.ChallengeLocation;
+import com.example.dailychallenge.exception.challenge.ChallengeCategoryNotFound;
 import com.example.dailychallenge.service.users.UserService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -43,12 +45,11 @@ public class ChallengeServiceTest {
         return userDto;
     }
 
-    MultipartFile createMultipartFiles() throws Exception {
+    MultipartFile createMultipartFiles() {
         String path = challengeImgLocation +"/";
         String imageName = "challengeImage.jpg";
-        MockMultipartFile multipartFile = new MockMultipartFile(path, imageName,
+        return new MockMultipartFile(path, imageName,
                 "image/jpg", new byte[]{1, 2, 3, 4});
-        return multipartFile;
     }
 
     @Test
@@ -72,5 +73,25 @@ public class ChallengeServiceTest {
         assertEquals(challengeDto.getChallengeCategory(), challenge.getChallengeCategory().getDescription());
         assertEquals(challengeDto.getChallengeLocation(), challenge.getChallengeLocation().getDescription());
         assertEquals(challengeDto.getChallengeDuration(), challenge.getChallengeDuration().getDescription());
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 카테고리로 챌린지 생성 테스트")
+    void createChallengeByCategoryNotFound() throws Exception {
+        UserDto userDto = createUser();
+        userService.saveUser(userDto, passwordEncoder);
+        ChallengeDto challengeDto = ChallengeDto.builder()
+                .title("제목입니다.")
+                .content("내용입니다.")
+                .challengeCategory(ChallengeCategory.STUDY.getDescription() + "error")
+                .challengeLocation(ChallengeLocation.INDOOR.getDescription())
+                .challengeDuration(ChallengeDuration.WITHIN_TEN_MINUTES.getDescription())
+                .build();
+        MultipartFile challengeImg = createMultipartFiles();
+
+        Throwable exception = assertThrows(ChallengeCategoryNotFound.class, () -> {
+            challengeService.saveChallenge(challengeDto, challengeImg);
+        });
+        assertEquals("존재하지 않는 챌린지 카테고리입니다.", exception.getMessage());
     }
 }

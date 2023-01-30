@@ -21,6 +21,6 @@ public class ChallengeCategoryNotFound extends DailyChallengeException {
 
     @Override
     public int getStatusCode() {
-        return 404;
+        return 400;
     }
 }

@@ -48,3 +48,24 @@ Content-Type: application/json
   "challengeLocation": "실내",
   "challengeDuration": "10분 이내"
 }
+
+### 1-1. 잘못된 카테고리로 챌린지 생성
+POST 127.0.0.1:8080/challenge/new
+Content-Type: multipart/form-data; boundary=boundary
+Authorization: Bearer {{token}}
+Accept: application/json
+
+--boundary
+Content-Disposition: form-data; name="challengeImgFile"; filename="editImage.jpg
+
+--boundary
+Content-Disposition: form-data; name="requestCreateChallenge"
+Content-Type: application/json
+
+{
+  "title": "제목 입니다.",
+  "content": "내용 입니다.",
+  "challengeCategory": "error",
+  "challengeLocation": "실내",
+  "challengeDuration": "10분 이내"
+}

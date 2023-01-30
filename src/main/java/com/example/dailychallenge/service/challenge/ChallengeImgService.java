@@ -19,7 +19,7 @@ public class ChallengeImgService {
     private final ChallengeImgRepository challengeImgRepository;
     private final FileService fileService;
 
-    public void saveChallengeImg(ChallengeImg challengeImg, MultipartFile challengeImgFile) throws Exception {
+    public void saveChallengeImg(ChallengeImg challengeImg, MultipartFile challengeImgFile) {
         String oriImgName = challengeImgFile.getOriginalFilename();
         String imgName = "";
         String imgUrl = "";
@@ -37,7 +37,7 @@ public class ChallengeImgService {
 
     }
 
-    public void updateChallengeImg(Long challengeImgId, MultipartFile userImgFile) throws Exception {
+    public void updateChallengeImg(Long challengeImgId, MultipartFile userImgFile) {
         if(!userImgFile.isEmpty()){
             ChallengeImg savedChallengeImg = challengeImgRepository.findById(challengeImgId)
                     .orElseThrow(EntityNotFoundException::new);

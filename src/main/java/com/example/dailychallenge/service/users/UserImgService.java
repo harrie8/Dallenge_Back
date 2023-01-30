@@ -4,12 +4,11 @@ import com.example.dailychallenge.entity.users.UserImg;
 import com.example.dailychallenge.repository.UserImgRepository;
 import com.example.dailychallenge.service.FileService;
 import com.querydsl.core.util.StringUtils;
+import javax.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-
-import javax.persistence.EntityNotFoundException;
 
 
 @Service
@@ -20,7 +19,7 @@ public class UserImgService {
     private final UserImgRepository userImgRepository;
     private final FileService fileService;
 
-    public void saveUserImg(UserImg userImg, MultipartFile userImgFile) throws Exception {
+    public void saveUserImg(UserImg userImg, MultipartFile userImgFile) {
         String oriImgName = userImgFile.getOriginalFilename();
         String imgName = "";
         String imgUrl = "";
@@ -38,7 +37,7 @@ public class UserImgService {
 
     }
 
-    public void updateUserImg(Long userImgId, MultipartFile userImgFile) throws Exception {
+    public void updateUserImg(Long userImgId, MultipartFile userImgFile) {
         if(!userImgFile.isEmpty()){
             UserImg savedUserImg = userImgRepository.findById(userImgId)
                     .orElseThrow(EntityNotFoundException::new);

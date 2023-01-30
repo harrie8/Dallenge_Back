@@ -1,12 +1,13 @@
 package com.example.dailychallenge.service;
 
+import com.example.dailychallenge.exception.FileNotUpload;
+import java.io.File;
+import java.io.IOException;
+import java.util.UUID;
 import lombok.extern.java.Log;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.io.File;
-import java.util.UUID;
 
 @Service @Log
 public class FileService {
@@ -18,7 +19,7 @@ public class FileService {
         return userImgLocation + "/" + filename;
     }
 
-    public String uploadFile(MultipartFile multipartFile) throws Exception {
+    public String uploadFile(MultipartFile multipartFile) {
 
         if (multipartFile.isEmpty()) {
             return null;
@@ -28,7 +29,11 @@ public class FileService {
 
         // 서버에 저장하는 파일명
         String savedFileName = createStoreFileName(originalFilename);
-        multipartFile.transferTo(new File(getFullPath(savedFileName))); // 저장
+        try {
+            multipartFile.transferTo(new File(getFullPath(savedFileName))); // 저장
+        } catch (IOException | IllegalStateException e) {
+            throw new FileNotUpload();
+        }
 
         return savedFileName;
     }
