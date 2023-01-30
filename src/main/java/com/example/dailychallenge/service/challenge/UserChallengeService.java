@@ -1,13 +1,16 @@
 package com.example.dailychallenge.service.challenge;
 
-import com.example.dailychallenge.entity.users.User;
 import com.example.dailychallenge.entity.challenge.Challenge;
 import com.example.dailychallenge.entity.challenge.ChallengeStatus;
 import com.example.dailychallenge.entity.challenge.UserChallenge;
+import com.example.dailychallenge.entity.users.User;
 import com.example.dailychallenge.exception.UserNotFound;
 import com.example.dailychallenge.repository.UserChallengeRepository;
 import com.example.dailychallenge.repository.UserRepository;
+import com.example.dailychallenge.vo.ResponseChallenge;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,5 +36,11 @@ public class UserChallengeService {
         userChallengeRepository.save(userChallenge);
 
         return userChallenge;
+    }
+
+
+    public List<ResponseChallenge> searchAllByPopular(Pageable pageable) {
+
+        return userChallengeRepository.searchAllChallengesByPopularWithPaging(pageable);
     }
 }

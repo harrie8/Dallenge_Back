@@ -1,13 +1,23 @@
 package com.example.dailychallenge.controller.challenge;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.example.dailychallenge.dto.UserDto;
+import com.example.dailychallenge.entity.challenge.Challenge;
+import com.example.dailychallenge.entity.challenge.ChallengeCategory;
+import com.example.dailychallenge.entity.challenge.ChallengeDuration;
+import com.example.dailychallenge.entity.challenge.ChallengeLocation;
 import com.example.dailychallenge.entity.challenge.ChallengeStatus;
+import com.example.dailychallenge.entity.challenge.UserChallenge;
+import com.example.dailychallenge.entity.users.User;
+import com.example.dailychallenge.repository.ChallengeRepository;
+import com.example.dailychallenge.repository.UserChallengeRepository;
+import com.example.dailychallenge.repository.UserRepository;
 import com.example.dailychallenge.service.users.UserService;
 import com.example.dailychallenge.utils.JwtTokenUtil;
 import com.example.dailychallenge.vo.RequestCreateChallenge;
@@ -43,6 +53,12 @@ class ChallengeControllerTest {
     PasswordEncoder passwordEncoder;
     @Autowired
     private UserService userService;
+    @Autowired
+    private ChallengeRepository challengeRepository;
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private UserChallengeRepository userChallengeRepository;
     @Autowired
     private MockMvc mockMvc;
     @Autowired
@@ -134,6 +150,71 @@ class ChallengeControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.code").value(400))
                 .andExpect(jsonPath("$.message").value("존재하지 않는 챌린지 카테고리입니다."))
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("모든 챌린지 인기순으로 조회 테스트")
+    public void searchAllChallengesByPopularTest() throws Exception {
+        userService.saveUser(createUser(), passwordEncoder);
+        Challenge challenge1 = Challenge.builder()
+                .title("제목입니다.1")
+                .content("내용입니다.1")
+                .challengeCategory(ChallengeCategory.STUDY)
+                .challengeLocation(ChallengeLocation.INDOOR)
+                .challengeDuration(ChallengeDuration.WITHIN_TEN_MINUTES)
+                .build();
+        Challenge challenge2 = Challenge.builder()
+                .title("제목입니다.2")
+                .content("내용입니다.2")
+                .challengeCategory(ChallengeCategory.ECONOMY)
+                .challengeLocation(ChallengeLocation.OUTDOOR)
+                .challengeDuration(ChallengeDuration.OVER_ONE_HOUR)
+                .build();
+        challengeRepository.save(challenge1);
+        challengeRepository.save(challenge2);
+        for (int i = 1; i <= 10; i++) {
+            User user =  User.builder()
+                    .userName("홍길동" + i)
+                    .email(i + "@test.com")
+                    .password("1234")
+                    .build();
+            userRepository.save(user);
+            if (i <= 2) {
+                UserChallenge userChallenge = UserChallenge.builder()
+                        .challengeStatus(ChallengeStatus.TRYING)
+                        .user(user)
+                        .challenge(challenge1)
+                        .build();
+                userChallengeRepository.save(userChallenge);
+            }
+            if (3 <= i && i <= 7) {
+                UserChallenge userChallenge = UserChallenge.builder()
+                        .challengeStatus(ChallengeStatus.PAUSE)
+                        .user(user)
+                        .challenge(challenge2)
+                        .build();
+                userChallengeRepository.save(userChallenge);
+            }
+        }
+
+        String token = generateToken();
+        mockMvc.perform(get("/challenge")
+                        .header(AUTHORIZATION, token)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].title").value(challenge2.getTitle()))
+                .andExpect(jsonPath("$[0].content").value(challenge2.getContent()))
+                .andExpect(jsonPath("$[0].challengeCategory").value(challenge2.getChallengeCategory().getDescription()))
+                .andExpect(jsonPath("$[0].challengeLocation").value(challenge2.getChallengeLocation().getDescription()))
+                .andExpect(jsonPath("$[0].challengeDuration").value(challenge2.getChallengeDuration().getDescription()))
+                .andExpect(jsonPath("$[0].howManyUsersAreInThisChallenge").value(5))
+                .andExpect(jsonPath("$[1].title").value(challenge1.getTitle()))
+                .andExpect(jsonPath("$[1].content").value(challenge1.getContent()))
+                .andExpect(jsonPath("$[1].challengeCategory").value(challenge1.getChallengeCategory().getDescription()))
+                .andExpect(jsonPath("$[1].challengeLocation").value(challenge1.getChallengeLocation().getDescription()))
+                .andExpect(jsonPath("$[1].challengeDuration").value(challenge1.getChallengeDuration().getDescription()))
+                .andExpect(jsonPath("$[1].howManyUsersAreInThisChallenge").value(2))
                 .andDo(print());
     }
 
