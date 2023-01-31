@@ -8,6 +8,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.example.dailychallenge.dto.UserDto;
 import com.example.dailychallenge.entity.users.User;
+import com.example.dailychallenge.repository.UserRepository;
 import com.example.dailychallenge.service.users.UserService;
 import com.example.dailychallenge.utils.JwtTokenUtil;
 import com.example.dailychallenge.vo.RequestUpdateUser;
@@ -16,6 +17,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,8 +40,12 @@ import org.springframework.transaction.annotation.Transactional;
 @TestPropertySource(locations = "classpath:application-test.properties")
 class UserControllerTest {
     private final static String TOKEN_PREFIX = "Bearer ";
-    private final static String TOKEN = "token";
+    private final static String AUTHORIZATION = "Authorization";
+    private final static String EMAIL = "test1234@test.com";
+    private final static String PASSWORD = "1234";
 
+    @Autowired
+    UserRepository userRepository;
     @Autowired
     PasswordEncoder passwordEncoder;
     @Autowired
@@ -53,7 +59,10 @@ class UserControllerTest {
     @Autowired
     private JwtTokenUtil jwtTokenUtil;
 
-
+    @BeforeEach
+    void beforeEach() {
+        userRepository.deleteAll();
+    }
 
     public UserDto createUser() {
         UserDto userDto = new UserDto();
@@ -127,7 +136,7 @@ class UserControllerTest {
         mockMvc.perform(multipart("/user/{userId}", userId)
                         .file(userImgFile)
                         .file(requestUpdateUser)
-                        .header("Authorization", token)
+                        .header(AUTHORIZATION, token)
                         .contentType(MediaType.MULTIPART_FORM_DATA)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -142,7 +151,7 @@ class UserControllerTest {
 
         String token = generateToken();
         mockMvc.perform(delete("/user/{userId}", userId)
-                        .header("Authorization", token)
+                        .header(AUTHORIZATION, token)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -151,9 +160,9 @@ class UserControllerTest {
 
     private String generateToken() {
         Authentication auth = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken("test1234@test.com", "1234"));
+                new UsernamePasswordAuthenticationToken(EMAIL, PASSWORD));
         if (auth.isAuthenticated()) {
-            UserDetails userDetails = userService.loadUserByUsername("test1234@test.com");
+            UserDetails userDetails = userService.loadUserByUsername(EMAIL);
             return TOKEN_PREFIX + jwtTokenUtil.generateToken(userDetails);
         }
 

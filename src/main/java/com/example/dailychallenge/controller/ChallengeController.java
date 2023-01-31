@@ -1,6 +1,7 @@
 package com.example.dailychallenge.controller;
 
 import com.example.dailychallenge.dto.ChallengeDto;
+import com.example.dailychallenge.dto.ChallengeSearchCondition;
 import com.example.dailychallenge.entity.challenge.Challenge;
 import com.example.dailychallenge.entity.challenge.UserChallenge;
 import com.example.dailychallenge.entity.hashtag.Hashtag;
@@ -59,9 +60,19 @@ public class ChallengeController {
     }
 
     @GetMapping("/challenge")
-    public ResponseEntity<List<ResponseChallenge>> searchAllChallengesByPopular(Pageable pageable) {
+    public ResponseEntity<List<ResponseChallenge>> searchAllChallengesSortByPopular(Pageable pageable) {
 
-        List<ResponseChallenge> responseChallenges = userChallengeService.searchAllByPopular(pageable);
+        List<ResponseChallenge> responseChallenges = userChallengeService.searchAllSortByPopularWithPaging(pageable);
+
+        return ResponseEntity.status(HttpStatus.OK).body(responseChallenges);
+    }
+
+    @GetMapping("/challenge/condition")
+    public ResponseEntity<List<ResponseChallenge>> searchChallengesByConditionSortByPopular(
+            ChallengeSearchCondition condition, Pageable pageable) {
+
+        List<ResponseChallenge> responseChallenges = userChallengeService.searchByConditionSortByPopularWithPaging(
+                condition, pageable);
 
         return ResponseEntity.status(HttpStatus.OK).body(responseChallenges);
     }

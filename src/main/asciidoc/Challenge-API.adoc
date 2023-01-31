@@ -24,3 +24,20 @@ hashtagDto - 해시태그 데이터(LIST) +
 
 
 operation::challenge-create[snippets='http-response']
+
+
+[[Challenge-모든-챌린지-찾기]]
+=== 모든 챌린지 찾기(인기순으로 정렬)
+
+operation::challenges-find-all[snippets='http-request,request-parameters,http-response']
+
+
+[[Challenge-이름-또는_카테고리로-챌린지-찾기]]
+=== 이름 또는 카테고리로 챌린지 찾기(인기순으로 정렬)
+
+url에서 paramteter보시면 title,category값이 한글이 깨졌습니다. +
+원래 값은 GET /challenge/condition?title=제목&category=공부&size=20&page=0 입니다.
+
+operation::challenges-find-by-condition[snippets='http-request,request-parameters,http-response']
+
+

@@ -25,31 +25,30 @@ import com.example.dailychallenge.dto.UserDto;
 import com.example.dailychallenge.entity.users.User;
 import com.example.dailychallenge.repository.UserRepository;
 import com.example.dailychallenge.service.users.UserService;
+import com.example.dailychallenge.utils.JwtTokenUtil;
 import com.example.dailychallenge.vo.RequestLogin;
 import com.example.dailychallenge.vo.RequestUpdateUser;
 import com.example.dailychallenge.vo.RequestUser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
-import java.util.Map;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.restdocs.RestDocumentationExtension;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.ResultActions;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -58,7 +57,9 @@ import org.springframework.test.web.servlet.ResultActions;
 @TestPropertySource(locations = "classpath:application-test.properties")
 public class UserControllerDocTest {
     private final static String TOKEN_PREFIX = "Bearer ";
-    private final static String TOKEN = "token";
+    private final static String AUTHORIZATION = "Authorization";
+    private final static String EMAIL = "test1234@test.com";
+    private final static String PASSWORD = "1234";
     @Autowired
     UserRepository userRepository;
     @Autowired
@@ -69,7 +70,10 @@ public class UserControllerDocTest {
     private PasswordEncoder passwordEncoder;
     @Autowired
     private ObjectMapper objectMapper;
-
+    @Autowired
+    private AuthenticationManager authenticationManager;
+    @Autowired
+    private JwtTokenUtil jwtTokenUtil;
 
 
     @BeforeEach
@@ -189,10 +193,11 @@ public class UserControllerDocTest {
                 "application/json", data.getBytes(
                 StandardCharsets.UTF_8));
 
+        String token = generateToken();
         mockMvc.perform(multipart("/user/{userId}", userId)
                         .file(requestUpdateUser)
                         .file(userImgFile)
-                        .header("Authorization", getToken())
+                        .header(AUTHORIZATION, token)
                         .contentType(MediaType.MULTIPART_FORM_DATA)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -225,8 +230,9 @@ public class UserControllerDocTest {
         User savedUser = userService.saveUser(createUser(), passwordEncoder);
         Long userId = savedUser.getId();
 
+        String token = generateToken();
         mockMvc.perform(delete("/user/{userId}", userId)
-                        .header("Authorization", getToken())
+                        .header(AUTHORIZATION, token)
                         .contentType(APPLICATION_JSON)
                         .accept(APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -243,24 +249,14 @@ public class UserControllerDocTest {
                 ));
     }
 
-    // 회원 정보 수정, 회원 삭제할 때 헤더에 token값을 주기 위한 메서드입니다.
-    private String getToken() throws Exception {
-        Map<String, String> loginData = new HashMap<>();
-        loginData.put("email", "test1234@test.com");
-        loginData.put("password", "1234");
+    private String generateToken() {
+        Authentication auth = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(EMAIL, PASSWORD));
+        if (auth.isAuthenticated()) {
+            UserDetails userDetails = userService.loadUserByUsername(EMAIL);
+            return TOKEN_PREFIX + jwtTokenUtil.generateToken(userDetails);
+        }
 
-        ResultActions resultActions = mockMvc.perform(post("/user/login")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(loginData))
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
-
-        String contentAsString = resultActions.andReturn().getResponse().getContentAsString();
-        JSONParser jsonParser = new JSONParser();
-        JSONObject jsonObject = (JSONObject) jsonParser.parse(contentAsString);
-        String token = (String) jsonObject.get(TOKEN);
-
-        return TOKEN_PREFIX + token;
+        throw new IllegalArgumentException("token 생성 오류");
     }
-
 }

@@ -1,5 +1,6 @@
 package com.example.dailychallenge.service.challenge;
 
+import com.example.dailychallenge.dto.ChallengeSearchCondition;
 import com.example.dailychallenge.entity.challenge.Challenge;
 import com.example.dailychallenge.entity.challenge.ChallengeStatus;
 import com.example.dailychallenge.entity.challenge.UserChallenge;
@@ -39,8 +40,14 @@ public class UserChallengeService {
     }
 
 
-    public List<ResponseChallenge> searchAllByPopular(Pageable pageable) {
+    public List<ResponseChallenge> searchAllSortByPopularWithPaging(Pageable pageable) {
 
-        return userChallengeRepository.searchAllChallengesByPopularWithPaging(pageable);
+        return userChallengeRepository.searchAllChallengesSortByPopularWithPaging(pageable);
+    }
+
+    public List<ResponseChallenge> searchByConditionSortByPopularWithPaging(ChallengeSearchCondition condition,
+                                                                            Pageable pageable) {
+
+        return userChallengeRepository.searchChallengesByConditionSortByPopularWithPaging(condition, pageable);
     }
 }

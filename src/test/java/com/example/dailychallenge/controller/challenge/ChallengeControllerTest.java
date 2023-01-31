@@ -22,8 +22,13 @@ import com.example.dailychallenge.service.users.UserService;
 import com.example.dailychallenge.utils.JwtTokenUtil;
 import com.example.dailychallenge.vo.RequestCreateChallenge;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.stream.Stream;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -67,6 +72,13 @@ class ChallengeControllerTest {
     private AuthenticationManager authenticationManager;
     @Autowired
     private JwtTokenUtil jwtTokenUtil;
+
+    @BeforeEach
+    void beforeEach() {
+        userChallengeRepository.deleteAll();
+        userRepository.deleteAll();
+        challengeRepository.deleteAll();
+    }
 
 
     public UserDto createUser() {
@@ -201,6 +213,8 @@ class ChallengeControllerTest {
         String token = generateToken();
         mockMvc.perform(get("/challenge")
                         .header(AUTHORIZATION, token)
+                        .param("size", "20")
+                        .param("page", "0")
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].title").value(challenge2.getTitle()))
@@ -215,6 +229,59 @@ class ChallengeControllerTest {
                 .andExpect(jsonPath("$[1].challengeLocation").value(challenge1.getChallengeLocation().getDescription()))
                 .andExpect(jsonPath("$[1].challengeDuration").value(challenge1.getChallengeDuration().getDescription()))
                 .andExpect(jsonPath("$[1].howManyUsersAreInThisChallenge").value(2))
+                .andDo(print());
+    }
+
+    static Stream<Arguments> generateData() {
+        return Stream.of(
+                Arguments.of("1", null),
+                Arguments.of(null, "경제")
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("generateData")
+    @DisplayName("챌린지들을 검색 조건으로 찾고 인기순으로 정렬하는 테스트")
+    public void searchChallengesByConditionSortByPopularTest(String title, String category) throws Exception {
+        userService.saveUser(createUser(), passwordEncoder);
+        User user = User.builder()
+                .userName("홍길동")
+                .email("test@test.com")
+                .password("1234")
+                .build();
+        userRepository.save(user);
+        for (int i = 1; i <= 10; i++) {
+            ChallengeCategory challengeCategory = ChallengeCategory.STUDY;
+            if (i >= 6) {
+                challengeCategory = ChallengeCategory.ECONOMY;
+            }
+            Challenge challenge = Challenge.builder()
+                    .title("제목입니다." + i)
+                    .content("내용입니다." + i)
+                    .challengeCategory(challengeCategory)
+                    .challengeLocation(ChallengeLocation.INDOOR)
+                    .challengeDuration(ChallengeDuration.WITHIN_TEN_MINUTES)
+                    .build();
+            challengeRepository.save(challenge);
+            UserChallenge userChallenge = UserChallenge.builder()
+                    .challengeStatus(ChallengeStatus.TRYING)
+                    .user(user)
+                    .challenge(challenge)
+                    .build();
+            userChallengeRepository.save(userChallenge);
+        }
+
+        String token = generateToken();
+        mockMvc.perform(get("/challenge/condition")
+                        .header(AUTHORIZATION, token)
+                        .param("title", title)
+                        .param("category", category)
+                        .param("size", "20")
+                        .param("page", "0")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$..['title']").exists())
+                .andExpect(jsonPath("$..['challengeCategory']").exists())
                 .andDo(print());
     }
 
