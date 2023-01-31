@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ResponseCreateChallenge {
 
+    private Long id;
     private String title;
     private String content;
     private String challengeCategory;
@@ -18,8 +19,9 @@ public class ResponseCreateChallenge {
     private String challengeStatus;
 
     @Builder
-    public ResponseCreateChallenge(String title, String content, String challengeCategory, String challengeLocation,
+    public ResponseCreateChallenge(Long id, String title, String content, String challengeCategory, String challengeLocation,
                                    String challengeDuration, String challengeStatus) {
+        this.id = id;
         this.title = title;
         this.content = content;
         this.challengeCategory = challengeCategory;
@@ -30,6 +32,7 @@ public class ResponseCreateChallenge {
 
     public static ResponseCreateChallenge create(Challenge challenge, UserChallenge userChallenge) {
         return ResponseCreateChallenge.builder()
+                .id(challenge.getId())
                 .title(challenge.getTitle())
                 .content(challenge.getContent())
                 .challengeCategory(challenge.getChallengeCategory().getDescription())

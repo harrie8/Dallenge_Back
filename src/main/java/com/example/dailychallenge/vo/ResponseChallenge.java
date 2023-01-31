@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 public class ResponseChallenge {
+    private Long id;
     private String title;
     private String content;
     private String challengeCategory;
@@ -17,8 +18,9 @@ public class ResponseChallenge {
     private Long howManyUsersAreInThisChallenge;
 
     @Builder
-    public ResponseChallenge(String title, String content, String challengeCategory, String challengeLocation,
+    public ResponseChallenge(Long id, String title, String content, String challengeCategory, String challengeLocation,
                              String challengeDuration, Long howManyUsersAreInThisChallenge) {
+        this.id = id;
         this.title = title;
         this.content = content;
         this.challengeCategory = challengeCategory;
@@ -29,6 +31,7 @@ public class ResponseChallenge {
 
     @QueryProjection
     public ResponseChallenge(Challenge challenge, Long howManyUsersAreInThisChallenge) {
+        this.id = challenge.getId();
         this.title = challenge.getTitle();
         this.content = challenge.getContent();
         this.challengeCategory = challenge.getChallengeCategory().getDescription();
