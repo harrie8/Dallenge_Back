@@ -54,6 +54,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.authorizeRequests()
                 .antMatchers("/h2-console/**").permitAll();
 
+        http.authorizeRequests()
+                .antMatchers("/images/**").permitAll(); // 이미지 불러오기
+
         http.
                 authorizeRequests()
                 .antMatchers("/user/{userId:[\\d+]}").authenticated()
