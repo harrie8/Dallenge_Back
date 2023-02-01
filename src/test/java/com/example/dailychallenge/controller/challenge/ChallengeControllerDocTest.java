@@ -12,6 +12,7 @@ import static org.springframework.restdocs.request.RequestDocumentation.paramete
 import static org.springframework.restdocs.request.RequestDocumentation.partWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.requestParameters;
 import static org.springframework.restdocs.request.RequestDocumentation.requestParts;
+import static org.springframework.restdocs.snippet.Attributes.key;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -47,7 +48,6 @@ import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.mock.web.MockPart;
 import org.springframework.restdocs.RestDocumentationExtension;
-import org.springframework.restdocs.snippet.Attributes;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -159,22 +159,22 @@ public class ChallengeControllerDocTest {
                                         "Cache-Control", "Strict-Transport-Security", "X-Frame-Options"),
                                 prettyPrint()),
                         requestParts(
-                                partWithName("requestCreateChallenge").description("챌린지 정보 데이터(JSON)"),
-                                partWithName("challengeImgFile").description("챌린지 이미지 파일(FILE)").optional(),
+                                partWithName("requestCreateChallenge").description("챌린지 정보 데이터(JSON)")
+                                        .attributes(key("type").value("JSON")),
+                                partWithName("challengeImgFile").description("챌린지 이미지 파일(FILE)").optional()
+                                        .attributes(key("type").value(".jpg")),
                                 partWithName("\"hashtagDto\"").description("해시태그 데이터(LIST)").optional()
+                                        .attributes(key("type").value("LIST"))
                         ),
                         requestPartFields("requestCreateChallenge",
                                 fieldWithPath("title").description("제목"),
                                 fieldWithPath("content").description("내용"),
                                 fieldWithPath("challengeCategory").description("카테고리")
-                                        .attributes(Attributes.key("format").value(
-                                                challengeCategoryDescriptions)),
+                                        .attributes(key("format").value(challengeCategoryDescriptions)),
                                 fieldWithPath("challengeLocation").description("장소")
-                                        .attributes(Attributes.key("format").value(
-                                                challengeLocationDescriptions)),
+                                        .attributes(key("format").value(challengeLocationDescriptions)),
                                 fieldWithPath("challengeDuration").description("기간")
-                                        .attributes(Attributes.key("format").value(
-                                                challengeDurationDescriptions))
+                                        .attributes(key("format").value(challengeDurationDescriptions))
                         )
                 ));
     }
@@ -252,7 +252,7 @@ public class ChallengeControllerDocTest {
                                 prettyPrint()),
                         requestParameters(
                                 parameterWithName("size").description("페이지네이션 - 사이즈"),
-                                parameterWithName("page").description("페이지네이션 - 페이지")
+                                parameterWithName("page").description("페이지네이션 - 페이지, 0번부터 시작합니다.")
                         )
                 ));
     }
@@ -310,7 +310,7 @@ public class ChallengeControllerDocTest {
                                 parameterWithName("title").description("찾고 싶은 챌린지 제목").optional(),
                                 parameterWithName("category").description("찾고 싶은 챌린지 카테고리").optional(),
                                 parameterWithName("size").description("페이지네이션 - 사이즈"),
-                                parameterWithName("page").description("페이지네이션 - 페이지")
+                                parameterWithName("page").description("페이지네이션 - 페이지, 0번부터 시작합니다.")
                         )
                 ));
     }

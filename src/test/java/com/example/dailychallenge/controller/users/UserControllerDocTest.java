@@ -9,8 +9,15 @@ import static org.springframework.restdocs.operation.preprocess.Preprocessors.pr
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessResponse;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.removeHeaders;
-import static org.springframework.restdocs.payload.PayloadDocumentation.*;
-import static org.springframework.restdocs.request.RequestDocumentation.*;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.requestPartFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.partWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
+import static org.springframework.restdocs.request.RequestDocumentation.requestParameters;
+import static org.springframework.restdocs.request.RequestDocumentation.requestParts;
 import static org.springframework.restdocs.snippet.Attributes.key;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -117,12 +124,10 @@ public class UserControllerDocTest {
                                         "Cache-Control", "Strict-Transport-Security", "X-Frame-Options"),
                                 prettyPrint()),
                         requestFields(
-                                fieldWithPath("userName").description("이름")
-                                        .attributes(key("constraint").value("회원 이름을 입력해주세요.")),
+                                fieldWithPath("userName").description("이름"),
                                 fieldWithPath("email").description("이메일")
-                                        .attributes(key("constraint").value("회원 이메일을 입력해주세요.")),
+                                        .attributes(key("constraints").value("이메일 형식")),
                                 fieldWithPath("password").description("비밀번호")
-                                        .attributes(key("constraint").value("회원 비밀번호를 입력해주세요."))
                         ),
                         responseFields(
                                 fieldWithPath("email").description("회원가입 성공한 email"),
@@ -158,9 +163,8 @@ public class UserControllerDocTest {
                                 prettyPrint()),
                         requestFields(
                                 fieldWithPath("email").description("이메일")
-                                        .attributes(key("constraint").value("회원 이메일을 입력해주세요.")),
+                                        .attributes(key("constraints").value("이메일 형식")),
                                 fieldWithPath("password").description("비밀번호")
-                                        .attributes(key("constraint").value("회원 비밀번호를 입력해주세요."))
                         ),
                         responseFields(
                                 fieldWithPath("token").description("인증 토큰 값"),
@@ -207,8 +211,8 @@ public class UserControllerDocTest {
                                 parameterWithName("userId").description("회원 ID")
                         ),
                         requestParts(
-                                partWithName("requestUpdateUser").description("회원 정보 수정 데이터(JSON)"),
-                                partWithName("userImgFile").description("회원 프로필 이미지(FILE)").optional()
+                                partWithName("requestUpdateUser").description("회원 정보 수정 데이터(JSON)").attributes(key("type").value("JSON")),
+                                partWithName("userImgFile").description("회원 프로필 이미지(FILE)").optional().attributes(key("type").value(".jpg"))
                         ),
                         requestPartFields("requestUpdateUser",
                                 fieldWithPath("userName").description("회원 이름"),
@@ -248,9 +252,9 @@ public class UserControllerDocTest {
     @DisplayName("회원 아이디 중복 확인")
     public void duplicateUserId() throws Exception {
         User user = userService.saveUser(createUser(), passwordEncoder);
-        mockMvc.perform(MockMvcRequestBuilders.post("/user/check")
+        mockMvc.perform(MockMvcRequestBuilders.post("/user/check?email=test1234@naver.com")
                         .contentType(APPLICATION_JSON)
-                        .param("email","test1234@naver.com")
+//                        .param("email","test1234@naver.com") // rest docs에서 한글이 깨져서 url에 파라미터로 바로 넣었습니다.
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andDo(print())
@@ -270,9 +274,9 @@ public class UserControllerDocTest {
     @DisplayName("비밀번호 검증")
     public void checkUserPassword() throws Exception {
         User user = userService.saveUser(createUser(), passwordEncoder);
-        mockMvc.perform(MockMvcRequestBuilders.post("/user/{userId}/check",user.getId())
+        mockMvc.perform(MockMvcRequestBuilders.post("/user/{userId}/check?password=1234",user.getId())
                         .contentType(APPLICATION_JSON)
-                        .param("password","1234")
+//                        .param("password","1234")
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andDo(print())
