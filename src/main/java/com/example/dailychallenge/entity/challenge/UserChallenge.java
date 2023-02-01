@@ -30,25 +30,25 @@ public class UserChallenge {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    private User user;
+    private User users;
 
     @ManyToOne
     @JoinColumn(name = "challenge_id")
     private Challenge challenge;
 
     @Builder
-    public UserChallenge(ChallengeStatus challengeStatus, User user, Challenge challenge) {
+    public UserChallenge(ChallengeStatus challengeStatus, User users, Challenge challenge) {
         this.challengeStatus = challengeStatus;
-        this.user = user;
+        this.users = users;
         this.challenge = challenge;
     }
 
-    public void setUser(User user) {
-        if (user.getUserChallenges().contains(this)) {
-            user.getUserChallenges().remove(this);
+    public void setUser(User users) {
+        if (users.getUserChallenges().contains(this)) {
+            users.getUserChallenges().remove(this);
         }
-        this.user = user;
-        user.getUserChallenges().add(this);
+        this.users = users;
+        users.getUserChallenges().add(this);
     }
 
     public void setChallenge(Challenge challenge) {

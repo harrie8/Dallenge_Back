@@ -5,20 +5,21 @@ import com.example.dailychallenge.dto.ChallengeSearchCondition;
 import com.example.dailychallenge.entity.challenge.Challenge;
 import com.example.dailychallenge.entity.challenge.UserChallenge;
 import com.example.dailychallenge.entity.hashtag.Hashtag;
+import com.example.dailychallenge.entity.users.User;
 import com.example.dailychallenge.exception.users.UserNotFound;
 import com.example.dailychallenge.service.challenge.ChallengeService;
 import com.example.dailychallenge.service.challenge.UserChallengeService;
 import com.example.dailychallenge.service.hashtag.ChallengeHashtagService;
 import com.example.dailychallenge.service.hashtag.HashtagService;
+import com.example.dailychallenge.service.users.UserService;
 import com.example.dailychallenge.vo.RequestCreateChallenge;
 import com.example.dailychallenge.vo.ResponseChallenge;
 import com.example.dailychallenge.vo.ResponseCreateChallenge;
 import java.util.List;
 import javax.validation.Valid;
-import javax.validation.constraints.Null;
-
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -38,23 +39,30 @@ public class ChallengeController {
     private final UserChallengeService userChallengeService;
     private final HashtagService hashtagService;
     private final ChallengeHashtagService challengeHashtagService;
+    private final UserService userService;
 
 
-    @PostMapping(value = "/challenge/new", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
-    public ResponseEntity<ResponseCreateChallenge> createChallenge(@AuthenticationPrincipal org.springframework.security.core.userdetails.User user,
-                                                                   @RequestPart @Valid RequestCreateChallenge requestCreateChallenge,
-                                                                   @RequestPart(required = false) MultipartFile challengeImgFile,
-                                                                   @RequestPart(value = "hashtagDto",required = false) List<String> hashtagDto) {
+    @PostMapping(value = "/challenge/new", consumes = {MediaType.APPLICATION_JSON_VALUE,
+            MediaType.MULTIPART_FORM_DATA_VALUE})
+    public ResponseEntity<ResponseCreateChallenge> createChallenge(
+            @AuthenticationPrincipal org.springframework.security.core.userdetails.User user,
+            @RequestPart @Valid RequestCreateChallenge requestCreateChallenge,
+            @RequestPart(required = false) MultipartFile challengeImgFile,
+            @RequestPart(value = "hashtagDto", required = false) List<String> hashtagDto) {
         ModelMapper mapper = new ModelMapper();
         String userEmail = user.getUsername();
+        User findUser = userService.findByEmail(userEmail);
+        if (findUser == null) {
+            throw new UserNotFound();
+        }
         ChallengeDto challengeDto = mapper.map(requestCreateChallenge, ChallengeDto.class);
 
-        Challenge challenge = challengeService.saveChallenge(challengeDto, challengeImgFile);
-        UserChallenge userChallenge = userChallengeService.saveUserChallenge(challenge, userEmail);
+        Challenge challenge = challengeService.saveChallenge(challengeDto, challengeImgFile, findUser);
+        UserChallenge userChallenge = userChallengeService.saveUserChallenge(challenge, findUser);
 
         ResponseCreateChallenge responseCreateChallenge = ResponseCreateChallenge.create(challenge, userChallenge);
 
-        if(hashtagDto != null) {
+        if (hashtagDto != null) {
             List<Hashtag> hashtags = hashtagService.saveHashtag(hashtagDto);
             challengeHashtagService.saveChallengeHashtag(challenge, hashtags);
         }
@@ -63,18 +71,18 @@ public class ChallengeController {
     }
 
     @GetMapping("/challenge")
-    public ResponseEntity<List<ResponseChallenge>> searchAllChallengesSortByPopular(Pageable pageable) {
+    public ResponseEntity<Page<ResponseChallenge>> searchAllChallengesSortByPopular(Pageable pageable) {
 
-        List<ResponseChallenge> responseChallenges = userChallengeService.searchAllSortByPopularWithPaging(pageable);
+        Page<ResponseChallenge> responseChallenges = userChallengeService.searchAllSortByPopularWithPaging(pageable);
 
         return ResponseEntity.status(HttpStatus.OK).body(responseChallenges);
     }
 
     @GetMapping("/challenge/condition")
-    public ResponseEntity<List<ResponseChallenge>> searchChallengesByConditionSortByPopular(
+    public ResponseEntity<Page<ResponseChallenge>> searchChallengesByConditionSortByPopular(
             ChallengeSearchCondition condition, Pageable pageable) {
 
-        List<ResponseChallenge> responseChallenges = userChallengeService.searchByConditionSortByPopularWithPaging(
+        Page<ResponseChallenge> responseChallenges = userChallengeService.searchByConditionSortByPopularWithPaging(
                 condition, pageable);
 
         return ResponseEntity.status(HttpStatus.OK).body(responseChallenges);

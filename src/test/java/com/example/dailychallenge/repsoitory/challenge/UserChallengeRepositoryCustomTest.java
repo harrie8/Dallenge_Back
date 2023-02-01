@@ -23,6 +23,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,6 +43,12 @@ public class UserChallengeRepositoryCustomTest {
     @Test
     @DisplayName("인기 많은 순서대로 모든 챌리지 찾는 테스트")
     void searchAllChallengesByPopular() {
+        User savedUser = User.builder()
+                .userName("홍길동")
+                .email("test@test.com")
+                .password("1234")
+                .build();
+        userRepository.save(savedUser);
         Challenge challenge1 = Challenge.builder()
                 .title("제목입니다.1")
                 .content("내용입니다.1")
@@ -49,6 +56,7 @@ public class UserChallengeRepositoryCustomTest {
                 .challengeLocation(ChallengeLocation.INDOOR)
                 .challengeDuration(ChallengeDuration.WITHIN_TEN_MINUTES)
                 .build();
+        challenge1.setUser(savedUser);
         Challenge challenge2 = Challenge.builder()
                 .title("제목입니다.2")
                 .content("내용입니다.2")
@@ -56,27 +64,40 @@ public class UserChallengeRepositoryCustomTest {
                 .challengeLocation(ChallengeLocation.OUTDOOR)
                 .challengeDuration(ChallengeDuration.OVER_ONE_HOUR)
                 .build();
+        challenge2.setUser(savedUser);
         challengeRepository.save(challenge1);
         challengeRepository.save(challenge2);
-        for (int i = 1; i <= 10; i++) {
+        UserChallenge userChallenge = UserChallenge.builder()
+                .challengeStatus(ChallengeStatus.TRYING)
+                .users(savedUser)
+                .challenge(challenge1)
+                .build();
+        userChallengeRepository.save(userChallenge);
+        userChallenge = UserChallenge.builder()
+                .challengeStatus(ChallengeStatus.PAUSE)
+                .users(savedUser)
+                .challenge(challenge2)
+                .build();
+        userChallengeRepository.save(userChallenge);
+        for (int i = 1; i <= 8; i++) {
             User user = User.builder()
                     .userName("홍길동" + i)
                     .email(i + "@test.com")
                     .password("1234")
                     .build();
             userRepository.save(user);
-            if (i <= 2) {
-                UserChallenge userChallenge = UserChallenge.builder()
+            if (i == 1) {
+                userChallenge = UserChallenge.builder()
                         .challengeStatus(ChallengeStatus.TRYING)
-                        .user(user)
+                        .users(user)
                         .challenge(challenge1)
                         .build();
                 userChallengeRepository.save(userChallenge);
             }
-            if (3 <= i && i <= 7) {
-                UserChallenge userChallenge = UserChallenge.builder()
+            if (2 <= i && i <= 5) {
+                userChallenge = UserChallenge.builder()
                         .challengeStatus(ChallengeStatus.PAUSE)
-                        .user(user)
+                        .users(user)
                         .challenge(challenge2)
                         .build();
                 userChallengeRepository.save(userChallenge);
@@ -84,10 +105,11 @@ public class UserChallengeRepositoryCustomTest {
         }
 
         PageRequest pageRequest = PageRequest.of(0, 20);
-        List<ResponseChallenge> results = userChallengeRepository.searchAllChallengesSortByPopularWithPaging(pageRequest);
+        Page<ResponseChallenge> results = userChallengeRepository.searchAllChallengesSortByPopularWithPaging(pageRequest);
 
         assertThat(results).extracting("title").containsExactly("제목입니다.2", "제목입니다.1");
         assertThat(results).extracting("howManyUsersAreInThisChallenge").containsExactly(5L, 2L);
+        assertThat(results).extracting("challengeOwnerUser").extracting("userName").containsExactly("홍길동", "홍길동");
     }
 
     static Stream<Arguments> generateData() {
@@ -119,10 +141,11 @@ public class UserChallengeRepositoryCustomTest {
                     .challengeLocation(ChallengeLocation.INDOOR)
                     .challengeDuration(ChallengeDuration.WITHIN_TEN_MINUTES)
                     .build();
+            challenge.setUser(user);
             challengeRepository.save(challenge);
             UserChallenge userChallenge = UserChallenge.builder()
                     .challengeStatus(ChallengeStatus.TRYING)
-                    .user(user)
+                    .users(user)
                     .challenge(challenge)
                     .build();
             userChallengeRepository.save(userChallenge);
@@ -133,9 +156,10 @@ public class UserChallengeRepositoryCustomTest {
                 .category(category)
                 .build();
         PageRequest pageRequest = PageRequest.of(0, 20);
-        List<ResponseChallenge> results = userChallengeRepository.searchChallengesByConditionSortByPopularWithPaging(
+        Page<ResponseChallenge> results = userChallengeRepository.searchChallengesByConditionSortByPopularWithPaging(
                 condition, pageRequest);
 
         assertThat(results).extracting("title").containsExactlyElementsOf(expect);
+        assertThat(results).extracting("challengeOwnerUser").extracting("userName").contains(user.getUserName());
     }
 }

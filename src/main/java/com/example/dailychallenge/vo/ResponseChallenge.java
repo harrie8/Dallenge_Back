@@ -15,18 +15,22 @@ public class ResponseChallenge {
     private String challengeCategory;
     private String challengeLocation;
     private String challengeDuration;
+    private String challengeImgUrl;
     private Long howManyUsersAreInThisChallenge;
+    private ResponseUser challengeOwnerUser;
 
     @Builder
     public ResponseChallenge(Long id, String title, String content, String challengeCategory, String challengeLocation,
-                             String challengeDuration, Long howManyUsersAreInThisChallenge) {
+                             String challengeDuration, String challengeImgUrl, Long howManyUsersAreInThisChallenge, ResponseUser responseUser) {
         this.id = id;
         this.title = title;
         this.content = content;
         this.challengeCategory = challengeCategory;
         this.challengeLocation = challengeLocation;
         this.challengeDuration = challengeDuration;
+        this.challengeImgUrl = challengeImgUrl;
         this.howManyUsersAreInThisChallenge = howManyUsersAreInThisChallenge;
+        this.challengeOwnerUser = responseUser;
     }
 
     @QueryProjection
@@ -37,6 +41,15 @@ public class ResponseChallenge {
         this.challengeCategory = challenge.getChallengeCategory().getDescription();
         this.challengeLocation = challenge.getChallengeLocation().getDescription();
         this.challengeDuration = challenge.getChallengeDuration().getDescription();
+
+        if (challenge.getChallengeImg() != null) {
+            this.challengeImgUrl = challenge.getChallengeImg().getImgUrl();
+        }
+        if (challenge.getChallengeImg() == null) {
+            this.challengeImgUrl = null;
+        }
+
         this.howManyUsersAreInThisChallenge = howManyUsersAreInThisChallenge;
+        this.challengeOwnerUser = ResponseUser.create(challenge.getUsers());
     }
 }

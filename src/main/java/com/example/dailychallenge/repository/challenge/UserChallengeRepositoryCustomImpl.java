@@ -1,6 +1,7 @@
 package com.example.dailychallenge.repository.challenge;
 
 import static com.example.dailychallenge.entity.challenge.QChallenge.challenge;
+import static com.example.dailychallenge.entity.challenge.QChallengeImg.challengeImg;
 import static com.example.dailychallenge.entity.challenge.QUserChallenge.userChallenge;
 import static org.aspectj.util.LangUtil.isEmpty;
 
@@ -12,6 +13,8 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.List;
 import javax.persistence.EntityManager;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 
 public class UserChallengeRepositoryCustomImpl implements
@@ -24,27 +27,40 @@ public class UserChallengeRepositoryCustomImpl implements
     }
 
     @Override
-    public List<ResponseChallenge> searchAllChallengesSortByPopularWithPaging(Pageable pageable) {
-        return queryFactory
+    public Page<ResponseChallenge> searchAllChallengesSortByPopularWithPaging(Pageable pageable) {
+        List<ResponseChallenge> content = queryFactory
                 .select(new QResponseChallenge(userChallenge.challenge, userChallenge.count()))
                 .from(userChallenge)
                 .leftJoin(userChallenge.challenge, challenge)
+                .leftJoin(userChallenge.challenge.challengeImg, challengeImg)
                 .groupBy(userChallenge.challenge)
                 .orderBy(userChallenge.count().desc()) // 먼저 생성된 챌린지로 정렬하기
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
+
+        long total = queryFactory
+                .select(userChallenge.challenge)
+                .from(userChallenge)
+                .leftJoin(userChallenge.challenge, challenge)
+                .leftJoin(userChallenge.challenge.challengeImg, challengeImg)
+                .groupBy(userChallenge.challenge)
+                .fetch()
+                .size();
+
+        return new PageImpl<>(content, pageable, total);
     }
 
     @Override
-    public List<ResponseChallenge> searchChallengesByConditionSortByPopularWithPaging(
+    public Page<ResponseChallenge> searchChallengesByConditionSortByPopularWithPaging(
             ChallengeSearchCondition condition,
             Pageable pageable) {
 
-        return queryFactory
+        List<ResponseChallenge> content = queryFactory
                 .select(new QResponseChallenge(userChallenge.challenge, userChallenge.count()))
                 .from(userChallenge)
                 .leftJoin(userChallenge.challenge, challenge)
+                .leftJoin(userChallenge.challenge.challengeImg, challengeImg)
                 .where(titleContains(condition.getTitle()),
                         categoryEq(condition.getCategory()))
                 .groupBy(userChallenge.challenge)
@@ -52,6 +68,19 @@ public class UserChallengeRepositoryCustomImpl implements
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
+
+        long total = queryFactory
+                .select(userChallenge.challenge)
+                .from(userChallenge)
+                .leftJoin(userChallenge.challenge, challenge)
+                .leftJoin(userChallenge.challenge.challengeImg, challengeImg)
+                .where(titleContains(condition.getTitle()),
+                        categoryEq(condition.getCategory()))
+                .groupBy(userChallenge.challenge)
+                .fetch()
+                .size();
+
+        return new PageImpl<>(content, pageable, total);
     }
 
     private BooleanExpression titleContains(String title) {

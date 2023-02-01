@@ -1,7 +1,7 @@
 package com.example.dailychallenge.entity.users;
 
-import com.example.dailychallenge.dto.UserDto;
 import com.example.dailychallenge.dto.UserEditor;
+import com.example.dailychallenge.entity.challenge.Challenge;
 import com.example.dailychallenge.entity.challenge.UserChallenge;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,7 +15,6 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
-
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -37,7 +36,10 @@ public class User {
     @OneToOne(mappedBy = "users", cascade = CascadeType.ALL)
     private UserImg userImg;
 
-    @OneToMany(mappedBy = "challenge", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "users", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<Challenge> challenges = new ArrayList<>();
+
+    @OneToMany(mappedBy = "users", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<UserChallenge> userChallenges = new ArrayList<>();
 
     @Builder

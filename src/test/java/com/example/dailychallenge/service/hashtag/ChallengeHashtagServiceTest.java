@@ -1,25 +1,29 @@
 package com.example.dailychallenge.service.hashtag;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import com.example.dailychallenge.dto.ChallengeDto;
 import com.example.dailychallenge.dto.UserDto;
-import com.example.dailychallenge.entity.challenge.*;
+import com.example.dailychallenge.entity.challenge.Challenge;
+import com.example.dailychallenge.entity.challenge.ChallengeCategory;
+import com.example.dailychallenge.entity.challenge.ChallengeDuration;
+import com.example.dailychallenge.entity.challenge.ChallengeLocation;
 import com.example.dailychallenge.entity.hashtag.ChallengeHashtag;
 import com.example.dailychallenge.entity.hashtag.Hashtag;
 import com.example.dailychallenge.entity.users.User;
 import com.example.dailychallenge.service.challenge.ChallengeService;
+import com.example.dailychallenge.service.users.UserService;
+import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
 @Transactional
 @TestPropertySource(locations = "classpath:application-test.properties")
@@ -33,6 +37,19 @@ class ChallengeHashtagServiceTest {
     private HashtagService hashtagService;
     @Autowired
     private ChallengeHashtagService challengeHashtagService;
+    @Autowired
+    private UserService userService;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    public UserDto createUser() {
+        UserDto userDto = new UserDto();
+        userDto.setEmail("test1234@test.com");
+        userDto.setUserName("홍길동");
+        userDto.setInfo("testInfo");
+        userDto.setPassword("1234");
+        return userDto;
+    }
 
     MultipartFile createMultipartFiles() throws Exception {
         String path = challengeImgLocation +"/";
@@ -43,6 +60,7 @@ class ChallengeHashtagServiceTest {
     }
 
     public Challenge createChallenge() throws Exception {
+        User savedUser = userService.saveUser(createUser(), passwordEncoder);
         ChallengeDto challengeDto = ChallengeDto.builder()
                 .title("제목입니다.")
                 .content("내용입니다.")
@@ -52,7 +70,7 @@ class ChallengeHashtagServiceTest {
                 .build();
         MultipartFile challengeImg = createMultipartFiles();
 
-        return challengeService.saveChallenge(challengeDto, challengeImg);
+        return challengeService.saveChallenge(challengeDto, challengeImg, savedUser);
     }
 
     public List<Hashtag> createHashtag() {

@@ -2,11 +2,11 @@ package com.example.dailychallenge.repository.challenge;
 
 import com.example.dailychallenge.dto.ChallengeSearchCondition;
 import com.example.dailychallenge.vo.ResponseChallenge;
-import java.util.List;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 public interface UserChallengeRepositoryCustom {
 
-    List<ResponseChallenge> searchAllChallengesSortByPopularWithPaging(Pageable pageable);
-    List<ResponseChallenge> searchChallengesByConditionSortByPopularWithPaging(ChallengeSearchCondition condition, Pageable pageable);
+    Page<ResponseChallenge> searchAllChallengesSortByPopularWithPaging(Pageable pageable);
+    Page<ResponseChallenge> searchChallengesByConditionSortByPopularWithPaging(ChallengeSearchCondition condition, Pageable pageable);
 }
