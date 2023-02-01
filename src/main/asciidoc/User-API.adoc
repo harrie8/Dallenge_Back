@@ -45,3 +45,29 @@ include::{snippets}/user-update/http-response.adoc[]
 === 회원 삭제
 
 operation::user-delete[snippets='http-request,path-parameters,http-response']
+
+
+[[User-회원-아이디-중복-확인]]
+=== 회원 아이디 중복 확인
+
+include::{snippets}/user-check-email/http-request.adoc[]
+==== 요청값
+
+====
+include::{snippets}/user-check-email/request-parameters.adoc[]
+====
+
+include::{snippets}/user-check-email/http-response.adoc[]
+
+
+[[User-회원-비밀번호-검증]]
+=== 회원 비밀번호 검증
+
+include::{snippets}/user-check-password/http-request.adoc[]
+==== 요청값
+
+====
+include::{snippets}/user-check-password/request-parameters.adoc[]
+====
+
+include::{snippets}/user-check-password/http-response.adoc[]

@@ -39,7 +39,7 @@ public class UserService implements UserDetailsService {
 
     public User saveUser(UserDto userDto, PasswordEncoder passwordEncoder) throws Exception {
 
-        validateDuplicateMember(userDto.getEmail());
+        validateDuplicateUser(userDto.getEmail());
 
         User user = User.builder()
                 .userName(userDto.getUserName())
@@ -112,7 +112,7 @@ public class UserService implements UserDetailsService {
         userRepository.save(user);
     }
 
-    public void validateDuplicateMember(String email) {
+    public void validateDuplicateUser(String email) {
         User user = userRepository.findByEmail(email);
         if (user != null) {
             throw new UserDuplicateNotCheck();

@@ -9,14 +9,8 @@ import static org.springframework.restdocs.operation.preprocess.Preprocessors.pr
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessResponse;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.removeHeaders;
-import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
-import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
-import static org.springframework.restdocs.payload.PayloadDocumentation.requestPartFields;
-import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
-import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
-import static org.springframework.restdocs.request.RequestDocumentation.partWithName;
-import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
-import static org.springframework.restdocs.request.RequestDocumentation.requestParts;
+import static org.springframework.restdocs.payload.PayloadDocumentation.*;
+import static org.springframework.restdocs.request.RequestDocumentation.*;
 import static org.springframework.restdocs.snippet.Attributes.key;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -49,6 +43,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -245,6 +240,50 @@ public class UserControllerDocTest {
                                         "Strict-Transport-Security", "X-Frame-Options"), prettyPrint()),
                         pathParameters(
                                 parameterWithName("userId").description("회원 ID")
+                        )
+                ));
+    }
+
+    @Test
+    @DisplayName("회원 아이디 중복 확인")
+    public void duplicateUserId() throws Exception {
+        User user = userService.saveUser(createUser(), passwordEncoder);
+        mockMvc.perform(MockMvcRequestBuilders.post("/user/check")
+                        .contentType(APPLICATION_JSON)
+                        .param("email","test1234@naver.com")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andDo(print())
+                .andDo(document("user-check-email",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(
+                                removeHeaders("Vary", "X-Content-Type-Options", "X-XSS-Protection", "Pragma", "Expires",
+                                        "Cache-Control", "Strict-Transport-Security", "X-Frame-Options"),
+                                prettyPrint()),
+                        requestParameters(
+                                parameterWithName("email").description("검증할 이메일")
+                        )
+                ));
+    }
+
+    @Test
+    @DisplayName("비밀번호 검증")
+    public void checkUserPassword() throws Exception {
+        User user = userService.saveUser(createUser(), passwordEncoder);
+        mockMvc.perform(MockMvcRequestBuilders.post("/user/{userId}/check",user.getId())
+                        .contentType(APPLICATION_JSON)
+                        .param("password","1234")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andDo(print())
+                .andDo(document("user-check-password",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(
+                                removeHeaders("Vary", "X-Content-Type-Options", "X-XSS-Protection", "Pragma", "Expires",
+                                        "Cache-Control", "Strict-Transport-Security", "X-Frame-Options"),
+                                prettyPrint()),
+                        requestParameters(
+                                parameterWithName("password").description("검증할 비밀번호")
                         )
                 ));
     }

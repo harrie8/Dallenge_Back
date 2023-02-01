@@ -451,7 +451,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">POST /challenge/new HTTP/1.1
 Content-Type: multipart/form-data;charset=UTF-8; boundary=6o2knFse3p53ty9dmcQvWAIx1zInP11uCfbm
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0MTIzNEB0ZXN0LmNvbSIsImlhdCI6MTY3NTAxMTAzNCwiZXhwIjoxNjc1MDI5MDM0fQ.r-YNaSeWjI73NPZFxSw7sA178uz-LiFnr0-pjaq-Pec
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0MTIzNEB0ZXN0LmNvbSIsImlhdCI6MTY3NTIzMjE2MSwiZXhwIjoxNjc1MjMyMjIxfQ.7hiHITfB1SAVc2J8bzw3hP-LOas1CyqldhHHxNqyAxw
 Accept: application/json
 Host: api.dailychallenge.com
 
@@ -581,9 +581,10 @@ Content-Type: image/jpg
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">HTTP/1.1 201 Created
 Content-Type: application/json
-Content-Length: 218
+Content-Length: 232
 
 {
+  "id" : 11,
   "title" : "제목입니다.",
   "content" : "내용입니다.",
   "challengeCategory" : "공부",
@@ -596,12 +597,192 @@ Content-Length: 218
 </div>
 </div>
 </div>
+<div class="sect2">
+<h3 id="Challenge-모든-챌린지-찾기">모든 챌린지 찾기(인기순으로 정렬)</h3>
+<div class="sect3">
+<h4 id="Challenge-모든-챌린지-찾기_http_request">HTTP request</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight nowrap"><code class="language-http" data-lang="http">GET /challenge?size=20&amp;page=0 HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0MTIzNEB0ZXN0LmNvbSIsImlhdCI6MTY3NTIzMjE2MiwiZXhwIjoxNjc1MjMyMjIyfQ.i0dxdENa23ccyE9acBXxAdvRs8l1W-SlxazGNQydGoU
+Accept: application/json
+Host: api.dailychallenge.com</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="Challenge-모든-챌린지-찾기_request_parameters">Request parameters</h4>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">파라미터</th>
+<th class="tableblock halign-left valign-top">필수여부</th>
+<th class="tableblock halign-left valign-top">설명</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>size</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">true</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">페이지네이션 - 사이즈</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>page</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">true</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">페이지네이션 - 페이지</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect3">
+<h4 id="Challenge-모든-챌린지-찾기_http_response">HTTP response</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight nowrap"><code class="language-http" data-lang="http">HTTP/1.1 200 OK
+Content-Type: application/json
+Content-Length: 486
+
+[ {
+  "id" : 13,
+  "title" : "제목입니다.2",
+  "content" : "내용입니다.2",
+  "challengeCategory" : "경제",
+  "challengeLocation" : "실외",
+  "challengeDuration" : "1시간 이상",
+  "howManyUsersAreInThisChallenge" : 5
+}, {
+  "id" : 12,
+  "title" : "제목입니다.1",
+  "content" : "내용입니다.1",
+  "challengeCategory" : "공부",
+  "challengeLocation" : "실내",
+  "challengeDuration" : "10분 이내",
+  "howManyUsersAreInThisChallenge" : 2
+} ]</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="Challenge-이름-또는_카테고리로-챌린지-찾기">이름 또는 카테고리로 챌린지 찾기(인기순으로 정렬)</h3>
+<div class="paragraph">
+<p>url에서 paramteter보시면 title,category값이 한글이 깨졌습니다.<br>
+원래 값은 GET /challenge/condition?title=제목&amp;category=공부&amp;size=20&amp;page=0 입니다.</p>
+</div>
+<div class="sect3">
+<h4 id="Challenge-이름-또는_카테고리로-챌린지-찾기_http_request">HTTP request</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight nowrap"><code class="language-http" data-lang="http">GET /challenge/condition?title=%EC%A0%9C%EB%AA%A9&amp;category=%EA%B3%B5%EB%B6%80&amp;size=20&amp;page=0 HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0MTIzNEB0ZXN0LmNvbSIsImlhdCI6MTY3NTIzMjE2MCwiZXhwIjoxNjc1MjMyMjIwfQ.nFvlXhItAVGSdaMYZEuj3gHm6UERVyCf8-8otjDtKe0
+Accept: application/json
+Host: api.dailychallenge.com</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="Challenge-이름-또는_카테고리로-챌린지-찾기_request_parameters">Request parameters</h4>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">파라미터</th>
+<th class="tableblock halign-left valign-top">필수여부</th>
+<th class="tableblock halign-left valign-top">설명</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>title</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">false</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">찾고 싶은 챌린지 제목</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>category</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">false</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">찾고 싶은 챌린지 카테고리</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>size</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">true</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">페이지네이션 - 사이즈</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>page</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">true</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">페이지네이션 - 페이지</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect3">
+<h4 id="Challenge-이름-또는_카테고리로-챌린지-찾기_http_response">HTTP response</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight nowrap"><code class="language-http" data-lang="http">HTTP/1.1 200 OK
+Content-Type: application/json
+Content-Length: 1202
+
+[ {
+  "id" : 1,
+  "title" : "제목입니다.1",
+  "content" : "내용입니다.1",
+  "challengeCategory" : "공부",
+  "challengeLocation" : "실내",
+  "challengeDuration" : "10분 이내",
+  "howManyUsersAreInThisChallenge" : 1
+}, {
+  "id" : 2,
+  "title" : "제목입니다.2",
+  "content" : "내용입니다.2",
+  "challengeCategory" : "공부",
+  "challengeLocation" : "실내",
+  "challengeDuration" : "10분 이내",
+  "howManyUsersAreInThisChallenge" : 1
+}, {
+  "id" : 3,
+  "title" : "제목입니다.3",
+  "content" : "내용입니다.3",
+  "challengeCategory" : "공부",
+  "challengeLocation" : "실내",
+  "challengeDuration" : "10분 이내",
+  "howManyUsersAreInThisChallenge" : 1
+}, {
+  "id" : 4,
+  "title" : "제목입니다.4",
+  "content" : "내용입니다.4",
+  "challengeCategory" : "공부",
+  "challengeLocation" : "실내",
+  "challengeDuration" : "10분 이내",
+  "howManyUsersAreInThisChallenge" : 1
+}, {
+  "id" : 5,
+  "title" : "제목입니다.5",
+  "content" : "내용입니다.5",
+  "challengeCategory" : "공부",
+  "challengeLocation" : "실내",
+  "challengeDuration" : "10분 이내",
+  "howManyUsersAreInThisChallenge" : 1
+} ]</code></pre>
+</div>
+</div>
+</div>
+</div>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2023-01-30 00:36:26 +0900
+Last updated 2023-01-31 16:23:40 +0900
 </div>
 </div>
 </body>

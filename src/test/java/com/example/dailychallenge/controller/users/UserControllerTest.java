@@ -1,5 +1,7 @@
 package com.example.dailychallenge.controller.users;
+import static org.junit.jupiter.api.Assertions.*;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -8,6 +10,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.example.dailychallenge.dto.UserDto;
 import com.example.dailychallenge.entity.users.User;
+import com.example.dailychallenge.exception.users.UserDuplicateCheck;
+import com.example.dailychallenge.exception.users.UserDuplicateNotCheck;
+import com.example.dailychallenge.exception.users.UserPasswordCheck;
 import com.example.dailychallenge.repository.UserRepository;
 import com.example.dailychallenge.service.users.UserService;
 import com.example.dailychallenge.utils.JwtTokenUtil;
@@ -32,6 +37,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest
@@ -155,6 +161,70 @@ class UserControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("회원 아이디 중복 에러 테스트 - 검증 url")
+    public void duplicateUserIdTest() throws Exception {
+        User user = userService.saveUser(createUser(), passwordEncoder);
+        String token = generateToken();
+
+        mockMvc.perform(post("/user/check")
+                        .param("email","test1234@test.com")
+                        .header(AUTHORIZATION, token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().is4xxClientError())
+                .andExpect(result ->
+                        assertTrue(result.getResolvedException().getClass().isAssignableFrom(UserDuplicateCheck.class)))
+                .andDo(print());
+    }
+
+    @Test // 중복일 때만 예외 발생
+    @DisplayName("회원가입 중복 에러 테스트 - 아이디 중복 체크를 안하고 회원가입하는 경우")
+    public void duplicateUserTest() throws Exception {
+        userService.saveUser(createUser(), passwordEncoder);
+        RequestUser requestUser = RequestUser.builder()
+                .userName("GilDong")
+                .email("test1234@test.com")
+                .password("1234")
+                .build();
+
+        mockMvc.perform(post("/user/new")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(requestUser))
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().is4xxClientError())
+                .andExpect(result ->
+                        assertTrue(result.getResolvedException().getClass().isAssignableFrom(UserDuplicateNotCheck.class)))
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("비밀번호 검증 테스트")
+    public void checkUserPassword() throws Exception {
+        User user = userService.saveUser(createUser(), passwordEncoder);
+        mockMvc.perform(post("/user/{userId}/check",user.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .param("password","1234")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("비밀번호 검증 에러 테스트")
+    public void checkUserPasswordError() throws Exception {
+        User user = userService.saveUser(createUser(), passwordEncoder);
+
+        mockMvc.perform(post("/user/{userId}/check",user.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .param("password","12345")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().is4xxClientError())
+                .andExpect(result ->
+                        assertTrue(result.getResolvedException().getClass().isAssignableFrom(UserPasswordCheck.class)))
                 .andDo(print());
     }
 

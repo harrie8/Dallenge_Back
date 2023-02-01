@@ -1,14 +1,14 @@
 package com.example.dailychallenge.service.users;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import com.example.dailychallenge.dto.UserDto;
 import com.example.dailychallenge.entity.users.User;
+import com.example.dailychallenge.exception.users.UserDuplicateNotCheck;
 import com.example.dailychallenge.exception.users.UserNotFound;
+import com.example.dailychallenge.exception.users.UserPasswordCheck;
 import com.example.dailychallenge.repository.UserImgRepository;
 import com.example.dailychallenge.repository.UserRepository;
 import com.example.dailychallenge.vo.RequestUpdateUser;
@@ -129,5 +129,23 @@ class UserServiceTest {
 
         assertEquals(0, userRepository.count());
         assertEquals(0,userImgRepository.count());
+    }
+
+    @Test
+    @DisplayName("회원 중복 에러 테스트")
+    public void duplicateUserTest() throws Exception {
+        User savedUser = userService.saveUser(createUser(), passwordEncoder);
+        assertThatThrownBy(() -> userService.validateDuplicateUser(savedUser.getEmail()))
+                .isInstanceOf(UserDuplicateNotCheck.class)
+                .hasMessage("아이디 중복체크를 해주세요.");
+    }
+
+    @Test
+    @DisplayName("비밀번호 검증 테스트")
+    public void checkUserPassword() throws Exception {
+        User savedUser = userService.saveUser(createUser(), passwordEncoder);
+
+        assertTrue(userService.checkPassword(savedUser.getId(), "1234", passwordEncoder));
+        assertFalse(userService.checkPassword(savedUser.getId(), "12345", passwordEncoder));
     }
 }

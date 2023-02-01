@@ -17,6 +17,6 @@ public class UserLoginFailure extends DailyChallengeException {
 
     @Override
     public String getMessage() {
-        return super.getMessage();
+        return MESSAGE;
     }
 }
