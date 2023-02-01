@@ -2,6 +2,8 @@ package com.example.dailychallenge.controller;
 
 import com.example.dailychallenge.dto.UserDto;
 import com.example.dailychallenge.entity.users.User;
+import com.example.dailychallenge.exception.users.UserIdDuplicate;
+import com.example.dailychallenge.exception.users.UserLoginFailure;
 import com.example.dailychallenge.service.users.UserService;
 import com.example.dailychallenge.utils.JwtTokenUtil;
 import com.example.dailychallenge.vo.RequestLogin;
@@ -21,13 +23,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.core.user.OAuth2User;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestPart;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
@@ -40,7 +36,7 @@ public class UserController {
     private final JwtTokenUtil jwtTokenUtil;
 
     @PostMapping("/user/new")
-    public ResponseEntity createUser(@RequestBody RequestUser requestUser) throws Exception {
+    public ResponseEntity createUser(@RequestBody @Valid RequestUser requestUser) throws Exception {
         ModelMapper mapper = new ModelMapper();
 
         UserDto userDto = mapper.map(requestUser, UserDto.class);
@@ -52,7 +48,7 @@ public class UserController {
     }
 
     @PostMapping("/user/login")
-    public ResponseEntity loginUser(@RequestBody RequestLogin requestLogin) {
+    public ResponseEntity loginUser(@RequestBody @Valid RequestLogin requestLogin) {
         ModelMapper mapper = new ModelMapper();
         try {
             Authentication auth = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
@@ -69,12 +65,12 @@ public class UserController {
 
                 return ResponseEntity.status(HttpStatus.OK).body(responseLoginUser);
             } else {
-                // 로그인 되지 않은 사용자인 경우
+                /** 로그인 되지 않은 사용자인 경우  -> 소셜 로그인 이후 변경 예정 **/
                 return ResponseEntity.status(401).body("Invalid Credentials");
             }
         } catch (Exception e) {
             // 아이디, 비밀번호 틀린 경우
-            return ResponseEntity.status(500).body("이메일 또는 비밀번호가 일치하지 않습니다.");
+            throw new UserLoginFailure();
         }
     }
 
@@ -89,6 +85,15 @@ public class UserController {
     @DeleteMapping("/user/{userId}")
     public void deleteUser(@PathVariable Long userId) {
         userService.delete(userId);
+    }
+
+    @PostMapping("/user/check")
+    public ResponseEntity<String> checkDuplicateUser(@RequestParam String email){
+        User user = userService.findByEmail(email);
+        if (user != null) {
+            throw new UserIdDuplicate();
+        }
+        return ResponseEntity.status(200).body("사용 가능한 아이디입니다.");
     }
 
 

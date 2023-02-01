@@ -1,4 +1,6 @@
-package com.example.dailychallenge.exception;
+package com.example.dailychallenge.exception.users;
+
+import com.example.dailychallenge.exception.DailyChallengeException;
 
 public class UserNotFound extends DailyChallengeException {
 

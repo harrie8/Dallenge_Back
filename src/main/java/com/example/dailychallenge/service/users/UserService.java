@@ -5,12 +5,13 @@ import com.example.dailychallenge.dto.UserEditor;
 import com.example.dailychallenge.entity.social.ProviderUser;
 import com.example.dailychallenge.entity.users.User;
 import com.example.dailychallenge.entity.users.UserImg;
-import com.example.dailychallenge.exception.UserNotFound;
+import com.example.dailychallenge.exception.users.UserDuplicateNotCheck;
+import com.example.dailychallenge.exception.users.UserIdDuplicate;
+import com.example.dailychallenge.exception.users.UserNotFound;
 import com.example.dailychallenge.repository.UserRepository;
 import com.example.dailychallenge.vo.RequestUpdateUser;
 import java.util.ArrayList;
 import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -38,6 +39,8 @@ public class UserService implements UserDetailsService {
     }
 
     public User saveUser(UserDto userDto, PasswordEncoder passwordEncoder) throws Exception {
+
+        validateDuplicateMember(userDto.getEmail());
 
         User user = User.builder()
                 .userName(userDto.getUserName())
@@ -108,5 +111,12 @@ public class UserService implements UserDetailsService {
                 .build();
 
         userRepository.save(user);
+    }
+
+    public void validateDuplicateMember(String email) {
+        User user = userRepository.findByEmail(email);
+        if (user != null) {
+            throw new UserDuplicateNotCheck();
+        }
     }
 }

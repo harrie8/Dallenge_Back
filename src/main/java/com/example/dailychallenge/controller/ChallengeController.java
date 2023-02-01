@@ -5,6 +5,7 @@ import com.example.dailychallenge.dto.ChallengeSearchCondition;
 import com.example.dailychallenge.entity.challenge.Challenge;
 import com.example.dailychallenge.entity.challenge.UserChallenge;
 import com.example.dailychallenge.entity.hashtag.Hashtag;
+import com.example.dailychallenge.exception.users.UserNotFound;
 import com.example.dailychallenge.service.challenge.ChallengeService;
 import com.example.dailychallenge.service.challenge.UserChallengeService;
 import com.example.dailychallenge.service.hashtag.ChallengeHashtagService;
@@ -14,6 +15,8 @@ import com.example.dailychallenge.vo.ResponseChallenge;
 import com.example.dailychallenge.vo.ResponseCreateChallenge;
 import java.util.List;
 import javax.validation.Valid;
+import javax.validation.constraints.Null;
+
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Pageable;

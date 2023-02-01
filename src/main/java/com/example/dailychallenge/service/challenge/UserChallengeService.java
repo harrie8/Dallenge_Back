@@ -5,7 +5,7 @@ import com.example.dailychallenge.entity.challenge.Challenge;
 import com.example.dailychallenge.entity.challenge.ChallengeStatus;
 import com.example.dailychallenge.entity.challenge.UserChallenge;
 import com.example.dailychallenge.entity.users.User;
-import com.example.dailychallenge.exception.UserNotFound;
+import com.example.dailychallenge.exception.users.UserNotFound;
 import com.example.dailychallenge.repository.UserChallengeRepository;
 import com.example.dailychallenge.repository.UserRepository;
 import com.example.dailychallenge.vo.ResponseChallenge;

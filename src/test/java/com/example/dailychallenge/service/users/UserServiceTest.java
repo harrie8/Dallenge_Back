@@ -8,10 +8,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.example.dailychallenge.dto.UserDto;
 import com.example.dailychallenge.entity.users.User;
-import com.example.dailychallenge.exception.UserNotFound;
+import com.example.dailychallenge.exception.users.UserNotFound;
 import com.example.dailychallenge.repository.UserImgRepository;
 import com.example.dailychallenge.repository.UserRepository;
-import com.example.dailychallenge.service.users.UserService;
 import com.example.dailychallenge.vo.RequestUpdateUser;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

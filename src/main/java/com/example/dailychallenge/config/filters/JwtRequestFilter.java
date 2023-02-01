@@ -1,8 +1,10 @@
-package com.example.dailychallenge.config;
+package com.example.dailychallenge.config.filters;
 
 import com.example.dailychallenge.service.users.UserService;
 import com.example.dailychallenge.utils.JwtTokenUtil;
 import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.security.SignatureException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -47,18 +49,16 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                                 .setAuthentication(usernamePasswordAuthenticationToken);
                     }
                 }
-            } catch (IllegalStateException e) {
-                logger.error("Unable to fetch JWT Token");
+            } catch (SignatureException e) {
+                throw new JwtException("잘못된 토큰입니다.");
             } catch (ExpiredJwtException e) {
-                logger.error("JWT Token is expired");
+                throw new JwtException("토큰이 만료되었습니다.");
             } catch (Exception e) {
-                logger.error(e.getMessage());
+                logger.warn(e.getMessage());
             }
         } else {
             logger.warn("JWT Token does not begin with Bearer String");
         }
         chain.doFilter(request,response);
     }
-
-
 }
