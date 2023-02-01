@@ -2,8 +2,9 @@ package com.example.dailychallenge.controller;
 
 import com.example.dailychallenge.dto.UserDto;
 import com.example.dailychallenge.entity.users.User;
-import com.example.dailychallenge.exception.users.UserIdDuplicate;
+import com.example.dailychallenge.exception.users.UserDuplicateCheck;
 import com.example.dailychallenge.exception.users.UserLoginFailure;
+import com.example.dailychallenge.exception.users.UserPasswordCheck;
 import com.example.dailychallenge.service.users.UserService;
 import com.example.dailychallenge.utils.JwtTokenUtil;
 import com.example.dailychallenge.vo.RequestLogin;
@@ -13,10 +14,12 @@ import com.example.dailychallenge.vo.ResponseLoginUser;
 import com.example.dailychallenge.vo.ResponseUser;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -28,6 +31,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequiredArgsConstructor
+@Slf4j
 public class UserController {
 
     private final UserService userService;
@@ -68,8 +72,7 @@ public class UserController {
                 /** 로그인 되지 않은 사용자인 경우  -> 소셜 로그인 이후 변경 예정 **/
                 return ResponseEntity.status(401).body("Invalid Credentials");
             }
-        } catch (Exception e) {
-            // 아이디, 비밀번호 틀린 경우
+        } catch (BadCredentialsException e) { // 아이디, 비밀번호 틀린 경우
             throw new UserLoginFailure();
         }
     }
@@ -78,7 +81,6 @@ public class UserController {
     public void updateUser(@PathVariable Long userId,
                            @RequestPart @Valid RequestUpdateUser requestUpdateUser,
                            @RequestPart(value = "userImgFile", required = false) MultipartFile multipartFile) throws Exception {
-
         userService.updateUser(userId, requestUpdateUser, passwordEncoder, multipartFile);
     }
 
@@ -87,15 +89,23 @@ public class UserController {
         userService.delete(userId);
     }
 
-    @PostMapping("/user/check")
+    @PostMapping("/user/check") // 아이디 중복 체크
     public ResponseEntity<String> checkDuplicateUser(@RequestParam String email){
         User user = userService.findByEmail(email);
         if (user != null) {
-            throw new UserIdDuplicate();
+            throw new UserDuplicateCheck();
         }
-        return ResponseEntity.status(200).body("사용 가능한 아이디입니다.");
+        return ResponseEntity.status(HttpStatus.OK).body("사용 가능한 아이디입니다.");
     }
 
+    @PostMapping("/user/{userId}/check") // 비밀번호 검증 url
+    public ResponseEntity<String> checkUserPassword(@PathVariable("userId") Long userId,
+                                                    @RequestParam String password) {
+        if (!userService.checkPassword(userId, password, passwordEncoder)) {
+            throw new UserPasswordCheck();
+        }
+        return ResponseEntity.status(HttpStatus.OK).body("비밀번호 확인이 완료되었습니다.");
+    }
 
     /**
      * 2023-01-29

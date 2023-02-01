@@ -3,8 +3,9 @@ package com.example.dailychallenge.controller.exception;
 import com.example.dailychallenge.exception.FileNotUpload;
 import com.example.dailychallenge.exception.challenge.ChallengeCategoryNotFound;
 import com.example.dailychallenge.exception.users.UserDuplicateNotCheck;
-import com.example.dailychallenge.exception.users.UserIdDuplicate;
+import com.example.dailychallenge.exception.users.UserDuplicateCheck;
 import com.example.dailychallenge.exception.users.UserLoginFailure;
+import com.example.dailychallenge.exception.users.UserPasswordCheck;
 import com.example.dailychallenge.vo.ResponseError;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -35,11 +36,11 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(responseError.getCode()).body(responseError);
     }
 
-    @ExceptionHandler(UserIdDuplicate.class)
-    protected ResponseEntity<ResponseError> handlerUserIdDuplicate(UserIdDuplicate userIdDuplicate) {
+    @ExceptionHandler(UserDuplicateCheck.class)
+    protected ResponseEntity<ResponseError> handlerUserIdDuplicate(UserDuplicateCheck userDuplicateCheck) {
         final ResponseError responseError = ResponseError.builder()
-                .code(userIdDuplicate.getStatusCode())
-                .message(userIdDuplicate.getMessage())
+                .code(userDuplicateCheck.getStatusCode())
+                .message(userDuplicateCheck.getMessage())
                 .build();
 
         return ResponseEntity.status(responseError.getCode()).body(responseError);
@@ -65,7 +66,17 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(responseError.getCode()).body(responseError);
     }
 
-    @ExceptionHandler(MethodArgumentNotValidException.class)
+    @ExceptionHandler(UserPasswordCheck.class)
+    protected ResponseEntity<ResponseError> handlerUserPasswordCheck(UserPasswordCheck userPasswordCheck) {
+        final ResponseError responseError = ResponseError.builder()
+                .code(userPasswordCheck.getStatusCode())
+                .message(userPasswordCheck.getMessage())
+                .build();
+
+        return ResponseEntity.status(responseError.getCode()).body(responseError);
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)  // 유효성 검증에 대한 예외처리
     public ResponseEntity<ResponseError> processValidationError(MethodArgumentNotValidException ex) {
         final ResponseError responseError = ResponseError.builder()
                 .code(HttpStatus.BAD_REQUEST.value())

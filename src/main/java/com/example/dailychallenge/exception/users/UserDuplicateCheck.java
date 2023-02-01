@@ -2,10 +2,10 @@ package com.example.dailychallenge.exception.users;
 
 import com.example.dailychallenge.exception.DailyChallengeException;
 
-public class UserIdDuplicate extends DailyChallengeException {
+public class UserDuplicateCheck extends DailyChallengeException {
 
     private static final String MESSAGE = "이미 가입된 회원입니다.";
-    public UserIdDuplicate() {
+    public UserDuplicateCheck() {
         super(MESSAGE);
     }
 

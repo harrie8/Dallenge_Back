@@ -6,7 +6,6 @@ import com.example.dailychallenge.entity.social.ProviderUser;
 import com.example.dailychallenge.entity.users.User;
 import com.example.dailychallenge.entity.users.UserImg;
 import com.example.dailychallenge.exception.users.UserDuplicateNotCheck;
-import com.example.dailychallenge.exception.users.UserIdDuplicate;
 import com.example.dailychallenge.exception.users.UserNotFound;
 import com.example.dailychallenge.repository.UserRepository;
 import com.example.dailychallenge.vo.RequestUpdateUser;
@@ -118,5 +117,10 @@ public class UserService implements UserDetailsService {
         if (user != null) {
             throw new UserDuplicateNotCheck();
         }
+    }
+
+    public boolean checkPassword(Long userId, String pw,PasswordEncoder passwordEncoder) {
+        User user = userRepository.findById(userId).orElseThrow(UserNotFound::new);
+        return passwordEncoder.matches(pw, user.getPassword());
     }
 }
