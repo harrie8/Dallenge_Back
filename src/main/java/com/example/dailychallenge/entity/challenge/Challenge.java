@@ -1,5 +1,6 @@
 package com.example.dailychallenge.entity.challenge;
 
+import com.example.dailychallenge.entity.BaseEntity;
 import com.example.dailychallenge.entity.hashtag.ChallengeHashtag;
 import com.example.dailychallenge.entity.users.User;
 import java.util.ArrayList;
@@ -26,7 +27,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "challenge")
 @Getter
 @NoArgsConstructor
-public class Challenge {
+public class Challenge extends BaseEntity {
 
     @Id
     @Column(name = "challenge_id")

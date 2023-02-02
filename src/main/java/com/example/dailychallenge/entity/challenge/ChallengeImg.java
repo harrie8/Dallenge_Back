@@ -1,5 +1,6 @@
 package com.example.dailychallenge.entity.challenge;
 
+import com.example.dailychallenge.entity.BaseEntity;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -15,7 +16,7 @@ import lombok.Setter;
 @Entity
 @Table(name = "challenge_img")
 @Getter @Setter
-public class ChallengeImg {
+public class ChallengeImg extends BaseEntity {
     @Id @Column(name = "challenge_img_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

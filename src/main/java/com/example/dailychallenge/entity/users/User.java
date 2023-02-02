@@ -1,6 +1,7 @@
 package com.example.dailychallenge.entity.users;
 
 import com.example.dailychallenge.dto.UserEditor;
+import com.example.dailychallenge.entity.BaseEntity;
 import com.example.dailychallenge.entity.challenge.Challenge;
 import com.example.dailychallenge.entity.challenge.UserChallenge;
 import java.util.ArrayList;
@@ -21,7 +22,7 @@ import lombok.NoArgsConstructor;
 
 @Entity @Table(name = "users") // user 예약어라 users로 변경
 @Getter @NoArgsConstructor
-public class User {
+public class User extends BaseEntity {
 
     @Id @Column(name = "user_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)

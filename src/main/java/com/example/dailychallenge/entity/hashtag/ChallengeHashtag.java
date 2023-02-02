@@ -1,5 +1,6 @@
 package com.example.dailychallenge.entity.hashtag;
 
+import com.example.dailychallenge.entity.BaseEntity;
 import com.example.dailychallenge.entity.challenge.Challenge;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -16,7 +17,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor
-public class ChallengeHashtag {
+public class ChallengeHashtag extends BaseEntity {
 
     @Id
     @Column(name = "challenge_hashtag_id")

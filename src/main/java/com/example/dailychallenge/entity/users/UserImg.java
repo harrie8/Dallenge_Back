@@ -1,17 +1,23 @@
 package com.example.dailychallenge.entity.users;
 
-import lombok.Builder;
+import com.example.dailychallenge.entity.BaseEntity;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
-
-import javax.persistence.*;
 
 @Entity
 @Table(name = "user_img")
 @NoArgsConstructor
 @Getter
-public class UserImg {
+public class UserImg extends BaseEntity {
     @Id @Column(name = "user_img_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
