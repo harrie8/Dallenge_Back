@@ -52,7 +52,7 @@ public class UserController {
     }
 
     @PostMapping("/user/login")
-    public ResponseEntity loginUser(@RequestBody @Valid RequestLogin requestLogin) {
+    public ResponseEntity<?> loginUser(@RequestBody @Valid RequestLogin requestLogin) {
         ModelMapper mapper = new ModelMapper();
         try {
             Authentication auth = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(

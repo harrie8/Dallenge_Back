@@ -1,6 +1,7 @@
 package com.example.dailychallenge.entity.challenge;
 
 import com.example.dailychallenge.entity.BaseEntity;
+import com.example.dailychallenge.entity.comment.Comment;
 import com.example.dailychallenge.entity.hashtag.ChallengeHashtag;
 import com.example.dailychallenge.entity.users.User;
 import java.util.ArrayList;
@@ -56,6 +57,9 @@ public class Challenge extends BaseEntity {
 
     @OneToMany(mappedBy = "challenge",cascade = CascadeType.ALL)
     private List<ChallengeHashtag> challengeHashtags = new ArrayList<>();
+
+    @OneToMany(mappedBy = "challenge", cascade = CascadeType.ALL)
+    private List<Comment> comments = new ArrayList<>();
 
     @Builder
     public Challenge(String title, String content, ChallengeCategory challengeCategory,
