@@ -11,6 +11,7 @@ import com.example.dailychallenge.entity.challenge.ChallengeDuration;
 import com.example.dailychallenge.entity.challenge.ChallengeLocation;
 import com.example.dailychallenge.entity.users.User;
 import com.example.dailychallenge.exception.challenge.ChallengeCategoryNotFound;
+import com.example.dailychallenge.exception.challenge.ChallengeNotFound;
 import com.example.dailychallenge.service.users.UserService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -93,5 +94,44 @@ public class ChallengeServiceTest {
             challengeService.saveChallenge(challengeDto, challengeImg, savedUser);
         });
         assertEquals("존재하지 않는 챌린지 카테고리입니다.", exception.getMessage());
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 특정 챌린지 조회 테스트")
+    void findByIdByChallengeNotFound() throws Exception {
+        User savedUser = userService.saveUser(createUser(), passwordEncoder);
+        ChallengeDto challengeDto = ChallengeDto.builder()
+                .title("제목입니다.")
+                .content("내용입니다.")
+                .challengeCategory(ChallengeCategory.STUDY.getDescription())
+                .challengeLocation(ChallengeLocation.INDOOR.getDescription())
+                .challengeDuration(ChallengeDuration.WITHIN_TEN_MINUTES.getDescription())
+                .build();
+        MultipartFile challengeImg = createMultipartFiles();
+        Challenge savedChallenge = challengeService.saveChallenge(challengeDto, challengeImg, savedUser);
+        Long challengeId = savedChallenge.getId();
+
+        Throwable exception = assertThrows(ChallengeNotFound.class,
+                () -> challengeService.findById(challengeId + 100L));
+        assertEquals("챌린지를 찾을 수 없습니다.", exception.getMessage());
+    }
+
+    @Test
+    @DisplayName("존재하는 특정 챌린지 조회 테스트")
+    void findById() throws Exception {
+        User savedUser = userService.saveUser(createUser(), passwordEncoder);
+        ChallengeDto challengeDto = ChallengeDto.builder()
+                .title("제목입니다.")
+                .content("내용입니다.")
+                .challengeCategory(ChallengeCategory.STUDY.getDescription())
+                .challengeLocation(ChallengeLocation.INDOOR.getDescription())
+                .challengeDuration(ChallengeDuration.WITHIN_TEN_MINUTES.getDescription())
+                .build();
+        MultipartFile challengeImg = createMultipartFiles();
+        Challenge savedChallenge = challengeService.saveChallenge(challengeDto, challengeImg, savedUser);
+        Long challengeId = savedChallenge.getId();
+
+        Challenge findChallenge = challengeService.findById(challengeId);
+        assertEquals(savedChallenge, findChallenge);
     }
 }

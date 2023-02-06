@@ -2,8 +2,9 @@ package com.example.dailychallenge.controller.exception;
 
 import com.example.dailychallenge.exception.FileNotUpload;
 import com.example.dailychallenge.exception.challenge.ChallengeCategoryNotFound;
-import com.example.dailychallenge.exception.users.UserDuplicateNotCheck;
+import com.example.dailychallenge.exception.challenge.ChallengeNotFound;
 import com.example.dailychallenge.exception.users.UserDuplicateCheck;
+import com.example.dailychallenge.exception.users.UserDuplicateNotCheck;
 import com.example.dailychallenge.exception.users.UserLoginFailure;
 import com.example.dailychallenge.exception.users.UserPasswordCheck;
 import com.example.dailychallenge.vo.ResponseError;
@@ -85,4 +86,13 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(responseError.getCode()).body(responseError);
     }
 
+    @ExceptionHandler(ChallengeNotFound.class)
+    protected ResponseEntity<ResponseError> handlerChallengeNotFound(ChallengeNotFound challengeNotFound) {
+        final ResponseError responseError = ResponseError.builder()
+                .code(challengeNotFound.getStatusCode())
+                .message(challengeNotFound.getMessage())
+                .build();
+
+        return ResponseEntity.status(responseError.getCode()).body(responseError);
+    }
 }

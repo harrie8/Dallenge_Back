@@ -4,8 +4,8 @@ import com.example.dailychallenge.dto.ChallengeDto;
 import com.example.dailychallenge.entity.challenge.Challenge;
 import com.example.dailychallenge.entity.challenge.ChallengeImg;
 import com.example.dailychallenge.entity.users.User;
+import com.example.dailychallenge.exception.challenge.ChallengeNotFound;
 import com.example.dailychallenge.repository.ChallengeRepository;
-import javax.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,6 +35,6 @@ public class ChallengeService {
     }
 
     public Challenge findById(Long id) {
-        return challengeRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+        return challengeRepository.findById(id).orElseThrow(ChallengeNotFound::new);
     }
 }
