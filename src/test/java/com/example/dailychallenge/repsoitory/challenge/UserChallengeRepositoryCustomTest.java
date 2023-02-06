@@ -16,8 +16,8 @@ import com.example.dailychallenge.repository.UserRepository;
 import com.example.dailychallenge.vo.ResponseChallenge;
 import java.util.List;
 import java.util.stream.Stream;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -25,6 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -40,15 +41,25 @@ public class UserChallengeRepositoryCustomTest {
     @Autowired
     private UserRepository userRepository;
 
-    @Test
-    @DisplayName("인기 많은 순서대로 모든 챌리지 찾는 테스트")
-    void searchAllChallengesByPopular() {
-        User savedUser = User.builder()
+    private User savedUser;
+
+    @BeforeEach
+    void beforeEach() {
+        userChallengeRepository.deleteAll();
+        challengeRepository.deleteAll();
+        userRepository.deleteAll();
+
+        initData();
+    }
+
+    private void initData() {
+        savedUser = User.builder()
                 .userName("홍길동")
                 .email("test@test.com")
                 .password("1234")
                 .build();
         userRepository.save(savedUser);
+
         Challenge challenge1 = Challenge.builder()
                 .title("제목입니다.1")
                 .content("내용입니다.1")
@@ -57,6 +68,14 @@ public class UserChallengeRepositoryCustomTest {
                 .challengeDuration(ChallengeDuration.WITHIN_TEN_MINUTES)
                 .build();
         challenge1.setUser(savedUser);
+        challengeRepository.save(challenge1);
+        UserChallenge userChallenge1 = UserChallenge.builder()
+                .challengeStatus(ChallengeStatus.TRYING)
+                .users(savedUser)
+                .challenge(challenge1)
+                .build();
+        userChallengeRepository.save(userChallenge1);
+
         Challenge challenge2 = Challenge.builder()
                 .title("제목입니다.2")
                 .content("내용입니다.2")
@@ -65,20 +84,38 @@ public class UserChallengeRepositoryCustomTest {
                 .challengeDuration(ChallengeDuration.OVER_ONE_HOUR)
                 .build();
         challenge2.setUser(savedUser);
-        challengeRepository.save(challenge1);
         challengeRepository.save(challenge2);
-        UserChallenge userChallenge = UserChallenge.builder()
-                .challengeStatus(ChallengeStatus.TRYING)
-                .users(savedUser)
-                .challenge(challenge1)
-                .build();
-        userChallengeRepository.save(userChallenge);
-        userChallenge = UserChallenge.builder()
+        UserChallenge userChallenge2 = UserChallenge.builder()
                 .challengeStatus(ChallengeStatus.PAUSE)
                 .users(savedUser)
                 .challenge(challenge2)
                 .build();
-        userChallengeRepository.save(userChallenge);
+        userChallengeRepository.save(userChallenge2);
+
+        Challenge challenge6 = null;
+
+        for (int i = 3; i <= 10; i++) {
+            Challenge challenge = Challenge.builder()
+                    .title("제목입니다." + i)
+                    .content("내용입니다." + i)
+                    .challengeCategory(ChallengeCategory.WORKOUT)
+                    .challengeLocation(ChallengeLocation.INDOOR)
+                    .challengeDuration(ChallengeDuration.WITHIN_TEN_MINUTES)
+                    .build();
+            challenge.setUser(savedUser);
+            challengeRepository.save(challenge);
+            UserChallenge userChallenge = UserChallenge.builder()
+                    .challengeStatus(ChallengeStatus.TRYING)
+                    .users(savedUser)
+                    .challenge(challenge)
+                    .build();
+            userChallengeRepository.save(userChallenge);
+
+            if (i == 6) {
+                challenge6 = challenge;
+            }
+        }
+
         for (int i = 1; i <= 8; i++) {
             User user = User.builder()
                     .userName("홍길동" + i)
@@ -87,7 +124,7 @@ public class UserChallengeRepositoryCustomTest {
                     .build();
             userRepository.save(user);
             if (i == 1) {
-                userChallenge = UserChallenge.builder()
+                UserChallenge userChallenge = UserChallenge.builder()
                         .challengeStatus(ChallengeStatus.TRYING)
                         .users(user)
                         .challenge(challenge1)
@@ -95,71 +132,98 @@ public class UserChallengeRepositoryCustomTest {
                 userChallengeRepository.save(userChallenge);
             }
             if (2 <= i && i <= 5) {
-                userChallenge = UserChallenge.builder()
+                UserChallenge userChallenge = UserChallenge.builder()
                         .challengeStatus(ChallengeStatus.PAUSE)
                         .users(user)
                         .challenge(challenge2)
                         .build();
                 userChallengeRepository.save(userChallenge);
             }
+
+            if (i == 6) {
+                UserChallenge userChallenge = UserChallenge.builder()
+                        .challengeStatus(ChallengeStatus.TRYING)
+                        .users(user)
+                        .challenge(challenge6)
+                        .build();
+                userChallengeRepository.save(userChallenge);
+            }
         }
-
-        PageRequest pageRequest = PageRequest.of(0, 20);
-        Page<ResponseChallenge> results = userChallengeRepository.searchAllChallengesSortByPopularWithPaging(pageRequest);
-
-        assertThat(results).extracting("title").containsExactly("제목입니다.2", "제목입니다.1");
-        assertThat(results).extracting("howManyUsersAreInThisChallenge").containsExactly(5L, 2L);
-        assertThat(results).extracting("challengeOwnerUser").extracting("userName").containsExactly("홍길동", "홍길동");
     }
 
-    static Stream<Arguments> generateData() {
+    static Stream<Arguments> generateSortData() {
         return Stream.of(
-                Arguments.of("1", null, List.of("제목입니다.1", "제목입니다.10")),
-                Arguments.of(null, "경제", List.of("제목입니다.6", "제목입니다.7", "제목입니다.8", "제목입니다.9", "제목입니다.10"))
+                Arguments.of("popular",
+                        List.of("제목입니다.2", "제목입니다.1", "제목입니다.6", "제목입니다.3", "제목입니다.4", "제목입니다.5",
+                                "제목입니다.7", "제목입니다.8", "제목입니다.9", "제목입니다.10"),
+                        List.of(5L, 2L, 2L, 1L, 1L, 1L, 1L, 1L, 1L, 1L)),
+                Arguments.of("time",
+                        List.of("제목입니다.1", "제목입니다.2", "제목입니다.3", "제목입니다.4", "제목입니다.5", "제목입니다.6",
+                                "제목입니다.7", "제목입니다.8", "제목입니다.9", "제목입니다.10"),
+                        List.of(2L, 5L, 1L, 1L, 1L, 2L, 1L, 1L, 1L, 1L))
         );
     }
 
     @ParameterizedTest
-    @MethodSource("generateData")
-    @DisplayName("이름으로 챌리지들을 찾고 인기순으로 정렬하는 테스트")
-    void searchChallengesByConditionByPopular(String title, String category, List<String> expect) {
-        User user = User.builder()
-                .userName("홍길동")
-                .email("test@test.com")
-                .password("1234")
-                .build();
-        userRepository.save(user);
-        for (int i = 1; i <= 10; i++) {
-            ChallengeCategory challengeCategory = ChallengeCategory.STUDY;
-            if (i >= 6) {
-                challengeCategory = ChallengeCategory.ECONOMY;
-            }
-            Challenge challenge = Challenge.builder()
-                    .title("제목입니다." + i)
-                    .content("내용입니다." + i)
-                    .challengeCategory(challengeCategory)
-                    .challengeLocation(ChallengeLocation.INDOOR)
-                    .challengeDuration(ChallengeDuration.WITHIN_TEN_MINUTES)
-                    .build();
-            challenge.setUser(user);
-            challengeRepository.save(challenge);
-            UserChallenge userChallenge = UserChallenge.builder()
-                    .challengeStatus(ChallengeStatus.TRYING)
-                    .users(user)
-                    .challenge(challenge)
-                    .build();
-            userChallengeRepository.save(userChallenge);
+    @MethodSource("generateSortData")
+    @DisplayName("모든 챌리지들을 찾는 테스트")
+    void searchAllChallenges(String sortProperties, List<String> titleExpect,
+                             List<Long> howManyUsersAreInThisChallengeExpect) {
+
+        PageRequest pageRequest = PageRequest.of(0, 20, Sort.by(sortProperties));
+//        PageRequest pageRequest = PageRequest.of(0, 20, Sort.by("time").ascending());
+        Page<ResponseChallenge> results = userChallengeRepository.searchAllChallenges(pageRequest);
+
+        for (ResponseChallenge result : results) {
+            System.out.println("result = " + result);
         }
 
-        ChallengeSearchCondition condition = ChallengeSearchCondition.builder()
-                .title(title)
-                .category(category)
-                .build();
-        PageRequest pageRequest = PageRequest.of(0, 20);
-        Page<ResponseChallenge> results = userChallengeRepository.searchChallengesByConditionSortByPopularWithPaging(
-                condition, pageRequest);
+        assertThat(results).extracting("title").containsExactlyElementsOf(titleExpect);
+        assertThat(results).extracting("howManyUsersAreInThisChallenge")
+                .containsExactlyElementsOf(howManyUsersAreInThisChallengeExpect);
+        assertThat(results).extracting("challengeOwnerUser").extracting("userName")
+                .contains(savedUser.getUserName());
+        if (sortProperties.equals("time")) {
+            assertThat(results).extracting("created_at").isSorted();
+        }
+    }
+
+    static Stream<Arguments> generateConditionData() {
+        return Stream.of(
+                Arguments.of(ChallengeSearchCondition.builder()
+                                .title("1").category(null).build(),
+                        "popular",
+                        List.of("제목입니다.1", "제목입니다.10")),
+                Arguments.of(ChallengeSearchCondition.builder()
+                                .title(null).category(ChallengeCategory.WORKOUT.getDescription()).build(),
+                        "popular",
+                        List.of("제목입니다.6", "제목입니다.3", "제목입니다.4", "제목입니다.5", "제목입니다.7", "제목입니다.8",
+                                "제목입니다.9", "제목입니다.10")),
+                Arguments.of(ChallengeSearchCondition.builder()
+                                .title(null).category(ChallengeCategory.WORKOUT.getDescription()).build(),
+                        "time",
+                        List.of("제목입니다.3", "제목입니다.4", "제목입니다.5", "제목입니다.6", "제목입니다.7", "제목입니다.8",
+                                "제목입니다.9", "제목입니다.10")),
+                Arguments.of(ChallengeSearchCondition.builder()
+                                .title("1").category(ChallengeCategory.STUDY.getDescription()).build(),
+                        "popular",
+                        List.of("제목입니다.1"))
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("generateConditionData")
+    @DisplayName("챌린지 검색 조건으로 챌린지들을 찾는 테스트")
+    void searchChallengesByCondition(ChallengeSearchCondition condition, String sortProperties, List<String> expect) {
+        PageRequest pageRequest = PageRequest.of(0, 20, Sort.by(sortProperties));
+        Page<ResponseChallenge> results = userChallengeRepository.searchChallengesByCondition(condition, pageRequest);
+
+        for (ResponseChallenge result : results) {
+            System.out.println("result = " + result);
+        }
 
         assertThat(results).extracting("title").containsExactlyElementsOf(expect);
-        assertThat(results).extracting("challengeOwnerUser").extracting("userName").contains(user.getUserName());
+        assertThat(results).extracting("challengeOwnerUser").extracting("userName")
+                .contains(savedUser.getUserName());
     }
 }

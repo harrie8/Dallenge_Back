@@ -26,20 +26,77 @@ hashtagDto - 해시태그 데이터(LIST) +
 operation::challenge-create[snippets='http-response']
 
 
-[[Challenge-모든-챌린지-찾기]]
-=== 모든 챌린지 찾기(인기순으로 정렬)
+[[Challenge-모든-챌린지들-찾기]]
+=== 모든 챌린지들 찾기
 
-operation::challenges-find-all[snippets='http-request,request-parameters,http-response']
+==== popular 정렬
+====
 
+- popular는 내림차순 정렬합니다.
+
+operation::challenges-find-all[snippets='http-request,request-parameters']
+
+.HTTP Response
+[%collapsible]
+=====
+include::{snippets}/challenges-find-all/http-response.adoc[]
 include::{snippets}/challenges-find-all/response-fields.adoc[]
+=====
+
+====
+
+==== time 정렬
+====
+
+- time은 오름차순 정렬합니다.
+
+operation::challenges-find-all-sort-by-time[snippets='http-request,request-parameters']
+
+.HTTP Response
+[%collapsible]
+=====
+include::{snippets}/challenges-find-all-sort-by-time/http-response.adoc[]
+include::{snippets}/challenges-find-all-sort-by-time/response-fields.adoc[]
+=====
+
+====
 
 
-[[Challenge-이름-또는_카테고리로-챌린지-찾기]]
-=== 이름 또는 카테고리로 챌린지 찾기(인기순으로 정렬)
+[[Challenge-이름-또는_카테고리로-챌린지들-찾기]]
+=== 이름 또는 카테고리로 챌린지들 찾기
 
-url에서 paramteter보시면 title,category값이 한글이 깨졌습니다. +
-원래 값은 GET /challenge/condition?title=제목&category=공부&size=20&page=0 입니다.
+==== popular 정렬
+====
 
-operation::challenges-find-by-condition[snippets='http-request,request-parameters,http-response']
+- popular는 내림차순 정렬합니다.
+- url의 parameter 보시면 title,category 값이 한글이 깨졌습니다. +
+원래 값은 GET /challenge/condition?title=&category=운동&size=20&page=0&sort=popular 입니다.
 
-include::{snippets}/challenges-find-by-condition/response-fields.adoc[]
+operation::challenges-find-by-condition-sort-by-popular[snippets='http-request,request-parameters']
+
+.HTTP Response
+[%collapsible]
+=====
+include::{snippets}/challenges-find-by-condition-sort-by-popular/http-response.adoc[]
+include::{snippets}/challenges-find-by-condition-sort-by-popular/response-fields.adoc[]
+=====
+
+====
+
+==== time 정렬
+====
+
+- time은 오름차순 정렬합니다.
+- url의 parameter 보시면 title,category 값이 한글이 깨졌습니다. +
+원래 값은 GET /challenge/condition?title=&category=운동&size=20&page=0&sort=time 입니다.
+
+operation::challenges-find-by-condition-sort-by-time[snippets='http-request,request-parameters']
+
+.HTTP Response
+[%collapsible]
+=====
+include::{snippets}/challenges-find-by-condition-sort-by-time/http-response.adoc[]
+include::{snippets}/challenges-find-by-condition-sort-by-time/response-fields.adoc[]
+=====
+
+====

@@ -7,6 +7,6 @@ import org.springframework.data.domain.Pageable;
 
 public interface UserChallengeRepositoryCustom {
 
-    Page<ResponseChallenge> searchAllChallengesSortByPopularWithPaging(Pageable pageable);
-    Page<ResponseChallenge> searchChallengesByConditionSortByPopularWithPaging(ChallengeSearchCondition condition, Pageable pageable);
+    Page<ResponseChallenge> searchAllChallenges(Pageable pageable);
+    Page<ResponseChallenge> searchChallengesByCondition(ChallengeSearchCondition condition, Pageable pageable);
 }

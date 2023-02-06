@@ -34,6 +34,7 @@ public class ChallengeService {
         return challenge;
     }
 
+    // TODO: 2023-02-06 댓글, 해시태그 정보도 같이 반환하기
     public Challenge findById(Long id) {
         return challengeRepository.findById(id).orElseThrow(ChallengeNotFound::new);
     }

@@ -33,15 +33,14 @@ public class UserChallengeService {
         return userChallenge;
     }
 
+    public Page<ResponseChallenge> searchAll(Pageable pageable) {
 
-    public Page<ResponseChallenge> searchAllSortByPopularWithPaging(Pageable pageable) {
-
-        return userChallengeRepository.searchAllChallengesSortByPopularWithPaging(pageable);
+        return userChallengeRepository.searchAllChallenges(pageable);
     }
 
-    public Page<ResponseChallenge> searchByConditionSortByPopularWithPaging(ChallengeSearchCondition condition,
-                                                                            Pageable pageable) {
+    public Page<ResponseChallenge> searchByCondition(ChallengeSearchCondition condition,
+                                                     Pageable pageable) {
 
-        return userChallengeRepository.searchChallengesByConditionSortByPopularWithPaging(condition, pageable);
+        return userChallengeRepository.searchChallengesByCondition(condition, pageable);
     }
 }

@@ -9,6 +9,8 @@ import com.example.dailychallenge.dto.ChallengeSearchCondition;
 import com.example.dailychallenge.entity.challenge.ChallengeCategory;
 import com.example.dailychallenge.vo.QResponseChallenge;
 import com.example.dailychallenge.vo.ResponseChallenge;
+import com.querydsl.core.types.Order;
+import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.List;
@@ -16,6 +18,7 @@ import javax.persistence.EntityManager;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
 public class UserChallengeRepositoryCustomImpl implements
         UserChallengeRepositoryCustom {
@@ -27,14 +30,15 @@ public class UserChallengeRepositoryCustomImpl implements
     }
 
     @Override
-    public Page<ResponseChallenge> searchAllChallengesSortByPopularWithPaging(Pageable pageable) {
+    public Page<ResponseChallenge> searchAllChallenges(Pageable pageable) {
         List<ResponseChallenge> content = queryFactory
                 .select(new QResponseChallenge(userChallenge.challenge, userChallenge.count()))
                 .from(userChallenge)
                 .leftJoin(userChallenge.challenge, challenge)
                 .leftJoin(userChallenge.challenge.challengeImg, challengeImg)
                 .groupBy(userChallenge.challenge)
-                .orderBy(userChallenge.count().desc()) // 먼저 생성된 챌린지로 정렬하기
+//                .orderBy(userChallenge.count().desc(), userChallenge.challenge.created_at.asc())
+                .orderBy(challengesSort(pageable))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
@@ -52,9 +56,7 @@ public class UserChallengeRepositoryCustomImpl implements
     }
 
     @Override
-    public Page<ResponseChallenge> searchChallengesByConditionSortByPopularWithPaging(
-            ChallengeSearchCondition condition,
-            Pageable pageable) {
+    public Page<ResponseChallenge> searchChallengesByCondition(ChallengeSearchCondition condition, Pageable pageable) {
 
         List<ResponseChallenge> content = queryFactory
                 .select(new QResponseChallenge(userChallenge.challenge, userChallenge.count()))
@@ -64,7 +66,8 @@ public class UserChallengeRepositoryCustomImpl implements
                 .where(titleContains(condition.getTitle()),
                         categoryEq(condition.getCategory()))
                 .groupBy(userChallenge.challenge)
-                .orderBy(userChallenge.count().desc()) // 먼저 생성된 챌린지로 정렬하기
+//                .orderBy(userChallenge.count().desc(), userChallenge.challenge.created_at.asc())
+                .orderBy(challengesSort(pageable))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
@@ -93,5 +96,22 @@ public class UserChallengeRepositoryCustomImpl implements
         }
         ChallengeCategory challengeCategory = ChallengeCategory.findByDescription(category);
         return userChallenge.challenge.challengeCategory.eq(challengeCategory);
+    }
+
+    private OrderSpecifier<?> challengesSort(Pageable pageable) {
+        if (pageable.getSort().isEmpty()) {
+            return OrderByNull.getDefault();
+        }
+        for (Sort.Order order : pageable.getSort()) {
+//            Order direction = order.getDirection().isAscending() ? Order.ASC : Order.DESC; // 새로운 정렬 조건이 추가되면 처리하자
+            if (order.getProperty().equals("time")) {
+//                return new OrderSpecifier<>(direction, challenge.created_at);
+                return new OrderSpecifier<>(Order.ASC, challenge.created_at);
+            }
+            if (order.getProperty().equals("popular")) {
+                return new OrderSpecifier<>(Order.DESC, userChallenge.count());
+            }
+        }
+        return OrderByNull.getDefault();
     }
 }

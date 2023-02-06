@@ -21,6 +21,8 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -71,19 +73,20 @@ public class ChallengeController {
     }
 
     @GetMapping("/challenge")
-    public ResponseEntity<Page<ResponseChallenge>> searchAllChallengesSortByPopular(Pageable pageable) {
+    public ResponseEntity<Page<ResponseChallenge>> searchAllChallengesSortByPopular(
+            @PageableDefault(page = 0, size = 10, sort = "popular", direction = Sort.Direction.DESC) Pageable pageable) {
 
-        Page<ResponseChallenge> responseChallenges = userChallengeService.searchAllSortByPopularWithPaging(pageable);
+        Page<ResponseChallenge> responseChallenges = userChallengeService.searchAll(pageable);
 
         return ResponseEntity.status(HttpStatus.OK).body(responseChallenges);
     }
 
     @GetMapping("/challenge/condition")
     public ResponseEntity<Page<ResponseChallenge>> searchChallengesByConditionSortByPopular(
-            ChallengeSearchCondition condition, Pageable pageable) {
+            ChallengeSearchCondition condition,
+            @PageableDefault(page = 0, size = 10, sort = "popular", direction = Sort.Direction.DESC) Pageable pageable) {
 
-        Page<ResponseChallenge> responseChallenges = userChallengeService.searchByConditionSortByPopularWithPaging(
-                condition, pageable);
+        Page<ResponseChallenge> responseChallenges = userChallengeService.searchByCondition(condition, pageable);
 
         return ResponseEntity.status(HttpStatus.OK).body(responseChallenges);
     }

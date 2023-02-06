@@ -1,12 +1,17 @@
 package com.example.dailychallenge.controller.challenge;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.hasItems;
+import static org.hamcrest.Matchers.nullValue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.example.dailychallenge.dto.ChallengeSearchCondition;
 import com.example.dailychallenge.dto.UserDto;
 import com.example.dailychallenge.entity.challenge.Challenge;
 import com.example.dailychallenge.entity.challenge.ChallengeCategory;
@@ -14,6 +19,7 @@ import com.example.dailychallenge.entity.challenge.ChallengeDuration;
 import com.example.dailychallenge.entity.challenge.ChallengeImg;
 import com.example.dailychallenge.entity.challenge.ChallengeLocation;
 import com.example.dailychallenge.entity.challenge.ChallengeStatus;
+import com.example.dailychallenge.entity.challenge.UserChallenge;
 import com.example.dailychallenge.entity.users.User;
 import com.example.dailychallenge.repository.ChallengeImgRepository;
 import com.example.dailychallenge.repository.ChallengeRepository;
@@ -24,7 +30,9 @@ import com.example.dailychallenge.service.users.UserService;
 import com.example.dailychallenge.utils.JwtTokenUtil;
 import com.example.dailychallenge.vo.RequestCreateChallenge;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.List;
 import java.util.stream.Stream;
+import org.hamcrest.Matcher;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -58,7 +66,7 @@ class ChallengeControllerTest {
     private final static String PASSWORD = "1234";
 
     @Autowired
-    PasswordEncoder passwordEncoder;
+    private PasswordEncoder passwordEncoder;
     @Autowired
     private UserService userService;
     @Autowired
@@ -80,14 +88,17 @@ class ChallengeControllerTest {
     @Autowired
     private JwtTokenUtil jwtTokenUtil;
 
-    @BeforeEach
-    void beforeEach() {
-        userChallengeRepository.deleteAll();
-        userRepository.deleteAll();
-        challengeRepository.deleteAll();
-        challengeImgRepository.deleteAll();
-    }
+    private User savedUser;
 
+    @BeforeEach
+    void beforeEach() throws Exception {
+        userChallengeRepository.deleteAll();
+        challengeImgRepository.deleteAll();
+        challengeRepository.deleteAll();
+        userRepository.deleteAll();
+
+        initData();
+    }
 
     public UserDto createUser() {
         UserDto userDto = new UserDto();
@@ -105,11 +116,107 @@ class ChallengeControllerTest {
                 "image/jpg", new byte[]{1, 2, 3, 4});
     }
 
+    private void initData() throws Exception {
+        savedUser = userService.saveUser(createUser(), passwordEncoder);
+
+        Challenge challenge1 = Challenge.builder()
+                .title("제목입니다.1")
+                .content("내용입니다.1")
+                .challengeCategory(ChallengeCategory.STUDY)
+                .challengeLocation(ChallengeLocation.INDOOR)
+                .challengeDuration(ChallengeDuration.WITHIN_TEN_MINUTES)
+                .build();
+
+        ChallengeImg challengeImg = new ChallengeImg();
+        challengeImg.updateUserImg("oriImgName", "imgName", "imgUrl");
+        challenge1.setChallengeImg(challengeImg);
+        challenge1.setUser(savedUser);
+        challengeRepository.save(challenge1);
+        UserChallenge userChallenge1 = UserChallenge.builder()
+                .challengeStatus(ChallengeStatus.TRYING)
+                .users(savedUser)
+                .challenge(challenge1)
+                .build();
+        userChallengeRepository.save(userChallenge1);
+
+        Challenge challenge2 = Challenge.builder()
+                .title("제목입니다.2")
+                .content("내용입니다.2")
+                .challengeCategory(ChallengeCategory.ECONOMY)
+                .challengeLocation(ChallengeLocation.OUTDOOR)
+                .challengeDuration(ChallengeDuration.OVER_ONE_HOUR)
+                .build();
+        challenge2.setUser(savedUser);
+        challengeRepository.save(challenge2);
+        UserChallenge userChallenge2 = UserChallenge.builder()
+                .challengeStatus(ChallengeStatus.PAUSE)
+                .users(savedUser)
+                .challenge(challenge2)
+                .build();
+        userChallengeRepository.save(userChallenge2);
+
+        Challenge challenge6 = null;
+
+        for (int i = 3; i <= 10; i++) {
+            Challenge challenge = Challenge.builder()
+                    .title("제목입니다." + i)
+                    .content("내용입니다." + i)
+                    .challengeCategory(ChallengeCategory.WORKOUT)
+                    .challengeLocation(ChallengeLocation.INDOOR)
+                    .challengeDuration(ChallengeDuration.WITHIN_TEN_MINUTES)
+                    .build();
+            challenge.setUser(savedUser);
+            challengeRepository.save(challenge);
+            UserChallenge userChallenge = UserChallenge.builder()
+                    .challengeStatus(ChallengeStatus.TRYING)
+                    .users(savedUser)
+                    .challenge(challenge)
+                    .build();
+            userChallengeRepository.save(userChallenge);
+
+            if (i == 6) {
+                challenge6 = challenge;
+            }
+        }
+
+        for (int i = 1; i <= 8; i++) {
+            User user = User.builder()
+                    .userName("홍길동" + i)
+                    .email(i + "@test.com")
+                    .password("1234")
+                    .build();
+            userRepository.save(user);
+            if (i == 1) {
+                UserChallenge userChallenge = UserChallenge.builder()
+                        .challengeStatus(ChallengeStatus.TRYING)
+                        .users(user)
+                        .challenge(challenge1)
+                        .build();
+                userChallengeRepository.save(userChallenge);
+            }
+            if (2 <= i && i <= 5) {
+                UserChallenge userChallenge = UserChallenge.builder()
+                        .challengeStatus(ChallengeStatus.PAUSE)
+                        .users(user)
+                        .challenge(challenge2)
+                        .build();
+                userChallengeRepository.save(userChallenge);
+            }
+
+            if (i == 6) {
+                UserChallenge userChallenge = UserChallenge.builder()
+                        .challengeStatus(ChallengeStatus.TRYING)
+                        .users(user)
+                        .challenge(challenge6)
+                        .build();
+                userChallengeRepository.save(userChallenge);
+            }
+        }
+    }
 
     @Test
     @DisplayName("챌린지 생성 테스트")
     public void createChallengeTest() throws Exception {
-        User savedUser = userService.saveUser(createUser(), passwordEncoder);
         RequestCreateChallenge requestCreatChallenge = RequestCreateChallenge.builder()
                 .title("제목입니다.")
                 .content("내용입니다.")
@@ -153,7 +260,6 @@ class ChallengeControllerTest {
     @Test
     @DisplayName("존재하지 않는 카테고리로 챌린지 생성 테스트")
     public void createChallengeByCategoryNotFoundTest() throws Exception {
-        userService.saveUser(createUser(), passwordEncoder);
         RequestCreateChallenge requestCreatChallenge = RequestCreateChallenge.builder()
                 .title("제목입니다.")
                 .content("내용입니다.")
@@ -179,48 +285,8 @@ class ChallengeControllerTest {
     }
 
     @Test
-    @DisplayName("모든 챌린지 인기순으로 조회 테스트")
-    public void searchAllChallengesByPopularTest() throws Exception {
-        User savedUser = userService.saveUser(createUser(), passwordEncoder);
-        Challenge challenge1 = Challenge.builder()
-                .title("제목입니다.1")
-                .content("내용입니다.1")
-                .challengeCategory(ChallengeCategory.STUDY)
-                .challengeLocation(ChallengeLocation.INDOOR)
-                .challengeDuration(ChallengeDuration.WITHIN_TEN_MINUTES)
-                .build();
-        ChallengeImg challengeImg = new ChallengeImg();
-        challengeImg.updateUserImg("oriImgName", "imgName", "imgUrl");
-        challenge1.setChallengeImg(challengeImg);
-        challenge1.setUser(savedUser);
-        Challenge challenge2 = Challenge.builder()
-                .title("제목입니다.2")
-                .content("내용입니다.2")
-                .challengeCategory(ChallengeCategory.ECONOMY)
-                .challengeLocation(ChallengeLocation.OUTDOOR)
-                .challengeDuration(ChallengeDuration.OVER_ONE_HOUR)
-                .build();
-        challenge2.setUser(savedUser);
-        challengeRepository.save(challenge1);
-        challengeImgRepository.save(challengeImg);
-        challengeRepository.save(challenge2);
-        userChallengeService.saveUserChallenge(challenge1, savedUser);
-        userChallengeService.saveUserChallenge(challenge2, savedUser);
-        for (int i = 1; i <= 8; i++) {
-            User user =  User.builder()
-                    .userName("홍길동" + i)
-                    .email(i + "@test.com")
-                    .password("1234")
-                    .build();
-            userRepository.save(user);
-            if (i == 1) {
-                userChallengeService.saveUserChallenge(challenge1, user);
-            }
-            if (2 <= i && i <= 5) {
-                userChallengeService.saveUserChallenge(challenge2, user);
-            }
-        }
-
+    @DisplayName("모든 챌린지 조회 테스트")
+    public void searchAllChallengesTest() throws Exception {
         String token = generateToken();
         mockMvc.perform(get("/challenge")
                         .header(AUTHORIZATION, token)
@@ -228,71 +294,119 @@ class ChallengeControllerTest {
                         .param("page", "0")
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content[0].title").value(challenge2.getTitle()))
-                .andExpect(jsonPath("$.content[0].content").value(challenge2.getContent()))
-                .andExpect(jsonPath("$.content[0].challengeCategory").value(challenge2.getChallengeCategory().getDescription()))
-                .andExpect(jsonPath("$.content[0].challengeLocation").value(challenge2.getChallengeLocation().getDescription()))
-                .andExpect(jsonPath("$.content[0].challengeDuration").value(challenge2.getChallengeDuration().getDescription()))
-                .andExpect(jsonPath("$.content[0].challengeImgUrl").isEmpty())
-                .andExpect(jsonPath("$.content[0].howManyUsersAreInThisChallenge").value(5))
-                .andExpect(jsonPath("$.content[0].challengeOwnerUser.userName").value(savedUser.getUserName()))
-                .andExpect(jsonPath("$.content[0].challengeOwnerUser.email").value(savedUser.getEmail()))
-                .andExpect(jsonPath("$.content[0].challengeOwnerUser.userId").value(savedUser.getId()))
-                .andExpect(jsonPath("$.content[1].title").value(challenge1.getTitle()))
-                .andExpect(jsonPath("$.content[1].content").value(challenge1.getContent()))
-                .andExpect(jsonPath("$.content[1].challengeCategory").value(challenge1.getChallengeCategory().getDescription()))
-                .andExpect(jsonPath("$.content[1].challengeLocation").value(challenge1.getChallengeLocation().getDescription()))
-                .andExpect(jsonPath("$.content[1].challengeDuration").value(challenge1.getChallengeDuration().getDescription()))
-                .andExpect(jsonPath("$.content[1].challengeImgUrl").value(challengeImg.getImgUrl()))
-                .andExpect(jsonPath("$.content[1].howManyUsersAreInThisChallenge").value(2))
-                .andExpect(jsonPath("$.content[1].challengeOwnerUser.userName").value(savedUser.getUserName()))
-                .andExpect(jsonPath("$.content[1].challengeOwnerUser.email").value(savedUser.getEmail()))
-                .andExpect(jsonPath("$.content[1].challengeOwnerUser.userId").value(savedUser.getId()))
+                .andExpect(jsonPath("$.content[*].title", contains(
+                        "제목입니다.2", "제목입니다.1", "제목입니다.6", "제목입니다.3", "제목입니다.4",
+                        "제목입니다.5", "제목입니다.7", "제목입니다.8", "제목입니다.9", "제목입니다.10")))
+                .andExpect(jsonPath("$.content[*].content", contains(
+                        "내용입니다.2", "내용입니다.1", "내용입니다.6", "내용입니다.3", "내용입니다.4",
+                        "내용입니다.5", "내용입니다.7", "내용입니다.8", "내용입니다.9", "내용입니다.10")))
+                .andExpect(jsonPath("$.content[*].challengeCategory",
+                        hasItems(ChallengeCategory.ECONOMY.getDescription(), ChallengeCategory.STUDY.getDescription(),
+                                ChallengeCategory.WORKOUT.getDescription())))
+                .andExpect(jsonPath("$.content[*].challengeLocation",
+                        hasItems(ChallengeLocation.OUTDOOR.getDescription(),
+                                ChallengeLocation.INDOOR.getDescription())))
+                .andExpect(jsonPath("$.content[*].challengeDuration",
+                        hasItems(ChallengeDuration.OVER_ONE_HOUR.getDescription(),
+                                ChallengeDuration.WITHIN_TEN_MINUTES.getDescription())))
+                .andExpect(jsonPath("$.content[*].challengeImgUrl",
+                        hasItems(null, "imgUrl")))
+                .andExpect(jsonPath("$.content[*].howManyUsersAreInThisChallenge",
+                        contains(5, 2, 2, 1, 1, 1, 1, 1, 1, 1)))
+                .andExpect(jsonPath("$.content[*].challengeOwnerUser.userName",
+                        hasItem(savedUser.getUserName())))
+                .andExpect(jsonPath("$.content[*].challengeOwnerUser.email",
+                        hasItem(savedUser.getEmail())))
+                .andExpect(jsonPath("$.content[*].challengeOwnerUser.userId",
+                        hasItem(savedUser.getId().intValue())))
                 .andDo(print());
     }
 
-    static Stream<Arguments> generateData() {
+    static Stream<Arguments> generateConditionData() {
         return Stream.of(
-                Arguments.of("1", null),
-                Arguments.of(null, "경제")
-        );
+                Arguments.of(ChallengeSearchCondition.builder()
+                                .title("1").category(null).build(),
+                        "popular",
+                        List.of(
+                                contains("제목입니다.1", "제목입니다.10"),
+                                contains("내용입니다.1", "내용입니다.10"),
+                                contains(ChallengeCategory.STUDY.getDescription(),
+                                        ChallengeCategory.WORKOUT.getDescription()),
+                                hasItem(ChallengeLocation.INDOOR.getDescription()),
+                                hasItem(ChallengeDuration.WITHIN_TEN_MINUTES.getDescription()),
+                                contains("imgUrl", null),
+                                contains(2, 1)
+                        )),
+                Arguments.of(ChallengeSearchCondition.builder()
+                                .title(null).category(ChallengeCategory.WORKOUT.getDescription()).build(),
+                        "popular",
+                        List.of(
+                                contains("제목입니다.6", "제목입니다.3", "제목입니다.4", "제목입니다.5", "제목입니다.7", "제목입니다.8",
+                                        "제목입니다.9", "제목입니다.10"),
+                                contains("내용입니다.6", "내용입니다.3", "내용입니다.4", "내용입니다.5", "내용입니다.7", "내용입니다.8",
+                                        "내용입니다.9", "내용입니다.10"),
+                                hasItem(ChallengeCategory.WORKOUT.getDescription()),
+                                hasItem(ChallengeLocation.INDOOR.getDescription()),
+                                hasItem(ChallengeDuration.WITHIN_TEN_MINUTES.getDescription()),
+                                hasItem(nullValue()),
+                                contains(2, 1, 1, 1, 1, 1, 1, 1)
+                        )),
+                Arguments.of(ChallengeSearchCondition.builder()
+                                .title(null).category(ChallengeCategory.WORKOUT.getDescription()).build(),
+                        "time",
+                        List.of(
+                                contains("제목입니다.3", "제목입니다.4", "제목입니다.5", "제목입니다.6", "제목입니다.7", "제목입니다.8",
+                                        "제목입니다.9", "제목입니다.10"),
+                                contains("내용입니다.3", "내용입니다.4", "내용입니다.5", "내용입니다.6", "내용입니다.7", "내용입니다.8",
+                                        "내용입니다.9", "내용입니다.10"),
+                                hasItem(ChallengeCategory.WORKOUT.getDescription()),
+                                hasItem(ChallengeLocation.INDOOR.getDescription()),
+                                hasItem(ChallengeDuration.WITHIN_TEN_MINUTES.getDescription()),
+                                hasItem(nullValue()),
+                                contains(1, 1, 1, 2, 1, 1, 1, 1)
+                        )),
+                Arguments.of(ChallengeSearchCondition.builder()
+                                .title("1").category(ChallengeCategory.STUDY.getDescription()).build(),
+                        "popular",
+                        List.of(
+                                contains("제목입니다.1"),
+                                contains("내용입니다.1"),
+                                contains(ChallengeCategory.STUDY.getDescription()),
+                                contains(ChallengeLocation.INDOOR.getDescription()),
+                                contains(ChallengeDuration.WITHIN_TEN_MINUTES.getDescription()),
+                                contains("imgUrl"),
+                                contains(2))
+                ));
     }
 
     @ParameterizedTest
-    @MethodSource("generateData")
-    @DisplayName("챌린지들을 검색 조건으로 찾고 인기순으로 정렬하는 테스트")
-    public void searchChallengesByConditionSortByPopularTest(String title, String category) throws Exception {
-        User savedUser = userService.saveUser(createUser(), passwordEncoder);
-        for (int i = 1; i <= 10; i++) {
-            ChallengeCategory challengeCategory = ChallengeCategory.STUDY;
-            if (i >= 6) {
-                challengeCategory = ChallengeCategory.ECONOMY;
-            }
-            Challenge challenge = Challenge.builder()
-                    .title("제목입니다." + i)
-                    .content("내용입니다." + i)
-                    .challengeCategory(challengeCategory)
-                    .challengeLocation(ChallengeLocation.INDOOR)
-                    .challengeDuration(ChallengeDuration.WITHIN_TEN_MINUTES)
-                    .build();
-            challenge.setUser(savedUser);
-            challengeRepository.save(challenge);
-            userChallengeService.saveUserChallenge(challenge, savedUser);
-        }
-
+    @MethodSource("generateConditionData")
+    @DisplayName("챌린지들을 검색 조건으로 찾는 테스트")
+    public void searchChallengesByConditionTest(ChallengeSearchCondition condition, String sortProperties,
+                                                List<Matcher<Iterable<? extends String>>> expects) throws Exception {
         String token = generateToken();
         mockMvc.perform(get("/challenge/condition")
                         .header(AUTHORIZATION, token)
-                        .param("title", title)
-                        .param("category", category)
+                        .param("title", condition.getTitle())
+                        .param("category", condition.getCategory())
                         .param("size", "20")
                         .param("page", "0")
+                        .param("sort", sortProperties)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$..['title']").exists())
-                .andExpect(jsonPath("$..['challengeCategory']").exists())
-                .andExpect(jsonPath("$..['challengeImgUrl']").exists())
-                .andExpect(jsonPath("$..['challengeOwnerUser']").exists())
+                .andExpect(jsonPath("$.content[*].title", expects.get(0)))
+                .andExpect(jsonPath("$.content[*].content", expects.get(1)))
+                .andExpect(jsonPath("$.content[*].challengeCategory", expects.get(2)))
+                .andExpect(jsonPath("$.content[*].challengeLocation", expects.get(3)))
+                .andExpect(jsonPath("$.content[*].challengeDuration", expects.get(4)))
+                .andExpect(jsonPath("$.content[*].challengeImgUrl", expects.get(5)))
+                .andExpect(jsonPath("$.content[*].howManyUsersAreInThisChallenge", expects.get(6)))
+                .andExpect(jsonPath("$.content[*].challengeOwnerUser.userName", hasItem(
+                        savedUser.getUserName())))
+                .andExpect(jsonPath("$.content[*].challengeOwnerUser.email", hasItem(
+                        savedUser.getEmail())))
+                .andExpect(jsonPath("$.content[*].challengeOwnerUser.userId", hasItem(
+                        savedUser.getId().intValue())))
                 .andDo(print());
     }
 
@@ -300,31 +414,17 @@ class ChallengeControllerTest {
     @CsvSource(value = {
             "10, 2"
     })
-    @DisplayName("모든 챌린지 인기순으로 조회 페이징 테스트")
-    public void searchAllChallengesByPopularPagingTest(int totalElements, int totalPages) throws Exception {
-        User savedUser = userService.saveUser(createUser(), passwordEncoder);
-        for (int i = 0; i < totalElements; i++) {
-            Challenge challenge = Challenge.builder()
-                    .title("제목입니다." + i)
-                    .content("내용입니다." + i)
-                    .challengeCategory(ChallengeCategory.ECONOMY)
-                    .challengeLocation(ChallengeLocation.OUTDOOR)
-                    .challengeDuration(ChallengeDuration.OVER_ONE_HOUR)
-                    .build();
-            challenge.setUser(savedUser);
-            challengeRepository.save(challenge);
-            userChallengeService.saveUserChallenge(challenge, savedUser);
-        }
-
+    @DisplayName("모든 챌린지 조회 페이징 테스트")
+    public void searchAllChallengesPagingTest(int totalElements, int numOfPage) throws Exception {
         String token = generateToken();
         mockMvc.perform(get("/challenge")
                         .header(AUTHORIZATION, token)
-                        .param("size", String.valueOf(totalPages))
+                        .param("size", String.valueOf(numOfPage))
                         .param("page", "0")
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.totalElements").value(totalElements))
-                .andExpect(jsonPath("$.totalPages").value(totalElements / totalPages))
+                .andExpect(jsonPath("$.totalPages").value(totalElements / numOfPage))
                 .andDo(print());
     }
 
