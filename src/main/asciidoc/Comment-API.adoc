@@ -1,0 +1,53 @@
+[[Comment-API]]
+== 댓글 API
+
+[[Comment-댓글-생성]]
+=== 댓글 생성
+
+operation::comment-create[snippets='http-request']
+
+==== 요청값
+
+====
+include::{snippets}/comment-create/request-parts.adoc[]
+
+commentDto - 댓글 정보 데이터(JSON)
+include::{snippets}/comment-create/request-part-commentDto-fields.adoc[]
+
+commentImgFile - 댓글 이미지 파일(FILE) +
+.jpg 형식의 이미지 파일을 지원합니다.
+
+====
+
+
+operation::comment-create[snippets='http-response']
+
+
+[[Comment-댓글-수정]]
+=== 댓글 수정
+
+==== HTTP request
+
+include::{snippets}/comment-update/http-request.adoc[]
+
+==== 요청값
+
+====
+include::{snippets}/comment-update/request-parts.adoc[]
+
+commentDto - 댓글 수정 데이터(JSON)
+include::{snippets}/comment-update/request-part-commentDto-fields.adoc[]
+
+commentDtoImg - 댓글 수정 프로필 이미지(FILE) +
+.jpg 형식의 이미지 파일을 지원합니다.
+
+====
+
+==== HTTP response
+
+include::{snippets}/comment-update/http-response.adoc[]
+
+[[Comment-댓글-삭제]]
+=== 댓글 삭제
+
+operation::comment-delete[snippets='http-request,path-parameters,http-response']

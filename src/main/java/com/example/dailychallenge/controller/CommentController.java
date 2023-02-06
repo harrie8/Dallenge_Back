@@ -10,6 +10,7 @@ import com.example.dailychallenge.service.users.UserService;
 import com.example.dailychallenge.vo.ResponseComment;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -25,8 +26,9 @@ public class CommentController {
     private final UserService userService;
     private final ChallengeService challengeService;
 
-    @PostMapping("/{challengeId}/comment/new")
-    public ResponseEntity<?> createComment(
+    @PostMapping(value = "/{challengeId}/comment/new", consumes = {MediaType.APPLICATION_JSON_VALUE,
+            MediaType.MULTIPART_FORM_DATA_VALUE})
+    public ResponseEntity<ResponseComment> createComment(
             @AuthenticationPrincipal org.springframework.security.core.userdetails.User user,
             @PathVariable("challengeId") Long challengeId,
             @RequestPart @Valid CommentDto commentDto,

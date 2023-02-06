@@ -15,3 +15,5 @@ include::User-API.adoc[]
 
 include::Challenge-API.adoc[]
 
+include::Comment-API.adoc[]
+

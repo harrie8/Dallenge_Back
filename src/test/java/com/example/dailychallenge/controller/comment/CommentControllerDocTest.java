@@ -6,27 +6,24 @@ import com.example.dailychallenge.dto.UserDto;
 import com.example.dailychallenge.entity.challenge.*;
 import com.example.dailychallenge.entity.comment.Comment;
 import com.example.dailychallenge.entity.users.User;
-import com.example.dailychallenge.repository.ChallengeImgRepository;
-import com.example.dailychallenge.repository.ChallengeRepository;
-import com.example.dailychallenge.repository.UserChallengeRepository;
-import com.example.dailychallenge.repository.UserRepository;
+import com.example.dailychallenge.repository.*;
 import com.example.dailychallenge.service.challenge.ChallengeService;
-import com.example.dailychallenge.service.challenge.UserChallengeService;
 import com.example.dailychallenge.service.comment.CommentService;
 import com.example.dailychallenge.service.users.UserService;
 import com.example.dailychallenge.utils.JwtTokenUtil;
-import com.example.dailychallenge.vo.RequestCreateChallenge;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.mock.web.MockPart;
+import org.springframework.restdocs.RestDocumentationExtension;
+import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -34,15 +31,19 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.requestPartFields;
+import static org.springframework.restdocs.request.RequestDocumentation.*;
+import static org.springframework.restdocs.snippet.Attributes.key;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -50,10 +51,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
-@Transactional
 @AutoConfigureMockMvc
+@AutoConfigureRestDocs(uriScheme = "https", uriHost = "api.dailychallenge.com", uriPort = 443)
+@ExtendWith(RestDocumentationExtension.class)
 @TestPropertySource(locations = "classpath:application-test.properties")
-class CommentControllerTest {
+public class CommentControllerDocTest {
 
     private final static String TOKEN_PREFIX = "Bearer ";
     private final static String AUTHORIZATION = "Authorization";
@@ -66,6 +68,8 @@ class CommentControllerTest {
     private UserService userService;
     @Autowired
     private ChallengeService challengeService;
+    @Autowired
+    private CommentRepository commentRepository;
     @Autowired
     private CommentService commentService;
     @Autowired
@@ -137,6 +141,7 @@ class CommentControllerTest {
     @DisplayName("댓글 생성 테스트")
     public void createCommentTest() throws Exception {
         Challenge challenge = createChallenge();
+        User user = challenge.getUsers();
         CommentDto requestComment = CommentDto.builder()
                 .content("댓글 내용")
                 .build();
@@ -150,14 +155,34 @@ class CommentControllerTest {
 
         Long challengeId = challenge.getId();
         String token = generateToken();
-        mockMvc.perform(multipart("/{challengeId}/comment/new",challengeId)
+        mockMvc.perform(RestDocumentationRequestBuilders
+                        .multipart("/{challengeId}/comment/new",challengeId)
                         .file(commentDto)
                         .file(commentDtoImg)
                         .header(AUTHORIZATION, token)
                         .contentType(MediaType.MULTIPART_FORM_DATA)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated())
-                .andDo(print());
+                .andExpect(jsonPath("$.content").value(requestComment.getContent()))
+                .andExpect(jsonPath("$.userId").value(user.getId()))
+                .andDo(print())
+                .andDo(document("comment-create",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(
+                                removeHeaders("Vary", "X-Content-Type-Options", "X-XSS-Protection", "Pragma", "Expires",
+                                        "Cache-Control", "Strict-Transport-Security", "X-Frame-Options"),
+                                prettyPrint()),
+                        pathParameters(
+                                parameterWithName("challengeId").description("챌린지 아이디")
+                        ),
+                        requestParts(
+                                partWithName("commentDto").description("댓글 정보 데이터(JSON)").attributes(key("type").value("JSON")),
+                                partWithName("commentDtoImg").description("댓글 이미지 파일(FILE)").optional().attributes(key("type").value(".jpg"))
+                        ),
+                        requestPartFields("commentDto",
+                                fieldWithPath("content").description("내용")
+                        )
+                ));
     }
 
     @Test
@@ -176,15 +201,35 @@ class CommentControllerTest {
                 "application/json", json.getBytes(StandardCharsets.UTF_8));
 
         Long challengeId = savedComment.getChallenge().getId();
+        Long commentId = savedComment.getId();
         String token = generateToken();
-        mockMvc.perform(multipart("/{challengeId}/comment/{commentId}",challengeId,savedComment.getId())
+        mockMvc.perform(RestDocumentationRequestBuilders
+                        .multipart("/{challengeId}/comment/{commentId}",challengeId,commentId)
                         .file(commentDto)
                         .file(commentDtoImg)
                         .header(AUTHORIZATION, token)
                         .contentType(MediaType.MULTIPART_FORM_DATA)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andDo(print());
+                .andDo(print())
+                .andDo(document("comment-update",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(
+                                removeHeaders("Vary", "X-Content-Type-Options", "X-XSS-Protection", "Pragma", "Expires",
+                                        "Cache-Control", "Strict-Transport-Security", "X-Frame-Options"),
+                                prettyPrint()),
+                        pathParameters(
+                                parameterWithName("challengeId").description("챌린지 아이디"),
+                                parameterWithName("commentId").description("댓글 아이디")
+                        ),
+                        requestParts(
+                                partWithName("commentDto").description("댓글 수정 정보 데이터(JSON)").attributes(key("type").value("JSON")),
+                                partWithName("commentDtoImg").description("댓글 수정 이미지 파일(FILE)").optional().attributes(key("type").value(".jpg"))
+                        ),
+                        requestPartFields("commentDto",
+                                fieldWithPath("content").description("수정할 내용")
+                        )
+                ));
     }
 
     @Test
@@ -193,12 +238,24 @@ class CommentControllerTest {
         Comment savedComment = createComment();
         Long challengeId = savedComment.getChallenge().getId();
         String token = generateToken();
-        mockMvc.perform(delete("/{challengeId}/comment/{commentId}",challengeId,savedComment.getId())
+        mockMvc.perform(RestDocumentationRequestBuilders
+                        .delete("/{challengeId}/comment/{commentId}",challengeId,savedComment.getId())
                         .header(AUTHORIZATION, token)
                         .contentType(MediaType.MULTIPART_FORM_DATA)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andDo(print());
+                .andDo(print())
+                .andDo(document("comment-delete",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(
+                                removeHeaders("Vary", "X-Content-Type-Options", "X-XSS-Protection", "Pragma", "Expires",
+                                        "Cache-Control", "Strict-Transport-Security", "X-Frame-Options"),
+                                prettyPrint()),
+                        pathParameters(
+                                parameterWithName("challengeId").description("챌린지 아이디"),
+                                parameterWithName("commentId").description("댓글 아이디")
+                        )
+                ));
     }
 
     private String generateToken() {
@@ -211,5 +268,4 @@ class CommentControllerTest {
 
         throw new IllegalArgumentException("token 생성 오류");
     }
-
 }
