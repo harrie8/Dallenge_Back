@@ -2,6 +2,7 @@ package com.example.dailychallenge.vo;
 
 import com.example.dailychallenge.entity.challenge.Challenge;
 import com.querydsl.core.annotations.QueryProjection;
+import java.util.List;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -16,13 +17,15 @@ public class ResponseChallenge {
     private String challengeLocation;
     private String challengeDuration;
     private String created_at;
-    private String challengeImgUrl;
+    private List<String> challengeImgUrls;
     private Long howManyUsersAreInThisChallenge;
     private ResponseUser challengeOwnerUser;
 
     @Builder
     public ResponseChallenge(Long id, String title, String content, String challengeCategory, String challengeLocation,
-                             String challengeDuration, String created_at, String challengeImgUrl, Long howManyUsersAreInThisChallenge, ResponseUser responseUser) {
+                             String challengeDuration, String created_at, List<String> challengeImgUrls,
+                             Long howManyUsersAreInThisChallenge, ResponseUser responseUser) {
+
         this.id = id;
         this.title = title;
         this.content = content;
@@ -30,7 +33,7 @@ public class ResponseChallenge {
         this.challengeLocation = challengeLocation;
         this.challengeDuration = challengeDuration;
         this.created_at = created_at;
-        this.challengeImgUrl = challengeImgUrl;
+        this.challengeImgUrls = challengeImgUrls;
         this.howManyUsersAreInThisChallenge = howManyUsersAreInThisChallenge;
         this.challengeOwnerUser = responseUser;
     }
@@ -44,14 +47,7 @@ public class ResponseChallenge {
         this.challengeLocation = challenge.getChallengeLocation().getDescription();
         this.challengeDuration = challenge.getChallengeDuration().getDescription();
         this.created_at = challenge.getFormattedCreatedAt();
-
-        if (challenge.getChallengeImg() != null) {
-            this.challengeImgUrl = challenge.getChallengeImg().getImgUrl();
-        }
-        if (challenge.getChallengeImg() == null) {
-            this.challengeImgUrl = null;
-        }
-
+        this.challengeImgUrls = challenge.getImgUrls();
         this.howManyUsersAreInThisChallenge = howManyUsersAreInThisChallenge;
         this.challengeOwnerUser = ResponseUser.create(challenge.getUsers());
     }

@@ -69,8 +69,9 @@ class ChallengeHashtagServiceTest {
                 .challengeDuration(ChallengeDuration.WITHIN_TEN_MINUTES.getDescription())
                 .build();
         MultipartFile challengeImg = createMultipartFiles();
+        List<MultipartFile> challengeImgFiles = List.of(challengeImg);
 
-        return challengeService.saveChallenge(challengeDto, challengeImg, savedUser);
+        return challengeService.saveChallenge(challengeDto, challengeImgFiles, savedUser);
     }
 
     public List<Hashtag> createHashtag() {

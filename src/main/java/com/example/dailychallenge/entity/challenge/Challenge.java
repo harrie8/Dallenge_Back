@@ -18,7 +18,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import lombok.Builder;
 import lombok.Getter;
@@ -46,8 +45,8 @@ public class Challenge extends BaseEntity {
     private ChallengeDuration challengeDuration;
 
     // 다중 이미지 업로드 기능 추가하기
-    @OneToOne(mappedBy = "challenge", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private ChallengeImg challengeImg;
+    @OneToMany(mappedBy = "challenge", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<ChallengeImg> challengeImgs = new ArrayList<>();
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User users;
@@ -72,8 +71,8 @@ public class Challenge extends BaseEntity {
         this.challengeDuration = challengeDuration;
     }
 
-    public void setChallengeImg(ChallengeImg challengeImg) {
-        this.challengeImg = challengeImg;
+    public void addChallengeImg(ChallengeImg challengeImg) {
+        this.challengeImgs.add(challengeImg);
     }
 
     public void setUser(User users) {
@@ -82,6 +81,15 @@ public class Challenge extends BaseEntity {
         }
         this.users = users;
         users.getChallenges().add(this);
+    }
+
+    public List<String> getImgUrls() {
+        List<String> imgUrls = new ArrayList<>();
+        for (ChallengeImg challengeImg : challengeImgs) {
+            String imgUrl = challengeImg.getImgUrl();
+            imgUrls.add(imgUrl);
+        }
+        return imgUrls;
     }
 
     @Override

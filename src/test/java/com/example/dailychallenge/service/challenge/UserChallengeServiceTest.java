@@ -10,7 +10,9 @@ import com.example.dailychallenge.entity.challenge.ChallengeLocation;
 import com.example.dailychallenge.entity.challenge.ChallengeStatus;
 import com.example.dailychallenge.entity.challenge.UserChallenge;
 import com.example.dailychallenge.entity.users.User;
+import com.example.dailychallenge.repository.UserRepository;
 import com.example.dailychallenge.service.users.UserService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +31,14 @@ public class UserChallengeServiceTest {
     @Autowired
     private UserService userService;
     @Autowired
+    private UserRepository userRepository;
+    @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @BeforeEach
+    void beforeEach() {
+        userRepository.deleteAll();
+    }
 
     public UserDto createUser() {
         UserDto userDto = new UserDto();

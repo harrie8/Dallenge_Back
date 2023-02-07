@@ -4,7 +4,6 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasItems;
-import static org.hamcrest.Matchers.nullValue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -129,7 +128,7 @@ class ChallengeControllerTest {
 
         ChallengeImg challengeImg = new ChallengeImg();
         challengeImg.updateUserImg("oriImgName", "imgName", "imgUrl");
-        challenge1.setChallengeImg(challengeImg);
+        challenge1.addChallengeImg(challengeImg);
         challenge1.setUser(savedUser);
         challengeRepository.save(challenge1);
         UserChallenge userChallenge1 = UserChallenge.builder()
@@ -214,6 +213,7 @@ class ChallengeControllerTest {
         }
     }
 
+    // TODO: 2023-02-07 이미지 파일 없는 테스트 코드도 추가하기
     @Test
     @DisplayName("챌린지 생성 테스트")
     public void createChallengeTest() throws Exception {
@@ -233,11 +233,13 @@ class ChallengeControllerTest {
 
         MockPart tag1 = new MockPart("\"hashtagDto\"", "tag1".getBytes(UTF_8));
         MockPart tag2 = new MockPart("\"hashtagDto\"", "tag2".getBytes(UTF_8));
+        // TODO: 2023-02-07 현재 hashtag 값이 안 넘어와서  hashtag 테스트 코드 수정하기
 
         String token = generateToken();
         mockMvc.perform(multipart("/challenge/new")
                         .file(requestCreateChallenge)
-                        .file(challengeImgFile)
+                        .part(new MockPart("challengeImgFiles", "challengeImgFile", challengeImgFile.getBytes()))
+                        .part(new MockPart("challengeImgFiles", "challengeImgFile", challengeImgFile.getBytes()))
                         .part(tag1)
                         .part(tag2)
                         .header(AUTHORIZATION, token)
@@ -250,7 +252,7 @@ class ChallengeControllerTest {
                 .andExpect(jsonPath("$.challengeLocation").value(requestCreatChallenge.getChallengeLocation()))
                 .andExpect(jsonPath("$.challengeDuration").value(requestCreatChallenge.getChallengeDuration()))
                 .andExpect(jsonPath("$.challengeStatus").value(ChallengeStatus.TRYING.getDescription()))
-                .andExpect(jsonPath("$.challengeImgUrl").isNotEmpty())
+                .andExpect(jsonPath("$.challengeImgUrls[*]").isNotEmpty())
                 .andExpect(jsonPath("$.challengeOwnerUser.userName").value(savedUser.getUserName()))
                 .andExpect(jsonPath("$.challengeOwnerUser.email").value(savedUser.getEmail()))
                 .andExpect(jsonPath("$.challengeOwnerUser.userId").value(savedUser.getId()))
@@ -309,8 +311,8 @@ class ChallengeControllerTest {
                 .andExpect(jsonPath("$.content[*].challengeDuration",
                         hasItems(ChallengeDuration.OVER_ONE_HOUR.getDescription(),
                                 ChallengeDuration.WITHIN_TEN_MINUTES.getDescription())))
-                .andExpect(jsonPath("$.content[*].challengeImgUrl",
-                        hasItems(null, "imgUrl")))
+                .andExpect(jsonPath("$.content[*].challengeImgUrls",
+                        hasItems(List.of(), List.of("imgUrl"))))
                 .andExpect(jsonPath("$.content[*].howManyUsersAreInThisChallenge",
                         contains(5, 2, 2, 1, 1, 1, 1, 1, 1, 1)))
                 .andExpect(jsonPath("$.content[*].challengeOwnerUser.userName",
@@ -334,7 +336,7 @@ class ChallengeControllerTest {
                                         ChallengeCategory.WORKOUT.getDescription()),
                                 hasItem(ChallengeLocation.INDOOR.getDescription()),
                                 hasItem(ChallengeDuration.WITHIN_TEN_MINUTES.getDescription()),
-                                contains("imgUrl", null),
+                                contains(List.of("imgUrl"), List.of()),
                                 contains(2, 1)
                         )),
                 Arguments.of(ChallengeSearchCondition.builder()
@@ -348,7 +350,7 @@ class ChallengeControllerTest {
                                 hasItem(ChallengeCategory.WORKOUT.getDescription()),
                                 hasItem(ChallengeLocation.INDOOR.getDescription()),
                                 hasItem(ChallengeDuration.WITHIN_TEN_MINUTES.getDescription()),
-                                hasItem(nullValue()),
+                                hasItem(List.of()),
                                 contains(2, 1, 1, 1, 1, 1, 1, 1)
                         )),
                 Arguments.of(ChallengeSearchCondition.builder()
@@ -362,7 +364,7 @@ class ChallengeControllerTest {
                                 hasItem(ChallengeCategory.WORKOUT.getDescription()),
                                 hasItem(ChallengeLocation.INDOOR.getDescription()),
                                 hasItem(ChallengeDuration.WITHIN_TEN_MINUTES.getDescription()),
-                                hasItem(nullValue()),
+                                hasItem(List.of()),
                                 contains(1, 1, 1, 2, 1, 1, 1, 1)
                         )),
                 Arguments.of(ChallengeSearchCondition.builder()
@@ -374,7 +376,7 @@ class ChallengeControllerTest {
                                 contains(ChallengeCategory.STUDY.getDescription()),
                                 contains(ChallengeLocation.INDOOR.getDescription()),
                                 contains(ChallengeDuration.WITHIN_TEN_MINUTES.getDescription()),
-                                contains("imgUrl"),
+                                contains(List.of("imgUrl")),
                                 contains(2))
                 ));
     }
@@ -399,7 +401,7 @@ class ChallengeControllerTest {
                 .andExpect(jsonPath("$.content[*].challengeCategory", expects.get(2)))
                 .andExpect(jsonPath("$.content[*].challengeLocation", expects.get(3)))
                 .andExpect(jsonPath("$.content[*].challengeDuration", expects.get(4)))
-                .andExpect(jsonPath("$.content[*].challengeImgUrl", expects.get(5)))
+                .andExpect(jsonPath("$.content[*].challengeImgUrls", expects.get(5)))
                 .andExpect(jsonPath("$.content[*].howManyUsersAreInThisChallenge", expects.get(6)))
                 .andExpect(jsonPath("$.content[*].challengeOwnerUser.userName", hasItem(
                         savedUser.getUserName())))

@@ -33,7 +33,7 @@ public class ChallengeImgService {
         // 이미지 정보 저장
         challengeImg.updateUserImg(oriImgName,imgName,imgUrl);
         challengeImgRepository.save(challengeImg);
-        challengeImg.getChallenge().setChallengeImg(challengeImg);
+        challengeImg.getChallenge().addChallengeImg(challengeImg);
 
     }
 

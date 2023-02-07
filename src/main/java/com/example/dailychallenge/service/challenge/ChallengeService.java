@@ -6,6 +6,7 @@ import com.example.dailychallenge.entity.challenge.ChallengeImg;
 import com.example.dailychallenge.entity.users.User;
 import com.example.dailychallenge.exception.challenge.ChallengeNotFound;
 import com.example.dailychallenge.repository.ChallengeRepository;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,16 +20,18 @@ public class ChallengeService {
     private final ChallengeRepository challengeRepository;
     private final ChallengeImgService challengeImgService;
 
-    public Challenge saveChallenge(ChallengeDto challengeDto, MultipartFile challengeImgFile, User user) {
+    public Challenge saveChallenge(ChallengeDto challengeDto, List<MultipartFile> challengeImgFiles, User user) {
         Challenge challenge = challengeDto.toChallenge();
         challenge.setUser(user);
 
         challengeRepository.save(challenge);
 
-        if (!challengeImgFile.isEmpty()) {
-            ChallengeImg challengeImg = new ChallengeImg();
-            challengeImg.setChallenge(challenge);
-            challengeImgService.saveChallengeImg(challengeImg, challengeImgFile);
+        if (challengeImgFiles != null) {
+            for (MultipartFile challengeImgFile : challengeImgFiles) {
+                ChallengeImg challengeImg = new ChallengeImg();
+                challengeImg.setChallenge(challenge);
+                challengeImgService.saveChallengeImg(challengeImg, challengeImgFile);
+            }
         }
 
         return challenge;

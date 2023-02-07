@@ -5,18 +5,14 @@ import com.example.dailychallenge.entity.challenge.Challenge;
 import com.example.dailychallenge.entity.comment.Comment;
 import com.example.dailychallenge.entity.comment.CommentImg;
 import com.example.dailychallenge.entity.users.User;
-import com.example.dailychallenge.entity.users.UserImg;
 import com.example.dailychallenge.repository.CommentRepository;
+import java.util.ArrayList;
+import java.util.List;
+import javax.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-
-import javax.persistence.EntityNotFoundException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -35,7 +31,7 @@ public class CommentService {
 
         commentRepository.save(comment);
 
-        if (!commentImgFiles.isEmpty()) {
+        if (!commentImgFiles.isEmpty()) { // commentImgFiles가 null일 수도 있어서 수정해야 될 것 같습니다.
             for (int i = 0; i < commentImgFiles.size(); i++) {
                 CommentImg commentImg = new CommentImg();
                 commentImg.saveComment(comment);

@@ -13,6 +13,7 @@ import com.example.dailychallenge.entity.users.User;
 import com.example.dailychallenge.exception.challenge.ChallengeCategoryNotFound;
 import com.example.dailychallenge.exception.challenge.ChallengeNotFound;
 import com.example.dailychallenge.service.users.UserService;
+import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,8 +67,9 @@ public class ChallengeServiceTest {
                 .challengeDuration(ChallengeDuration.WITHIN_TEN_MINUTES.getDescription())
                 .build();
         MultipartFile challengeImg = createMultipartFiles();
+        List<MultipartFile> challengeImgFiles = List.of(challengeImg);
 
-        Challenge challenge = challengeService.saveChallenge(challengeDto, challengeImg, savedUser);
+        Challenge challenge = challengeService.saveChallenge(challengeDto, challengeImgFiles, savedUser);
 
         assertEquals(challengeDto.getTitle(), challenge.getTitle());
         assertEquals(challengeDto.getContent(), challenge.getContent());
@@ -89,9 +91,10 @@ public class ChallengeServiceTest {
                 .challengeDuration(ChallengeDuration.WITHIN_TEN_MINUTES.getDescription())
                 .build();
         MultipartFile challengeImg = createMultipartFiles();
+        List<MultipartFile> challengeImgFiles = List.of(challengeImg);
 
         Throwable exception = assertThrows(ChallengeCategoryNotFound.class, () -> {
-            challengeService.saveChallenge(challengeDto, challengeImg, savedUser);
+            challengeService.saveChallenge(challengeDto, challengeImgFiles, savedUser);
         });
         assertEquals("존재하지 않는 챌린지 카테고리입니다.", exception.getMessage());
     }
@@ -108,7 +111,8 @@ public class ChallengeServiceTest {
                 .challengeDuration(ChallengeDuration.WITHIN_TEN_MINUTES.getDescription())
                 .build();
         MultipartFile challengeImg = createMultipartFiles();
-        Challenge savedChallenge = challengeService.saveChallenge(challengeDto, challengeImg, savedUser);
+        List<MultipartFile> challengeImgFiles = List.of(challengeImg);
+        Challenge savedChallenge = challengeService.saveChallenge(challengeDto, challengeImgFiles, savedUser);
         Long challengeId = savedChallenge.getId();
 
         Throwable exception = assertThrows(ChallengeNotFound.class,
@@ -128,7 +132,8 @@ public class ChallengeServiceTest {
                 .challengeDuration(ChallengeDuration.WITHIN_TEN_MINUTES.getDescription())
                 .build();
         MultipartFile challengeImg = createMultipartFiles();
-        Challenge savedChallenge = challengeService.saveChallenge(challengeDto, challengeImg, savedUser);
+        List<MultipartFile> challengeImgFiles = List.of(challengeImg);
+        Challenge savedChallenge = challengeService.saveChallenge(challengeDto, challengeImgFiles, savedUser);
         Long challengeId = savedChallenge.getId();
 
         Challenge findChallenge = challengeService.findById(challengeId);

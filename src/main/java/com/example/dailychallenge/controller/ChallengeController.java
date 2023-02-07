@@ -49,7 +49,7 @@ public class ChallengeController {
     public ResponseEntity<ResponseCreateChallenge> createChallenge(
             @AuthenticationPrincipal org.springframework.security.core.userdetails.User user,
             @RequestPart @Valid RequestCreateChallenge requestCreateChallenge,
-            @RequestPart(required = false) MultipartFile challengeImgFile,
+            @RequestPart(required = false) List<MultipartFile> challengeImgFiles,
             @RequestPart(value = "hashtagDto", required = false) List<String> hashtagDto) {
         ModelMapper mapper = new ModelMapper();
         String userEmail = user.getUsername();
@@ -59,7 +59,7 @@ public class ChallengeController {
         }
         ChallengeDto challengeDto = mapper.map(requestCreateChallenge, ChallengeDto.class);
 
-        Challenge challenge = challengeService.saveChallenge(challengeDto, challengeImgFile, findUser);
+        Challenge challenge = challengeService.saveChallenge(challengeDto, challengeImgFiles, findUser);
         UserChallenge userChallenge = userChallengeService.saveUserChallenge(challenge, findUser);
 
         ResponseCreateChallenge responseCreateChallenge = ResponseCreateChallenge.create(challenge, userChallenge);

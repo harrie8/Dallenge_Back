@@ -35,7 +35,7 @@ public class UserChallengeRepositoryCustomImpl implements
                 .select(new QResponseChallenge(userChallenge.challenge, userChallenge.count()))
                 .from(userChallenge)
                 .leftJoin(userChallenge.challenge, challenge)
-                .leftJoin(userChallenge.challenge.challengeImg, challengeImg)
+                .leftJoin(userChallenge.challenge.challengeImgs, challengeImg)
                 .groupBy(userChallenge.challenge)
 //                .orderBy(userChallenge.count().desc(), userChallenge.challenge.created_at.asc())
                 .orderBy(challengesSort(pageable))
@@ -47,7 +47,7 @@ public class UserChallengeRepositoryCustomImpl implements
                 .select(userChallenge.challenge)
                 .from(userChallenge)
                 .leftJoin(userChallenge.challenge, challenge)
-                .leftJoin(userChallenge.challenge.challengeImg, challengeImg)
+                .leftJoin(userChallenge.challenge.challengeImgs, challengeImg)
                 .groupBy(userChallenge.challenge)
                 .fetch()
                 .size();
@@ -62,7 +62,7 @@ public class UserChallengeRepositoryCustomImpl implements
                 .select(new QResponseChallenge(userChallenge.challenge, userChallenge.count()))
                 .from(userChallenge)
                 .leftJoin(userChallenge.challenge, challenge)
-                .leftJoin(userChallenge.challenge.challengeImg, challengeImg)
+                .leftJoin(userChallenge.challenge.challengeImgs, challengeImg)
                 .where(titleContains(condition.getTitle()),
                         categoryEq(condition.getCategory()))
                 .groupBy(userChallenge.challenge)
@@ -76,7 +76,7 @@ public class UserChallengeRepositoryCustomImpl implements
                 .select(userChallenge.challenge)
                 .from(userChallenge)
                 .leftJoin(userChallenge.challenge, challenge)
-                .leftJoin(userChallenge.challenge.challengeImg, challengeImg)
+                .leftJoin(userChallenge.challenge.challengeImgs, challengeImg)
                 .where(titleContains(condition.getTitle()),
                         categoryEq(condition.getCategory()))
                 .groupBy(userChallenge.challenge)
