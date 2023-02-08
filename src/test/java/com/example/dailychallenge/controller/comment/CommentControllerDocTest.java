@@ -12,6 +12,7 @@ import static org.springframework.restdocs.request.RequestDocumentation.partWith
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.restdocs.request.RequestDocumentation.requestParts;
 import static org.springframework.restdocs.snippet.Attributes.key;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -263,6 +264,31 @@ public class CommentControllerDocTest {
                                 prettyPrint()),
                         pathParameters(
                                 parameterWithName("challengeId").description("챌린지 아이디"),
+                                parameterWithName("commentId").description("댓글 아이디")
+                        )
+                ));
+    }
+
+    @Test
+    @DisplayName("좋아요 테스트")
+    public void isLikeTest() throws Exception {
+        Comment savedComment = createComment();
+        String token = generateToken();
+        mockMvc.perform(RestDocumentationRequestBuilders
+                        .post("/{commentId}/like", savedComment.getId())
+                        .param("isLike", String.valueOf(1))
+                        .header(AUTHORIZATION, token)
+                        .contentType(MediaType.MULTIPART_FORM_DATA)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.isLike").value(savedComment.getLikes()+1))
+                .andDo(document("comment-like",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(
+                                removeHeaders("Vary", "X-Content-Type-Options", "X-XSS-Protection", "Pragma", "Expires",
+                                        "Cache-Control", "Strict-Transport-Security", "X-Frame-Options"),
+                                prettyPrint()),
+                        pathParameters(
                                 parameterWithName("commentId").description("댓글 아이디")
                         )
                 ));

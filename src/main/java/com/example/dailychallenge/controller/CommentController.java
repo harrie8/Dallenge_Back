@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
+import java.util.HashMap;
 import java.util.List;
 
 @RestController
@@ -73,7 +74,9 @@ public class CommentController {
             @RequestParam Integer isLike) {
 
         Integer likeCount = commentService.likeUpdate(commentId, isLike);
-        return ResponseEntity.status(HttpStatus.OK).body(likeCount);
+        HashMap<String, Integer> responseMap = new HashMap<>();
+        responseMap.put("isLike", likeCount);
+        return ResponseEntity.status(HttpStatus.OK).body(responseMap);
     }
 
 }

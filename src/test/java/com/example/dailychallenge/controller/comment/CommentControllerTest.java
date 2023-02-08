@@ -1,7 +1,6 @@
 package com.example.dailychallenge.controller.comment;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -190,6 +189,21 @@ class CommentControllerTest {
         Long challengeId = savedComment.getChallenge().getId();
         String token = generateToken();
         mockMvc.perform(delete("/{challengeId}/comment/{commentId}",challengeId,savedComment.getId())
+                        .header(AUTHORIZATION, token)
+                        .contentType(MediaType.MULTIPART_FORM_DATA)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("좋아요 테스트")
+    public void isLikeTest() throws Exception {
+        Comment savedComment = createComment();
+
+        String token = generateToken();
+        mockMvc.perform(post("/{commentId}/like", savedComment.getId())
+                        .param("isLike", String.valueOf(1))
                         .header(AUTHORIZATION, token)
                         .contentType(MediaType.MULTIPART_FORM_DATA)
                         .accept(MediaType.APPLICATION_JSON))
