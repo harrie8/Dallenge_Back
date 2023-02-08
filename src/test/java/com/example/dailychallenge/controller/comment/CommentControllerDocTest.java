@@ -7,10 +7,7 @@ import static org.springframework.restdocs.operation.preprocess.Preprocessors.pr
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.removeHeaders;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestPartFields;
-import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
-import static org.springframework.restdocs.request.RequestDocumentation.partWithName;
-import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
-import static org.springframework.restdocs.request.RequestDocumentation.requestParts;
+import static org.springframework.restdocs.request.RequestDocumentation.*;
 import static org.springframework.restdocs.snippet.Attributes.key;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -275,8 +272,7 @@ public class CommentControllerDocTest {
         Comment savedComment = createComment();
         String token = generateToken();
         mockMvc.perform(RestDocumentationRequestBuilders
-                        .post("/{commentId}/like", savedComment.getId())
-                        .param("isLike", String.valueOf(1))
+                        .post("/{commentId}/like?isLike=1", savedComment.getId())
                         .header(AUTHORIZATION, token)
                         .contentType(MediaType.MULTIPART_FORM_DATA)
                         .accept(MediaType.APPLICATION_JSON))
@@ -288,6 +284,9 @@ public class CommentControllerDocTest {
                                 removeHeaders("Vary", "X-Content-Type-Options", "X-XSS-Protection", "Pragma", "Expires",
                                         "Cache-Control", "Strict-Transport-Security", "X-Frame-Options"),
                                 prettyPrint()),
+                        requestParameters(
+                                parameterWithName("isLike").description("좋아요(1)/좋아요 취소(0)")
+                        ),
                         pathParameters(
                                 parameterWithName("commentId").description("댓글 아이디")
                         )

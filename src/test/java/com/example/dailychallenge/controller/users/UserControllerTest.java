@@ -228,6 +228,19 @@ class UserControllerTest {
                 .andDo(print());
     }
 
+    @Test
+    @DisplayName("비밀번호 변경 테스트")
+    public void changeUserPassword() throws Exception {
+        User user = userService.saveUser(createUser(), passwordEncoder);
+        mockMvc.perform(post("/user/{userId}/change",user.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .param("oldPassword","1234")
+                        .param("newPassword","12345")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andDo(print());
+    }
+
     private String generateToken() {
         Authentication auth = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(EMAIL, PASSWORD));

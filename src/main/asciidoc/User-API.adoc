@@ -71,3 +71,18 @@ include::{snippets}/user-check-password/request-parameters.adoc[]
 ====
 
 include::{snippets}/user-check-password/http-response.adoc[]
+
+
+[[User-회원-비밀번호-변경]]
+=== 회원 비밀번호 변경
+
+include::{snippets}/user-change-password/http-request.adoc[]
+==== 요청값
+
+====
+include::{snippets}/user-change-password/path-parameters.adoc[]
+
+include::{snippets}/user-change-password/request-parameters.adoc[]
+====
+
+include::{snippets}/user-change-password/http-response.adoc[]

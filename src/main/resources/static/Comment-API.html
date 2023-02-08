@@ -451,7 +451,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">POST /83/comment/new HTTP/1.1
 Content-Type: multipart/form-data;charset=UTF-8; boundary=6o2knFse3p53ty9dmcQvWAIx1zInP11uCfbm
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0MTIzNEB0ZXN0LmNvbSIsImlhdCI6MTY3NTg1ODE1MSwiZXhwIjoxNjc1ODc2MTUxfQ.XWW_xjUJcTX7JCn1MtrNumVdaGTusIskUJf47LuCCbo
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0MTIzNEB0ZXN0LmNvbSIsImlhdCI6MTY3NTg1OTYzMSwiZXhwIjoxNjc1ODc3NjMxfQ.yoOY_OGZ_u4uW1WDsyzttY2879jUkh_k3pFGhp3r2ts
 Accept: application/json
 Host: api.dailychallenge.com
 
@@ -549,7 +549,7 @@ Content-Length: 101
 
 {
   "content" : "댓글 내용",
-  "createdAt" : "2023-02-08T21:09:11.5972455",
+  "createdAt" : "2023-02-08T21:33:51.3428761",
   "userId" : 74
 }</code></pre>
 </div>
@@ -565,7 +565,7 @@ Content-Length: 101
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">POST /85/comment/4 HTTP/1.1
 Content-Type: multipart/form-data;charset=UTF-8; boundary=6o2knFse3p53ty9dmcQvWAIx1zInP11uCfbm
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0MTIzNEB0ZXN0LmNvbSIsImlhdCI6MTY3NTg1ODE1MiwiZXhwIjoxNjc1ODc2MTUyfQ.448Cu6nk1vni__k0KrLKU3jFT7OvhStXe-TvaVinVn4
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0MTIzNEB0ZXN0LmNvbSIsImlhdCI6MTY3NTg1OTYzMSwiZXhwIjoxNjc1ODc3NjMxfQ.yoOY_OGZ_u4uW1WDsyzttY2879jUkh_k3pFGhp3r2ts
 Accept: application/json
 Host: api.dailychallenge.com
 
@@ -671,7 +671,7 @@ Content-Type: image/jpg
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">DELETE /82/comment/1 HTTP/1.1
 Content-Type: multipart/form-data;charset=UTF-8
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0MTIzNEB0ZXN0LmNvbSIsImlhdCI6MTY3NTg1ODE1MSwiZXhwIjoxNjc1ODc2MTUxfQ.XWW_xjUJcTX7JCn1MtrNumVdaGTusIskUJf47LuCCbo
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0MTIzNEB0ZXN0LmNvbSIsImlhdCI6MTY3NTg1OTYzMCwiZXhwIjoxNjc1ODc3NjMwfQ.-kpgHRdm4PXviNofMb86EZxLZ5_9MDn54qGyzFDrFzw
 Accept: application/json
 Host: api.dailychallenge.com</code></pre>
 </div>
@@ -729,13 +729,11 @@ Content-Length: 32
 <h4 id="_http_request_2">HTTP request</h4>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight nowrap"><code class="language-http" data-lang="http">POST /3/like HTTP/1.1
+<pre class="highlight nowrap"><code class="language-http" data-lang="http">POST /3/like?isLike=1 HTTP/1.1
 Content-Type: multipart/form-data;charset=UTF-8
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0MTIzNEB0ZXN0LmNvbSIsImlhdCI6MTY3NTg1ODE1MSwiZXhwIjoxNjc1ODc2MTUxfQ.XWW_xjUJcTX7JCn1MtrNumVdaGTusIskUJf47LuCCbo
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0MTIzNEB0ZXN0LmNvbSIsImlhdCI6MTY3NTg1OTYzMSwiZXhwIjoxNjc1ODc3NjMxfQ.yoOY_OGZ_u4uW1WDsyzttY2879jUkh_k3pFGhp3r2ts
 Accept: application/json
-Host: api.dailychallenge.com
-
-isLike=1</code></pre>
+Host: api.dailychallenge.com</code></pre>
 </div>
 </div>
 </div>
@@ -767,9 +765,27 @@ isLike=1</code></pre>
 </tr>
 </tbody>
 </table>
-<div class="paragraph">
-<p>isLike - 좋아요(1)/좋아요 취소(0)</p>
-</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">파라미터</th>
+<th class="tableblock halign-left valign-top">필수여부</th>
+<th class="tableblock halign-left valign-top">설명</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>isLike</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">true</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">좋아요(1)/좋아요 취소(0)</p></td>
+</tr>
+</tbody>
+</table>
 </div>
 </div>
 </div>
@@ -793,7 +809,7 @@ Content-Length: 20
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2023-02-08 21:08:33 +0900
+Last updated 2023-02-08 21:33:18 +0900
 </div>
 </div>
 </body>

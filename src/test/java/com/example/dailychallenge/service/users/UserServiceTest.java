@@ -148,4 +148,15 @@ class UserServiceTest {
         assertTrue(userService.checkPassword(savedUser.getId(), "1234", passwordEncoder));
         assertFalse(userService.checkPassword(savedUser.getId(), "12345", passwordEncoder));
     }
+
+    @Test
+    @DisplayName("비밀번호 변경 테스트")
+    public void changeUserPassword() throws Exception {
+        User savedUser = userService.saveUser(createUser(), passwordEncoder);
+        userService.changePassword(savedUser.getId(), "12345",passwordEncoder);
+
+        assertAll(
+                () -> assertTrue(passwordEncoder.matches("12345", savedUser.getPassword()))
+        );
+    }
 }

@@ -123,4 +123,9 @@ public class UserService implements UserDetailsService {
         User user = userRepository.findById(userId).orElseThrow(UserNotFound::new);
         return passwordEncoder.matches(pw, user.getPassword());
     }
+
+    public void changePassword(Long userId, String newPassword, PasswordEncoder passwordEncoder) {
+        User user = userRepository.findById(userId).orElseThrow(UserNotFound::new);
+        user.changePassword(passwordEncoder.encode(newPassword));
+    }
 }

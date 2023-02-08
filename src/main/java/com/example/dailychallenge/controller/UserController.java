@@ -107,6 +107,17 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body("비밀번호 확인이 완료되었습니다.");
     }
 
+    @PostMapping("/user/{userId}/change") // 비밀번호 변경 url
+    public ResponseEntity<?> changeUserPassword(@PathVariable("userId") Long userId,
+                                               @RequestParam String oldPassword,
+                                               @RequestParam String newPassword) {
+        if (!userService.checkPassword(userId, oldPassword, passwordEncoder)) {
+            throw new UserPasswordCheck();
+        }
+        userService.changePassword(userId,newPassword,passwordEncoder);
+        return ResponseEntity.status(HttpStatus.OK).body("비밀번호가 변경되었습니다.");
+    }
+
     /**
      * 2023-01-29
      * aws 구글 로그인 url : http://ec2-52-78-166-208.ap-northeast-2.compute.amazonaws.com:8080/oauth2/authorization/google

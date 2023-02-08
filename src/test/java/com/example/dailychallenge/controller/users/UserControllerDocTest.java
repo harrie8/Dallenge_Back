@@ -43,6 +43,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.restdocs.RestDocumentationExtension;
+import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -274,9 +275,9 @@ public class UserControllerDocTest {
     @DisplayName("비밀번호 검증")
     public void checkUserPassword() throws Exception {
         User user = userService.saveUser(createUser(), passwordEncoder);
-        mockMvc.perform(MockMvcRequestBuilders.post("/user/{userId}/check?password=1234",user.getId())
+        mockMvc.perform(RestDocumentationRequestBuilders
+                        .post("/user/{userId}/check?password=1234",user.getId())
                         .contentType(APPLICATION_JSON)
-//                        .param("password","1234")
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andDo(print())
@@ -288,6 +289,35 @@ public class UserControllerDocTest {
                                 prettyPrint()),
                         requestParameters(
                                 parameterWithName("password").description("검증할 비밀번호")
+                        ),
+                        pathParameters(
+                                parameterWithName("userId").description("회원 ID")
+                        )
+                ));
+    }
+
+    @Test
+    @DisplayName("비밀번호 변경 테스트")
+    public void changeUserPassword() throws Exception {
+        User user = userService.saveUser(createUser(), passwordEncoder);
+        mockMvc.perform(RestDocumentationRequestBuilders
+                        .post("/user/{userId}/change?oldPassword=1234&newPassword=12345",user.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andDo(print())
+                .andDo(document("user-change-password",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(
+                                removeHeaders("Vary", "X-Content-Type-Options", "X-XSS-Protection", "Pragma", "Expires",
+                                        "Cache-Control", "Strict-Transport-Security", "X-Frame-Options"),
+                                prettyPrint()),
+                        requestParameters(
+                                parameterWithName("oldPassword").description("기존 비밀번호"),
+                                parameterWithName("newPassword").description("변경할 비밀번호")
+                        ),
+                        pathParameters(
+                                parameterWithName("userId").description("회원 ID")
                         )
                 ));
     }

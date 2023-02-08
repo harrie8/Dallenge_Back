@@ -72,4 +72,8 @@ public class User extends BaseEntity {
         info = userEditor.getInfo();
         password = userEditor.getPassword();
     }
+
+    public void changePassword(String newPassword){
+        this.password = newPassword;
+    }
 }

@@ -64,7 +64,7 @@ include::{snippets}/comment-like/http-request.adoc[]
 ====
 include::{snippets}/comment-like/path-parameters.adoc[]
 
-isLike - 좋아요(1)/좋아요 취소(0)
+include::{snippets}/comment-like/request-parameters.adoc[]
 ====
 
 ==== HTTP response
