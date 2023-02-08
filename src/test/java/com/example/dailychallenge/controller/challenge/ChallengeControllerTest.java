@@ -4,6 +4,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasItems;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -88,15 +89,13 @@ class ChallengeControllerTest {
     private JwtTokenUtil jwtTokenUtil;
 
     private User savedUser;
+    private Challenge challenge1;
+    private String token;
 
     @BeforeEach
     void beforeEach() throws Exception {
-        userChallengeRepository.deleteAll();
-        challengeImgRepository.deleteAll();
-        challengeRepository.deleteAll();
-        userRepository.deleteAll();
-
         initData();
+        token = generateToken();
     }
 
     public UserDto createUser() {
@@ -118,7 +117,7 @@ class ChallengeControllerTest {
     private void initData() throws Exception {
         savedUser = userService.saveUser(createUser(), passwordEncoder);
 
-        Challenge challenge1 = Challenge.builder()
+        challenge1 = Challenge.builder()
                 .title("제목입니다.1")
                 .content("내용입니다.1")
                 .challengeCategory(ChallengeCategory.STUDY)
@@ -235,7 +234,6 @@ class ChallengeControllerTest {
         MockPart tag2 = new MockPart("\"hashtagDto\"", "tag2".getBytes(UTF_8));
         // TODO: 2023-02-07 현재 hashtag 값이 안 넘어와서  hashtag 테스트 코드 수정하기
 
-        String token = generateToken();
         mockMvc.perform(multipart("/challenge/new")
                         .file(requestCreateChallenge)
                         .part(new MockPart("challengeImgFiles", "challengeImgFile", challengeImgFile.getBytes()))
@@ -274,7 +272,6 @@ class ChallengeControllerTest {
                 "requestCreateChallenge",
                 "application/json", json.getBytes(UTF_8));
 
-        String token = generateToken();
         mockMvc.perform(multipart("/challenge/new")
                         .file(requestCreateChallenge)
                         .header(AUTHORIZATION, token)
@@ -289,7 +286,6 @@ class ChallengeControllerTest {
     @Test
     @DisplayName("모든 챌린지 조회 테스트")
     public void searchAllChallengesTest() throws Exception {
-        String token = generateToken();
         mockMvc.perform(get("/challenge")
                         .header(AUTHORIZATION, token)
                         .param("size", "20")
@@ -386,7 +382,6 @@ class ChallengeControllerTest {
     @DisplayName("챌린지들을 검색 조건으로 찾는 테스트")
     public void searchChallengesByConditionTest(ChallengeSearchCondition condition, String sortProperties,
                                                 List<Matcher<Iterable<? extends String>>> expects) throws Exception {
-        String token = generateToken();
         mockMvc.perform(get("/challenge/condition")
                         .header(AUTHORIZATION, token)
                         .param("title", condition.getTitle())
@@ -418,7 +413,6 @@ class ChallengeControllerTest {
     })
     @DisplayName("모든 챌린지 조회 페이징 테스트")
     public void searchAllChallengesPagingTest(int totalElements, int numOfPage) throws Exception {
-        String token = generateToken();
         mockMvc.perform(get("/challenge")
                         .header(AUTHORIZATION, token)
                         .param("size", String.valueOf(numOfPage))
@@ -427,6 +421,17 @@ class ChallengeControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.totalElements").value(totalElements))
                 .andExpect(jsonPath("$.totalPages").value(totalElements / numOfPage))
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("챌린지 삭제 테스트")
+    void deleteChallenge() throws Exception {
+        Long challenge1Id = challenge1.getId();
+        mockMvc.perform(delete("/challenge/{challengeId}", challenge1Id)
+                        .header(AUTHORIZATION, token)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNoContent())
                 .andDo(print());
     }
 

@@ -1,9 +1,11 @@
 package com.example.dailychallenge.entity.challenge;
 
+import com.example.dailychallenge.dto.ChallengeEditor;
 import com.example.dailychallenge.entity.BaseEntity;
 import com.example.dailychallenge.entity.comment.Comment;
 import com.example.dailychallenge.entity.hashtag.ChallengeHashtag;
 import com.example.dailychallenge.entity.users.User;
+import com.example.dailychallenge.exception.AuthorizationException;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.CascadeType;
@@ -44,7 +46,6 @@ public class Challenge extends BaseEntity {
     @Enumerated(value = EnumType.STRING)
     private ChallengeDuration challengeDuration;
 
-    // 다중 이미지 업로드 기능 추가하기
     @OneToMany(mappedBy = "challenge", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<ChallengeImg> challengeImgs = new ArrayList<>();
     @ManyToOne
@@ -92,14 +93,28 @@ public class Challenge extends BaseEntity {
         return imgUrls;
     }
 
-    @Override
-    public String toString() {
-        return "Challenge{" +
-                "title='" + title + '\'' +
-                ", content='" + content + '\'' +
-                ", challengeCategory=" + challengeCategory +
-                ", challengeLocation=" + challengeLocation +
-                ", challengeDuration=" + challengeDuration +
-                '}';
+    public ChallengeEditor.ChallengeEditorBuilder toEditor() {
+        return ChallengeEditor.builder()
+                .title(title)
+                .content(content)
+                .category(challengeCategory.getDescription());
+    }
+
+    public void update(ChallengeEditor challengeEditor) {
+        if (challengeEditor.getTitle() != null) {
+            title = challengeEditor.getTitle();
+        }
+        if (challengeEditor.getContent() != null) {
+            content = challengeEditor.getContent();
+        }
+        if (challengeEditor.getCategory() != null) {
+            challengeCategory = ChallengeCategory.findByDescription(challengeEditor.getCategory());
+        }
+    }
+
+    public void validateOwner(Long userId) {
+        if (!userId.equals(users.getId())) {
+            throw new AuthorizationException();
+        }
     }
 }

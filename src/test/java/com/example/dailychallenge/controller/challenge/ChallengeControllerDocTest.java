@@ -5,6 +5,7 @@ import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasItems;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessRequest;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessResponse;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
@@ -14,6 +15,7 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.relaxedR
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestPartFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.partWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.restdocs.request.RequestDocumentation.requestParameters;
 import static org.springframework.restdocs.request.RequestDocumentation.requestParts;
 import static org.springframework.restdocs.snippet.Attributes.key;
@@ -65,6 +67,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest
+@Transactional
 @AutoConfigureMockMvc
 @AutoConfigureRestDocs(uriScheme = "https", uriHost = "api.dailychallenge.com", uriPort = 443)
 @ExtendWith(RestDocumentationExtension.class)
@@ -99,15 +102,13 @@ public class ChallengeControllerDocTest {
     private JwtTokenUtil jwtTokenUtil;
 
     private User savedUser;
+    private Challenge challenge1;
+    private String token;
 
     @BeforeEach
     void beforeEach() throws Exception {
-        userChallengeRepository.deleteAll();
-        challengeImgRepository.deleteAll();
-        challengeRepository.deleteAll();
-        userRepository.deleteAll();
-
         initData();
+        token = generateToken();
     }
 
     public UserDto createUser() {
@@ -129,7 +130,7 @@ public class ChallengeControllerDocTest {
     private void initData() throws Exception {
         savedUser = userService.saveUser(createUser(), passwordEncoder);
 
-        Challenge challenge1 = Challenge.builder()
+        challenge1 = Challenge.builder()
                 .title("제목입니다.1")
                 .content("내용입니다.1")
                 .challengeCategory(ChallengeCategory.STUDY)
@@ -247,7 +248,6 @@ public class ChallengeControllerDocTest {
         String challengeCategoryDescriptions = String.join(", ", ChallengeCategory.getDescriptions());
         String challengeLocationDescriptions = String.join(", ", ChallengeLocation.getDescriptions());
         String challengeDurationDescriptions = String.join(", ", ChallengeDuration.getDescriptions());
-        String token = generateToken();
         mockMvc.perform(multipart("/challenge/new")
                         .file(requestCreateChallenge)
                         .part(new MockPart("challengeImgFiles", "challengeImgFile", challengeImgFile.getBytes()))
@@ -300,7 +300,6 @@ public class ChallengeControllerDocTest {
     @Test
     @DisplayName("모든 챌린지 조회하고 인기순으로 내림차순 정렬 테스트")
     public void searchAllChallengesSortByPopularTest() throws Exception {
-        String token = generateToken();
         mockMvc.perform(get("/challenge")
                         .header(AUTHORIZATION, token)
                         .param("size", "20")
@@ -364,7 +363,6 @@ public class ChallengeControllerDocTest {
     @Test
     @DisplayName("모든 챌린지 조회하고 생성순으로 오름차순 정렬 테스트")
     public void searchAllChallengesSortByTimeTest() throws Exception {
-        String token = generateToken();
         mockMvc.perform(get("/challenge")
                         .header(AUTHORIZATION, token)
                         .param("size", "20")
@@ -398,7 +396,6 @@ public class ChallengeControllerDocTest {
     @Test
     @DisplayName("챌린지들을 검색 조건으로 조회하고 인기순으로 오름차순 정렬 테스트")
     public void searchChallengesByConditionSortByPopularTest() throws Exception {
-        String token = generateToken();
         mockMvc.perform(get("/challenge/condition")
                         .header(AUTHORIZATION, token)
                         .param("title", "")
@@ -456,7 +453,6 @@ public class ChallengeControllerDocTest {
     @Test
     @DisplayName("챌린지들을 검색 조건으로 조회하고 생성순으로 내림차순 정렬 테스트")
     public void searchChallengesByConditionSortByTimeTest() throws Exception {
-        String token = generateToken();
         mockMvc.perform(get("/challenge/condition")
                         .header(AUTHORIZATION, token)
                         .param("title", "")
@@ -487,6 +483,26 @@ public class ChallengeControllerDocTest {
                         relaxedResponseFields(
                                 fieldWithPath("totalElements").description("DB에 있는 전체 Challenge 개수"),
                                 fieldWithPath("totalPages").description("만들 수 있는 page 개수")
+                        )
+                ));
+    }
+
+    @Test
+    @DisplayName("챌린지 삭제 테스트")
+    void deleteChallenge() throws Exception {
+        mockMvc.perform(delete("/challenge/{challengeId}", challenge1.getId())
+                        .header(AUTHORIZATION, token)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNoContent())
+                .andDo(print())
+                .andDo(document("challenge-delete",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(
+                                removeHeaders("Vary", "X-Content-Type-Options", "X-XSS-Protection", "Pragma", "Expires",
+                                        "Cache-Control", "Strict-Transport-Security", "X-Frame-Options"),
+                                prettyPrint()),
+                        pathParameters(
+                                parameterWithName("challengeId").description("챌린지 ID")
                         )
                 ));
     }

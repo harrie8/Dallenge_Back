@@ -4,11 +4,20 @@
 [[Challenge-챌린지-생성]]
 === 챌린지 생성
 
-operation::challenge-create[snippets='http-request']
-
-==== 요청값
-
+.HTTP Request
+[%collapsible]
 ====
+
+[%collapsible]
+=====
+operation::challenge-create[snippets='http-request']
+=====
+
+=====
+
+.RequestBody
+[%collapsible]
+======
 include::{snippets}/challenge-create/request-parts.adoc[]
 
 requestCreateChallenge - 챌린지 정보 데이터(JSON)
@@ -19,9 +28,10 @@ challengeImgFile - 챌린지 이미지 파일(FILE) +
 
 hashtagDto - 해시태그 데이터(LIST) +
 ["tag1","tag2"] 의 형식으로 여러 개의 문자열을 리스트로 받아옵니다.
+======
+=====
 
 ====
-
 
 operation::challenge-create[snippets='http-response']
 
@@ -34,13 +44,13 @@ operation::challenge-create[snippets='http-response']
 
 - popular는 내림차순 정렬합니다.
 
-operation::challenges-find-all[snippets='http-request,request-parameters']
+operation::challenges-find-all-sort-by-popular[snippets='http-request,request-parameters']
 
 .HTTP Response
 [%collapsible]
 =====
-include::{snippets}/challenges-find-all/http-response.adoc[]
-include::{snippets}/challenges-find-all/response-fields.adoc[]
+include::{snippets}/challenges-find-all-sort-by-popular/http-response.adoc[]
+include::{snippets}/challenges-find-all-sort-by-popular/response-fields.adoc[]
 =====
 
 ====
@@ -100,3 +110,8 @@ include::{snippets}/challenges-find-by-condition-sort-by-time/response-fields.ad
 =====
 
 ====
+
+[[Challenge-챌린지-삭제]]
+==== 챌린지 삭제
+
+operation::challenge-delete[snippets='http-request,path-parameters,http-response']

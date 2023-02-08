@@ -27,7 +27,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
@@ -89,5 +91,19 @@ public class ChallengeController {
         Page<ResponseChallenge> responseChallenges = userChallengeService.searchByCondition(condition, pageable);
 
         return ResponseEntity.status(HttpStatus.OK).body(responseChallenges);
+    }
+
+    @DeleteMapping("/challenge/{challengeId}")
+    public ResponseEntity<Void> deleteChallenge(
+            @AuthenticationPrincipal org.springframework.security.core.userdetails.User user,
+            @PathVariable Long challengeId) {
+        String userEmail = user.getUsername();
+        User findUser = userService.findByEmail(userEmail);
+        if (findUser == null) {
+            throw new UserNotFound();
+        }
+
+        challengeService.deleteChallenge(challengeId, findUser);
+        return ResponseEntity.noContent().build();
     }
 }
