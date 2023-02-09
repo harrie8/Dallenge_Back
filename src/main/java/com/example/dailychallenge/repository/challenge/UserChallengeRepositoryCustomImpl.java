@@ -124,7 +124,7 @@ public class UserChallengeRepositoryCustomImpl implements
 //            Order direction = order.getDirection().isAscending() ? Order.ASC : Order.DESC; // 새로운 정렬 조건이 추가되면 처리하자
             if (order.getProperty().equals("time")) {
 //                return new OrderSpecifier<>(direction, challenge.created_at);
-                return new OrderSpecifier<>(Order.ASC, challenge.created_at);
+                return new OrderSpecifier<>(Order.DESC, challenge.created_at);
             }
             if (order.getProperty().equals("popular")) {
                 return new OrderSpecifier<>(Order.DESC, userChallenge.count());

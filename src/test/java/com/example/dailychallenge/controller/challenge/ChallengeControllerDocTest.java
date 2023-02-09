@@ -392,8 +392,8 @@ public class ChallengeControllerDocTest extends RestDocsTest {
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content[*].title", contains(
-                        "제목입니다.1", "제목입니다.2", "제목입니다.3", "제목입니다.4", "제목입니다.5",
-                        "제목입니다.6", "제목입니다.7", "제목입니다.8", "제목입니다.9", "제목입니다.10")))
+                        "제목입니다.10", "제목입니다.9", "제목입니다.8", "제목입니다.7", "제목입니다.6", "제목입니다.5",
+                        "제목입니다.4", "제목입니다.3", "제목입니다.2", "제목입니다.1")))
                 .andDo(restDocs.document(
                         requestParameters(
                                 parameterWithName("size").description("기본값: 10").optional(),
@@ -474,8 +474,8 @@ public class ChallengeControllerDocTest extends RestDocsTest {
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content[*].title",
-                        contains("제목입니다.3", "제목입니다.4", "제목입니다.5","제목입니다.6", "제목입니다.7", "제목입니다.8",
-                                "제목입니다.9", "제목입니다.10")))
+                        contains("제목입니다.10", "제목입니다.9", "제목입니다.8", "제목입니다.7", "제목입니다.6", "제목입니다.5",
+                                "제목입니다.4", "제목입니다.3")))
                 .andDo(restDocs.document(
                         requestParameters(
                                 parameterWithName("title").description("찾고 싶은 Challenge 제목").optional(),

@@ -19,6 +19,7 @@ import com.example.dailychallenge.repository.UserRepository;
 import com.example.dailychallenge.util.RepositoryTest;
 import com.example.dailychallenge.vo.challenge.ResponseChallenge;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -166,15 +167,15 @@ public class UserChallengeRepositoryCustomTest extends RepositoryTest {
                                 "제목입니다.7", "제목입니다.8", "제목입니다.9", "제목입니다.10"),
                         List.of(5L, 2L, 2L, 1L, 1L, 1L, 1L, 1L, 1L, 1L)),
                 Arguments.of("time",
-                        List.of("제목입니다.1", "제목입니다.2", "제목입니다.3", "제목입니다.4", "제목입니다.5", "제목입니다.6",
-                                "제목입니다.7", "제목입니다.8", "제목입니다.9", "제목입니다.10"),
-                        List.of(2L, 5L, 1L, 1L, 1L, 2L, 1L, 1L, 1L, 1L))
+                        List.of("제목입니다.10", "제목입니다.9", "제목입니다.8", "제목입니다.7", "제목입니다.6", "제목입니다.5",
+                                "제목입니다.4", "제목입니다.3", "제목입니다.2", "제목입니다.1"),
+                        List.of(1L, 1L, 1L, 1L, 2L, 1L, 1L, 1L, 5L, 2L))
         );
     }
 
     @ParameterizedTest
     @MethodSource("generateSortData")
-    @DisplayName("모든 챌리지들을 찾는 테스트")
+    @DisplayName("모든 챌린지들을 찾는 테스트")
     void searchAllChallenges(String sortProperties, List<String> titleExpect,
                              List<Long> howManyUsersAreInThisChallengeExpect) {
 
@@ -192,7 +193,18 @@ public class UserChallengeRepositoryCustomTest extends RepositoryTest {
             assertThat(results).extracting("challengeOwnerUser").extracting("userName")
                     .contains(savedUser.getUserName());
             if (sortProperties.equals("time")) {
-                assertThat(results).extracting("created_at").isSorted();
+                List<String> createdAts = results.getContent().stream()
+                        .map(ResponseChallenge::getCreated_at)
+                        .sorted()
+                        .collect(Collectors.toList());
+                assertThat(createdAts).isSorted();
+            }
+            if (sortProperties.equals("popular")) {
+                List<Long> howManyUsersAreInThisChallenges = results.getContent().stream()
+                        .map(ResponseChallenge::getHowManyUsersAreInThisChallenge)
+                        .sorted()
+                        .collect(Collectors.toList());
+                assertThat(howManyUsersAreInThisChallenges).isSorted();
             }
         });
     }
@@ -211,8 +223,8 @@ public class UserChallengeRepositoryCustomTest extends RepositoryTest {
                 Arguments.of(ChallengeSearchCondition.builder()
                                 .title(null).category(ChallengeCategory.WORKOUT.getDescription()).build(),
                         "time",
-                        List.of("제목입니다.3", "제목입니다.4", "제목입니다.5", "제목입니다.6", "제목입니다.7", "제목입니다.8",
-                                "제목입니다.9", "제목입니다.10")),
+                        List.of("제목입니다.10", "제목입니다.9", "제목입니다.8", "제목입니다.7", "제목입니다.6", "제목입니다.5",
+                                "제목입니다.4", "제목입니다.3")),
                 Arguments.of(ChallengeSearchCondition.builder()
                                 .title("1").category(ChallengeCategory.STUDY.getDescription()).build(),
                         "popular",
