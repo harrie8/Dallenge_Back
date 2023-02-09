@@ -4,26 +4,36 @@
 [[Challenge-챌린지-생성]]
 === 챌린지 생성
 
-operation::challenge-create[snippets='http-request']
-
-==== 요청값
-
+.HTTP Request
+[%collapsible]
 ====
-include::{snippets}/challenge-create/request-parts.adoc[]
+
+[%collapsible]
+=====
+operation::challenge-controller-doc-test/create-challenge-test[snippets='http-request']
+=====
+
+=====
+
+.RequestBody
+[%collapsible]
+======
+include::{snippets}/challenge-controller-doc-test/create-challenge-test/request-parts.adoc[]
 
 requestCreateChallenge - 챌린지 정보 데이터(JSON)
-include::{snippets}/challenge-create/request-part-requestCreateChallenge-fields.adoc[]
+include::{snippets}/challenge-controller-doc-test/create-challenge-test/request-part-requestCreateChallenge-fields.adoc[]
 
 challengeImgFile - 챌린지 이미지 파일(FILE) +
 .jpg 형식의 이미지 파일을 지원합니다.
 
 hashtagDto - 해시태그 데이터(LIST) +
 ["tag1","tag2"] 의 형식으로 여러 개의 문자열을 리스트로 받아옵니다.
+======
+=====
 
 ====
 
-
-operation::challenge-create[snippets='http-response']
+operation::challenge-controller-doc-test/create-challenge-test[snippets='http-response']
 
 
 [[Challenge-모든-챌린지들-찾기]]
@@ -34,13 +44,13 @@ operation::challenge-create[snippets='http-response']
 
 - popular는 내림차순 정렬합니다.
 
-operation::challenges-find-all[snippets='http-request,request-parameters']
+operation::challenge-controller-doc-test/search-all-challenges-sort-by-popular-test[snippets='http-request,request-parameters']
 
 .HTTP Response
 [%collapsible]
 =====
-include::{snippets}/challenges-find-all/http-response.adoc[]
-include::{snippets}/challenges-find-all/response-fields.adoc[]
+include::{snippets}/challenge-controller-doc-test/search-all-challenges-sort-by-popular-test/http-response.adoc[]
+include::{snippets}/challenge-controller-doc-test/search-all-challenges-sort-by-popular-test/response-fields.adoc[]
 =====
 
 ====
@@ -50,19 +60,24 @@ include::{snippets}/challenges-find-all/response-fields.adoc[]
 
 - time은 오름차순 정렬합니다.
 
-operation::challenges-find-all-sort-by-time[snippets='http-request,request-parameters']
+operation::challenge-controller-doc-test/search-all-challenges-sort-by-time-test[snippets='http-request,request-parameters']
 
 .HTTP Response
 [%collapsible]
 =====
-include::{snippets}/challenges-find-all-sort-by-time/http-response.adoc[]
-include::{snippets}/challenges-find-all-sort-by-time/response-fields.adoc[]
+include::{snippets}/challenge-controller-doc-test/search-all-challenges-sort-by-time-test/http-response.adoc[]
+include::{snippets}/challenge-controller-doc-test/search-all-challenges-sort-by-time-test/response-fields.adoc[]
 =====
 
 ====
 
+[[Challenge-특정-챌린지-조회]]
+=== 특정 챌린지 조회
 
-[[Challenge-이름-또는_카테고리로-챌린지들-찾기]]
+operation::challenge-controller-doc-test/find-challenge-by-id-test[snippets='http-request,path-parameters,http-response,response-fields']
+
+
+[[Challenge-이름-또는-카테고리로-챌린지들-찾기]]
 === 이름 또는 카테고리로 챌린지들 찾기
 
 ==== popular 정렬
@@ -72,13 +87,13 @@ include::{snippets}/challenges-find-all-sort-by-time/response-fields.adoc[]
 - url의 parameter 보시면 title,category 값이 한글이 깨졌습니다. +
 원래 값은 GET /challenge/condition?title=&category=운동&size=20&page=0&sort=popular 입니다.
 
-operation::challenges-find-by-condition-sort-by-popular[snippets='http-request,request-parameters']
+operation::challenge-controller-doc-test/search-challenges-by-condition-sort-by-popular-test[snippets='http-request,request-parameters']
 
 .HTTP Response
 [%collapsible]
 =====
-include::{snippets}/challenges-find-by-condition-sort-by-popular/http-response.adoc[]
-include::{snippets}/challenges-find-by-condition-sort-by-popular/response-fields.adoc[]
+include::{snippets}/challenge-controller-doc-test/search-challenges-by-condition-sort-by-popular-test/http-response.adoc[]
+include::{snippets}/challenge-controller-doc-test/search-challenges-by-condition-sort-by-popular-test/response-fields.adoc[]
 =====
 
 ====
@@ -90,13 +105,59 @@ include::{snippets}/challenges-find-by-condition-sort-by-popular/response-fields
 - url의 parameter 보시면 title,category 값이 한글이 깨졌습니다. +
 원래 값은 GET /challenge/condition?title=&category=운동&size=20&page=0&sort=time 입니다.
 
-operation::challenges-find-by-condition-sort-by-time[snippets='http-request,request-parameters']
+operation::challenge-controller-doc-test/search-challenges-by-condition-sort-by-time-test[snippets='http-request,request-parameters']
 
 .HTTP Response
 [%collapsible]
 =====
-include::{snippets}/challenges-find-by-condition-sort-by-time/http-response.adoc[]
-include::{snippets}/challenges-find-by-condition-sort-by-time/response-fields.adoc[]
+include::{snippets}/challenge-controller-doc-test/search-challenges-by-condition-sort-by-time-test/http-response.adoc[]
+include::{snippets}/challenge-controller-doc-test/search-challenges-by-condition-sort-by-time-test/response-fields.adoc[]
 =====
 
 ====
+
+[[Challenge-챌린지-수정]]
+=== 챌린지 수정
+
+.HTTP Request
+[%collapsible]
+====
+
+[%collapsible]
+=====
+include::{snippets}/challenge-controller-doc-test/update-challenge/http-request.adoc[]
+=====
+
+
+.RequestBody
+[%collapsible]
+======
+=======
+include::{snippets}/challenge-controller-doc-test/update-challenge/request-parts.adoc[]
+
+requestCreateChallenge - 챌린지 정보 데이터(JSON)
+include::{snippets}/challenge-controller-doc-test/update-challenge/request-part-requestUpdateChallenge-fields.adoc[]
+
+challengeImgFile - 챌린지 이미지 파일(FILE) +
+.jpg 형식의 이미지 파일을 지원합니다.
+
+hashtagDto - 해시태그 데이터(LIST) +
+["tag1","tag2"] 의 형식으로 여러 개의 문자열을 리스트로 받아옵니다.
+=======
+======
+
+operation::challenge-controller-doc-test/update-challenge[snippets='']
+
+====
+
+.HTTP Response
+[%collapsible]
+====
+operation::challenge-controller-doc-test/update-challenge[snippets='http-response,response-fields']
+====
+
+
+[[Challenge-챌린지-삭제]]
+=== 챌린지 삭제
+
+operation::challenge-controller-doc-test/delete-challenge[snippets='http-request,path-parameters,http-response']

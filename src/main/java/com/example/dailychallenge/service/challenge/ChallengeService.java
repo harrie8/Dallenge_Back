@@ -1,11 +1,14 @@
 package com.example.dailychallenge.service.challenge;
 
 import com.example.dailychallenge.dto.ChallengeDto;
+import com.example.dailychallenge.dto.ChallengeEditor;
 import com.example.dailychallenge.entity.challenge.Challenge;
 import com.example.dailychallenge.entity.challenge.ChallengeImg;
 import com.example.dailychallenge.entity.users.User;
 import com.example.dailychallenge.exception.challenge.ChallengeNotFound;
 import com.example.dailychallenge.repository.ChallengeRepository;
+import com.example.dailychallenge.vo.challenge.RequestUpdateChallenge;
+import com.example.dailychallenge.vo.challenge.ResponseChallenge;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -37,8 +40,40 @@ public class ChallengeService {
         return challenge;
     }
 
-    // TODO: 2023-02-06 댓글, 해시태그 정보도 같이 반환하기
     public Challenge findById(Long id) {
         return challengeRepository.findById(id).orElseThrow(ChallengeNotFound::new);
+    }
+
+    public ResponseChallenge searchById(Long challengeId) {
+        return challengeRepository.searchChallengeById(challengeId).orElseThrow(ChallengeNotFound::new);
+    }
+
+    /**
+     * 기존 이미지들을 전부 삭제하고 업데이트 이미지들을 저장하는 로직
+     */
+    public Challenge updateChallenge(Long challengeId, RequestUpdateChallenge requestUpdateChallenge,
+                                     List<MultipartFile> updateChallengeImgFiles, User user) {
+        Challenge findChallenge = challengeRepository.findById(challengeId).orElseThrow(ChallengeNotFound::new);
+        findChallenge.validateOwner(user.getId());
+
+        ChallengeEditor.ChallengeEditorBuilder editorBuilder = findChallenge.toEditor();
+        ChallengeEditor challengeEditor = editorBuilder
+                .title(requestUpdateChallenge.getTitle())
+                .content(requestUpdateChallenge.getContent())
+                .category(requestUpdateChallenge.getChallengeCategory())
+                .build();
+
+        findChallenge.update(challengeEditor);
+        challengeImgService.updateChallengeImgs(findChallenge, updateChallengeImgFiles);
+
+        return findChallenge;
+    }
+
+    public void deleteChallenge(Long challengeId, User user) {
+        Challenge findChallenge = challengeRepository.findById(challengeId).orElseThrow(ChallengeNotFound::new);
+
+        findChallenge.validateOwner(user.getId());
+
+        challengeRepository.delete(findChallenge);
     }
 }

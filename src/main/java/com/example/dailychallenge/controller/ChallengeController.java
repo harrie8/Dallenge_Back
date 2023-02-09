@@ -12,9 +12,13 @@ import com.example.dailychallenge.service.challenge.UserChallengeService;
 import com.example.dailychallenge.service.hashtag.ChallengeHashtagService;
 import com.example.dailychallenge.service.hashtag.HashtagService;
 import com.example.dailychallenge.service.users.UserService;
-import com.example.dailychallenge.vo.RequestCreateChallenge;
-import com.example.dailychallenge.vo.ResponseChallenge;
-import com.example.dailychallenge.vo.ResponseCreateChallenge;
+import com.example.dailychallenge.vo.challenge.RequestCreateChallenge;
+import com.example.dailychallenge.vo.challenge.RequestUpdateChallenge;
+import com.example.dailychallenge.vo.challenge.ResponseChallenge;
+import com.example.dailychallenge.vo.challenge.ResponseChallengeWithParticipatedUsersInfo;
+import com.example.dailychallenge.vo.challenge.ResponseCreateChallenge;
+import com.example.dailychallenge.vo.challenge.ResponseUpdateChallenge;
+import com.example.dailychallenge.vo.challenge.ResponseUserChallenge;
 import java.util.List;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +31,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
@@ -72,6 +78,20 @@ public class ChallengeController {
         return ResponseEntity.status(HttpStatus.CREATED).body(responseCreateChallenge);
     }
 
+    @GetMapping("/challenge/{challengeId}")
+    public ResponseEntity<ResponseChallengeWithParticipatedUsersInfo> findChallengeById(
+            @PathVariable Long challengeId) {
+        ResponseChallenge responseChallenge = challengeService.searchById(challengeId);
+        List<ResponseUserChallenge> responseUserChallenges = userChallengeService.searchByChallengeId(challengeId);
+
+        ResponseChallengeWithParticipatedUsersInfo responseChallengeWithParticipatedUsersInfo =
+                ResponseChallengeWithParticipatedUsersInfo.builder()
+                        .responseChallenge(responseChallenge)
+                        .responseUserChallenges(responseUserChallenges)
+                        .build();
+        return ResponseEntity.status(HttpStatus.OK).body(responseChallengeWithParticipatedUsersInfo);
+    }
+
     @GetMapping("/challenge")
     public ResponseEntity<Page<ResponseChallenge>> searchAllChallengesSortByPopular(
             @PageableDefault(page = 0, size = 10, sort = "popular", direction = Sort.Direction.DESC) Pageable pageable) {
@@ -89,5 +109,40 @@ public class ChallengeController {
         Page<ResponseChallenge> responseChallenges = userChallengeService.searchByCondition(condition, pageable);
 
         return ResponseEntity.status(HttpStatus.OK).body(responseChallenges);
+    }
+
+    @PostMapping("/challenge/{challengeId}")
+    public ResponseEntity<ResponseUpdateChallenge> updateChallenge(
+            @AuthenticationPrincipal org.springframework.security.core.userdetails.User user,
+            @PathVariable Long challengeId,
+            @RequestPart @Valid RequestUpdateChallenge requestUpdateChallenge,
+            @RequestPart(required = false) List<MultipartFile> updateChallengeImgFiles) {
+
+        String userEmail = user.getUsername();
+        User findUser = userService.findByEmail(userEmail);
+        if (findUser == null) {
+            throw new UserNotFound();
+        }
+
+        Challenge updatedChallenge = challengeService.updateChallenge(challengeId, requestUpdateChallenge,
+                updateChallengeImgFiles, findUser);
+
+        ResponseUpdateChallenge responseChallenge = ResponseUpdateChallenge.create(updatedChallenge);
+
+        return ResponseEntity.status(HttpStatus.OK).body(responseChallenge);
+    }
+
+    @DeleteMapping("/challenge/{challengeId}")
+    public ResponseEntity<Void> deleteChallenge(
+            @AuthenticationPrincipal org.springframework.security.core.userdetails.User user,
+            @PathVariable Long challengeId) {
+        String userEmail = user.getUsername();
+        User findUser = userService.findByEmail(userEmail);
+        if (findUser == null) {
+            throw new UserNotFound();
+        }
+
+        challengeService.deleteChallenge(challengeId, findUser);
+        return ResponseEntity.noContent().build();
     }
 }

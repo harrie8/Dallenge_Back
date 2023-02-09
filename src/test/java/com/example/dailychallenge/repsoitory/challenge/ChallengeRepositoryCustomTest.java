@@ -1,9 +1,9 @@
 package com.example.dailychallenge.repsoitory.challenge;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import com.example.dailychallenge.dto.ChallengeSearchCondition;
 import com.example.dailychallenge.entity.challenge.Challenge;
 import com.example.dailychallenge.entity.challenge.ChallengeCategory;
 import com.example.dailychallenge.entity.challenge.ChallengeDuration;
@@ -12,25 +12,20 @@ import com.example.dailychallenge.entity.challenge.ChallengeLocation;
 import com.example.dailychallenge.entity.challenge.ChallengeStatus;
 import com.example.dailychallenge.entity.challenge.UserChallenge;
 import com.example.dailychallenge.entity.users.User;
+import com.example.dailychallenge.exception.challenge.ChallengeNotFound;
 import com.example.dailychallenge.repository.ChallengeImgRepository;
 import com.example.dailychallenge.repository.ChallengeRepository;
 import com.example.dailychallenge.repository.UserChallengeRepository;
 import com.example.dailychallenge.repository.UserRepository;
 import com.example.dailychallenge.util.RepositoryTest;
 import com.example.dailychallenge.vo.challenge.ResponseChallenge;
-import java.util.List;
-import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 
-public class UserChallengeRepositoryCustomTest extends RepositoryTest {
+public class ChallengeRepositoryCustomTest extends RepositoryTest {
 
     @Autowired
     private UserChallengeRepository userChallengeRepository;
@@ -159,82 +154,39 @@ public class UserChallengeRepositoryCustomTest extends RepositoryTest {
         }
     }
 
-    static Stream<Arguments> generateSortData() {
-        return Stream.of(
-                Arguments.of("popular",
-                        List.of("제목입니다.2", "제목입니다.1", "제목입니다.6", "제목입니다.3", "제목입니다.4", "제목입니다.5",
-                                "제목입니다.7", "제목입니다.8", "제목입니다.9", "제목입니다.10"),
-                        List.of(5L, 2L, 2L, 1L, 1L, 1L, 1L, 1L, 1L, 1L)),
-                Arguments.of("time",
-                        List.of("제목입니다.1", "제목입니다.2", "제목입니다.3", "제목입니다.4", "제목입니다.5", "제목입니다.6",
-                                "제목입니다.7", "제목입니다.8", "제목입니다.9", "제목입니다.10"),
-                        List.of(2L, 5L, 1L, 1L, 1L, 2L, 1L, 1L, 1L, 1L))
-        );
-    }
+    @Nested
+    @DisplayName("특정 챌린지 조회 테스트")
+    class searchById {
+        @Test
+        void success() {
+            Long challenge1Id = challenge1.getId();
+            ResponseChallenge responseChallenge = challengeRepository.searchChallengeById(challenge1Id)
+                    .orElseThrow(ChallengeNotFound::new);
 
-    @ParameterizedTest
-    @MethodSource("generateSortData")
-    @DisplayName("모든 챌리지들을 찾는 테스트")
-    void searchAllChallenges(String sortProperties, List<String> titleExpect,
-                             List<Long> howManyUsersAreInThisChallengeExpect) {
-
-        PageRequest pageRequest = PageRequest.of(0, 20, Sort.by(sortProperties));
-        Page<ResponseChallenge> results = userChallengeRepository.searchAllChallenges(pageRequest);
-
-        for (ResponseChallenge result : results) {
-            System.out.println("result = " + result);
+            assertAll(() -> {
+                assertEquals(challenge1Id, responseChallenge.getId());
+                assertEquals(challenge1.getTitle(), responseChallenge.getTitle());
+                assertEquals(challenge1.getContent(), responseChallenge.getContent());
+                assertEquals(challenge1.getChallengeCategory().getDescription(), responseChallenge.getChallengeCategory());
+                assertEquals(challenge1.getChallengeLocation().getDescription(), responseChallenge.getChallengeLocation());
+                assertEquals(challenge1.getChallengeDuration().getDescription(), responseChallenge.getChallengeDuration());
+                assertEquals(challenge1.getFormattedCreatedAt(), responseChallenge.getCreated_at());
+                assertEquals(challenge1.getImgUrls(), responseChallenge.getChallengeImgUrls());
+                assertEquals(2, responseChallenge.getHowManyUsersAreInThisChallenge());
+                assertEquals(savedUser.getUserName(), responseChallenge.getChallengeOwnerUser().getUserName());
+                assertEquals(savedUser.getEmail(), responseChallenge.getChallengeOwnerUser().getEmail());
+                assertEquals(savedUser.getId(), responseChallenge.getChallengeOwnerUser().getUserId());
+            });
         }
 
-        assertAll(() -> {
-            assertThat(results).extracting("title").containsExactlyElementsOf(titleExpect);
-            assertThat(results).extracting("howManyUsersAreInThisChallenge")
-                    .containsExactlyElementsOf(howManyUsersAreInThisChallengeExpect);
-            assertThat(results).extracting("challengeOwnerUser").extracting("userName")
-                    .contains(savedUser.getUserName());
-            if (sortProperties.equals("time")) {
-                assertThat(results).extracting("created_at").isSorted();
-            }
-        });
-    }
+        @Test
+        void failByChallengeNotFound() {
+            Long notExistChallenge1Id = challenge1.getId() + 100L;
 
-    static Stream<Arguments> generateConditionData() {
-        return Stream.of(
-                Arguments.of(ChallengeSearchCondition.builder()
-                                .title("1").category(null).build(),
-                        "popular",
-                        List.of("제목입니다.1", "제목입니다.10")),
-                Arguments.of(ChallengeSearchCondition.builder()
-                                .title(null).category(ChallengeCategory.WORKOUT.getDescription()).build(),
-                        "popular",
-                        List.of("제목입니다.6", "제목입니다.3", "제목입니다.4", "제목입니다.5", "제목입니다.7", "제목입니다.8",
-                                "제목입니다.9", "제목입니다.10")),
-                Arguments.of(ChallengeSearchCondition.builder()
-                                .title(null).category(ChallengeCategory.WORKOUT.getDescription()).build(),
-                        "time",
-                        List.of("제목입니다.3", "제목입니다.4", "제목입니다.5", "제목입니다.6", "제목입니다.7", "제목입니다.8",
-                                "제목입니다.9", "제목입니다.10")),
-                Arguments.of(ChallengeSearchCondition.builder()
-                                .title("1").category(ChallengeCategory.STUDY.getDescription()).build(),
-                        "popular",
-                        List.of("제목입니다.1"))
-        );
-    }
-
-    @ParameterizedTest
-    @MethodSource("generateConditionData")
-    @DisplayName("챌린지 검색 조건으로 챌린지들을 찾는 테스트")
-    void searchChallengesByCondition(ChallengeSearchCondition condition, String sortProperties, List<String> expect) {
-        PageRequest pageRequest = PageRequest.of(0, 20, Sort.by(sortProperties));
-        Page<ResponseChallenge> results = userChallengeRepository.searchChallengesByCondition(condition, pageRequest);
-
-        for (ResponseChallenge result : results) {
-            System.out.println("result = " + result);
+            Throwable exception = assertThrows(ChallengeNotFound.class,
+                    () -> challengeRepository.searchChallengeById(notExistChallenge1Id)
+                            .orElseThrow(ChallengeNotFound::new));
+            assertEquals("챌린지를 찾을 수 없습니다.", exception.getMessage());
         }
-
-        assertAll(() -> {
-            assertThat(results).extracting("title").containsExactlyElementsOf(expect);
-            assertThat(results).extracting("challengeOwnerUser").extracting("userName")
-                    .contains(savedUser.getUserName());
-        });
     }
 }
