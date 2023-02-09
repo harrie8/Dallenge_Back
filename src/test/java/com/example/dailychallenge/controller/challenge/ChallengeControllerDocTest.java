@@ -4,6 +4,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasItems;
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.startsWith;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
@@ -11,6 +12,7 @@ import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuild
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.relaxedResponseFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestPartFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.partWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
@@ -18,7 +20,6 @@ import static org.springframework.restdocs.request.RequestDocumentation.requestP
 import static org.springframework.restdocs.request.RequestDocumentation.requestParts;
 import static org.springframework.restdocs.snippet.Attributes.key;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -45,7 +46,7 @@ import com.example.dailychallenge.service.challenge.UserChallengeService;
 import com.example.dailychallenge.service.users.UserService;
 import com.example.dailychallenge.util.RestDocsTest;
 import com.example.dailychallenge.vo.challenge.RequestCreateChallenge;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.example.dailychallenge.vo.challenge.RequestUpdateChallenge;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
@@ -58,7 +59,6 @@ import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.mock.web.MockPart;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.RequestPostProcessor;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -86,10 +86,6 @@ public class ChallengeControllerDocTest extends RestDocsTest {
     private HashtagRepository hashtagRepository;
     @Autowired
     private ChallengeHashtagRepository challengeHashtagRepository;
-    @Autowired
-    private MockMvc mockMvc;
-    @Autowired
-    private ObjectMapper objectMapper;
 
     @Value("${userImgLocation}")
     private String challengeImgLocation;
@@ -204,6 +200,16 @@ public class ChallengeControllerDocTest extends RestDocsTest {
         return result;
     }
 
+    private List<MultipartFile> updateChallengeImgFiles() {
+        List<MultipartFile> updateChallengeImgFiles = new ArrayList<>();
+        for (int i = 0; i < 2; i++) {
+            String path = challengeImgLocation +"/";
+            String imageName = "updatedChallengeImage" + i + ".jpg";
+            updateChallengeImgFiles.add(new MockMultipartFile(path, imageName, "image/jpg", new byte[]{1, 2, 3, 4}));
+        }
+        return updateChallengeImgFiles;
+    }
+
     @Test
     @DisplayName("챌린지 생성")
 //    @WithAuthUser
@@ -250,7 +256,6 @@ public class ChallengeControllerDocTest extends RestDocsTest {
                 .andExpect(jsonPath("$.challengeOwnerUser.userName").value(savedUser.getUserName()))
                 .andExpect(jsonPath("$.challengeOwnerUser.email").value(savedUser.getEmail()))
                 .andExpect(jsonPath("$.challengeOwnerUser.userId").value(savedUser.getId()))
-                .andDo(print())
                 .andDo(restDocs.document(
                         requestParts(
                                 partWithName("requestCreateChallenge").description("챌린지 정보 데이터(JSON)")
@@ -306,7 +311,6 @@ public class ChallengeControllerDocTest extends RestDocsTest {
                         contains(savedUser.getUserName(), "홍길동1")))
                 .andExpect(jsonPath("$.responseUserChallenges[*].participatedUser.email",
                         contains(savedUser.getEmail(), "1@test.com")))
-                .andDo(print())
                 .andDo(restDocs.document(
                         pathParameters(
                                 parameterWithName("challengeId").description("찾고 싶은 챌린지 ID")
@@ -440,7 +444,6 @@ public class ChallengeControllerDocTest extends RestDocsTest {
                         hasItem(savedUser.getEmail())))
                 .andExpect(jsonPath("$.content[*].challengeOwnerUser.userId",
                         hasItem(savedUser.getId().intValue())))
-                .andDo(print())
                 .andDo(restDocs.document(
                         requestParameters(
                                 parameterWithName("title").description("찾고 싶은 Challenge 제목").optional(),
@@ -473,7 +476,6 @@ public class ChallengeControllerDocTest extends RestDocsTest {
                 .andExpect(jsonPath("$.content[*].title",
                         contains("제목입니다.3", "제목입니다.4", "제목입니다.5","제목입니다.6", "제목입니다.7", "제목입니다.8",
                                 "제목입니다.9", "제목입니다.10")))
-                .andDo(print())
                 .andDo(restDocs.document(
                         requestParameters(
                                 parameterWithName("title").description("찾고 싶은 Challenge 제목").optional(),
@@ -491,13 +493,79 @@ public class ChallengeControllerDocTest extends RestDocsTest {
     }
 
     @Test
+    @DisplayName("챌린지 수정 테스트")
+    void updateChallenge() throws Exception {
+        RequestUpdateChallenge requestUpdateChallenge = RequestUpdateChallenge.builder()
+                .title("수정된 제목")
+                .content("수정된 내용")
+                .challengeCategory(ChallengeCategory.WORKOUT.getDescription())
+                .build();
+        List<MultipartFile> updateChallengeImgFiles = updateChallengeImgFiles();
+
+        String json = objectMapper.writeValueAsString(requestUpdateChallenge);
+        MockMultipartFile mockRequestUpdateChallenge = new MockMultipartFile("requestUpdateChallenge",
+                "requestUpdateChallenge",
+                "application/json", json.getBytes(UTF_8));
+
+        String challengeCategoryDescriptions = String.join(", ", ChallengeCategory.getDescriptions());
+        Long challenge1Id = challenge1.getId();
+        mockMvc.perform(multipart("/challenge/{challengeId}", challenge1Id)
+                        .file(mockRequestUpdateChallenge)
+                        .part(new MockPart("updateChallengeImgFiles", "updateChallengeImgFiles",
+                                updateChallengeImgFiles.get(0).getBytes()))
+                        .part(new MockPart("updateChallengeImgFiles", "updateChallengeImgFiles",
+                                updateChallengeImgFiles.get(1).getBytes()))
+                        .with(requestPostProcessor)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.title").value(requestUpdateChallenge.getTitle()))
+                .andExpect(jsonPath("$.content").value(requestUpdateChallenge.getContent()))
+                .andExpect(jsonPath("$.challengeCategory").value(requestUpdateChallenge.getChallengeCategory()))
+                .andExpect(jsonPath("$.challengeLocation").value(challenge1.getChallengeLocation().getDescription()))
+                .andExpect(jsonPath("$.challengeDuration").value(challenge1.getChallengeDuration().getDescription()))
+                .andExpect(jsonPath("$.created_at").value(challenge1.getFormattedCreatedAt()))
+                .andExpect(jsonPath("$.updated_at").isNotEmpty())
+                .andExpect(jsonPath("$.challengeImgUrls[*]", hasItem(startsWith("/images/"))))
+                .andExpect(jsonPath("$.challengeImgUrls", hasSize(2)))
+                .andDo(restDocs.document(
+                        pathParameters(
+                                parameterWithName("challengeId").description("수정하고 싶은 챌린지 ID")
+                        ),
+                        requestParts(
+                                partWithName("requestUpdateChallenge").description("챌린지 정보 데이터(JSON)")
+                                        .attributes(key("type").value("JSON")),
+                                partWithName("updateChallengeImgFiles").description("챌린지 이미지 파일들(FILE)").optional()
+                                        .attributes(key("type").value(".jpg"))
+//                                partWithName("\"hashtagDto\"").description("해시태그 데이터(LIST)").optional()
+//                                        .attributes(key("type").value("LIST"))
+                        ),
+                        requestPartFields("requestUpdateChallenge",
+                                fieldWithPath("title").description("제목"),
+                                fieldWithPath("content").description("내용"),
+                                fieldWithPath("challengeCategory").description("카테고리")
+                                        .attributes(key("format").value(challengeCategoryDescriptions))
+                        ),
+                        responseFields(
+                                fieldWithPath("id").description("챌린지 ID"),
+                                fieldWithPath("title").description("제목"),
+                                fieldWithPath("content").description("내용"),
+                                fieldWithPath("challengeCategory").description("카테고리"),
+                                fieldWithPath("challengeLocation").description("장소"),
+                                fieldWithPath("challengeDuration").description("기간"),
+                                fieldWithPath("created_at").description("생성일"),
+                                fieldWithPath("updated_at").description("수정일"),
+                                fieldWithPath("challengeImgUrls").description("사진 url들")
+                        )
+                ));
+    }
+
+    @Test
     @DisplayName("챌린지 삭제 테스트")
     void deleteChallenge() throws Exception {
         mockMvc.perform(delete("/challenge/{challengeId}", challenge1.getId())
                         .with(requestPostProcessor)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNoContent())
-                .andDo(print())
                 .andDo(restDocs.document(
                         pathParameters(
                                 parameterWithName("challengeId").description("챌린지 ID")

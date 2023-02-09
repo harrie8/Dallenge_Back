@@ -116,7 +116,48 @@ include::{snippets}/challenge-controller-doc-test/search-challenges-by-condition
 
 ====
 
+[[Challenge-챌린지-수정]]
+=== 챌린지 수정
+
+.HTTP Request
+[%collapsible]
+====
+
+[%collapsible]
+=====
+include::{snippets}/challenge-controller-doc-test/update-challenge/http-request.adoc[]
+=====
+
+
+.RequestBody
+[%collapsible]
+======
+=======
+include::{snippets}/challenge-controller-doc-test/update-challenge/request-parts.adoc[]
+
+requestCreateChallenge - 챌린지 정보 데이터(JSON)
+include::{snippets}/challenge-controller-doc-test/update-challenge/request-part-requestUpdateChallenge-fields.adoc[]
+
+challengeImgFile - 챌린지 이미지 파일(FILE) +
+.jpg 형식의 이미지 파일을 지원합니다.
+
+hashtagDto - 해시태그 데이터(LIST) +
+["tag1","tag2"] 의 형식으로 여러 개의 문자열을 리스트로 받아옵니다.
+=======
+======
+
+operation::challenge-controller-doc-test/update-challenge[snippets='']
+
+====
+
+.HTTP Response
+[%collapsible]
+====
+operation::challenge-controller-doc-test/update-challenge[snippets='http-response,response-fields']
+====
+
+
 [[Challenge-챌린지-삭제]]
-==== 챌린지 삭제
+=== 챌린지 삭제
 
 operation::challenge-controller-doc-test/delete-challenge[snippets='http-request,path-parameters,http-response']

@@ -13,9 +13,11 @@ import com.example.dailychallenge.service.hashtag.ChallengeHashtagService;
 import com.example.dailychallenge.service.hashtag.HashtagService;
 import com.example.dailychallenge.service.users.UserService;
 import com.example.dailychallenge.vo.challenge.RequestCreateChallenge;
+import com.example.dailychallenge.vo.challenge.RequestUpdateChallenge;
 import com.example.dailychallenge.vo.challenge.ResponseChallenge;
 import com.example.dailychallenge.vo.challenge.ResponseChallengeWithParticipatedUsersInfo;
 import com.example.dailychallenge.vo.challenge.ResponseCreateChallenge;
+import com.example.dailychallenge.vo.challenge.ResponseUpdateChallenge;
 import com.example.dailychallenge.vo.challenge.ResponseUserChallenge;
 import java.util.List;
 import javax.validation.Valid;
@@ -107,6 +109,27 @@ public class ChallengeController {
         Page<ResponseChallenge> responseChallenges = userChallengeService.searchByCondition(condition, pageable);
 
         return ResponseEntity.status(HttpStatus.OK).body(responseChallenges);
+    }
+
+    @PostMapping("/challenge/{challengeId}")
+    public ResponseEntity<ResponseUpdateChallenge> updateChallenge(
+            @AuthenticationPrincipal org.springframework.security.core.userdetails.User user,
+            @PathVariable Long challengeId,
+            @RequestPart @Valid RequestUpdateChallenge requestUpdateChallenge,
+            @RequestPart(required = false) List<MultipartFile> updateChallengeImgFiles) {
+
+        String userEmail = user.getUsername();
+        User findUser = userService.findByEmail(userEmail);
+        if (findUser == null) {
+            throw new UserNotFound();
+        }
+
+        Challenge updatedChallenge = challengeService.updateChallenge(challengeId, requestUpdateChallenge,
+                updateChallengeImgFiles, findUser);
+
+        ResponseUpdateChallenge responseChallenge = ResponseUpdateChallenge.create(updatedChallenge);
+
+        return ResponseEntity.status(HttpStatus.OK).body(responseChallenge);
     }
 
     @DeleteMapping("/challenge/{challengeId}")

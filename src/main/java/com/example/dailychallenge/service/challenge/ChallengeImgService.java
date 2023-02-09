@@ -1,10 +1,11 @@
 package com.example.dailychallenge.service.challenge;
 
+import com.example.dailychallenge.entity.challenge.Challenge;
 import com.example.dailychallenge.entity.challenge.ChallengeImg;
 import com.example.dailychallenge.repository.ChallengeImgRepository;
 import com.example.dailychallenge.service.FileService;
 import com.querydsl.core.util.StringUtils;
-import javax.persistence.EntityNotFoundException;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,18 +38,15 @@ public class ChallengeImgService {
 
     }
 
-    public void updateChallengeImg(Long challengeImgId, MultipartFile userImgFile) {
-        if(!userImgFile.isEmpty()){
-            ChallengeImg savedChallengeImg = challengeImgRepository.findById(challengeImgId)
-                    .orElseThrow(EntityNotFoundException::new);
-            if(!StringUtils.isNullOrEmpty(savedChallengeImg.getImgName())){
-                fileService.deleteFile(savedChallengeImg.getImgName());
-            }
+    public void updateChallengeImgs(Challenge challenge, List<MultipartFile> updateChallengeImgFiles) {
+        challenge.clearChallengeImgs();
+        Long challengeId = challenge.getId();
+        challengeImgRepository.deleteChallengeImgsByChallengeId(challengeId);
 
-            String oriImgName = userImgFile.getOriginalFilename();
-            String imgName = fileService.uploadFile(userImgFile);
-            String imgUrl = "/images/"+imgName;
-            savedChallengeImg.updateUserImg(oriImgName,imgName,imgUrl);
+        for (MultipartFile updateChallengeImgFile : updateChallengeImgFiles) {
+            ChallengeImg updateChallengeImg = new ChallengeImg();
+            updateChallengeImg.setChallenge(challenge);
+            saveChallengeImg(updateChallengeImg, updateChallengeImgFile);
         }
     }
 

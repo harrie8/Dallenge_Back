@@ -117,4 +117,8 @@ public class Challenge extends BaseEntity {
             throw new AuthorizationException();
         }
     }
+
+    public void clearChallengeImgs() {
+        this.challengeImgs.clear();
+    }
 }

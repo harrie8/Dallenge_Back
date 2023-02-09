@@ -2,11 +2,11 @@ package com.example.dailychallenge.controller.challenge;
 
 import static com.example.dailychallenge.util.fixture.TokenFixture.EMAIL;
 import static com.example.dailychallenge.util.fixture.TokenFixture.PASSWORD;
-import static com.example.dailychallenge.util.fixture.TokenFixture.ROLE;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasItems;
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.startsWith;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -39,6 +39,7 @@ import com.example.dailychallenge.service.challenge.ChallengeService;
 import com.example.dailychallenge.service.challenge.UserChallengeService;
 import com.example.dailychallenge.service.users.UserService;
 import com.example.dailychallenge.vo.challenge.RequestCreateChallenge;
+import com.example.dailychallenge.vo.challenge.RequestUpdateChallenge;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.ArrayList;
 import java.util.List;
@@ -60,9 +61,9 @@ import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.mock.web.MockPart;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.UserRequestPostProcessor;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.RequestPostProcessor;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -102,12 +103,12 @@ class ChallengeControllerTest {
     private String challengeImgLocation;
     private User savedUser;
     private Challenge challenge1;
-    private UserRequestPostProcessor userRequestPostProcessor;
+    private RequestPostProcessor requestPostProcessor;
 
     @BeforeEach
     void beforeEach() throws Exception {
         initData();
-        userRequestPostProcessor = user(EMAIL).password(PASSWORD).roles(ROLE);
+        requestPostProcessor = user(userService.loadUserByUsername(savedUser.getEmail()));
     }
 
     private void initData() throws Exception {
@@ -212,12 +213,22 @@ class ChallengeControllerTest {
         return result;
     }
 
+    private List<MultipartFile> updateChallengeImgFiles() {
+        List<MultipartFile> updateChallengeImgFiles = new ArrayList<>();
+        for (int i = 0; i < 2; i++) {
+            String path = challengeImgLocation +"/";
+            String imageName = "updatedChallengeImage" + i + ".jpg";
+            updateChallengeImgFiles.add(new MockMultipartFile(path, imageName, "image/jpg", new byte[]{1, 2, 3, 4}));
+        }
+        return updateChallengeImgFiles;
+    }
+
     @Nested
     @DisplayName("챌린지 생성 테스트")
     class createChallenge {
         @Test
 //        @WithAuthUser
-        public void success() throws Exception {
+        void success() throws Exception {
             RequestCreateChallenge requestCreatChallenge = RequestCreateChallenge.builder()
                     .title("제목입니다.")
                     .content("내용입니다.")
@@ -243,7 +254,7 @@ class ChallengeControllerTest {
                             .part(new MockPart("challengeImgFiles", "challengeImgFile", challengeImgFiles.get(2).getBytes()))
                             .part(tag1)
                             .part(tag2)
-                            .with(userRequestPostProcessor) // 토큰 인증 처리, 입력한 정보로 인증된 사용자 생성
+                            .with(requestPostProcessor) // 토큰 인증 처리, 입력한 정보로 인증된 사용자 생성
                             .contentType(MediaType.MULTIPART_FORM_DATA)
                             .accept(MediaType.APPLICATION_JSON))
                     .andExpect(status().isCreated())
@@ -262,7 +273,7 @@ class ChallengeControllerTest {
 
         @Test
         @DisplayName("존재하지 않는 카테고리로 챌린지 생성 테스트")
-        public void failByCategoryNotFoundTest() throws Exception {
+        void failByCategoryNotFoundTest() throws Exception {
             RequestCreateChallenge requestCreatChallenge = RequestCreateChallenge.builder()
                     .title("제목입니다.")
                     .content("내용입니다.")
@@ -277,7 +288,7 @@ class ChallengeControllerTest {
 
             mockMvc.perform(multipart("/challenge/new")
                             .file(requestCreateChallenge)
-                            .with(userRequestPostProcessor)
+                            .with(requestPostProcessor)
                             .contentType(MediaType.MULTIPART_FORM_DATA)
                             .accept(MediaType.APPLICATION_JSON))
                     .andExpect(status().isBadRequest())
@@ -293,7 +304,7 @@ class ChallengeControllerTest {
         Long challenge1Id = challenge1.getId();
 
         mockMvc.perform(get("/challenge/{challengeId}", challenge1Id)
-                        .with(userRequestPostProcessor)
+                        .with(requestPostProcessor)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.responseChallenge.title").value(challenge1.getTitle()))
@@ -322,9 +333,9 @@ class ChallengeControllerTest {
 
     @Test
     @DisplayName("모든 챌린지 조회 테스트")
-    public void searchAllChallengesTest() throws Exception {
+    void searchAllChallengesTest() throws Exception {
         mockMvc.perform(get("/challenge")
-                        .with(userRequestPostProcessor)
+                        .with(requestPostProcessor)
                         .param("size", "20")
                         .param("page", "0")
                         .accept(MediaType.APPLICATION_JSON))
@@ -417,10 +428,10 @@ class ChallengeControllerTest {
     @ParameterizedTest
     @MethodSource("generateConditionData")
     @DisplayName("챌린지들을 검색 조건으로 찾는 테스트")
-    public void searchChallengesByConditionTest(ChallengeSearchCondition condition, String sortProperties,
+    void searchChallengesByConditionTest(ChallengeSearchCondition condition, String sortProperties,
                                                 List<Matcher<Iterable<? extends String>>> expects) throws Exception {
         mockMvc.perform(get("/challenge/condition")
-                        .with(userRequestPostProcessor)
+                        .with(requestPostProcessor)
                         .param("title", condition.getTitle())
                         .param("category", condition.getCategory())
                         .param("size", "20")
@@ -449,9 +460,9 @@ class ChallengeControllerTest {
             "10, 2"
     })
     @DisplayName("모든 챌린지 조회 페이징 테스트")
-    public void searchAllChallengesPagingTest(int totalElements, int numOfPage) throws Exception {
+    void searchAllChallengesPagingTest(int totalElements, int numOfPage) throws Exception {
         mockMvc.perform(get("/challenge")
-                        .with(userRequestPostProcessor)
+                        .with(requestPostProcessor)
                         .param("size", String.valueOf(numOfPage))
                         .param("page", "0")
                         .accept(MediaType.APPLICATION_JSON))
@@ -462,11 +473,48 @@ class ChallengeControllerTest {
     }
 
     @Test
+    @DisplayName("챌린지 수정 테스트")
+    void updateChallenge() throws Exception {
+        RequestUpdateChallenge requestUpdateChallenge = RequestUpdateChallenge.builder()
+                .title("수정된 제목")
+                .content("수정된 내용")
+                .challengeCategory(ChallengeCategory.WORKOUT.getDescription())
+                .build();
+        List<MultipartFile> updateChallengeImgFiles = updateChallengeImgFiles();
+
+        String json = objectMapper.writeValueAsString(requestUpdateChallenge);
+        MockMultipartFile mockRequestUpdateChallenge = new MockMultipartFile("requestUpdateChallenge",
+                "requestUpdateChallenge",
+                "application/json", json.getBytes(UTF_8));
+
+        Long challenge1Id = challenge1.getId();
+        mockMvc.perform(multipart("/challenge/{challengeId}", challenge1Id)
+                        .file(mockRequestUpdateChallenge)
+                        .part(new MockPart("updateChallengeImgFiles", "updateChallengeImgFiles",
+                                updateChallengeImgFiles.get(0).getBytes()))
+                        .part(new MockPart("updateChallengeImgFiles", "updateChallengeImgFiles",
+                                updateChallengeImgFiles.get(1).getBytes()))
+                        .with(requestPostProcessor)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.title").value(requestUpdateChallenge.getTitle()))
+                .andExpect(jsonPath("$.content").value(requestUpdateChallenge.getContent()))
+                .andExpect(jsonPath("$.challengeCategory").value(requestUpdateChallenge.getChallengeCategory()))
+                .andExpect(jsonPath("$.challengeLocation").value(challenge1.getChallengeLocation().getDescription()))
+                .andExpect(jsonPath("$.challengeDuration").value(challenge1.getChallengeDuration().getDescription()))
+                .andExpect(jsonPath("$.created_at").value(challenge1.getFormattedCreatedAt()))
+                .andExpect(jsonPath("$.updated_at").isNotEmpty())
+                .andExpect(jsonPath("$.challengeImgUrls[*]", hasItem(startsWith("/images/"))))
+                .andExpect(jsonPath("$.challengeImgUrls", hasSize(2)))
+                .andDo(print());
+    }
+
+    @Test
     @DisplayName("챌린지 삭제 테스트")
     void deleteChallenge() throws Exception {
         Long challenge1Id = challenge1.getId();
         mockMvc.perform(delete("/challenge/{challengeId}", challenge1Id)
-                        .with(userRequestPostProcessor)
+                        .with(requestPostProcessor)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNoContent())
                 .andDo(print());

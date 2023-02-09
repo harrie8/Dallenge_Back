@@ -52,8 +52,9 @@ public class ChallengeService {
      * 기존 이미지들을 전부 삭제하고 업데이트 이미지들을 저장하는 로직
      */
     public Challenge updateChallenge(Long challengeId, RequestUpdateChallenge requestUpdateChallenge,
-                                     List<MultipartFile> updateChallengeImgFiles) {
+                                     List<MultipartFile> updateChallengeImgFiles, User user) {
         Challenge findChallenge = challengeRepository.findById(challengeId).orElseThrow(ChallengeNotFound::new);
+        findChallenge.validateOwner(user.getId());
 
         ChallengeEditor.ChallengeEditorBuilder editorBuilder = findChallenge.toEditor();
         ChallengeEditor challengeEditor = editorBuilder
@@ -63,13 +64,7 @@ public class ChallengeService {
                 .build();
 
         findChallenge.update(challengeEditor);
-
-//        List<ChallengeImg> challengeImgs = findChallenge.getChallengeImgs();
-//        List<Long> deleteCommentImgIds = new ArrayList<>();
-//        int idx = 0;
-//        if (!CollectionUtils.isEmpty(updateChallengeImgFiles)) {
-//
-//        }
+        challengeImgService.updateChallengeImgs(findChallenge, updateChallengeImgFiles);
 
         return findChallenge;
     }

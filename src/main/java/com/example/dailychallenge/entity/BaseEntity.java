@@ -25,4 +25,8 @@ public class BaseEntity {
     public String getFormattedCreatedAt() {
         return created_at.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss:SSS"));
     }
+
+    public String getFormattedUpdatedAt() {
+        return updated_at.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss:SSS"));
+    }
 }
