@@ -1,20 +1,13 @@
 package com.example.dailychallenge.controller.challenge;
 
-import static com.example.dailychallenge.util.fixture.TokenFixture.EMAIL;
-import static com.example.dailychallenge.util.fixture.TokenFixture.PASSWORD;
-import static com.example.dailychallenge.util.fixture.TokenFixture.ROLE;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.startsWith;
-import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
-import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessRequest;
-import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessResponse;
-import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
-import static org.springframework.restdocs.operation.preprocess.Preprocessors.removeHeaders;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.multipart;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.relaxedResponseFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestPartFields;
@@ -25,7 +18,6 @@ import static org.springframework.restdocs.request.RequestDocumentation.requestP
 import static org.springframework.restdocs.request.RequestDocumentation.requestParts;
 import static org.springframework.restdocs.snippet.Attributes.key;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -51,6 +43,7 @@ import com.example.dailychallenge.repository.UserRepository;
 import com.example.dailychallenge.service.challenge.ChallengeService;
 import com.example.dailychallenge.service.challenge.UserChallengeService;
 import com.example.dailychallenge.service.users.UserService;
+import com.example.dailychallenge.util.RestDocsTest;
 import com.example.dailychallenge.vo.challenge.RequestCreateChallenge;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.nio.charset.StandardCharsets;
@@ -59,30 +52,18 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.mock.web.MockPart;
-import org.springframework.restdocs.RestDocumentationExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.UserRequestPostProcessor;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.RequestPostProcessor;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-@SpringBootTest
-@Transactional
-@AutoConfigureMockMvc
-@AutoConfigureRestDocs(uriScheme = "https", uriHost = "api.dailychallenge.com", uriPort = 443)
-@ExtendWith(RestDocumentationExtension.class)
-@TestPropertySource(locations = "classpath:application-test.properties")
-public class ChallengeControllerDocTest {
+public class ChallengeControllerDocTest extends RestDocsTest {
     @Autowired
     private PasswordEncoder passwordEncoder;
     @Autowired
@@ -114,12 +95,12 @@ public class ChallengeControllerDocTest {
     private String challengeImgLocation;
     private User savedUser;
     private Challenge challenge1;
-    private UserRequestPostProcessor userRequestPostProcessor;
+    private RequestPostProcessor requestPostProcessor;
 
     @BeforeEach
     void beforeEach() throws Exception {
         initData();
-        userRequestPostProcessor = user(EMAIL).password(PASSWORD).roles(ROLE);
+        requestPostProcessor = user(userService.loadUserByUsername(savedUser.getEmail()));
     }
 
     private void initData() throws Exception {
@@ -225,6 +206,7 @@ public class ChallengeControllerDocTest {
 
     @Test
     @DisplayName("챌린지 생성")
+//    @WithAuthUser
     void createChallengeTest() throws Exception {
         RequestCreateChallenge requestCreatChallenge = RequestCreateChallenge.builder()
                 .title("제목입니다.")
@@ -254,7 +236,7 @@ public class ChallengeControllerDocTest {
                         .part(new MockPart("challengeImgFiles", "challengeImgFile", challengeImgFiles.get(2).getBytes()))
                         .part(tag1)
                         .part(tag2)
-                        .with(userRequestPostProcessor)
+                        .with(requestPostProcessor)
                         .contentType(MediaType.MULTIPART_FORM_DATA)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated())
@@ -269,12 +251,7 @@ public class ChallengeControllerDocTest {
                 .andExpect(jsonPath("$.challengeOwnerUser.email").value(savedUser.getEmail()))
                 .andExpect(jsonPath("$.challengeOwnerUser.userId").value(savedUser.getId()))
                 .andDo(print())
-                .andDo(document("challenge-create",
-                        preprocessRequest(prettyPrint()),
-                        preprocessResponse(
-                                removeHeaders("Vary", "X-Content-Type-Options", "X-XSS-Protection", "Pragma", "Expires",
-                                        "Cache-Control", "Strict-Transport-Security", "X-Frame-Options"),
-                                prettyPrint()),
+                .andDo(restDocs.document(
                         requestParts(
                                 partWithName("requestCreateChallenge").description("챌린지 정보 데이터(JSON)")
                                         .attributes(key("type").value("JSON")),
@@ -305,7 +282,7 @@ public class ChallengeControllerDocTest {
         Long challenge1Id = challenge1.getId();
 
         mockMvc.perform(get("/challenge/{challengeId}", challenge1Id)
-                        .with(userRequestPostProcessor)
+                        .with(requestPostProcessor)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.responseChallenge.title").value(challenge1.getTitle()))
@@ -330,12 +307,7 @@ public class ChallengeControllerDocTest {
                 .andExpect(jsonPath("$.responseUserChallenges[*].participatedUser.email",
                         contains(savedUser.getEmail(), "1@test.com")))
                 .andDo(print())
-                .andDo(document("challenge-find-one",
-                        preprocessRequest(prettyPrint()),
-                        preprocessResponse(
-                                removeHeaders("Vary", "X-Content-Type-Options", "X-XSS-Protection", "Pragma", "Expires",
-                                        "Cache-Control", "Strict-Transport-Security", "X-Frame-Options"),
-                                prettyPrint()),
+                .andDo(restDocs.document(
                         pathParameters(
                                 parameterWithName("challengeId").description("찾고 싶은 챌린지 ID")
                         ),
@@ -351,7 +323,7 @@ public class ChallengeControllerDocTest {
     @DisplayName("모든 챌린지 조회하고 인기순으로 내림차순 정렬 테스트")
     public void searchAllChallengesSortByPopularTest() throws Exception {
         mockMvc.perform(get("/challenge")
-                        .with(userRequestPostProcessor)
+                        .with(requestPostProcessor)
                         .param("size", "20")
                         .param("page", "0")
                         .param("sort", "popular")
@@ -382,12 +354,7 @@ public class ChallengeControllerDocTest {
                         hasItem(savedUser.getEmail())))
                 .andExpect(jsonPath("$.content[*].challengeOwnerUser.userId",
                         hasItem(savedUser.getId().intValue())))
-                .andDo(document("challenges-find-all-sort-by-popular",
-                        preprocessRequest(prettyPrint()),
-                        preprocessResponse(
-                                removeHeaders("Vary", "X-Content-Type-Options", "X-XSS-Protection", "Pragma", "Expires",
-                                        "Cache-Control", "Strict-Transport-Security", "X-Frame-Options"),
-                                prettyPrint()),
+                .andDo(restDocs.document(
                         requestParameters(
                                 parameterWithName("size").description("기본값: 10").optional(),
                                 parameterWithName("page").description("기본값: 0, 0번부터 시작합니다.").optional(),
@@ -414,7 +381,7 @@ public class ChallengeControllerDocTest {
     @DisplayName("모든 챌린지 조회하고 생성순으로 오름차순 정렬 테스트")
     public void searchAllChallengesSortByTimeTest() throws Exception {
         mockMvc.perform(get("/challenge")
-                        .with(userRequestPostProcessor)
+                        .with(requestPostProcessor)
                         .param("size", "20")
                         .param("page", "0")
                         .param("sort", "time")
@@ -423,12 +390,7 @@ public class ChallengeControllerDocTest {
                 .andExpect(jsonPath("$.content[*].title", contains(
                         "제목입니다.1", "제목입니다.2", "제목입니다.3", "제목입니다.4", "제목입니다.5",
                         "제목입니다.6", "제목입니다.7", "제목입니다.8", "제목입니다.9", "제목입니다.10")))
-                .andDo(document("challenges-find-all-sort-by-time",
-                        preprocessRequest(prettyPrint()),
-                        preprocessResponse(
-                                removeHeaders("Vary", "X-Content-Type-Options", "X-XSS-Protection", "Pragma", "Expires",
-                                        "Cache-Control", "Strict-Transport-Security", "X-Frame-Options"),
-                                prettyPrint()),
+                .andDo(restDocs.document(
                         requestParameters(
                                 parameterWithName("size").description("기본값: 10").optional(),
                                 parameterWithName("page").description("기본값: 0, 0번부터 시작합니다.").optional(),
@@ -447,7 +409,8 @@ public class ChallengeControllerDocTest {
     @DisplayName("챌린지들을 검색 조건으로 조회하고 인기순으로 오름차순 정렬 테스트")
     public void searchChallengesByConditionSortByPopularTest() throws Exception {
         mockMvc.perform(get("/challenge/condition")
-                        .with(userRequestPostProcessor)
+                        .characterEncoding(UTF_8)
+                        .with(requestPostProcessor)
                         .param("title", "")
                         .param("category", ChallengeCategory.WORKOUT.getDescription())
                         .param("size", "20")
@@ -478,12 +441,7 @@ public class ChallengeControllerDocTest {
                 .andExpect(jsonPath("$.content[*].challengeOwnerUser.userId",
                         hasItem(savedUser.getId().intValue())))
                 .andDo(print())
-                .andDo(document("challenges-find-by-condition-sort-by-popular",
-                        preprocessRequest(prettyPrint()),
-                        preprocessResponse(
-                                removeHeaders("Vary", "X-Content-Type-Options", "X-XSS-Protection", "Pragma", "Expires",
-                                        "Cache-Control", "Strict-Transport-Security", "X-Frame-Options"),
-                                prettyPrint()),
+                .andDo(restDocs.document(
                         requestParameters(
                                 parameterWithName("title").description("찾고 싶은 Challenge 제목").optional(),
                                 parameterWithName("category").description("찾고 싶은 Challenge 카테고리").optional(),
@@ -504,7 +462,7 @@ public class ChallengeControllerDocTest {
     @DisplayName("챌린지들을 검색 조건으로 조회하고 생성순으로 내림차순 정렬 테스트")
     public void searchChallengesByConditionSortByTimeTest() throws Exception {
         mockMvc.perform(get("/challenge/condition")
-                        .with(userRequestPostProcessor)
+                        .with(requestPostProcessor)
                         .param("title", "")
                         .param("category", ChallengeCategory.WORKOUT.getDescription())
                         .param("size", "20")
@@ -516,12 +474,7 @@ public class ChallengeControllerDocTest {
                         contains("제목입니다.3", "제목입니다.4", "제목입니다.5","제목입니다.6", "제목입니다.7", "제목입니다.8",
                                 "제목입니다.9", "제목입니다.10")))
                 .andDo(print())
-                .andDo(document("challenges-find-by-condition-sort-by-time",
-                        preprocessRequest(prettyPrint()),
-                        preprocessResponse(
-                                removeHeaders("Vary", "X-Content-Type-Options", "X-XSS-Protection", "Pragma", "Expires",
-                                        "Cache-Control", "Strict-Transport-Security", "X-Frame-Options"),
-                                prettyPrint()),
+                .andDo(restDocs.document(
                         requestParameters(
                                 parameterWithName("title").description("찾고 싶은 Challenge 제목").optional(),
                                 parameterWithName("category").description("찾고 싶은 Challenge 카테고리").optional(),
@@ -541,19 +494,15 @@ public class ChallengeControllerDocTest {
     @DisplayName("챌린지 삭제 테스트")
     void deleteChallenge() throws Exception {
         mockMvc.perform(delete("/challenge/{challengeId}", challenge1.getId())
-                        .with(userRequestPostProcessor)
+                        .with(requestPostProcessor)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNoContent())
                 .andDo(print())
-                .andDo(document("challenge-delete",
-                        preprocessRequest(prettyPrint()),
-                        preprocessResponse(
-                                removeHeaders("Vary", "X-Content-Type-Options", "X-XSS-Protection", "Pragma", "Expires",
-                                        "Cache-Control", "Strict-Transport-Security", "X-Frame-Options"),
-                                prettyPrint()),
+                .andDo(restDocs.document(
                         pathParameters(
                                 parameterWithName("challengeId").description("챌린지 ID")
                         )
                 ));
     }
 }
+
