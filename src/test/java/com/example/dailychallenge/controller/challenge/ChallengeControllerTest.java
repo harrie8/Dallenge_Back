@@ -401,15 +401,15 @@ class ChallengeControllerTest {
                                 .title(null).category(ChallengeCategory.WORKOUT.getDescription()).build(),
                         "time",
                         List.of(
-                                contains("제목입니다.3", "제목입니다.4", "제목입니다.5", "제목입니다.6", "제목입니다.7", "제목입니다.8",
-                                        "제목입니다.9", "제목입니다.10"),
-                                contains("내용입니다.3", "내용입니다.4", "내용입니다.5", "내용입니다.6", "내용입니다.7", "내용입니다.8",
-                                        "내용입니다.9", "내용입니다.10"),
+                                contains("제목입니다.10", "제목입니다.9", "제목입니다.8", "제목입니다.7", "제목입니다.6", "제목입니다.5",
+                                        "제목입니다.4", "제목입니다.3"),
+                                contains("내용입니다.10", "내용입니다.9", "내용입니다.8", "내용입니다.7", "내용입니다.6", "내용입니다.5",
+                                        "내용입니다.4", "내용입니다.3"),
                                 hasItem(ChallengeCategory.WORKOUT.getDescription()),
                                 hasItem(ChallengeLocation.INDOOR.getDescription()),
                                 hasItem(ChallengeDuration.WITHIN_TEN_MINUTES.getDescription()),
                                 hasItem(hasItem(startsWith("/images/"))),
-                                contains(1, 1, 1, 2, 1, 1, 1, 1)
+                                contains(1, 1, 1, 1, 2, 1, 1, 1)
                         )),
                 Arguments.of(ChallengeSearchCondition.builder()
                                 .title("1").category(ChallengeCategory.STUDY.getDescription()).build(),
