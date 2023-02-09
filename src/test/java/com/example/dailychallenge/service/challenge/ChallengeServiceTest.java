@@ -29,7 +29,8 @@ import com.example.dailychallenge.repository.HashtagRepository;
 import com.example.dailychallenge.repository.UserChallengeRepository;
 import com.example.dailychallenge.repository.UserRepository;
 import com.example.dailychallenge.service.users.UserService;
-import com.example.dailychallenge.vo.RequestUpdateChallenge;
+import com.example.dailychallenge.vo.challenge.RequestUpdateChallenge;
+import com.example.dailychallenge.vo.challenge.ResponseChallenge;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.EntityManager;
@@ -98,13 +99,6 @@ public class ChallengeServiceTest {
         userDto.setInfo("testInfo");
         userDto.setPassword("1234");
         return userDto;
-    }
-
-    MultipartFile createMultipartFiles() {
-        String path = challengeImgLocation +"/";
-        String imageName = "challengeImage.jpg";
-        return new MockMultipartFile(path, imageName,
-                "image/jpg", new byte[]{1, 2, 3, 4});
     }
 
     private ChallengeDto createChallengeDto() {
@@ -187,6 +181,66 @@ public class ChallengeServiceTest {
     }
 
     @Nested
+    @DisplayName("특정 챌린지 조회 테스트")
+    class searchById {
+        @Test
+        @DisplayName("존재하는 특정 챌린지 조회 테스트")
+        void success() {
+            Challenge savedChallenge = challengeService.saveChallenge(challengeDto, createChallengeImgFiles(), savedUser);
+            UserChallenge userChallenge = UserChallenge.builder()
+                    .challengeStatus(ChallengeStatus.TRYING)
+                    .challenge(savedChallenge)
+                    .users(savedUser)
+                    .build();
+            userChallengeRepository.save(userChallenge);
+            Long challengeId = savedChallenge.getId();
+
+            ResponseChallenge responseChallenge = challengeService.searchById(challengeId);
+
+            assertAll(
+                    () -> assertEquals(savedChallenge.getId(), responseChallenge.getId()),
+                    () -> assertEquals(savedChallenge.getTitle(), responseChallenge.getTitle()),
+                    () -> assertEquals(savedChallenge.getContent(), responseChallenge.getContent()),
+                    () -> assertEquals(savedChallenge.getChallengeCategory().getDescription(),
+                            responseChallenge.getChallengeCategory()),
+                    () -> assertEquals(savedChallenge.getChallengeLocation().getDescription(),
+                            responseChallenge.getChallengeLocation()),
+                    () -> assertEquals(savedChallenge.getChallengeDuration().getDescription(),
+                            responseChallenge.getChallengeDuration()),
+                    () -> assertEquals(savedChallenge.getFormattedCreatedAt(),
+                            responseChallenge.getCreated_at()),
+                    () -> assertEquals(savedChallenge.getImgUrls(),
+                            responseChallenge.getChallengeImgUrls()),
+                    () -> assertEquals(1L,
+                            responseChallenge.getHowManyUsersAreInThisChallenge()),
+                    () -> assertEquals(savedChallenge.getUsers().getUserName(),
+                            responseChallenge.getChallengeOwnerUser().getUserName()),
+                    () -> assertEquals(savedChallenge.getUsers().getEmail(),
+                            responseChallenge.getChallengeOwnerUser().getEmail()),
+                    () -> assertEquals(savedChallenge.getUsers().getId(),
+                            responseChallenge.getChallengeOwnerUser().getUserId())
+            );
+        }
+
+        @Test
+        @DisplayName("존재하지 않는 특정 챌린지를 조회하려고 하면 예외 발생")
+        void failByChallengeNotFound() {
+            Challenge savedChallenge = challengeService.saveChallenge(challengeDto, createChallengeImgFiles(), savedUser);
+            UserChallenge userChallenge = UserChallenge.builder()
+                    .challengeStatus(ChallengeStatus.TRYING)
+                    .challenge(savedChallenge)
+                    .users(savedUser)
+                    .build();
+            userChallengeRepository.save(userChallenge);
+            Long notExistChallengeId = savedChallenge.getId() + 100L;
+
+            Throwable exception = assertThrows(ChallengeNotFound.class,
+                    () -> challengeService.searchById(notExistChallengeId));
+            assertEquals("챌린지를 찾을 수 없습니다.", exception.getMessage());
+        }
+    }
+
+    @Nested
     @DisplayName("챌린지 수정 테스트")
     class update {
         @Test
@@ -199,7 +253,7 @@ public class ChallengeServiceTest {
                     .content("수정된 내용")
                     .challengeCategory(ChallengeCategory.WORKOUT.getDescription())
                     .build();
-            List<MultipartFile> updateChallengeImgFiles = List.of(createMultipartFiles(), createMultipartFiles());
+            List<MultipartFile> updateChallengeImgFiles = createChallengeImgFiles();
 
             entityManager.flush();
             entityManager.clear();
@@ -227,7 +281,7 @@ public class ChallengeServiceTest {
                     .content("수정된 내용")
                     .challengeCategory(ChallengeCategory.WORKOUT.getDescription())
                     .build();
-            List<MultipartFile> updateChallengeImgFiles = List.of(createMultipartFiles(), createMultipartFiles());
+            List<MultipartFile> updateChallengeImgFiles = createChallengeImgFiles();
 //        List<String> updateChallengeHashtags = List.of("editTag1", "editTag2");
 
             entityManager.flush();
@@ -250,7 +304,7 @@ public class ChallengeServiceTest {
                     .content("content")
                     .challengeCategory("fail")
                     .build();
-            List<MultipartFile> updateChallengeImgFiles = List.of(createMultipartFiles(), createMultipartFiles());
+            List<MultipartFile> updateChallengeImgFiles = createChallengeImgFiles();
 //        List<String> updateChallengeHashtags = List.of("editTag1", "editTag2");
 
             entityManager.flush();
@@ -273,7 +327,7 @@ public class ChallengeServiceTest {
                     .content("수정된 내용")
                     .challengeCategory(ChallengeCategory.WORKOUT.getDescription())
                     .build();
-            List<MultipartFile> updateChallengeImgFiles = List.of(createMultipartFiles(), createMultipartFiles());
+            List<MultipartFile> updateChallengeImgFiles = createChallengeImgFiles();
 //        List<String> updateChallengeHashtags = List.of("editTag1", "editTag2");
 
             Thread.sleep(1000L);

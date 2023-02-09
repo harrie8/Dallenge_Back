@@ -1,14 +1,15 @@
 package com.example.dailychallenge.repository.challenge;
 
 import static com.example.dailychallenge.entity.challenge.QChallenge.challenge;
-import static com.example.dailychallenge.entity.challenge.QChallengeImg.challengeImg;
 import static com.example.dailychallenge.entity.challenge.QUserChallenge.userChallenge;
 import static org.aspectj.util.LangUtil.isEmpty;
 
 import com.example.dailychallenge.dto.ChallengeSearchCondition;
 import com.example.dailychallenge.entity.challenge.ChallengeCategory;
-import com.example.dailychallenge.vo.QResponseChallenge;
-import com.example.dailychallenge.vo.ResponseChallenge;
+import com.example.dailychallenge.vo.challenge.QResponseChallenge;
+import com.example.dailychallenge.vo.challenge.QResponseUserChallenge;
+import com.example.dailychallenge.vo.challenge.ResponseChallenge;
+import com.example.dailychallenge.vo.challenge.ResponseUserChallenge;
 import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
@@ -30,12 +31,22 @@ public class UserChallengeRepositoryCustomImpl implements
     }
 
     @Override
+    public List<ResponseUserChallenge> searchUserChallengeByChallengeId(Long challengeId) {
+        return queryFactory
+                .select(new QResponseUserChallenge(userChallenge))
+                .from(userChallenge)
+                .leftJoin(userChallenge.challenge, challenge)
+                .where(challengeIdEq(challengeId))
+                .fetch();
+    }
+
+    @Override
     public Page<ResponseChallenge> searchAllChallenges(Pageable pageable) {
         List<ResponseChallenge> content = queryFactory
                 .select(new QResponseChallenge(userChallenge.challenge, userChallenge.count()))
                 .from(userChallenge)
                 .leftJoin(userChallenge.challenge, challenge)
-                .leftJoin(userChallenge.challenge.challengeImgs, challengeImg)
+//                .leftJoin(userChallenge.challenge.challengeImgs, challengeImg)
                 .groupBy(userChallenge.challenge)
 //                .orderBy(userChallenge.count().desc(), userChallenge.challenge.created_at.asc())
                 .orderBy(challengesSort(pageable))
@@ -47,7 +58,7 @@ public class UserChallengeRepositoryCustomImpl implements
                 .select(userChallenge.challenge)
                 .from(userChallenge)
                 .leftJoin(userChallenge.challenge, challenge)
-                .leftJoin(userChallenge.challenge.challengeImgs, challengeImg)
+//                .leftJoin(userChallenge.challenge.challengeImgs, challengeImg)
                 .groupBy(userChallenge.challenge)
                 .fetch()
                 .size();
@@ -62,7 +73,7 @@ public class UserChallengeRepositoryCustomImpl implements
                 .select(new QResponseChallenge(userChallenge.challenge, userChallenge.count()))
                 .from(userChallenge)
                 .leftJoin(userChallenge.challenge, challenge)
-                .leftJoin(userChallenge.challenge.challengeImgs, challengeImg)
+//                .leftJoin(userChallenge.challenge.challengeImgs, challengeImg)
                 .where(titleContains(condition.getTitle()),
                         categoryEq(condition.getCategory()))
                 .groupBy(userChallenge.challenge)
@@ -76,7 +87,7 @@ public class UserChallengeRepositoryCustomImpl implements
                 .select(userChallenge.challenge)
                 .from(userChallenge)
                 .leftJoin(userChallenge.challenge, challenge)
-                .leftJoin(userChallenge.challenge.challengeImgs, challengeImg)
+//                .leftJoin(userChallenge.challenge.challengeImgs, challengeImg)
                 .where(titleContains(condition.getTitle()),
                         categoryEq(condition.getCategory()))
                 .groupBy(userChallenge.challenge)
@@ -96,6 +107,13 @@ public class UserChallengeRepositoryCustomImpl implements
         }
         ChallengeCategory challengeCategory = ChallengeCategory.findByDescription(category);
         return userChallenge.challenge.challengeCategory.eq(challengeCategory);
+    }
+
+    private BooleanExpression challengeIdEq(Long challengeId) {
+        if (challengeId == null) {
+            throw new IllegalArgumentException();
+        }
+        return userChallenge.challenge.id.eq(challengeId);
     }
 
     private OrderSpecifier<?> challengesSort(Pageable pageable) {

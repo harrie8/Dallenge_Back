@@ -12,9 +12,11 @@ import com.example.dailychallenge.service.challenge.UserChallengeService;
 import com.example.dailychallenge.service.hashtag.ChallengeHashtagService;
 import com.example.dailychallenge.service.hashtag.HashtagService;
 import com.example.dailychallenge.service.users.UserService;
-import com.example.dailychallenge.vo.RequestCreateChallenge;
-import com.example.dailychallenge.vo.ResponseChallenge;
-import com.example.dailychallenge.vo.ResponseCreateChallenge;
+import com.example.dailychallenge.vo.challenge.RequestCreateChallenge;
+import com.example.dailychallenge.vo.challenge.ResponseChallenge;
+import com.example.dailychallenge.vo.challenge.ResponseChallengeWithParticipatedUsersInfo;
+import com.example.dailychallenge.vo.challenge.ResponseCreateChallenge;
+import com.example.dailychallenge.vo.challenge.ResponseUserChallenge;
 import java.util.List;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -72,6 +74,20 @@ public class ChallengeController {
         }
 
         return ResponseEntity.status(HttpStatus.CREATED).body(responseCreateChallenge);
+    }
+
+    @GetMapping("/challenge/{challengeId}")
+    public ResponseEntity<ResponseChallengeWithParticipatedUsersInfo> findChallengeById(
+            @PathVariable Long challengeId) {
+        ResponseChallenge responseChallenge = challengeService.searchById(challengeId);
+        List<ResponseUserChallenge> responseUserChallenges = userChallengeService.searchByChallengeId(challengeId);
+
+        ResponseChallengeWithParticipatedUsersInfo responseChallengeWithParticipatedUsersInfo =
+                ResponseChallengeWithParticipatedUsersInfo.builder()
+                        .responseChallenge(responseChallenge)
+                        .responseUserChallenges(responseUserChallenges)
+                        .build();
+        return ResponseEntity.status(HttpStatus.OK).body(responseChallengeWithParticipatedUsersInfo);
     }
 
     @GetMapping("/challenge")

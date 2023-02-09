@@ -71,8 +71,13 @@ include::{snippets}/challenges-find-all-sort-by-time/response-fields.adoc[]
 
 ====
 
+[[Challenge-특정-챌린지-조회]]
+=== 특정 챌린지 조회
 
-[[Challenge-이름-또는_카테고리로-챌린지들-찾기]]
+operation::challenge-find-one[snippets='http-request,path-parameters,http-response,response-fields']
+
+
+[[Challenge-이름-또는-카테고리로-챌린지들-찾기]]
 === 이름 또는 카테고리로 챌린지들 찾기
 
 ==== popular 정렬

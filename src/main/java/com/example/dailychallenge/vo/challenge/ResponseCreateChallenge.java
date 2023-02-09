@@ -1,7 +1,8 @@
-package com.example.dailychallenge.vo;
+package com.example.dailychallenge.vo.challenge;
 
 import com.example.dailychallenge.entity.challenge.Challenge;
 import com.example.dailychallenge.entity.challenge.UserChallenge;
+import com.example.dailychallenge.vo.ResponseUser;
 import java.util.List;
 import lombok.Builder;
 import lombok.Data;

@@ -1,4 +1,4 @@
-package com.example.dailychallenge.vo;
+package com.example.dailychallenge.vo.challenge;
 
 import javax.validation.constraints.NotBlank;
 import lombok.Builder;
