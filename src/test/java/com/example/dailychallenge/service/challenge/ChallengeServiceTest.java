@@ -1,5 +1,9 @@
 package com.example.dailychallenge.service.challenge;
 
+import static com.example.dailychallenge.util.fixture.ChallengeFixture.createChallengeDto;
+import static com.example.dailychallenge.util.fixture.ChallengeImgFixture.createChallengeImgFiles;
+import static com.example.dailychallenge.util.fixture.ChallengeImgFixture.updateChallengeImgFiles;
+import static com.example.dailychallenge.util.fixture.UserFixture.createUser;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -29,11 +33,10 @@ import com.example.dailychallenge.repository.ChallengeRepository;
 import com.example.dailychallenge.repository.CommentRepository;
 import com.example.dailychallenge.repository.HashtagRepository;
 import com.example.dailychallenge.repository.UserChallengeRepository;
-import com.example.dailychallenge.repository.UserRepository;
 import com.example.dailychallenge.service.users.UserService;
+import com.example.dailychallenge.util.ServiceTest;
 import com.example.dailychallenge.vo.challenge.RequestUpdateChallenge;
 import com.example.dailychallenge.vo.challenge.ResponseChallenge;
-import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -42,27 +45,13 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.test.context.TestPropertySource;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-@SpringBootTest
-@Transactional
-@TestPropertySource(locations = "classpath:application-test.properties")
-public class ChallengeServiceTest {
-
-    @Autowired
-    private ChallengeService challengeService;
+public class ChallengeServiceTest extends ServiceTest {
     @Autowired
     private UserService userService;
     @Autowired
-    private PasswordEncoder passwordEncoder;
-    @Autowired
-    private UserRepository userRepository;
+    private ChallengeService challengeService;
     @Autowired
     private ChallengeRepository challengeRepository;
     @Autowired
@@ -78,58 +67,13 @@ public class ChallengeServiceTest {
     @PersistenceContext
     private EntityManager entityManager;
 
-    @Value("${userImgLocation}")
-    private String challengeImgLocation;
     private User savedUser;
     private ChallengeDto challengeDto;
 
     @BeforeEach
-    void beforeEach() {
-        try {
-            savedUser = userService.saveUser(createUser(), passwordEncoder);
-            challengeDto = createChallengeDto();
-        } catch (Exception e) {
-            throw new IllegalArgumentException(e);
-        }
-    }
-
-    public UserDto createUser() {
-        UserDto userDto = new UserDto();
-        userDto.setEmail("test1234@test.com");
-        userDto.setUserName("홍길동");
-        userDto.setInfo("testInfo");
-        userDto.setPassword("1234");
-        return userDto;
-    }
-
-    private ChallengeDto createChallengeDto() {
-        return ChallengeDto.builder()
-                .title("제목입니다.")
-                .content("내용입니다.")
-                .challengeCategory(ChallengeCategory.STUDY.getDescription())
-                .challengeLocation(ChallengeLocation.INDOOR.getDescription())
-                .challengeDuration(ChallengeDuration.WITHIN_TEN_MINUTES.getDescription())
-                .build();
-    }
-
-    private List<MultipartFile> createChallengeImgFiles() {
-        List<MultipartFile> result = new ArrayList<>();
-        for (int i = 0; i < 3; i++) {
-            String path = challengeImgLocation +"/";
-            String imageName = "challengeImage" + i + ".jpg";
-            result.add(new MockMultipartFile(path, imageName, "image/jpg", new byte[]{1, 2, 3, 4}));
-        }
-        return result;
-    }
-
-    private List<MultipartFile> updateChallengeImgFiles() {
-        List<MultipartFile> updateChallengeImgFiles = new ArrayList<>();
-        for (int i = 0; i < 2; i++) {
-            String path = challengeImgLocation +"/";
-            String imageName = "updatedChallengeImage" + i + ".jpg";
-            updateChallengeImgFiles.add(new MockMultipartFile(path, imageName, "image/jpg", new byte[]{1, 2, 3, 4}));
-        }
-        return updateChallengeImgFiles;
+    void beforeEach() throws Exception {
+        savedUser = userService.saveUser(createUser(), passwordEncoder);
+        challengeDto = createChallengeDto();
     }
 
     @Nested
@@ -139,14 +83,16 @@ public class ChallengeServiceTest {
         void success() {
             Challenge challenge = challengeService.saveChallenge(challengeDto, createChallengeImgFiles(), savedUser);
 
-            assertEquals(challengeDto.getTitle(), challenge.getTitle());
-            assertEquals(challengeDto.getContent(), challenge.getContent());
-            assertEquals(challengeDto.getChallengeCategory(), challenge.getChallengeCategory().getDescription());
-            assertEquals(challengeDto.getChallengeLocation(), challenge.getChallengeLocation().getDescription());
-            assertEquals(challengeDto.getChallengeDuration(), challenge.getChallengeDuration().getDescription());
-            assertEquals(savedUser, challenge.getUsers());
-            assertThat(challenge.getChallengeImgs()).extracting("oriImgName")
-                    .containsExactly("challengeImage0.jpg", "challengeImage1.jpg", "challengeImage2.jpg");
+           assertAll(() -> {
+               assertEquals(challengeDto.getTitle(), challenge.getTitle());
+               assertEquals(challengeDto.getContent(), challenge.getContent());
+               assertEquals(challengeDto.getChallengeCategory(), challenge.getChallengeCategory().getDescription());
+               assertEquals(challengeDto.getChallengeLocation(), challenge.getChallengeLocation().getDescription());
+               assertEquals(challengeDto.getChallengeDuration(), challenge.getChallengeDuration().getDescription());
+               assertEquals(savedUser, challenge.getUsers());
+               assertThat(challenge.getChallengeImgs()).extracting("oriImgName")
+                       .containsExactly("challengeImage0.jpg", "challengeImage1.jpg", "challengeImage2.jpg");
+           });
         }
 
         @Test
@@ -209,29 +155,26 @@ public class ChallengeServiceTest {
 
             ResponseChallenge responseChallenge = challengeService.searchById(challengeId);
 
-            assertAll(
-                    () -> assertEquals(savedChallenge.getId(), responseChallenge.getId()),
-                    () -> assertEquals(savedChallenge.getTitle(), responseChallenge.getTitle()),
-                    () -> assertEquals(savedChallenge.getContent(), responseChallenge.getContent()),
-                    () -> assertEquals(savedChallenge.getChallengeCategory().getDescription(),
-                            responseChallenge.getChallengeCategory()),
-                    () -> assertEquals(savedChallenge.getChallengeLocation().getDescription(),
-                            responseChallenge.getChallengeLocation()),
-                    () -> assertEquals(savedChallenge.getChallengeDuration().getDescription(),
-                            responseChallenge.getChallengeDuration()),
-                    () -> assertEquals(savedChallenge.getFormattedCreatedAt(),
-                            responseChallenge.getCreated_at()),
-                    () -> assertEquals(savedChallenge.getImgUrls(),
-                            responseChallenge.getChallengeImgUrls()),
-                    () -> assertEquals(1L,
-                            responseChallenge.getHowManyUsersAreInThisChallenge()),
-                    () -> assertEquals(savedChallenge.getUsers().getUserName(),
-                            responseChallenge.getChallengeOwnerUser().getUserName()),
-                    () -> assertEquals(savedChallenge.getUsers().getEmail(),
-                            responseChallenge.getChallengeOwnerUser().getEmail()),
-                    () -> assertEquals(savedChallenge.getUsers().getId(),
-                            responseChallenge.getChallengeOwnerUser().getUserId())
-            );
+            assertAll(() -> {
+                assertEquals(savedChallenge.getId(), responseChallenge.getId());
+                assertEquals(savedChallenge.getTitle(), responseChallenge.getTitle());
+                assertEquals(savedChallenge.getContent(), responseChallenge.getContent());
+                assertEquals(savedChallenge.getChallengeCategory().getDescription(),
+                        responseChallenge.getChallengeCategory());
+                assertEquals(savedChallenge.getChallengeLocation().getDescription(),
+                        responseChallenge.getChallengeLocation());
+                assertEquals(savedChallenge.getChallengeDuration().getDescription(),
+                        responseChallenge.getChallengeDuration());
+                assertEquals(savedChallenge.getFormattedCreatedAt(), responseChallenge.getCreated_at());
+                assertEquals(savedChallenge.getImgUrls(), responseChallenge.getChallengeImgUrls());
+                assertEquals(1L, responseChallenge.getHowManyUsersAreInThisChallenge());
+                assertEquals(savedChallenge.getUsers().getUserName(),
+                        responseChallenge.getChallengeOwnerUser().getUserName());
+                assertEquals(savedChallenge.getUsers().getEmail(),
+                        responseChallenge.getChallengeOwnerUser().getEmail());
+                assertEquals(savedChallenge.getUsers().getId(),
+                        responseChallenge.getChallengeOwnerUser().getUserId());
+            });
         }
 
         @Test
@@ -272,18 +215,18 @@ public class ChallengeServiceTest {
             Challenge updatedChallenge = challengeService.updateChallenge(challengeId, requestUpdateChallenge,
                     updateChallengeImgFiles, savedUser);
 
-            assertAll(
-                    () -> assertEquals(requestUpdateChallenge.getTitle(), updatedChallenge.getTitle()),
-                    () -> assertEquals(requestUpdateChallenge.getContent(), updatedChallenge.getContent()),
-                    () -> assertEquals(requestUpdateChallenge.getChallengeCategory(),
-                            updatedChallenge.getChallengeCategory().getDescription()),
-                    () -> assertNotEquals(savedChallenge.getUpdated_at(), updatedChallenge.getUpdated_at())
-            );
-            List<ChallengeImg> all = challengeImgRepository.findAll(); // 이게 없으면 같은 데이터가 두 번 저장되는 오류 발생
-            assertThat(all).extracting("oriImgName")
-                    .containsExactly("updatedChallengeImage0.jpg", "updatedChallengeImage1.jpg");
-            assertThat(updatedChallenge.getChallengeImgs()).extracting("oriImgName")
-                    .containsExactly("updatedChallengeImage0.jpg", "updatedChallengeImage1.jpg");
+            assertAll(() -> {
+                assertEquals(requestUpdateChallenge.getTitle(), updatedChallenge.getTitle());
+                assertEquals(requestUpdateChallenge.getContent(), updatedChallenge.getContent());
+                assertEquals(requestUpdateChallenge.getChallengeCategory(),
+                        updatedChallenge.getChallengeCategory().getDescription());
+                assertNotEquals(savedChallenge.getUpdated_at(), updatedChallenge.getUpdated_at());
+                List<ChallengeImg> all = challengeImgRepository.findAll(); // 이게 없으면 같은 데이터가 두 번 저장되는 오류 발생
+                assertThat(all).extracting("oriImgName")
+                        .containsExactly("updatedChallengeImage0.jpg", "updatedChallengeImage1.jpg");
+                assertThat(updatedChallenge.getChallengeImgs()).extracting("oriImgName")
+                        .containsExactly("updatedChallengeImage0.jpg", "updatedChallengeImage1.jpg");
+            });
         }
 
         @Test
@@ -364,7 +307,6 @@ public class ChallengeServiceTest {
     class delete {
 
         @Test
-        @DisplayName("순수 챌린지 삭제 테스트")
         void success() {
             Challenge savedChallenge = challengeService.saveChallenge(challengeDto, createChallengeImgFiles(), savedUser);
             Long challengeId = savedChallenge.getId();
@@ -434,16 +376,17 @@ public class ChallengeServiceTest {
             hashtag.getChallengeHashtags().add(challengeHashtag);
             ChallengeHashtag savedChallengeHashtag = challengeHashtagRepository.save(challengeHashtag);
 
-            assertAll(
-                    () -> assertEquals(challengeImgFiles.size(), challengeImgRepository.count()),
-                    () -> assertEquals(savedUserChallenge,
-                            userChallengeRepository.findById(savedUserChallenge.getId()).orElseThrow()),
-                    () -> assertEquals(savedChallenge, challengeRepository.findById(savedChallenge.getId()).orElseThrow()),
-                    () -> assertEquals(savedComment, commentRepository.findById(savedComment.getId()).orElseThrow()),
-                    () -> assertEquals(savedHashTag, hashtagRepository.findById(savedHashTag.getId()).orElseThrow()),
-                    () -> assertEquals(savedChallengeHashtag,
-                            challengeHashtagRepository.findById(savedChallengeHashtag.getId()).orElseThrow())
-            );
+            assertAll(() -> {
+                assertEquals(challengeImgFiles.size(), challengeImgRepository.count());
+                assertEquals(savedUserChallenge,
+                        userChallengeRepository.findById(savedUserChallenge.getId()).orElseThrow());
+                assertEquals(savedChallenge,
+                        challengeRepository.findById(savedChallenge.getId()).orElseThrow());
+                assertEquals(savedChallengeHashtag,
+                        challengeHashtagRepository.findById(savedChallengeHashtag.getId()).orElseThrow());
+                assertEquals(savedComment, commentRepository.findById(savedComment.getId()).orElseThrow());
+                assertEquals(savedHashTag, hashtagRepository.findById(savedHashTag.getId()).orElseThrow());
+            });
 
             entityManager.flush();
             entityManager.clear();
@@ -451,14 +394,14 @@ public class ChallengeServiceTest {
             Long challengeId = savedChallenge.getId();
             challengeService.deleteChallenge(challengeId, savedUser);
 
-            assertAll(
-                    () -> assertEquals(0L, challengeImgRepository.count()),
-                    () -> assertTrue(userChallengeRepository.findById(savedUserChallenge.getId()).isEmpty()),
-                    () -> assertTrue(challengeRepository.findById(savedChallenge.getId()).isEmpty()),
-                    () -> assertTrue(commentRepository.findById(savedComment.getId()).isEmpty()),
-//                    () -> assertTrue(hashtagRepository.findById(savedHashTag.getId()).isEmpty()), // 챌린지 해시태그를 삭제해도 챌린지는 존재한다
-                    () -> assertTrue(challengeHashtagRepository.findById(savedChallengeHashtag.getId()).isEmpty())
-            );
+            assertAll(() -> {
+                assertEquals(0L, challengeImgRepository.count());
+                assertTrue(userChallengeRepository.findById(savedUserChallenge.getId()).isEmpty());
+                assertTrue(challengeRepository.findById(savedChallenge.getId()).isEmpty());
+                assertTrue(commentRepository.findById(savedComment.getId()).isEmpty());
+//                assertTrue(hashtagRepository.findById(savedHashTag.getId()).isEmpty()); // 챌린지 해시태그를 삭제해도 챌린지는 존재한다
+                assertTrue(challengeHashtagRepository.findById(savedChallengeHashtag.getId()).isEmpty());
+            });
         }
     }
 }

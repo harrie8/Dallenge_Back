@@ -5,7 +5,6 @@ import com.example.dailychallenge.entity.BaseEntity;
 import com.example.dailychallenge.entity.comment.Comment;
 import com.example.dailychallenge.entity.hashtag.ChallengeHashtag;
 import com.example.dailychallenge.entity.users.User;
-import com.example.dailychallenge.exception.AuthorizationException;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.CascadeType;
@@ -112,10 +111,8 @@ public class Challenge extends BaseEntity {
         }
     }
 
-    public void validateOwner(Long userId) {
-        if (!userId.equals(users.getId())) {
-            throw new AuthorizationException();
-        }
+    public boolean isOwner(Long userId) {
+        return userId.equals(users.getId());
     }
 
     public void clearChallengeImgs() {

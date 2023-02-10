@@ -1,5 +1,8 @@
 package com.example.dailychallenge.controller.challenge;
 
+import static com.example.dailychallenge.util.fixture.ChallengeImgFixture.createChallengeImgFiles;
+import static com.example.dailychallenge.util.fixture.ChallengeImgFixture.updateChallengeImgFiles;
+import static com.example.dailychallenge.util.fixture.UserFixture.createUser;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.hasItem;
@@ -24,7 +27,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.example.dailychallenge.dto.ChallengeDto;
-import com.example.dailychallenge.dto.UserDto;
 import com.example.dailychallenge.entity.challenge.Challenge;
 import com.example.dailychallenge.entity.challenge.ChallengeCategory;
 import com.example.dailychallenge.entity.challenge.ChallengeDuration;
@@ -35,11 +37,8 @@ import com.example.dailychallenge.entity.hashtag.ChallengeHashtag;
 import com.example.dailychallenge.entity.hashtag.Hashtag;
 import com.example.dailychallenge.entity.users.User;
 import com.example.dailychallenge.repository.ChallengeHashtagRepository;
-import com.example.dailychallenge.repository.ChallengeImgRepository;
-import com.example.dailychallenge.repository.ChallengeRepository;
 import com.example.dailychallenge.repository.CommentRepository;
 import com.example.dailychallenge.repository.HashtagRepository;
-import com.example.dailychallenge.repository.UserChallengeRepository;
 import com.example.dailychallenge.repository.UserRepository;
 import com.example.dailychallenge.service.challenge.ChallengeService;
 import com.example.dailychallenge.service.challenge.UserChallengeService;
@@ -48,13 +47,11 @@ import com.example.dailychallenge.util.RestDocsTest;
 import com.example.dailychallenge.vo.challenge.RequestCreateChallenge;
 import com.example.dailychallenge.vo.challenge.RequestUpdateChallenge;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.mock.web.MockPart;
@@ -71,15 +68,9 @@ public class ChallengeControllerDocTest extends RestDocsTest {
     @Autowired
     private ChallengeService challengeService;
     @Autowired
-    private ChallengeRepository challengeRepository;
-    @Autowired
     private UserRepository userRepository;
     @Autowired
-    private UserChallengeRepository userChallengeRepository;
-    @Autowired
     private UserChallengeService userChallengeService;
-    @Autowired
-    private ChallengeImgRepository challengeImgRepository;
     @Autowired
     private CommentRepository commentRepository;
     @Autowired
@@ -87,8 +78,6 @@ public class ChallengeControllerDocTest extends RestDocsTest {
     @Autowired
     private ChallengeHashtagRepository challengeHashtagRepository;
 
-    @Value("${userImgLocation}")
-    private String challengeImgLocation;
     private User savedUser;
     private Challenge challenge1;
     private RequestPostProcessor requestPostProcessor;
@@ -180,34 +169,6 @@ public class ChallengeControllerDocTest extends RestDocsTest {
                 userChallengeService.saveUserChallenge(challenge6, user);
             }
         }
-    }
-
-    public UserDto createUser() {
-        UserDto userDto = new UserDto();
-        userDto.setEmail("test1234@test.com");
-        userDto.setUserName("홍길동");
-        userDto.setInfo("testInfo");
-        userDto.setPassword("1234");
-        return userDto;
-    }
-    private List<MultipartFile> createChallengeImgFiles() {
-        List<MultipartFile> result = new ArrayList<>();
-        for (int i = 0; i < 3; i++) {
-            String path = challengeImgLocation +"/";
-            String imageName = "challengeImage" + i + ".jpg";
-            result.add(new MockMultipartFile(path, imageName, "image/jpg", new byte[]{1, 2, 3, 4}));
-        }
-        return result;
-    }
-
-    private List<MultipartFile> updateChallengeImgFiles() {
-        List<MultipartFile> updateChallengeImgFiles = new ArrayList<>();
-        for (int i = 0; i < 2; i++) {
-            String path = challengeImgLocation +"/";
-            String imageName = "updatedChallengeImage" + i + ".jpg";
-            updateChallengeImgFiles.add(new MockMultipartFile(path, imageName, "image/jpg", new byte[]{1, 2, 3, 4}));
-        }
-        return updateChallengeImgFiles;
     }
 
     @Test
@@ -362,7 +323,8 @@ public class ChallengeControllerDocTest extends RestDocsTest {
                         requestParameters(
                                 parameterWithName("size").description("기본값: 10").optional(),
                                 parameterWithName("page").description("기본값: 0, 0번부터 시작합니다.").optional(),
-                                parameterWithName("sort").description("기본값: popular-내림차순, popular 또는 time으로 정렬합니다.").optional()
+                                parameterWithName("sort").description("기본값: popular-내림차순, popular 또는 time으로 정렬합니다.")
+                                        .optional()
                         ),
                         relaxedResponseFields(
                                 fieldWithPath("totalElements").description("DB에 있는 전체 Challenge 개수"),
@@ -380,7 +342,6 @@ public class ChallengeControllerDocTest extends RestDocsTest {
                 ));
     }
 
-    @Transactional
     @Test
     @DisplayName("모든 챌린지 조회하고 생성순으로 오름차순 정렬 테스트")
     public void searchAllChallengesSortByTimeTest() throws Exception {
@@ -408,7 +369,6 @@ public class ChallengeControllerDocTest extends RestDocsTest {
                 ));
     }
 
-    @Transactional
     @Test
     @DisplayName("챌린지들을 검색 조건으로 조회하고 인기순으로 오름차순 정렬 테스트")
     public void searchChallengesByConditionSortByPopularTest() throws Exception {
@@ -460,7 +420,6 @@ public class ChallengeControllerDocTest extends RestDocsTest {
                 ));
     }
 
-    @Transactional
     @Test
     @DisplayName("챌린지들을 검색 조건으로 조회하고 생성순으로 내림차순 정렬 테스트")
     public void searchChallengesByConditionSortByTimeTest() throws Exception {
@@ -567,10 +526,7 @@ public class ChallengeControllerDocTest extends RestDocsTest {
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNoContent())
                 .andDo(restDocs.document(
-                        pathParameters(
-                                parameterWithName("challengeId").description("챌린지 ID")
-                        )
-                ));
+                        pathParameters(parameterWithName("challengeId").description("챌린지 ID"))));
     }
 }
 

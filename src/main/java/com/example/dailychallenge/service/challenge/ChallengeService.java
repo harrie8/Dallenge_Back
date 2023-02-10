@@ -5,6 +5,7 @@ import com.example.dailychallenge.dto.ChallengeEditor;
 import com.example.dailychallenge.entity.challenge.Challenge;
 import com.example.dailychallenge.entity.challenge.ChallengeImg;
 import com.example.dailychallenge.entity.users.User;
+import com.example.dailychallenge.exception.AuthorizationException;
 import com.example.dailychallenge.exception.challenge.ChallengeNotFound;
 import com.example.dailychallenge.repository.ChallengeRepository;
 import com.example.dailychallenge.vo.challenge.RequestUpdateChallenge;
@@ -54,7 +55,7 @@ public class ChallengeService {
     public Challenge updateChallenge(Long challengeId, RequestUpdateChallenge requestUpdateChallenge,
                                      List<MultipartFile> updateChallengeImgFiles, User user) {
         Challenge findChallenge = challengeRepository.findById(challengeId).orElseThrow(ChallengeNotFound::new);
-        findChallenge.validateOwner(user.getId());
+        validateOwner(user, findChallenge);
 
         ChallengeEditor.ChallengeEditorBuilder editorBuilder = findChallenge.toEditor();
         ChallengeEditor challengeEditor = editorBuilder
@@ -71,9 +72,14 @@ public class ChallengeService {
 
     public void deleteChallenge(Long challengeId, User user) {
         Challenge findChallenge = challengeRepository.findById(challengeId).orElseThrow(ChallengeNotFound::new);
-
-        findChallenge.validateOwner(user.getId());
+        validateOwner(user, findChallenge);
 
         challengeRepository.delete(findChallenge);
+    }
+
+    private void validateOwner(User user, Challenge challenge) {
+        if (!challenge.isOwner(user.getId())) {
+            throw new AuthorizationException();
+        }
     }
 }

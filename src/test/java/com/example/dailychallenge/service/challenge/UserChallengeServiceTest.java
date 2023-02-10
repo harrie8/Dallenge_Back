@@ -1,8 +1,8 @@
 package com.example.dailychallenge.service.challenge;
 
+import static com.example.dailychallenge.util.fixture.UserFixture.createUser;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import com.example.dailychallenge.dto.UserDto;
 import com.example.dailychallenge.entity.challenge.Challenge;
 import com.example.dailychallenge.entity.challenge.ChallengeCategory;
 import com.example.dailychallenge.entity.challenge.ChallengeDuration;
@@ -12,19 +12,13 @@ import com.example.dailychallenge.entity.challenge.UserChallenge;
 import com.example.dailychallenge.entity.users.User;
 import com.example.dailychallenge.repository.UserRepository;
 import com.example.dailychallenge.service.users.UserService;
+import com.example.dailychallenge.util.ServiceTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.test.context.TestPropertySource;
-import org.springframework.transaction.annotation.Transactional;
 
-@SpringBootTest
-@Transactional
-@TestPropertySource(locations = "classpath:application-test.properties")
-public class UserChallengeServiceTest {
+public class UserChallengeServiceTest extends ServiceTest {
 
     @Autowired
     private UserChallengeService userChallengeService;
@@ -32,21 +26,10 @@ public class UserChallengeServiceTest {
     private UserService userService;
     @Autowired
     private UserRepository userRepository;
-    @Autowired
-    private PasswordEncoder passwordEncoder;
 
     @BeforeEach
     void beforeEach() {
         userRepository.deleteAll();
-    }
-
-    public UserDto createUser() {
-        UserDto userDto = new UserDto();
-        userDto.setEmail("test1234@test.com");
-        userDto.setUserName("홍길동");
-        userDto.setInfo("testInfo");
-        userDto.setPassword("1234");
-        return userDto;
     }
 
     @Test
