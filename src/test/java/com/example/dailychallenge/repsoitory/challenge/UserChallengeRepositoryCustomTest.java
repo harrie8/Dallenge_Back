@@ -2,6 +2,7 @@ package com.example.dailychallenge.repsoitory.challenge;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.example.dailychallenge.dto.ChallengeSearchCondition;
 import com.example.dailychallenge.entity.challenge.Challenge;
@@ -19,10 +20,13 @@ import com.example.dailychallenge.repository.UserRepository;
 import com.example.dailychallenge.util.RepositoryTest;
 import com.example.dailychallenge.vo.challenge.ResponseChallenge;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -44,9 +48,14 @@ public class UserChallengeRepositoryCustomTest extends RepositoryTest {
 
     private User savedUser;
     private Challenge challenge1;
+    private User otherUser;
 
     @BeforeEach
     void beforeEach() {
+        userRepository.deleteAll(); // 에러 때문에 일단 넣음
+        userChallengeRepository.deleteAll(); // 에러 때문에 일단 넣음
+        challengeRepository.deleteAll(); // 에러 때문에 일단 넣음
+
         initData();
     }
 
@@ -157,6 +166,39 @@ public class UserChallengeRepositoryCustomTest extends RepositoryTest {
                         .build();
                 userChallengeRepository.save(userChallenge);
             }
+        }
+
+        otherUser = User.builder()
+                .userName("김철수")
+                .email("a@a.com")
+                .password("1234")
+                .build();
+        userRepository.save(otherUser);
+    }
+
+    @Nested
+    @DisplayName("챌린지 Id와 유저 Id로 UserChallenge를 찾는 테스트")
+    class findByChallengeIdAndUserId {
+        @Test
+        void present() {
+            Long challenge1Id = challenge1.getId();
+            Long userId = savedUser.getId();
+
+            Optional<UserChallenge> findUserChallenge = userChallengeRepository.findByChallengeIdAndUserId(
+                    challenge1Id, userId);
+
+            assertTrue(findUserChallenge.isPresent());
+        }
+
+        @Test
+        void empty() {
+            Long challenge1Id = challenge1.getId();
+            Long otherUserId = otherUser.getId();
+
+            Optional<UserChallenge> findUserChallenge = userChallengeRepository.findByChallengeIdAndUserId(
+                    challenge1Id, otherUserId);
+
+            assertTrue(findUserChallenge.isEmpty());
         }
     }
 

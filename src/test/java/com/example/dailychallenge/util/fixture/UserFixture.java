@@ -15,4 +15,13 @@ public class UserFixture {
         userDto.setPassword(PASSWORD);
         return userDto;
     }
+
+    public static UserDto createOtherUser() {
+        UserDto userDto = new UserDto();
+        userDto.setEmail("a@a.com");
+        userDto.setUserName("김철수");
+        userDto.setInfo("aInfo");
+        userDto.setPassword("1234");
+        return userDto;
+    }
 }

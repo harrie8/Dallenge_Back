@@ -3,6 +3,7 @@ package com.example.dailychallenge.service.challenge;
 import static com.example.dailychallenge.util.fixture.ChallengeFixture.createChallengeDto;
 import static com.example.dailychallenge.util.fixture.ChallengeImgFixture.createChallengeImgFiles;
 import static com.example.dailychallenge.util.fixture.ChallengeImgFixture.updateChallengeImgFiles;
+import static com.example.dailychallenge.util.fixture.UserFixture.createOtherUser;
 import static com.example.dailychallenge.util.fixture.UserFixture.createUser;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -12,7 +13,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.example.dailychallenge.dto.ChallengeDto;
-import com.example.dailychallenge.dto.UserDto;
 import com.example.dailychallenge.entity.challenge.Challenge;
 import com.example.dailychallenge.entity.challenge.ChallengeCategory;
 import com.example.dailychallenge.entity.challenge.ChallengeDuration;
@@ -284,12 +284,7 @@ public class ChallengeServiceTest extends ServiceTest {
                     .build();
             List<MultipartFile> updateChallengeImgFiles = updateChallengeImgFiles();
 //        List<String> updateChallengeHashtags = List.of("editTag1", "editTag2");
-            UserDto userDto = new UserDto();
-            userDto.setEmail("a@a.com");
-            userDto.setUserName("김철수");
-            userDto.setInfo("aInfo");
-            userDto.setPassword("1234");
-            User otherUser = userService.saveUser(userDto, passwordEncoder);
+            User otherUser = userService.saveUser(createOtherUser(), passwordEncoder);
 
             entityManager.flush();
             entityManager.clear();
@@ -332,12 +327,7 @@ public class ChallengeServiceTest extends ServiceTest {
         void failByAuthorization() throws Exception {
             Challenge savedChallenge = challengeService.saveChallenge(challengeDto, createChallengeImgFiles(), savedUser);
             Long challengeId = savedChallenge.getId();
-            UserDto userDto = new UserDto();
-            userDto.setEmail("a@a.com");
-            userDto.setUserName("김철수");
-            userDto.setInfo("aInfo");
-            userDto.setPassword("1234");
-            User otherUser = userService.saveUser(userDto, passwordEncoder);
+            User otherUser = userService.saveUser(createOtherUser(), passwordEncoder);
 
             Throwable exception = assertThrows(AuthorizationException.class,
                     () -> challengeService.deleteChallenge(challengeId, otherUser));

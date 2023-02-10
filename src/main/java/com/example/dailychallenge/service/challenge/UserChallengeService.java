@@ -5,6 +5,7 @@ import com.example.dailychallenge.entity.challenge.Challenge;
 import com.example.dailychallenge.entity.challenge.ChallengeStatus;
 import com.example.dailychallenge.entity.challenge.UserChallenge;
 import com.example.dailychallenge.entity.users.User;
+import com.example.dailychallenge.exception.userChallenge.UserChallengeDuplicate;
 import com.example.dailychallenge.repository.UserChallengeRepository;
 import com.example.dailychallenge.vo.challenge.ResponseChallenge;
 import com.example.dailychallenge.vo.challenge.ResponseUserChallenge;
@@ -22,8 +23,9 @@ public class UserChallengeService {
 
     private final UserChallengeRepository userChallengeRepository;
 
-    // TODO: 2023-02-01 중복 참여 불가능하게 수정
     public UserChallenge saveUserChallenge(Challenge challenge, User user) {
+        checkDuplicate(challenge, user);
+
         UserChallenge userChallenge = UserChallenge.builder()
                 .challengeStatus(ChallengeStatus.TRYING)
                 .build();
@@ -33,6 +35,13 @@ public class UserChallengeService {
         userChallengeRepository.save(userChallenge);
 
         return userChallenge;
+    }
+
+    private void checkDuplicate(Challenge challenge, User user) {
+        userChallengeRepository.findByChallengeIdAndUserId(challenge.getId(), user.getId())
+                .ifPresent(userChallenge -> {
+                    throw new UserChallengeDuplicate();
+                });
     }
 
     public List<ResponseUserChallenge> searchByChallengeId(Long challengeId) {

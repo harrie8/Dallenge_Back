@@ -15,6 +15,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.restdocs.RestDocumentationContextProvider;
 import org.springframework.restdocs.RestDocumentationExtension;
 import org.springframework.restdocs.mockmvc.RestDocumentationResultHandler;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -30,6 +31,8 @@ import org.springframework.web.filter.CharacterEncodingFilter;
 @Import(value = {RestDocsConfiguration.class})
 @TestPropertySource(locations = "classpath:application-test.properties")
 public class RestDocsTest {
+    @Autowired
+    protected PasswordEncoder passwordEncoder;
 
     @Autowired
     protected ObjectMapper objectMapper;

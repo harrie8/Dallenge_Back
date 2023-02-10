@@ -459,7 +459,10 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <ul class="sectlevel2">
 <li><a href="#Challenge-챌린지-생성">챌린지 생성</a></li>
 <li><a href="#Challenge-모든-챌린지들-찾기">모든 챌린지들 찾기</a></li>
-<li><a href="#Challenge-이름-또는_카테고리로-챌린지들-찾기">이름 또는 카테고리로 챌린지들 찾기</a></li>
+<li><a href="#Challenge-특정-챌린지-조회">특정 챌린지 조회</a></li>
+<li><a href="#Challenge-이름-또는-카테고리로-챌린지들-찾기">이름 또는 카테고리로 챌린지들 찾기</a></li>
+<li><a href="#Challenge-챌린지-수정">챌린지 수정</a></li>
+<li><a href="#Challenge-챌린지-삭제">챌린지 삭제</a></li>
 </ul>
 </li>
 <li><a href="#Comment-API">댓글 API</a>
@@ -468,6 +471,11 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#Comment-댓글-수정">댓글 수정</a></li>
 <li><a href="#Comment-댓글-삭제">댓글 삭제</a></li>
 <li><a href="#Comment-댓글-좋아요">좋아요</a></li>
+</ul>
+</li>
+<li><a href="#Challenge-API">챌린지 참가 API</a>
+<ul class="sectlevel2">
+<li><a href="#UserChallenge-챌린지-참가">챌린지 참가</a></li>
 </ul>
 </li>
 </ul>
@@ -580,7 +588,7 @@ Content-Length: 78
 {
   "userName" : "GilDong",
   "email" : "test@test.com",
-  "userId" : 82
+  "userId" : 30
 }</code></pre>
 </div>
 </div>
@@ -652,8 +660,8 @@ Content-Type: application/json
 Content-Length: 214
 
 {
-  "userId" : 81,
-  "token" : "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0MTIzNEB0ZXN0LmNvbSIsImlhdCI6MTY3NTg1OTYzMywiZXhwIjoxNjc1ODc3NjMzfQ.3yKko7iPk412RlbJnypcARfov8bx87z9gXsBVQej9ts",
+  "userId" : 29,
+  "token" : "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0MTIzNEB0ZXN0LmNvbSIsImlhdCI6MTY3NjAyNTAyNCwiZXhwIjoxNjc2MDQzMDI0fQ.Au0e9-dWM_HdT_Ko0SJI0fF5-2Nw6DIrOrC90hUSmFI",
   "userName" : "홍길동"
 }</code></pre>
 </div>
@@ -665,9 +673,9 @@ Content-Length: 214
 <h4 id="_http_request"><a class="link" href="#_http_request">HTTP request</a></h4>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">POST /user/83 HTTP/1.1
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">POST /user/31 HTTP/1.1
 Content-Type: multipart/form-data;charset=UTF-8; boundary=6o2knFse3p53ty9dmcQvWAIx1zInP11uCfbm
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0MTIzNEB0ZXN0LmNvbSIsImlhdCI6MTY3NTg1OTYzMywiZXhwIjoxNjc1ODc3NjMzfQ.3yKko7iPk412RlbJnypcARfov8bx87z9gXsBVQej9ts
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0MTIzNEB0ZXN0LmNvbSIsImlhdCI6MTY3NjAyNTAyNSwiZXhwIjoxNjc2MDQzMDI1fQ.4XsQf17hL1hmM_CgK7sUPdPq5t1-vD03OITHQ5gvF94
 Accept: application/json
 Host: api.dailychallenge.com
 
@@ -785,9 +793,9 @@ Content-Type: image/jpg
 <h4 id="User-회원-삭제_http_request"><a class="link" href="#User-회원-삭제_http_request">HTTP request</a></h4>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">DELETE /user/86 HTTP/1.1
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">DELETE /user/34 HTTP/1.1
 Content-Type: application/json;charset=UTF-8
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0MTIzNEB0ZXN0LmNvbSIsImlhdCI6MTY3NTg1OTYzNCwiZXhwIjoxNjc1ODc3NjM0fQ.oO7XTD6oErWqtBzHXDBZNYscsuKQqMP7WU9R6m4dBC8
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0MTIzNEB0ZXN0LmNvbSIsImlhdCI6MTY3NjAyNTAyNSwiZXhwIjoxNjc2MDQzMDI1fQ.4XsQf17hL1hmM_CgK7sUPdPq5t1-vD03OITHQ5gvF94
 Accept: application/json
 Host: api.dailychallenge.com</code></pre>
 </div>
@@ -881,7 +889,7 @@ Content-Length: 36
 <h3 id="User-회원-비밀번호-검증"><a class="link" href="#User-회원-비밀번호-검증">회원 비밀번호 검증</a></h3>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">POST /user/87/check?password=1234 HTTP/1.1
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">POST /user/35/check?password=1234 HTTP/1.1
 Content-Type: application/json;charset=UTF-8
 Accept: application/json
 Host: api.dailychallenge.com</code></pre>
@@ -929,7 +937,7 @@ Content-Length: 45
 <h3 id="User-회원-비밀번호-변경"><a class="link" href="#User-회원-비밀번호-변경">회원 비밀번호 변경</a></h3>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">POST /user/84/change?oldPassword=1234&amp;newPassword=12345 HTTP/1.1
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">POST /user/32/change?oldPassword=1234&amp;newPassword=12345 HTTP/1.1
 Content-Type: application/json;charset=UTF-8
 Accept: application/json
 Host: api.dailychallenge.com</code></pre>
@@ -1009,16 +1017,25 @@ Content-Length: 38
 <div class="sectionbody">
 <div class="sect2">
 <h3 id="Challenge-챌린지-생성"><a class="link" href="#Challenge-챌린지-생성">챌린지 생성</a></h3>
+<details>
+<summary class="title">HTTP Request</summary>
+<div class="content">
+<details>
+<summary class="title">Details</summary>
+<div class="content">
 <div class="sect3">
-<h4 id="Challenge-챌린지-생성_http_request"><a class="link" href="#Challenge-챌린지-생성_http_request">HTTP request</a></h4>
+<h4 id="_http_request"><a class="link" href="#_http_request">HTTP request</a></h4>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">POST /challenge/new HTTP/1.1
 Content-Type: multipart/form-data;charset=UTF-8; boundary=6o2knFse3p53ty9dmcQvWAIx1zInP11uCfbm
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0MTIzNEB0ZXN0LmNvbSIsImlhdCI6MTY3NTg1OTYyMiwiZXhwIjoxNjc1ODc3NjIyfQ.U4dT_du9adEYuFwMRv3CPmAmoRZBpdh2tt6dwtMbl1U
 Accept: application/json
-Host: api.dailychallenge.com
+Host: localhost:8080
 
+--6o2knFse3p53ty9dmcQvWAIx1zInP11uCfbm
+Content-Disposition: form-data; name=challengeImgFiles; filename=challengeImgFile
+
+
 --6o2knFse3p53ty9dmcQvWAIx1zInP11uCfbm
 Content-Disposition: form-data; name=challengeImgFiles; filename=challengeImgFile
 
@@ -1048,13 +1065,20 @@ Content-Disposition: form-data; name=challengeImgFiles; filename=challengeImgFil
 Content-Disposition: form-data; name=challengeImgFiles; filename=challengeImgFile
 
 
+--6o2knFse3p53ty9dmcQvWAIx1zInP11uCfbm
+Content-Disposition: form-data; name=challengeImgFiles; filename=challengeImgFile
+
+
 --6o2knFse3p53ty9dmcQvWAIx1zInP11uCfbm--</code></pre>
 </div>
 </div>
 </div>
-<div class="sect3">
-<h4 id="_요청값_5"><a class="link" href="#_요청값_5">요청값</a></h4>
+</div>
+</details>
 <div class="exampleblock">
+<div class="content">
+<details>
+<summary class="title">RequestBody</summary>
 <div class="content">
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
@@ -1159,31 +1183,34 @@ Content-Disposition: form-data; name=challengeImgFiles; filename=challengeImgFil
 ["tag1","tag2"] 의 형식으로 여러 개의 문자열을 리스트로 받아옵니다.</p>
 </div>
 </div>
+</details>
 </div>
-<div class="sect4">
-<h5 id="_요청값_5_http_response"><a class="link" href="#_요청값_5_http_response">HTTP response</a></h5>
+</div>
+</div>
+</details>
+<div class="sect3">
+<h4 id="Challenge-챌린지-생성_http_response"><a class="link" href="#Challenge-챌린지-생성_http_response">HTTP response</a></h4>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 201 Created
-Content-Type: application/json
-Content-Length: 510
+Content-Type: application/json;charset=UTF-8
+Content-Length: 575
 
 {
-  "id" : 31,
+  "id" : 81,
   "title" : "제목입니다.",
   "content" : "내용입니다.",
   "challengeCategory" : "공부",
   "challengeLocation" : "실내",
   "challengeDuration" : "10분 이내",
   "challengeStatus" : "도전중",
-  "challengeImgUrls" : [ "/images/064219d8-85d6-4abd-b18d-b52ae8b4a684.challengeImgFile", "/images/51f893b2-dc37-41ff-ad2b-7a8f014ed30c.challengeImgFile" ],
+  "challengeImgUrls" : [ "/images/625604c1-c6f7-4886-a54d-e036f6903e0a.challengeImgFile", "/images/8bddd9a7-839f-419c-a214-4bfda7354eae.challengeImgFile", "/images/7a41469d-b08d-497e-9e42-9739967cdfb2.challengeImgFile" ],
   "challengeOwnerUser" : {
     "userName" : "홍길동",
     "email" : "test1234@test.com",
-    "userId" : 19
+    "userId" : 64
   }
 }</code></pre>
-</div>
 </div>
 </div>
 </div>
@@ -1205,97 +1232,9 @@ Content-Length: 510
 <h5 id="_http_request"><a class="link" href="#_http_request">HTTP request</a></h5>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /challenge?size=20&amp;page=0 HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0MTIzNEB0ZXN0LmNvbSIsImlhdCI6MTY3NTIzMjE2MiwiZXhwIjoxNjc1MjMyMjIyfQ.i0dxdENa23ccyE9acBXxAdvRs8l1W-SlxazGNQydGoU
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /challenge?size=20&amp;page=0&amp;sort=popular HTTP/1.1
 Accept: application/json
-Host: api.dailychallenge.com</code></pre>
-</div>
-</div>
-</div>
-<div class="sect4">
-<h5 id="_request_parameters"><a class="link" href="#_request_parameters">Request parameters</a></h5>
-<table class="tableblock frame-all grid-all stretch">
-<colgroup>
-<col style="width: 33.3333%;">
-<col style="width: 33.3333%;">
-<col style="width: 33.3334%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-top">파라미터</th>
-<th class="tableblock halign-left valign-top">필수여부</th>
-<th class="tableblock halign-left valign-top">설명</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>size</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">true</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">페이지네이션 - 사이즈</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>page</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">true</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">페이지네이션 - 페이지</p></td>
-</tr>
-</tbody>
-</table>
-</div>
-<details>
-<summary class="title">HTTP Response</summary>
-<div class="content">
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
-Content-Type: application/json
-Content-Length: 486
-
-[ {
-  "id" : 13,
-  "title" : "제목입니다.2",
-  "content" : "내용입니다.2",
-  "challengeCategory" : "경제",
-  "challengeLocation" : "실외",
-  "challengeDuration" : "1시간 이상",
-  "howManyUsersAreInThisChallenge" : 5
-}, {
-  "id" : 12,
-  "title" : "제목입니다.1",
-  "content" : "내용입니다.1",
-  "challengeCategory" : "공부",
-  "challengeLocation" : "실내",
-  "challengeDuration" : "10분 이내",
-  "howManyUsersAreInThisChallenge" : 2
-} ]</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Unresolved directive in Challenge-API.adoc - include::..\..\..\target\generated-snippets/challenges-find-all/response-fields.adoc[]</p>
-</div>
-</div>
-</details>
-</div>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_time_정렬"><a class="link" href="#_time_정렬">time 정렬</a></h4>
-<div class="exampleblock">
-<div class="content">
-<div class="ulist">
-<ul>
-<li>
-<p>time은 오름차순 정렬합니다.</p>
-</li>
-</ul>
-</div>
-<div class="sect4">
-<h5 id="_http_request"><a class="link" href="#_http_request">HTTP request</a></h5>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /challenge?size=20&amp;page=0&amp;sort=time HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0MTIzNEB0ZXN0LmNvbSIsImlhdCI6MTY3NTg1OTYyMywiZXhwIjoxNjc1ODc3NjIzfQ.1w8OruY01hi2JsjhhFYZ7KWF_49hrI6TQoWIoQJ8BUM
-Accept: application/json
-Host: api.dailychallenge.com</code></pre>
+Host: localhost:8080</code></pre>
 </div>
 </div>
 </div>
@@ -1339,185 +1278,464 @@ Host: api.dailychallenge.com</code></pre>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
-Content-Type: application/json
-Content-Length: 5167
+Content-Type: application/json;charset=UTF-8
+Content-Length: 6708
 
 {
   "content" : [ {
-    "id" : 32,
-    "title" : "제목입니다.1",
-    "content" : "내용입니다.1",
-    "challengeCategory" : "공부",
-    "challengeLocation" : "실내",
-    "challengeDuration" : "10분 이내",
-    "created_at" : "2023-02-08 21:33:43:136",
-    "challengeImgUrls" : [ "imgUrl" ],
-    "howManyUsersAreInThisChallenge" : 2,
-    "challengeOwnerUser" : {
-      "userName" : "홍길동",
-      "email" : "test1234@test.com",
-      "userId" : 28
-    }
-  }, {
-    "id" : 33,
+    "id" : 62,
     "title" : "제목입니다.2",
     "content" : "내용입니다.2",
     "challengeCategory" : "경제",
     "challengeLocation" : "실외",
     "challengeDuration" : "1시간 이상",
-    "created_at" : "2023-02-08 21:33:43:144",
-    "challengeImgUrls" : [ ],
+    "created_at" : "2023-02-10 19:30:13:300",
+    "challengeImgUrls" : [ "/images/31ab7b4b-c5d3-419f-b046-7fbcfc882531.jpg", "/images/3077238f-20a0-4256-87e6-1506de81657b.jpg", "/images/8bd27815-5aa4-4765-9d52-71e1e677ae54.jpg" ],
     "howManyUsersAreInThisChallenge" : 5,
     "challengeOwnerUser" : {
       "userName" : "홍길동",
       "email" : "test1234@test.com",
-      "userId" : 28
+      "userId" : 55
     }
   }, {
-    "id" : 34,
-    "title" : "제목입니다.3",
-    "content" : "내용입니다.3",
-    "challengeCategory" : "운동",
+    "id" : 61,
+    "title" : "제목입니다.1",
+    "content" : "내용입니다.1",
+    "challengeCategory" : "공부",
     "challengeLocation" : "실내",
     "challengeDuration" : "10분 이내",
-    "created_at" : "2023-02-08 21:33:43:148",
-    "challengeImgUrls" : [ ],
-    "howManyUsersAreInThisChallenge" : 1,
+    "created_at" : "2023-02-10 19:30:13:284",
+    "challengeImgUrls" : [ "/images/ce551327-86ce-4bcf-8dee-79d115468b66.jpg", "/images/f0da0630-31e5-488c-889a-1f087886af66.jpg", "/images/146ea34d-07bd-4a72-9e10-bf6dc0425f59.jpg" ],
+    "howManyUsersAreInThisChallenge" : 2,
     "challengeOwnerUser" : {
       "userName" : "홍길동",
       "email" : "test1234@test.com",
-      "userId" : 28
+      "userId" : 55
     }
   }, {
-    "id" : 35,
-    "title" : "제목입니다.4",
-    "content" : "내용입니다.4",
-    "challengeCategory" : "운동",
-    "challengeLocation" : "실내",
-    "challengeDuration" : "10분 이내",
-    "created_at" : "2023-02-08 21:33:43:152",
-    "challengeImgUrls" : [ ],
-    "howManyUsersAreInThisChallenge" : 1,
-    "challengeOwnerUser" : {
-      "userName" : "홍길동",
-      "email" : "test1234@test.com",
-      "userId" : 28
-    }
-  }, {
-    "id" : 36,
-    "title" : "제목입니다.5",
-    "content" : "내용입니다.5",
-    "challengeCategory" : "운동",
-    "challengeLocation" : "실내",
-    "challengeDuration" : "10분 이내",
-    "created_at" : "2023-02-08 21:33:43:157",
-    "challengeImgUrls" : [ ],
-    "howManyUsersAreInThisChallenge" : 1,
-    "challengeOwnerUser" : {
-      "userName" : "홍길동",
-      "email" : "test1234@test.com",
-      "userId" : 28
-    }
-  }, {
-    "id" : 37,
+    "id" : 66,
     "title" : "제목입니다.6",
     "content" : "내용입니다.6",
     "challengeCategory" : "운동",
     "challengeLocation" : "실내",
     "challengeDuration" : "10분 이내",
-    "created_at" : "2023-02-08 21:33:43:160",
-    "challengeImgUrls" : [ ],
+    "created_at" : "2023-02-10 19:30:13:339",
+    "challengeImgUrls" : [ "/images/687d8787-4a02-4b96-bfe3-2371a9e23718.jpg", "/images/812200a2-c520-42fc-9f34-b672ab109a07.jpg", "/images/444c41a3-1e16-485f-bb34-87f414aa6f32.jpg" ],
     "howManyUsersAreInThisChallenge" : 2,
     "challengeOwnerUser" : {
       "userName" : "홍길동",
       "email" : "test1234@test.com",
-      "userId" : 28
+      "userId" : 55
     }
   }, {
-    "id" : 38,
+    "id" : 63,
+    "title" : "제목입니다.3",
+    "content" : "내용입니다.3",
+    "challengeCategory" : "운동",
+    "challengeLocation" : "실내",
+    "challengeDuration" : "10분 이내",
+    "created_at" : "2023-02-10 19:30:13:309",
+    "challengeImgUrls" : [ "/images/1d0772ee-d19f-4921-bba6-e25164058035.jpg", "/images/62a59881-e2a9-47a9-b11d-0f68998d7587.jpg", "/images/8c015d57-0c57-4fee-ae5e-66822c474f61.jpg" ],
+    "howManyUsersAreInThisChallenge" : 1,
+    "challengeOwnerUser" : {
+      "userName" : "홍길동",
+      "email" : "test1234@test.com",
+      "userId" : 55
+    }
+  }, {
+    "id" : 64,
+    "title" : "제목입니다.4",
+    "content" : "내용입니다.4",
+    "challengeCategory" : "운동",
+    "challengeLocation" : "실내",
+    "challengeDuration" : "10분 이내",
+    "created_at" : "2023-02-10 19:30:13:319",
+    "challengeImgUrls" : [ "/images/88dc928f-a800-4245-a1a9-0277b017c341.jpg", "/images/6225d1f6-17d5-4624-b447-10a8827be9c5.jpg", "/images/c2bfcb2a-ea4f-426d-8913-716044597e90.jpg" ],
+    "howManyUsersAreInThisChallenge" : 1,
+    "challengeOwnerUser" : {
+      "userName" : "홍길동",
+      "email" : "test1234@test.com",
+      "userId" : 55
+    }
+  }, {
+    "id" : 65,
+    "title" : "제목입니다.5",
+    "content" : "내용입니다.5",
+    "challengeCategory" : "운동",
+    "challengeLocation" : "실내",
+    "challengeDuration" : "10분 이내",
+    "created_at" : "2023-02-10 19:30:13:330",
+    "challengeImgUrls" : [ "/images/cab6e776-42b8-41ad-b6f8-fa134f439b9d.jpg", "/images/9092f3e9-0cb3-4c6a-bb7e-641c615ce763.jpg", "/images/6942fc52-4973-49db-a858-3e95f73a4f2f.jpg" ],
+    "howManyUsersAreInThisChallenge" : 1,
+    "challengeOwnerUser" : {
+      "userName" : "홍길동",
+      "email" : "test1234@test.com",
+      "userId" : 55
+    }
+  }, {
+    "id" : 67,
     "title" : "제목입니다.7",
     "content" : "내용입니다.7",
     "challengeCategory" : "운동",
     "challengeLocation" : "실내",
     "challengeDuration" : "10분 이내",
-    "created_at" : "2023-02-08 21:33:43:163",
-    "challengeImgUrls" : [ ],
+    "created_at" : "2023-02-10 19:30:13:353",
+    "challengeImgUrls" : [ "/images/f4b4ad01-8e01-4e52-bf4e-ca15e33462e0.jpg", "/images/b2f03749-c5ec-4358-aa65-b53f293b0008.jpg", "/images/d1c14efc-d98c-4a51-ba43-8bd134a1b09c.jpg" ],
     "howManyUsersAreInThisChallenge" : 1,
     "challengeOwnerUser" : {
       "userName" : "홍길동",
       "email" : "test1234@test.com",
-      "userId" : 28
+      "userId" : 55
     }
   }, {
-    "id" : 39,
+    "id" : 68,
     "title" : "제목입니다.8",
     "content" : "내용입니다.8",
     "challengeCategory" : "운동",
     "challengeLocation" : "실내",
     "challengeDuration" : "10분 이내",
-    "created_at" : "2023-02-08 21:33:43:166",
-    "challengeImgUrls" : [ ],
+    "created_at" : "2023-02-10 19:30:13:362",
+    "challengeImgUrls" : [ "/images/eb49222d-e507-454d-85c2-16b378f62d8d.jpg", "/images/a2f778c8-8b54-43ae-ac32-e7937449c979.jpg", "/images/7fab5ba5-df13-4cf1-8ab2-a46ab55fc186.jpg" ],
     "howManyUsersAreInThisChallenge" : 1,
     "challengeOwnerUser" : {
       "userName" : "홍길동",
       "email" : "test1234@test.com",
-      "userId" : 28
+      "userId" : 55
     }
   }, {
-    "id" : 40,
+    "id" : 69,
     "title" : "제목입니다.9",
     "content" : "내용입니다.9",
     "challengeCategory" : "운동",
     "challengeLocation" : "실내",
     "challengeDuration" : "10분 이내",
-    "created_at" : "2023-02-08 21:33:43:169",
-    "challengeImgUrls" : [ ],
+    "created_at" : "2023-02-10 19:30:13:374",
+    "challengeImgUrls" : [ "/images/7973ae21-73c7-4b0d-a6ba-bc8cc5c79423.jpg", "/images/b9a47575-3df5-42a3-9762-6f66c43e5b9e.jpg", "/images/8acae13e-e0a1-4b02-b2cd-49b3e768f120.jpg" ],
     "howManyUsersAreInThisChallenge" : 1,
     "challengeOwnerUser" : {
       "userName" : "홍길동",
       "email" : "test1234@test.com",
-      "userId" : 28
+      "userId" : 55
     }
   }, {
-    "id" : 41,
+    "id" : 70,
     "title" : "제목입니다.10",
     "content" : "내용입니다.10",
     "challengeCategory" : "운동",
     "challengeLocation" : "실내",
     "challengeDuration" : "10분 이내",
-    "created_at" : "2023-02-08 21:33:43:173",
-    "challengeImgUrls" : [ ],
+    "created_at" : "2023-02-10 19:30:13:386",
+    "challengeImgUrls" : [ "/images/4abedb10-b4d0-4007-9c1c-45410b700fea.jpg", "/images/485dd791-fd98-4d7f-932f-7afe5381246f.jpg", "/images/42d83688-b708-40b2-8525-b6835c908b02.jpg" ],
     "howManyUsersAreInThisChallenge" : 1,
     "challengeOwnerUser" : {
       "userName" : "홍길동",
       "email" : "test1234@test.com",
-      "userId" : 28
+      "userId" : 55
     }
   } ],
   "pageable" : {
     "sort" : {
-      "empty" : false,
       "sorted" : true,
-      "unsorted" : false
+      "unsorted" : false,
+      "empty" : false
     },
-    "offset" : 0,
     "pageNumber" : 0,
     "pageSize" : 20,
+    "offset" : 0,
     "unpaged" : false,
     "paged" : true
   },
-  "last" : true,
   "totalElements" : 10,
+  "last" : true,
   "totalPages" : 1,
+  "numberOfElements" : 10,
+  "first" : true,
   "size" : 20,
   "number" : 0,
   "sort" : {
-    "empty" : false,
     "sorted" : true,
-    "unsorted" : false
+    "unsorted" : false,
+    "empty" : false
   },
+  "empty" : false
+}</code></pre>
+</div>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">필드명</th>
+<th class="tableblock halign-left valign-top">타입</th>
+<th class="tableblock halign-left valign-top">필수값</th>
+<th class="tableblock halign-left valign-top">설명</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>totalElements</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Number</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">true</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">DB에 있는 전체 Challenge 개수</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>totalPages</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Number</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">true</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">만들 수 있는 page 개수</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</details>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_time_정렬"><a class="link" href="#_time_정렬">time 정렬</a></h4>
+<div class="exampleblock">
+<div class="content">
+<div class="ulist">
+<ul>
+<li>
+<p>time은 오름차순 정렬합니다.</p>
+</li>
+</ul>
+</div>
+<div class="sect4">
+<h5 id="_http_request"><a class="link" href="#_http_request">HTTP request</a></h5>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /challenge?size=20&amp;page=0&amp;sort=time HTTP/1.1
+Accept: application/json
+Host: localhost:8080</code></pre>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_request_parameters"><a class="link" href="#_request_parameters">Request parameters</a></h5>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">파라미터</th>
+<th class="tableblock halign-left valign-top">필수여부</th>
+<th class="tableblock halign-left valign-top">설명</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>size</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">false</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">기본값: 10</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>page</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">false</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">기본값: 0, 0번부터 시작합니다.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>sort</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">false</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">기본값: popular-내림차순, popular 또는 time으로 정렬합니다.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<details>
+<summary class="title">HTTP Response</summary>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
+Content-Type: application/json;charset=UTF-8
+Content-Length: 6708
+
+{
+  "content" : [ {
+    "id" : 60,
+    "title" : "제목입니다.10",
+    "content" : "내용입니다.10",
+    "challengeCategory" : "운동",
+    "challengeLocation" : "실내",
+    "challengeDuration" : "10분 이내",
+    "created_at" : "2023-02-10 19:30:13:086",
+    "challengeImgUrls" : [ "/images/ac785d58-1d25-4fe7-b1f0-ad68e7a66d56.jpg", "/images/ec91ee1e-8de6-4e2e-a34a-29fb17920726.jpg", "/images/ebd2a4d7-36bc-4b7a-864d-dbd42f7cb29a.jpg" ],
+    "howManyUsersAreInThisChallenge" : 1,
+    "challengeOwnerUser" : {
+      "userName" : "홍길동",
+      "email" : "test1234@test.com",
+      "userId" : 46
+    }
+  }, {
+    "id" : 59,
+    "title" : "제목입니다.9",
+    "content" : "내용입니다.9",
+    "challengeCategory" : "운동",
+    "challengeLocation" : "실내",
+    "challengeDuration" : "10분 이내",
+    "created_at" : "2023-02-10 19:30:13:074",
+    "challengeImgUrls" : [ "/images/e6de0eff-0c18-4ef0-a756-1743079c8845.jpg", "/images/a39abf9f-e0c5-4851-adf1-6fe01629fd2c.jpg", "/images/c1ff6b45-5ab7-4259-a333-df417ca2306d.jpg" ],
+    "howManyUsersAreInThisChallenge" : 1,
+    "challengeOwnerUser" : {
+      "userName" : "홍길동",
+      "email" : "test1234@test.com",
+      "userId" : 46
+    }
+  }, {
+    "id" : 58,
+    "title" : "제목입니다.8",
+    "content" : "내용입니다.8",
+    "challengeCategory" : "운동",
+    "challengeLocation" : "실내",
+    "challengeDuration" : "10분 이내",
+    "created_at" : "2023-02-10 19:30:13:062",
+    "challengeImgUrls" : [ "/images/140480fe-e037-4889-b629-8d10680bd92d.jpg", "/images/5294c5ee-d9fe-4d2a-ad48-a496287f981a.jpg", "/images/3314dc28-a7a7-4f19-a3e7-675a8d67c787.jpg" ],
+    "howManyUsersAreInThisChallenge" : 1,
+    "challengeOwnerUser" : {
+      "userName" : "홍길동",
+      "email" : "test1234@test.com",
+      "userId" : 46
+    }
+  }, {
+    "id" : 57,
+    "title" : "제목입니다.7",
+    "content" : "내용입니다.7",
+    "challengeCategory" : "운동",
+    "challengeLocation" : "실내",
+    "challengeDuration" : "10분 이내",
+    "created_at" : "2023-02-10 19:30:13:050",
+    "challengeImgUrls" : [ "/images/1d68ba1f-6d0b-4a19-a261-3227b9bce8cd.jpg", "/images/9497e247-b783-49d7-a07f-fa71b41c2a9b.jpg", "/images/2114c760-ea2f-46ed-9b9b-a91498020415.jpg" ],
+    "howManyUsersAreInThisChallenge" : 1,
+    "challengeOwnerUser" : {
+      "userName" : "홍길동",
+      "email" : "test1234@test.com",
+      "userId" : 46
+    }
+  }, {
+    "id" : 56,
+    "title" : "제목입니다.6",
+    "content" : "내용입니다.6",
+    "challengeCategory" : "운동",
+    "challengeLocation" : "실내",
+    "challengeDuration" : "10분 이내",
+    "created_at" : "2023-02-10 19:30:13:039",
+    "challengeImgUrls" : [ "/images/8cfc8c32-5a1e-4220-aabd-e4b8c67d35b4.jpg", "/images/7c6adb85-68ad-497f-af2a-cf847333e689.jpg", "/images/f716b8ab-cb25-4a3b-9387-fb7d15a036d1.jpg" ],
+    "howManyUsersAreInThisChallenge" : 2,
+    "challengeOwnerUser" : {
+      "userName" : "홍길동",
+      "email" : "test1234@test.com",
+      "userId" : 46
+    }
+  }, {
+    "id" : 55,
+    "title" : "제목입니다.5",
+    "content" : "내용입니다.5",
+    "challengeCategory" : "운동",
+    "challengeLocation" : "실내",
+    "challengeDuration" : "10분 이내",
+    "created_at" : "2023-02-10 19:30:13:028",
+    "challengeImgUrls" : [ "/images/f3c855aa-9074-45b2-a662-a4427fadc614.jpg", "/images/cb4013fe-206c-4333-ac8c-5d77d4f79b10.jpg", "/images/6b25cdc4-7f6a-4cf1-9ff6-47736487c33b.jpg" ],
+    "howManyUsersAreInThisChallenge" : 1,
+    "challengeOwnerUser" : {
+      "userName" : "홍길동",
+      "email" : "test1234@test.com",
+      "userId" : 46
+    }
+  }, {
+    "id" : 54,
+    "title" : "제목입니다.4",
+    "content" : "내용입니다.4",
+    "challengeCategory" : "운동",
+    "challengeLocation" : "실내",
+    "challengeDuration" : "10분 이내",
+    "created_at" : "2023-02-10 19:30:13:013",
+    "challengeImgUrls" : [ "/images/055ead62-9fc4-43b5-b85e-c76aff62944f.jpg", "/images/6bc558b2-616e-4bdb-afe5-160ee57f6bc5.jpg", "/images/7d015a6b-2719-43e7-b435-38c47edb5b14.jpg" ],
+    "howManyUsersAreInThisChallenge" : 1,
+    "challengeOwnerUser" : {
+      "userName" : "홍길동",
+      "email" : "test1234@test.com",
+      "userId" : 46
+    }
+  }, {
+    "id" : 53,
+    "title" : "제목입니다.3",
+    "content" : "내용입니다.3",
+    "challengeCategory" : "운동",
+    "challengeLocation" : "실내",
+    "challengeDuration" : "10분 이내",
+    "created_at" : "2023-02-10 19:30:12:996",
+    "challengeImgUrls" : [ "/images/c15e90f1-4a0d-4e95-806a-91ea437617df.jpg", "/images/f9b658af-d927-440f-808b-9b9b7ad5e0f2.jpg", "/images/3a2a42a2-930f-411b-853a-15c23dfbae9a.jpg" ],
+    "howManyUsersAreInThisChallenge" : 1,
+    "challengeOwnerUser" : {
+      "userName" : "홍길동",
+      "email" : "test1234@test.com",
+      "userId" : 46
+    }
+  }, {
+    "id" : 52,
+    "title" : "제목입니다.2",
+    "content" : "내용입니다.2",
+    "challengeCategory" : "경제",
+    "challengeLocation" : "실외",
+    "challengeDuration" : "1시간 이상",
+    "created_at" : "2023-02-10 19:30:12:980",
+    "challengeImgUrls" : [ "/images/acdc0903-dd3e-4050-8f0f-2a2a5c463158.jpg", "/images/1c0332ad-6909-4a52-b8a1-115648805b91.jpg", "/images/bb5435fb-b526-49f2-ab5f-2f5bca49f76f.jpg" ],
+    "howManyUsersAreInThisChallenge" : 5,
+    "challengeOwnerUser" : {
+      "userName" : "홍길동",
+      "email" : "test1234@test.com",
+      "userId" : 46
+    }
+  }, {
+    "id" : 51,
+    "title" : "제목입니다.1",
+    "content" : "내용입니다.1",
+    "challengeCategory" : "공부",
+    "challengeLocation" : "실내",
+    "challengeDuration" : "10분 이내",
+    "created_at" : "2023-02-10 19:30:12:958",
+    "challengeImgUrls" : [ "/images/8dd9c792-5fb2-4ea3-8310-98f9c635168e.jpg", "/images/e0390950-bb24-4afb-b129-7581c6ed112b.jpg", "/images/a1253316-06c8-4d39-bcc8-260e7de786c6.jpg" ],
+    "howManyUsersAreInThisChallenge" : 2,
+    "challengeOwnerUser" : {
+      "userName" : "홍길동",
+      "email" : "test1234@test.com",
+      "userId" : 46
+    }
+  } ],
+  "pageable" : {
+    "sort" : {
+      "sorted" : true,
+      "unsorted" : false,
+      "empty" : false
+    },
+    "pageNumber" : 0,
+    "pageSize" : 20,
+    "offset" : 0,
+    "unpaged" : false,
+    "paged" : true
+  },
+  "totalElements" : 10,
+  "last" : true,
+  "totalPages" : 1,
   "numberOfElements" : 10,
   "first" : true,
+  "size" : 20,
+  "number" : 0,
+  "sort" : {
+    "sorted" : true,
+    "unsorted" : false,
+    "empty" : false
+  },
   "empty" : false
 }</code></pre>
 </div>
@@ -1559,7 +1777,124 @@ Content-Length: 5167
 </div>
 </div>
 <div class="sect2">
-<h3 id="Challenge-이름-또는_카테고리로-챌린지들-찾기"><a class="link" href="#Challenge-이름-또는_카테고리로-챌린지들-찾기">이름 또는 카테고리로 챌린지들 찾기</a></h3>
+<h3 id="Challenge-특정-챌린지-조회"><a class="link" href="#Challenge-특정-챌린지-조회">특정 챌린지 조회</a></h3>
+<div class="sect3">
+<h4 id="Challenge-특정-챌린지-조회_http_request"><a class="link" href="#Challenge-특정-챌린지-조회_http_request">HTTP request</a></h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /challenge/41 HTTP/1.1
+Accept: application/json
+Host: localhost:8080</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="Challenge-특정-챌린지-조회_path_parameters"><a class="link" href="#Challenge-특정-챌린지-조회_path_parameters">Path parameters</a></h4>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Path</th>
+<th class="tableblock halign-left valign-top">필수여부</th>
+<th class="tableblock halign-left valign-top">설명</th>
+<th class="tableblock halign-left valign-top">Validation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>challengeId</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">true</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">찾고 싶은 챌린지 ID</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect3">
+<h4 id="Challenge-특정-챌린지-조회_http_response"><a class="link" href="#Challenge-특정-챌린지-조회_http_response">HTTP response</a></h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
+Content-Type: application/json;charset=UTF-8
+Content-Length: 1022
+
+{
+  "responseChallenge" : {
+    "id" : 41,
+    "title" : "제목입니다.1",
+    "content" : "내용입니다.1",
+    "challengeCategory" : "공부",
+    "challengeLocation" : "실내",
+    "challengeDuration" : "10분 이내",
+    "created_at" : "2023-02-10 19:30:12:618",
+    "challengeImgUrls" : [ "/images/8765dfc2-e35d-4d4c-ab1f-85c994725103.jpg", "/images/3f103977-3713-4b94-bb8f-115d2cce2b37.jpg", "/images/0aecfd65-baa2-4521-8353-f55ba2cb0a1e.jpg" ],
+    "howManyUsersAreInThisChallenge" : 2,
+    "challengeOwnerUser" : {
+      "userName" : "홍길동",
+      "email" : "test1234@test.com",
+      "userId" : 37
+    }
+  },
+  "responseUserChallenges" : [ {
+    "challengeStatus" : "도전중",
+    "participatedUser" : {
+      "userName" : "홍길동",
+      "email" : "test1234@test.com",
+      "userId" : 37
+    }
+  }, {
+    "challengeStatus" : "도전중",
+    "participatedUser" : {
+      "userName" : "홍길동1",
+      "email" : "1@test.com",
+      "userId" : 38
+    }
+  } ]
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="Challenge-특정-챌린지-조회_response_fields"><a class="link" href="#Challenge-특정-챌린지-조회_response_fields">Response fields</a></h4>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">필드명</th>
+<th class="tableblock halign-left valign-top">타입</th>
+<th class="tableblock halign-left valign-top">필수값</th>
+<th class="tableblock halign-left valign-top">설명</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>responseChallenge</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Object</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">true</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">챌린지 정보</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>responseUserChallenges</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Array</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">true</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">찾은 챌린지에 참여한 사람들 정보</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="Challenge-이름-또는-카테고리로-챌린지들-찾기"><a class="link" href="#Challenge-이름-또는-카테고리로-챌린지들-찾기">이름 또는 카테고리로 챌린지들 찾기</a></h3>
 <div class="sect3">
 <h4 id="_popular_정렬_2"><a class="link" href="#_popular_정렬_2">popular 정렬</a></h4>
 <div class="exampleblock">
@@ -1580,9 +1915,8 @@ Content-Length: 5167
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /challenge/condition?title=&amp;category=%EC%9A%B4%EB%8F%99&amp;size=20&amp;page=0&amp;sort=popular HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0MTIzNEB0ZXN0LmNvbSIsImlhdCI6MTY3NTg1OTYyMSwiZXhwIjoxNjc1ODc3NjIxfQ.mZ8zG99Pm7NPJaSnMg_rIftBIOv_bSw1ADD-dMwFZS0
 Accept: application/json
-Host: api.dailychallenge.com</code></pre>
+Host: localhost:8080</code></pre>
 </div>
 </div>
 </div>
@@ -1636,155 +1970,155 @@ Host: api.dailychallenge.com</code></pre>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
-Content-Type: application/json
-Content-Length: 4224
+Content-Type: application/json;charset=UTF-8
+Content-Length: 5464
 
 {
   "content" : [ {
-    "id" : 16,
+    "id" : 36,
     "title" : "제목입니다.6",
     "content" : "내용입니다.6",
     "challengeCategory" : "운동",
     "challengeLocation" : "실내",
     "challengeDuration" : "10분 이내",
-    "created_at" : "2023-02-08 21:33:41:622",
-    "challengeImgUrls" : [ ],
+    "created_at" : "2023-02-10 19:30:12:324",
+    "challengeImgUrls" : [ "/images/e3df6faf-259b-4a00-96b4-75c15e07951e.jpg", "/images/9248c712-eaea-437e-bc8e-84c69d726931.jpg", "/images/582617b8-8f16-447e-9fde-4624dafaf0f4.jpg" ],
     "howManyUsersAreInThisChallenge" : 2,
     "challengeOwnerUser" : {
       "userName" : "홍길동",
       "email" : "test1234@test.com",
-      "userId" : 10
+      "userId" : 28
     }
   }, {
-    "id" : 13,
+    "id" : 33,
     "title" : "제목입니다.3",
     "content" : "내용입니다.3",
     "challengeCategory" : "운동",
     "challengeLocation" : "실내",
     "challengeDuration" : "10분 이내",
-    "created_at" : "2023-02-08 21:33:41:606",
-    "challengeImgUrls" : [ ],
+    "created_at" : "2023-02-10 19:30:12:278",
+    "challengeImgUrls" : [ "/images/761f9c49-e0fa-4e24-92a7-2ae15a189b37.jpg", "/images/92b234ff-7e3f-49fe-898f-d867aa542219.jpg", "/images/89d3bb6f-a171-4702-801a-315b9e4737e8.jpg" ],
     "howManyUsersAreInThisChallenge" : 1,
     "challengeOwnerUser" : {
       "userName" : "홍길동",
       "email" : "test1234@test.com",
-      "userId" : 10
+      "userId" : 28
     }
   }, {
-    "id" : 14,
+    "id" : 34,
     "title" : "제목입니다.4",
     "content" : "내용입니다.4",
     "challengeCategory" : "운동",
     "challengeLocation" : "실내",
     "challengeDuration" : "10분 이내",
-    "created_at" : "2023-02-08 21:33:41:611",
-    "challengeImgUrls" : [ ],
+    "created_at" : "2023-02-10 19:30:12:294",
+    "challengeImgUrls" : [ "/images/7ab52fa1-fdfc-46a0-8747-6e6fdaa7a579.jpg", "/images/9ad9875a-1e0a-4e4f-9e86-d6a9435d5b23.jpg", "/images/c867bdcd-43ef-48d3-870e-7c6d375dfe9d.jpg" ],
     "howManyUsersAreInThisChallenge" : 1,
     "challengeOwnerUser" : {
       "userName" : "홍길동",
       "email" : "test1234@test.com",
-      "userId" : 10
+      "userId" : 28
     }
   }, {
-    "id" : 15,
+    "id" : 35,
     "title" : "제목입니다.5",
     "content" : "내용입니다.5",
     "challengeCategory" : "운동",
     "challengeLocation" : "실내",
     "challengeDuration" : "10분 이내",
-    "created_at" : "2023-02-08 21:33:41:616",
-    "challengeImgUrls" : [ ],
+    "created_at" : "2023-02-10 19:30:12:309",
+    "challengeImgUrls" : [ "/images/20d7c817-0da7-4b4d-b92e-6d1247733866.jpg", "/images/91eaacc0-1bac-4ee9-8b59-c33a94c6005a.jpg", "/images/29030a80-73bb-48f6-80de-e9111cc14fdc.jpg" ],
     "howManyUsersAreInThisChallenge" : 1,
     "challengeOwnerUser" : {
       "userName" : "홍길동",
       "email" : "test1234@test.com",
-      "userId" : 10
+      "userId" : 28
     }
   }, {
-    "id" : 17,
+    "id" : 37,
     "title" : "제목입니다.7",
     "content" : "내용입니다.7",
     "challengeCategory" : "운동",
     "challengeLocation" : "실내",
     "challengeDuration" : "10분 이내",
-    "created_at" : "2023-02-08 21:33:41:628",
-    "challengeImgUrls" : [ ],
+    "created_at" : "2023-02-10 19:30:12:342",
+    "challengeImgUrls" : [ "/images/c2debf3d-b74e-4a9f-9518-bee5d00f957d.jpg", "/images/9a8cf97b-aad7-4f18-ae7d-ab6182009d92.jpg", "/images/80e96269-e242-4598-88e7-aac908c03bb9.jpg" ],
     "howManyUsersAreInThisChallenge" : 1,
     "challengeOwnerUser" : {
       "userName" : "홍길동",
       "email" : "test1234@test.com",
-      "userId" : 10
+      "userId" : 28
     }
   }, {
-    "id" : 18,
+    "id" : 38,
     "title" : "제목입니다.8",
     "content" : "내용입니다.8",
     "challengeCategory" : "운동",
     "challengeLocation" : "실내",
     "challengeDuration" : "10분 이내",
-    "created_at" : "2023-02-08 21:33:41:633",
-    "challengeImgUrls" : [ ],
+    "created_at" : "2023-02-10 19:30:12:360",
+    "challengeImgUrls" : [ "/images/57086e5c-6a8c-4969-8961-bdc9688f3178.jpg", "/images/06776349-4bfa-47a4-82cc-e1fade9f9ddb.jpg", "/images/72e06bda-9634-4275-83e3-f03d1ccf9844.jpg" ],
     "howManyUsersAreInThisChallenge" : 1,
     "challengeOwnerUser" : {
       "userName" : "홍길동",
       "email" : "test1234@test.com",
-      "userId" : 10
+      "userId" : 28
     }
   }, {
-    "id" : 19,
+    "id" : 39,
     "title" : "제목입니다.9",
     "content" : "내용입니다.9",
     "challengeCategory" : "운동",
     "challengeLocation" : "실내",
     "challengeDuration" : "10분 이내",
-    "created_at" : "2023-02-08 21:33:41:637",
-    "challengeImgUrls" : [ ],
+    "created_at" : "2023-02-10 19:30:12:374",
+    "challengeImgUrls" : [ "/images/d80ba570-08b3-45aa-a9eb-f70af085d1af.jpg", "/images/e148941b-5cd0-4ed9-8a1c-f914e0fd604d.jpg", "/images/37797ace-ce3e-43c1-8794-b2c993904645.jpg" ],
     "howManyUsersAreInThisChallenge" : 1,
     "challengeOwnerUser" : {
       "userName" : "홍길동",
       "email" : "test1234@test.com",
-      "userId" : 10
+      "userId" : 28
     }
   }, {
-    "id" : 20,
+    "id" : 40,
     "title" : "제목입니다.10",
     "content" : "내용입니다.10",
     "challengeCategory" : "운동",
     "challengeLocation" : "실내",
     "challengeDuration" : "10분 이내",
-    "created_at" : "2023-02-08 21:33:41:641",
-    "challengeImgUrls" : [ ],
+    "created_at" : "2023-02-10 19:30:12:391",
+    "challengeImgUrls" : [ "/images/30c951fc-850e-4369-ba9e-d0c6d8a846b4.jpg", "/images/1060bea9-a1f3-4ad7-9ccb-29cdc51f6bbc.jpg", "/images/78730726-d152-46d2-a667-536a05ff372c.jpg" ],
     "howManyUsersAreInThisChallenge" : 1,
     "challengeOwnerUser" : {
       "userName" : "홍길동",
       "email" : "test1234@test.com",
-      "userId" : 10
+      "userId" : 28
     }
   } ],
   "pageable" : {
     "sort" : {
-      "empty" : false,
       "sorted" : true,
-      "unsorted" : false
+      "unsorted" : false,
+      "empty" : false
     },
-    "offset" : 0,
     "pageNumber" : 0,
     "pageSize" : 20,
+    "offset" : 0,
     "unpaged" : false,
     "paged" : true
   },
-  "last" : true,
   "totalElements" : 8,
+  "last" : true,
   "totalPages" : 1,
+  "numberOfElements" : 8,
+  "first" : true,
   "size" : 20,
   "number" : 0,
   "sort" : {
-    "empty" : false,
     "sorted" : true,
-    "unsorted" : false
+    "unsorted" : false,
+    "empty" : false
   },
-  "numberOfElements" : 8,
-  "first" : true,
   "empty" : false
 }</code></pre>
 </div>
@@ -1844,9 +2178,8 @@ Content-Length: 4224
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /challenge/condition?title=&amp;category=%EC%9A%B4%EB%8F%99&amp;size=20&amp;page=0&amp;sort=time HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0MTIzNEB0ZXN0LmNvbSIsImlhdCI6MTY3NTg1OTYyMCwiZXhwIjoxNjc1ODc3NjIwfQ.5m-1ytV9DQtXk_ETunQxWA22Bk74yUdajC5vtGLyGu4
 Accept: application/json
-Host: api.dailychallenge.com</code></pre>
+Host: localhost:8080</code></pre>
 </div>
 </div>
 </div>
@@ -1900,155 +2233,155 @@ Host: api.dailychallenge.com</code></pre>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
-Content-Type: application/json
-Content-Length: 4209
+Content-Type: application/json;charset=UTF-8
+Content-Length: 5464
 
 {
   "content" : [ {
-    "id" : 3,
-    "title" : "제목입니다.3",
-    "content" : "내용입니다.3",
-    "challengeCategory" : "운동",
-    "challengeLocation" : "실내",
-    "challengeDuration" : "10분 이내",
-    "created_at" : "2023-02-08 21:33:40:547",
-    "challengeImgUrls" : [ ],
-    "howManyUsersAreInThisChallenge" : 1,
-    "challengeOwnerUser" : {
-      "userName" : "홍길동",
-      "email" : "test1234@test.com",
-      "userId" : 1
-    }
-  }, {
-    "id" : 4,
-    "title" : "제목입니다.4",
-    "content" : "내용입니다.4",
-    "challengeCategory" : "운동",
-    "challengeLocation" : "실내",
-    "challengeDuration" : "10분 이내",
-    "created_at" : "2023-02-08 21:33:40:552",
-    "challengeImgUrls" : [ ],
-    "howManyUsersAreInThisChallenge" : 1,
-    "challengeOwnerUser" : {
-      "userName" : "홍길동",
-      "email" : "test1234@test.com",
-      "userId" : 1
-    }
-  }, {
-    "id" : 5,
-    "title" : "제목입니다.5",
-    "content" : "내용입니다.5",
-    "challengeCategory" : "운동",
-    "challengeLocation" : "실내",
-    "challengeDuration" : "10분 이내",
-    "created_at" : "2023-02-08 21:33:40:558",
-    "challengeImgUrls" : [ ],
-    "howManyUsersAreInThisChallenge" : 1,
-    "challengeOwnerUser" : {
-      "userName" : "홍길동",
-      "email" : "test1234@test.com",
-      "userId" : 1
-    }
-  }, {
-    "id" : 6,
-    "title" : "제목입니다.6",
-    "content" : "내용입니다.6",
-    "challengeCategory" : "운동",
-    "challengeLocation" : "실내",
-    "challengeDuration" : "10분 이내",
-    "created_at" : "2023-02-08 21:33:40:564",
-    "challengeImgUrls" : [ ],
-    "howManyUsersAreInThisChallenge" : 2,
-    "challengeOwnerUser" : {
-      "userName" : "홍길동",
-      "email" : "test1234@test.com",
-      "userId" : 1
-    }
-  }, {
-    "id" : 7,
-    "title" : "제목입니다.7",
-    "content" : "내용입니다.7",
-    "challengeCategory" : "운동",
-    "challengeLocation" : "실내",
-    "challengeDuration" : "10분 이내",
-    "created_at" : "2023-02-08 21:33:40:568",
-    "challengeImgUrls" : [ ],
-    "howManyUsersAreInThisChallenge" : 1,
-    "challengeOwnerUser" : {
-      "userName" : "홍길동",
-      "email" : "test1234@test.com",
-      "userId" : 1
-    }
-  }, {
-    "id" : 8,
-    "title" : "제목입니다.8",
-    "content" : "내용입니다.8",
-    "challengeCategory" : "운동",
-    "challengeLocation" : "실내",
-    "challengeDuration" : "10분 이내",
-    "created_at" : "2023-02-08 21:33:40:573",
-    "challengeImgUrls" : [ ],
-    "howManyUsersAreInThisChallenge" : 1,
-    "challengeOwnerUser" : {
-      "userName" : "홍길동",
-      "email" : "test1234@test.com",
-      "userId" : 1
-    }
-  }, {
-    "id" : 9,
-    "title" : "제목입니다.9",
-    "content" : "내용입니다.9",
-    "challengeCategory" : "운동",
-    "challengeLocation" : "실내",
-    "challengeDuration" : "10분 이내",
-    "created_at" : "2023-02-08 21:33:40:578",
-    "challengeImgUrls" : [ ],
-    "howManyUsersAreInThisChallenge" : 1,
-    "challengeOwnerUser" : {
-      "userName" : "홍길동",
-      "email" : "test1234@test.com",
-      "userId" : 1
-    }
-  }, {
-    "id" : 10,
+    "id" : 30,
     "title" : "제목입니다.10",
     "content" : "내용입니다.10",
     "challengeCategory" : "운동",
     "challengeLocation" : "실내",
     "challengeDuration" : "10분 이내",
-    "created_at" : "2023-02-08 21:33:40:582",
-    "challengeImgUrls" : [ ],
+    "created_at" : "2023-02-10 19:30:11:957",
+    "challengeImgUrls" : [ "/images/1dc23df1-0d9b-439a-8de2-31615c3722de.jpg", "/images/f1456146-ed0a-4d87-85cf-cf594a4f82ab.jpg", "/images/0bd8b4d2-4b09-4bc9-b500-fb8655ff2dd3.jpg" ],
     "howManyUsersAreInThisChallenge" : 1,
     "challengeOwnerUser" : {
       "userName" : "홍길동",
       "email" : "test1234@test.com",
-      "userId" : 1
+      "userId" : 19
+    }
+  }, {
+    "id" : 29,
+    "title" : "제목입니다.9",
+    "content" : "내용입니다.9",
+    "challengeCategory" : "운동",
+    "challengeLocation" : "실내",
+    "challengeDuration" : "10분 이내",
+    "created_at" : "2023-02-10 19:30:11:947",
+    "challengeImgUrls" : [ "/images/3debafb9-11e2-491b-b608-12a2d46ad137.jpg", "/images/d1ffab8a-2c2e-49b2-a600-22a893fe3247.jpg", "/images/908ea0c3-6b0c-49a6-813f-9a1be77cb3dc.jpg" ],
+    "howManyUsersAreInThisChallenge" : 1,
+    "challengeOwnerUser" : {
+      "userName" : "홍길동",
+      "email" : "test1234@test.com",
+      "userId" : 19
+    }
+  }, {
+    "id" : 28,
+    "title" : "제목입니다.8",
+    "content" : "내용입니다.8",
+    "challengeCategory" : "운동",
+    "challengeLocation" : "실내",
+    "challengeDuration" : "10분 이내",
+    "created_at" : "2023-02-10 19:30:11:937",
+    "challengeImgUrls" : [ "/images/4a6288dd-e4cb-4b1d-8319-fc2b107e1cbd.jpg", "/images/0e874d08-815d-48ff-b851-7610f9688bf2.jpg", "/images/08e76483-9cb1-442c-9315-720380270f82.jpg" ],
+    "howManyUsersAreInThisChallenge" : 1,
+    "challengeOwnerUser" : {
+      "userName" : "홍길동",
+      "email" : "test1234@test.com",
+      "userId" : 19
+    }
+  }, {
+    "id" : 27,
+    "title" : "제목입니다.7",
+    "content" : "내용입니다.7",
+    "challengeCategory" : "운동",
+    "challengeLocation" : "실내",
+    "challengeDuration" : "10분 이내",
+    "created_at" : "2023-02-10 19:30:11:925",
+    "challengeImgUrls" : [ "/images/df492e06-ab91-41f0-b052-62ff95161c13.jpg", "/images/49688a46-6600-405f-a2c1-ddd91e9a6215.jpg", "/images/f25a0eed-2845-4190-8253-089aa18e56b2.jpg" ],
+    "howManyUsersAreInThisChallenge" : 1,
+    "challengeOwnerUser" : {
+      "userName" : "홍길동",
+      "email" : "test1234@test.com",
+      "userId" : 19
+    }
+  }, {
+    "id" : 26,
+    "title" : "제목입니다.6",
+    "content" : "내용입니다.6",
+    "challengeCategory" : "운동",
+    "challengeLocation" : "실내",
+    "challengeDuration" : "10분 이내",
+    "created_at" : "2023-02-10 19:30:11:914",
+    "challengeImgUrls" : [ "/images/f6658aed-f456-49ea-b8f7-511ad24c890f.jpg", "/images/805f4617-37aa-43f2-99c4-ee81d3849571.jpg", "/images/47c044b0-11fd-4157-8860-13a301719c24.jpg" ],
+    "howManyUsersAreInThisChallenge" : 2,
+    "challengeOwnerUser" : {
+      "userName" : "홍길동",
+      "email" : "test1234@test.com",
+      "userId" : 19
+    }
+  }, {
+    "id" : 25,
+    "title" : "제목입니다.5",
+    "content" : "내용입니다.5",
+    "challengeCategory" : "운동",
+    "challengeLocation" : "실내",
+    "challengeDuration" : "10분 이내",
+    "created_at" : "2023-02-10 19:30:11:897",
+    "challengeImgUrls" : [ "/images/50ea8501-fef3-469f-a4d3-ad44c40361ac.jpg", "/images/8f1efe25-a20c-40b2-bdbb-3339d2177c2a.jpg", "/images/c0689953-bb3d-4bf7-9df8-b4211e6a20e8.jpg" ],
+    "howManyUsersAreInThisChallenge" : 1,
+    "challengeOwnerUser" : {
+      "userName" : "홍길동",
+      "email" : "test1234@test.com",
+      "userId" : 19
+    }
+  }, {
+    "id" : 24,
+    "title" : "제목입니다.4",
+    "content" : "내용입니다.4",
+    "challengeCategory" : "운동",
+    "challengeLocation" : "실내",
+    "challengeDuration" : "10분 이내",
+    "created_at" : "2023-02-10 19:30:11:882",
+    "challengeImgUrls" : [ "/images/98cb38e6-9337-4b6d-8dc5-eef3e6bf9d23.jpg", "/images/1c0f4298-f1fc-49da-bb5b-b3b44bd3f83d.jpg", "/images/6aa84200-b644-45e9-a7ac-00e854291f50.jpg" ],
+    "howManyUsersAreInThisChallenge" : 1,
+    "challengeOwnerUser" : {
+      "userName" : "홍길동",
+      "email" : "test1234@test.com",
+      "userId" : 19
+    }
+  }, {
+    "id" : 23,
+    "title" : "제목입니다.3",
+    "content" : "내용입니다.3",
+    "challengeCategory" : "운동",
+    "challengeLocation" : "실내",
+    "challengeDuration" : "10분 이내",
+    "created_at" : "2023-02-10 19:30:11:867",
+    "challengeImgUrls" : [ "/images/804418ae-348c-4cb2-be03-cc5359996be6.jpg", "/images/33a5f15f-601d-4dd6-9e1d-28b3c3ea0eea.jpg", "/images/026e9b6a-8c11-44ed-8281-ffa134127bb8.jpg" ],
+    "howManyUsersAreInThisChallenge" : 1,
+    "challengeOwnerUser" : {
+      "userName" : "홍길동",
+      "email" : "test1234@test.com",
+      "userId" : 19
     }
   } ],
   "pageable" : {
     "sort" : {
-      "empty" : false,
       "sorted" : true,
-      "unsorted" : false
+      "unsorted" : false,
+      "empty" : false
     },
-    "offset" : 0,
     "pageNumber" : 0,
     "pageSize" : 20,
+    "offset" : 0,
     "unpaged" : false,
     "paged" : true
   },
-  "last" : true,
   "totalElements" : 8,
+  "last" : true,
   "totalPages" : 1,
+  "numberOfElements" : 8,
+  "first" : true,
   "size" : 20,
   "number" : 0,
   "sort" : {
-    "empty" : false,
     "sorted" : true,
-    "unsorted" : false
+    "unsorted" : false,
+    "empty" : false
   },
-  "numberOfElements" : 8,
-  "first" : true,
   "empty" : false
 }</code></pre>
 </div>
@@ -2089,6 +2422,581 @@ Content-Length: 4209
 </div>
 </div>
 </div>
+<div class="sect2">
+<h3 id="Challenge-챌린지-수정"><a class="link" href="#Challenge-챌린지-수정">챌린지 수정</a></h3>
+<details>
+<summary class="title">HTTP Request</summary>
+<div class="content">
+<details>
+<summary class="title">Details</summary>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">POST /challenge/11 HTTP/1.1
+Content-Type: multipart/form-data;charset=UTF-8; boundary=6o2knFse3p53ty9dmcQvWAIx1zInP11uCfbm
+Accept: application/json
+Host: localhost:8080
+
+--6o2knFse3p53ty9dmcQvWAIx1zInP11uCfbm
+Content-Disposition: form-data; name=updateChallengeImgFiles; filename=updateChallengeImgFiles
+
+
+--6o2knFse3p53ty9dmcQvWAIx1zInP11uCfbm
+Content-Disposition: form-data; name=updateChallengeImgFiles; filename=updateChallengeImgFiles
+
+
+--6o2knFse3p53ty9dmcQvWAIx1zInP11uCfbm
+Content-Disposition: form-data; name=requestUpdateChallenge; filename=requestUpdateChallenge
+Content-Type: application/json
+
+{"title":"수정된 제목","content":"수정된 내용","challengeCategory":"운동"}
+--6o2knFse3p53ty9dmcQvWAIx1zInP11uCfbm
+Content-Disposition: form-data; name=updateChallengeImgFiles; filename=updateChallengeImgFiles
+
+
+--6o2knFse3p53ty9dmcQvWAIx1zInP11uCfbm
+Content-Disposition: form-data; name=updateChallengeImgFiles; filename=updateChallengeImgFiles
+
+
+--6o2knFse3p53ty9dmcQvWAIx1zInP11uCfbm--</code></pre>
+</div>
+</div>
+</div>
+</details>
+<details>
+<summary class="title">RequestBody</summary>
+<div class="content">
+<div class="exampleblock">
+<div class="content">
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Part</th>
+<th class="tableblock halign-left valign-top">타입</th>
+<th class="tableblock halign-left valign-top">필수여부</th>
+<th class="tableblock halign-left valign-top">설명</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>requestUpdateChallenge</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">JSON</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">true</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">챌린지 정보 데이터(JSON)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>updateChallengeImgFiles</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">.jpg</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">false</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">챌린지 이미지 파일들(FILE)</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>requestCreateChallenge - 챌린지 정보 데이터(JSON)</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 20%;">
+<col style="width: 20%;">
+<col style="width: 20%;">
+<col style="width: 20%;">
+<col style="width: 20%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">필드명</th>
+<th class="tableblock halign-left valign-top">타입</th>
+<th class="tableblock halign-left valign-top">필수여부</th>
+<th class="tableblock halign-left valign-top">제약조건</th>
+<th class="tableblock halign-left valign-top">설명</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>title</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">true</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">제목</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>content</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">true</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">내용</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>challengeCategory</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">true</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">공부, 봉사, 운동, 건강, 경제</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">카테고리</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>challengeImgFile - 챌린지 이미지 파일(FILE)<br>
+.jpg 형식의 이미지 파일을 지원합니다.</p>
+</div>
+<div class="paragraph">
+<p>hashtagDto - 해시태그 데이터(LIST)<br>
+["tag1","tag2"] 의 형식으로 여러 개의 문자열을 리스트로 받아옵니다.</p>
+</div>
+</div>
+</div>
+</div>
+</details>
+<div class="sect3">
+<h4 id="_curl_request"><a class="link" href="#_curl_request">Curl request</a></h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ curl 'http://localhost:8080/challenge/11' -i -X POST \
+    -H 'Content-Type: multipart/form-data;charset=UTF-8' \
+    -H 'Accept: application/json' \
+    -F 'updateChallengeImgFiles=@updateChallengeImgFiles' \
+    -F 'updateChallengeImgFiles=@updateChallengeImgFiles' \
+    -F 'requestUpdateChallenge=@requestUpdateChallenge;type=application/json' \
+    -F 'updateChallengeImgFiles=@updateChallengeImgFiles' \
+    -F 'updateChallengeImgFiles=@updateChallengeImgFiles'</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_http_request"><a class="link" href="#_http_request">HTTP request</a></h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">POST /challenge/11 HTTP/1.1
+Content-Type: multipart/form-data;charset=UTF-8; boundary=6o2knFse3p53ty9dmcQvWAIx1zInP11uCfbm
+Accept: application/json
+Host: localhost:8080
+
+--6o2knFse3p53ty9dmcQvWAIx1zInP11uCfbm
+Content-Disposition: form-data; name=updateChallengeImgFiles; filename=updateChallengeImgFiles
+
+
+--6o2knFse3p53ty9dmcQvWAIx1zInP11uCfbm
+Content-Disposition: form-data; name=updateChallengeImgFiles; filename=updateChallengeImgFiles
+
+
+--6o2knFse3p53ty9dmcQvWAIx1zInP11uCfbm
+Content-Disposition: form-data; name=requestUpdateChallenge; filename=requestUpdateChallenge
+Content-Type: application/json
+
+{"title":"수정된 제목","content":"수정된 내용","challengeCategory":"운동"}
+--6o2knFse3p53ty9dmcQvWAIx1zInP11uCfbm
+Content-Disposition: form-data; name=updateChallengeImgFiles; filename=updateChallengeImgFiles
+
+
+--6o2knFse3p53ty9dmcQvWAIx1zInP11uCfbm
+Content-Disposition: form-data; name=updateChallengeImgFiles; filename=updateChallengeImgFiles
+
+
+--6o2knFse3p53ty9dmcQvWAIx1zInP11uCfbm--</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_http_response"><a class="link" href="#_http_response">HTTP response</a></h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
+Content-Type: application/json;charset=UTF-8
+Content-Length: 458
+
+{
+  "id" : 11,
+  "title" : "수정된 제목",
+  "content" : "수정된 내용",
+  "challengeCategory" : "운동",
+  "challengeLocation" : "실내",
+  "challengeDuration" : "10분 이내",
+  "created_at" : "2023-02-10 19:30:11:116",
+  "updated_at" : "2023-02-10 19:30:11:599",
+  "challengeImgUrls" : [ "/images/40a4e9ed-f7f4-4ec5-85e3-ce96cf5a7283.updateChallengeImgFiles", "/images/cb08c6b1-2976-4c06-8532-69b65c1d9450.updateChallengeImgFiles" ]
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_httpie_request"><a class="link" href="#_httpie_request">HTTPie request</a></h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ http --multipart POST 'http://localhost:8080/challenge/11' \
+    'updateChallengeImgFiles'@'updateChallengeImgFiles' \
+    'updateChallengeImgFiles'@'updateChallengeImgFiles' \
+    'requestUpdateChallenge'@'requestUpdateChallenge' \
+    'updateChallengeImgFiles'@'updateChallengeImgFiles' \
+    'updateChallengeImgFiles'@'updateChallengeImgFiles' \
+    'Accept:application/json'</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_path_parameters"><a class="link" href="#_path_parameters">Path parameters</a></h4>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Path</th>
+<th class="tableblock halign-left valign-top">필수여부</th>
+<th class="tableblock halign-left valign-top">설명</th>
+<th class="tableblock halign-left valign-top">Validation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>challengeId</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">true</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">수정하고 싶은 챌린지 ID</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect3">
+<h4 id="_request_body"><a class="link" href="#_request_body">Request body</a></h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-none hljs"></code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_request_part-requestUpdateChallenge-fields"><a class="link" href="#_request_part-requestUpdateChallenge-fields">Request part-requestupdatechallenge-fields</a></h4>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 20%;">
+<col style="width: 20%;">
+<col style="width: 20%;">
+<col style="width: 20%;">
+<col style="width: 20%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">필드명</th>
+<th class="tableblock halign-left valign-top">타입</th>
+<th class="tableblock halign-left valign-top">필수여부</th>
+<th class="tableblock halign-left valign-top">제약조건</th>
+<th class="tableblock halign-left valign-top">설명</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>title</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">true</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">제목</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>content</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">true</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">내용</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>challengeCategory</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">true</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">공부, 봉사, 운동, 건강, 경제</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">카테고리</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect3">
+<h4 id="_request_parts"><a class="link" href="#_request_parts">Request parts</a></h4>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Part</th>
+<th class="tableblock halign-left valign-top">타입</th>
+<th class="tableblock halign-left valign-top">필수여부</th>
+<th class="tableblock halign-left valign-top">설명</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>requestUpdateChallenge</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">JSON</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">true</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">챌린지 정보 데이터(JSON)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>updateChallengeImgFiles</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">.jpg</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">false</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">챌린지 이미지 파일들(FILE)</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect3">
+<h4 id="_response_body"><a class="link" href="#_response_body">Response body</a></h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-none hljs">{
+  "id" : 11,
+  "title" : "수정된 제목",
+  "content" : "수정된 내용",
+  "challengeCategory" : "운동",
+  "challengeLocation" : "실내",
+  "challengeDuration" : "10분 이내",
+  "created_at" : "2023-02-10 19:30:11:116",
+  "updated_at" : "2023-02-10 19:30:11:599",
+  "challengeImgUrls" : [ "/images/40a4e9ed-f7f4-4ec5-85e3-ce96cf5a7283.updateChallengeImgFiles", "/images/cb08c6b1-2976-4c06-8532-69b65c1d9450.updateChallengeImgFiles" ]
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_response_fields"><a class="link" href="#_response_fields">Response fields</a></h4>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">필드명</th>
+<th class="tableblock halign-left valign-top">타입</th>
+<th class="tableblock halign-left valign-top">필수값</th>
+<th class="tableblock halign-left valign-top">설명</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>id</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Number</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">true</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">챌린지 ID</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>title</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">true</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">제목</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>content</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">true</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">내용</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>challengeCategory</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">true</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">카테고리</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>challengeLocation</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">true</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">장소</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>challengeDuration</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">true</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">기간</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>created_at</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">true</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">생성일</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>updated_at</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">true</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">수정일</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>challengeImgUrls</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Array</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">true</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">사진 url들</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</details>
+<details>
+<summary class="title">HTTP Response</summary>
+<div class="content">
+<div class="sect3">
+<h4 id="_http_response"><a class="link" href="#_http_response">HTTP response</a></h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
+Content-Type: application/json;charset=UTF-8
+Content-Length: 458
+
+{
+  "id" : 11,
+  "title" : "수정된 제목",
+  "content" : "수정된 내용",
+  "challengeCategory" : "운동",
+  "challengeLocation" : "실내",
+  "challengeDuration" : "10분 이내",
+  "created_at" : "2023-02-10 19:30:11:116",
+  "updated_at" : "2023-02-10 19:30:11:599",
+  "challengeImgUrls" : [ "/images/40a4e9ed-f7f4-4ec5-85e3-ce96cf5a7283.updateChallengeImgFiles", "/images/cb08c6b1-2976-4c06-8532-69b65c1d9450.updateChallengeImgFiles" ]
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_response_fields"><a class="link" href="#_response_fields">Response fields</a></h4>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">필드명</th>
+<th class="tableblock halign-left valign-top">타입</th>
+<th class="tableblock halign-left valign-top">필수값</th>
+<th class="tableblock halign-left valign-top">설명</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>id</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Number</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">true</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">챌린지 ID</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>title</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">true</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">제목</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>content</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">true</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">내용</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>challengeCategory</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">true</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">카테고리</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>challengeLocation</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">true</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">장소</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>challengeDuration</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">true</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">기간</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>created_at</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">true</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">생성일</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>updated_at</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">true</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">수정일</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>challengeImgUrls</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Array</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">true</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">사진 url들</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</details>
+</div>
+<div class="sect2">
+<h3 id="Challenge-챌린지-삭제"><a class="link" href="#Challenge-챌린지-삭제">챌린지 삭제</a></h3>
+<div class="sect3">
+<h4 id="Challenge-챌린지-삭제_http_request"><a class="link" href="#Challenge-챌린지-삭제_http_request">HTTP request</a></h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">DELETE /challenge/1 HTTP/1.1
+Accept: application/json
+Host: localhost:8080</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="Challenge-챌린지-삭제_path_parameters"><a class="link" href="#Challenge-챌린지-삭제_path_parameters">Path parameters</a></h4>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Path</th>
+<th class="tableblock halign-left valign-top">필수여부</th>
+<th class="tableblock halign-left valign-top">설명</th>
+<th class="tableblock halign-left valign-top">Validation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>challengeId</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">true</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">챌린지 ID</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect3">
+<h4 id="Challenge-챌린지-삭제_http_response"><a class="link" href="#Challenge-챌린지-삭제_http_response">HTTP response</a></h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 204 No Content</code></pre>
+</div>
+</div>
+</div>
+</div>
 </div>
 </div>
 <div class="sect1">
@@ -2100,9 +3008,9 @@ Content-Length: 4209
 <h4 id="Comment-댓글-생성_http_request"><a class="link" href="#Comment-댓글-생성_http_request">HTTP request</a></h4>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">POST /83/comment/new HTTP/1.1
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">POST /2/comment/new HTTP/1.1
 Content-Type: multipart/form-data;charset=UTF-8; boundary=6o2knFse3p53ty9dmcQvWAIx1zInP11uCfbm
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0MTIzNEB0ZXN0LmNvbSIsImlhdCI6MTY3NTg1OTYzMSwiZXhwIjoxNjc1ODc3NjMxfQ.yoOY_OGZ_u4uW1WDsyzttY2879jUkh_k3pFGhp3r2ts
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0MTIzNEB0ZXN0LmNvbSIsImlhdCI6MTY3NjAyNTAyMSwiZXhwIjoxNjc2MDQzMDIxfQ.L5NjyEtBTvZYNpPvToHEBnuiDm0NCsbKKBw2Olr_rTo
 Accept: application/json
 Host: api.dailychallenge.com
 
@@ -2121,7 +3029,7 @@ Content-Type: image/jpg
 </div>
 </div>
 <div class="sect3">
-<h4 id="_요청값_6"><a class="link" href="#_요청값_6">요청값</a></h4>
+<h4 id="_요청값_5"><a class="link" href="#_요청값_5">요청값</a></h4>
 <div class="exampleblock">
 <div class="content">
 <table class="tableblock frame-all grid-all stretch">
@@ -2191,17 +3099,17 @@ Content-Type: image/jpg
 </div>
 </div>
 <div class="sect4">
-<h5 id="_요청값_6_http_response"><a class="link" href="#_요청값_6_http_response">HTTP response</a></h5>
+<h5 id="_요청값_5_http_response"><a class="link" href="#_요청값_5_http_response">HTTP response</a></h5>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 201 Created
 Content-Type: application/json
-Content-Length: 101
+Content-Length: 100
 
 {
   "content" : "댓글 내용",
-  "createdAt" : "2023-02-08T21:33:51.3428761",
-  "userId" : 74
+  "createdAt" : "2023-02-10T19:30:21.9237414",
+  "userId" : 2
 }</code></pre>
 </div>
 </div>
@@ -2214,9 +3122,9 @@ Content-Length: 101
 <h4 id="_http_request_2"><a class="link" href="#_http_request_2">HTTP request</a></h4>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">POST /85/comment/4 HTTP/1.1
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">POST /4/comment/4 HTTP/1.1
 Content-Type: multipart/form-data;charset=UTF-8; boundary=6o2knFse3p53ty9dmcQvWAIx1zInP11uCfbm
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0MTIzNEB0ZXN0LmNvbSIsImlhdCI6MTY3NTg1OTYzMSwiZXhwIjoxNjc1ODc3NjMxfQ.yoOY_OGZ_u4uW1WDsyzttY2879jUkh_k3pFGhp3r2ts
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0MTIzNEB0ZXN0LmNvbSIsImlhdCI6MTY3NjAyNTAyMiwiZXhwIjoxNjc2MDQzMDIyfQ.I9RnfmcsHIp6jDCXPeGAZ7RYMzMdEsY_Y2yt3YSMWtA
 Accept: application/json
 Host: api.dailychallenge.com
 
@@ -2235,7 +3143,7 @@ Content-Type: image/jpg
 </div>
 </div>
 <div class="sect3">
-<h4 id="_요청값_7"><a class="link" href="#_요청값_7">요청값</a></h4>
+<h4 id="_요청값_6"><a class="link" href="#_요청값_6">요청값</a></h4>
 <div class="exampleblock">
 <div class="content">
 <table class="tableblock frame-all grid-all stretch">
@@ -2320,9 +3228,9 @@ Content-Type: image/jpg
 <h4 id="Comment-댓글-삭제_http_request"><a class="link" href="#Comment-댓글-삭제_http_request">HTTP request</a></h4>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">DELETE /82/comment/1 HTTP/1.1
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">DELETE /1/comment/1 HTTP/1.1
 Content-Type: multipart/form-data;charset=UTF-8
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0MTIzNEB0ZXN0LmNvbSIsImlhdCI6MTY3NTg1OTYzMCwiZXhwIjoxNjc1ODc3NjMwfQ.-kpgHRdm4PXviNofMb86EZxLZ5_9MDn54qGyzFDrFzw
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0MTIzNEB0ZXN0LmNvbSIsImlhdCI6MTY3NjAyNTAyMSwiZXhwIjoxNjc2MDQzMDIxfQ.L5NjyEtBTvZYNpPvToHEBnuiDm0NCsbKKBw2Olr_rTo
 Accept: application/json
 Host: api.dailychallenge.com</code></pre>
 </div>
@@ -2382,14 +3290,14 @@ Content-Length: 32
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">POST /3/like?isLike=1 HTTP/1.1
 Content-Type: multipart/form-data;charset=UTF-8
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0MTIzNEB0ZXN0LmNvbSIsImlhdCI6MTY3NTg1OTYzMSwiZXhwIjoxNjc1ODc3NjMxfQ.yoOY_OGZ_u4uW1WDsyzttY2879jUkh_k3pFGhp3r2ts
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0MTIzNEB0ZXN0LmNvbSIsImlhdCI6MTY3NjAyNTAyMiwiZXhwIjoxNjc2MDQzMDIyfQ.I9RnfmcsHIp6jDCXPeGAZ7RYMzMdEsY_Y2yt3YSMWtA
 Accept: application/json
 Host: api.dailychallenge.com</code></pre>
 </div>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_요청값_8"><a class="link" href="#_요청값_8">요청값</a></h4>
+<h4 id="_요청값_7"><a class="link" href="#_요청값_7">요청값</a></h4>
 <div class="exampleblock">
 <div class="content">
 <table class="tableblock frame-all grid-all stretch">
@@ -2457,10 +3365,70 @@ Content-Length: 20
 </div>
 </div>
 </div>
+<div class="sect1">
+<h2 id="Challenge-API"><a class="link" href="#Challenge-API">챌린지 참가 API</a></h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="UserChallenge-챌린지-참가"><a class="link" href="#UserChallenge-챌린지-참가">챌린지 참가</a></h3>
+<div class="sect3">
+<h4 id="UserChallenge-챌린지-참가_http_request"><a class="link" href="#UserChallenge-챌린지-참가_http_request">HTTP request</a></h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">POST /challenge/9/participate HTTP/1.1
+Accept: application/json
+Host: localhost:8080</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="UserChallenge-챌린지-참가_path_parameters"><a class="link" href="#UserChallenge-챌린지-참가_path_parameters">Path parameters</a></h4>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Path</th>
+<th class="tableblock halign-left valign-top">필수여부</th>
+<th class="tableblock halign-left valign-top">설명</th>
+<th class="tableblock halign-left valign-top">Validation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>challengeId</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">true</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">참가하고 싶은 챌린지 ID</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect3">
+<h4 id="UserChallenge-챌린지-참가_http_response"><a class="link" href="#UserChallenge-챌린지-참가_http_response">HTTP response</a></h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 201 Created
+Content-Type: application/json;charset=UTF-8
+Content-Length: 63
+
+{
+  "code" : 201,
+  "message" : "챌린지 참가 완료!"
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2023-02-06 22:15:42 +0900
+Last updated 2023-02-10 19:05:26 +0900
 </div>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.3/highlight.min.js"></script>

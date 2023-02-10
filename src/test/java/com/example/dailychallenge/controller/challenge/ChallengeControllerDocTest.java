@@ -55,14 +55,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.mock.web.MockPart;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.request.RequestPostProcessor;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 public class ChallengeControllerDocTest extends RestDocsTest {
-    @Autowired
-    private PasswordEncoder passwordEncoder;
     @Autowired
     private UserService userService;
     @Autowired

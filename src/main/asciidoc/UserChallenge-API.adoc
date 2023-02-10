@@ -1,0 +1,7 @@
+[[Challenge-API]]
+== 챌린지 참가 API
+
+[[UserChallenge-챌린지-참가]]
+=== 챌린지 참가
+
+operation::user-challenge-controller-doc-test/participate-in-challenge[snippets='http-request,path-parameters,http-response']

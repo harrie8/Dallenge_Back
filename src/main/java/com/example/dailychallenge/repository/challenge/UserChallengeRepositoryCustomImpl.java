@@ -6,6 +6,7 @@ import static org.aspectj.util.LangUtil.isEmpty;
 
 import com.example.dailychallenge.dto.ChallengeSearchCondition;
 import com.example.dailychallenge.entity.challenge.ChallengeCategory;
+import com.example.dailychallenge.entity.challenge.UserChallenge;
 import com.example.dailychallenge.vo.challenge.QResponseChallenge;
 import com.example.dailychallenge.vo.challenge.QResponseUserChallenge;
 import com.example.dailychallenge.vo.challenge.ResponseChallenge;
@@ -15,6 +16,7 @@ import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.List;
+import java.util.Optional;
 import javax.persistence.EntityManager;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -28,6 +30,19 @@ public class UserChallengeRepositoryCustomImpl implements
 
     public UserChallengeRepositoryCustomImpl(EntityManager em) {
         this.queryFactory = new JPAQueryFactory(em);
+    }
+
+    @Override
+    public Optional<UserChallenge> findByChallengeIdAndUserId(Long challengeId, Long userId) {
+        UserChallenge findUserChallenge = queryFactory
+                .selectFrom(userChallenge)
+                .where(
+                        challengeIdEq(challengeId),
+                        userIdEq(userId)
+                )
+                .fetchOne();
+
+        return Optional.ofNullable(findUserChallenge);
     }
 
     @Override
@@ -114,6 +129,13 @@ public class UserChallengeRepositoryCustomImpl implements
             throw new IllegalArgumentException();
         }
         return userChallenge.challenge.id.eq(challengeId);
+    }
+
+    private BooleanExpression userIdEq(Long userId) {
+        if (userId == null) {
+            throw new IllegalArgumentException();
+        }
+        return userChallenge.users.id.eq(userId);
     }
 
     private OrderSpecifier<?> challengesSort(Pageable pageable) {

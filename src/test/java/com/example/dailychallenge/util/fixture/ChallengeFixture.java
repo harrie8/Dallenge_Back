@@ -1,6 +1,7 @@
 package com.example.dailychallenge.util.fixture;
 
 import com.example.dailychallenge.dto.ChallengeDto;
+import com.example.dailychallenge.entity.challenge.Challenge;
 import com.example.dailychallenge.entity.challenge.ChallengeCategory;
 import com.example.dailychallenge.entity.challenge.ChallengeDuration;
 import com.example.dailychallenge.entity.challenge.ChallengeLocation;
@@ -14,6 +15,16 @@ public class ChallengeFixture {
                 .challengeCategory(ChallengeCategory.STUDY.getDescription())
                 .challengeLocation(ChallengeLocation.INDOOR.getDescription())
                 .challengeDuration(ChallengeDuration.WITHIN_TEN_MINUTES.getDescription())
+                .build();
+    }
+
+    public static Challenge createChallenge() {
+        return Challenge.builder()
+                .title("제목입니다.")
+                .content("내용입니다.")
+                .challengeCategory(ChallengeCategory.STUDY)
+                .challengeLocation(ChallengeLocation.INDOOR)
+                .challengeDuration(ChallengeDuration.WITHIN_TEN_MINUTES)
                 .build();
     }
 }
