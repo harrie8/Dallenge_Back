@@ -1,5 +1,6 @@
 package com.example.dailychallenge.controller.exception;
 
+import com.example.dailychallenge.exception.AuthorizationException;
 import com.example.dailychallenge.exception.FileNotUpload;
 import com.example.dailychallenge.exception.challenge.ChallengeCategoryNotFound;
 import com.example.dailychallenge.exception.challenge.ChallengeNotFound;
@@ -91,6 +92,17 @@ public class GlobalExceptionHandler {
         final ResponseError responseError = ResponseError.builder()
                 .code(challengeNotFound.getStatusCode())
                 .message(challengeNotFound.getMessage())
+                .build();
+
+        return ResponseEntity.status(responseError.getCode()).body(responseError);
+    }
+
+    @ExceptionHandler(AuthorizationException.class)
+    protected ResponseEntity<ResponseError> handlerAuthorizationException(
+            AuthorizationException authorizationException) {
+        final ResponseError responseError = ResponseError.builder()
+                .code(authorizationException.getStatusCode())
+                .message(authorizationException.getMessage())
                 .build();
 
         return ResponseEntity.status(responseError.getCode()).body(responseError);
