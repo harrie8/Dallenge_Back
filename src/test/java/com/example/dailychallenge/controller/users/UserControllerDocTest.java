@@ -19,7 +19,9 @@ import static org.springframework.restdocs.request.RequestDocumentation.pathPara
 import static org.springframework.restdocs.request.RequestDocumentation.requestParameters;
 import static org.springframework.restdocs.request.RequestDocumentation.requestParts;
 import static org.springframework.restdocs.snippet.Attributes.key;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.example.dailychallenge.dto.UserDto;
@@ -316,6 +318,33 @@ public class UserControllerDocTest {
                                 parameterWithName("oldPassword").description("기존 비밀번호"),
                                 parameterWithName("newPassword").description("변경할 비밀번호")
                         ),
+                        pathParameters(
+                                parameterWithName("userId").description("회원 ID")
+                        )
+                ));
+    }
+
+    @Test
+    @DisplayName("회원정보 조회 테스트")
+    public void getUserInfo() throws Exception {
+        User user = userService.saveUser(createUser(), passwordEncoder);
+        String token = generateToken();
+        mockMvc.perform(RestDocumentationRequestBuilders
+                        .get("/user/{userId}", user.getId())
+                        .header(AUTHORIZATION, token)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.email").value(user.getEmail()))
+                .andExpect(jsonPath("$.userName").value(user.getUserName()))
+                .andExpect(jsonPath("$.info").value(user.getInfo()))
+                .andExpect(jsonPath("$.imageUrl").value(user.getUserImg().getImgUrl()))
+                .andDo(print())
+                .andDo(document("user-info",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(
+                                removeHeaders("Vary", "X-Content-Type-Options", "X-XSS-Protection", "Pragma", "Expires",
+                                        "Cache-Control", "Strict-Transport-Security", "X-Frame-Options"),
+                                prettyPrint()),
                         pathParameters(
                                 parameterWithName("userId").description("회원 ID")
                         )

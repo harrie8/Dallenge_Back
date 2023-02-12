@@ -54,6 +54,7 @@ public class User extends BaseEntity {
         this.email = email;
         this.password = password;
         this.registrationId = registrationId;
+        this.info = "회원 정보를 입력해주세요.";
     }
 
     public void saveDefaultImg(UserImg userImg) {

@@ -10,6 +10,8 @@ import com.example.dailychallenge.exception.users.UserNotFound;
 import com.example.dailychallenge.repository.UserRepository;
 import com.example.dailychallenge.vo.RequestUpdateUser;
 import java.util.ArrayList;
+
+import com.example.dailychallenge.vo.ResponseUserInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mock.web.MockMultipartFile;
@@ -127,5 +129,16 @@ public class UserService implements UserDetailsService {
     public void changePassword(Long userId, String newPassword, PasswordEncoder passwordEncoder) {
         User user = userRepository.findById(userId).orElseThrow(UserNotFound::new);
         user.changePassword(passwordEncoder.encode(newPassword));
+    }
+
+    public ResponseUserInfo getUserInfo(Long userId) {
+        User user = userRepository.findById(userId).orElseThrow(UserNotFound::new);
+        ResponseUserInfo userInfo = ResponseUserInfo.builder()
+                .email(user.getEmail())
+                .userName(user.getUserName())
+                .info(user.getInfo())
+                .imageUrl(user.getUserImg().getImgUrl())
+                .build();
+        return userInfo;
     }
 }

@@ -2,9 +2,7 @@ package com.example.dailychallenge.controller.users;
 import static org.junit.jupiter.api.Assertions.*;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -236,6 +234,18 @@ class UserControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .param("oldPassword","1234")
                         .param("newPassword","12345")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("회원정보 조회 테스트")
+    public void getUserInfo() throws Exception {
+        User user = userService.saveUser(createUser(), passwordEncoder);
+        String token = generateToken();
+        mockMvc.perform(get("/user/{userId}", user.getId())
+                        .header(AUTHORIZATION, token)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andDo(print());

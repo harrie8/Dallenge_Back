@@ -7,11 +7,8 @@ import com.example.dailychallenge.exception.users.UserLoginFailure;
 import com.example.dailychallenge.exception.users.UserPasswordCheck;
 import com.example.dailychallenge.service.users.UserService;
 import com.example.dailychallenge.utils.JwtTokenUtil;
-import com.example.dailychallenge.vo.RequestLogin;
-import com.example.dailychallenge.vo.RequestUpdateUser;
-import com.example.dailychallenge.vo.RequestUser;
-import com.example.dailychallenge.vo.ResponseLoginUser;
-import com.example.dailychallenge.vo.ResponseUser;
+import com.example.dailychallenge.vo.*;
+
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -116,6 +113,12 @@ public class UserController {
         }
         userService.changePassword(userId,newPassword,passwordEncoder);
         return ResponseEntity.status(HttpStatus.OK).body("비밀번호가 변경되었습니다.");
+    }
+
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<ResponseUserInfo> getUserInfo(@PathVariable("userId") Long userId){
+        ResponseUserInfo userInfo = userService.getUserInfo(userId);
+        return ResponseEntity.status(HttpStatus.OK).body(userInfo);
     }
 
     /**

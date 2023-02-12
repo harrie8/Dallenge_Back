@@ -86,3 +86,16 @@ include::{snippets}/user-change-password/request-parameters.adoc[]
 ====
 
 include::{snippets}/user-change-password/http-response.adoc[]
+
+
+[[User-회원-정보-조회]]
+=== 회원 정보 조회
+
+include::{snippets}/user-info/http-request.adoc[]
+==== 요청값
+
+====
+include::{snippets}/user-info/path-parameters.adoc[]
+====
+
+include::{snippets}/user-info/http-response.adoc[]
