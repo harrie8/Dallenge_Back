@@ -4,6 +4,7 @@ import com.example.dailychallenge.dto.ChallengeDto;
 import com.example.dailychallenge.dto.ChallengeSearchCondition;
 import com.example.dailychallenge.entity.challenge.Challenge;
 import com.example.dailychallenge.entity.challenge.UserChallenge;
+import com.example.dailychallenge.entity.hashtag.ChallengeHashtag;
 import com.example.dailychallenge.entity.hashtag.Hashtag;
 import com.example.dailychallenge.entity.users.User;
 import com.example.dailychallenge.exception.users.UserNotFound;
@@ -20,6 +21,7 @@ import com.example.dailychallenge.vo.challenge.ResponseCreateChallenge;
 import com.example.dailychallenge.vo.challenge.ResponseUpdateChallenge;
 import com.example.dailychallenge.vo.challenge.ResponseUserChallenge;
 import java.util.List;
+import java.util.stream.Collectors;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -116,7 +118,8 @@ public class ChallengeController {
             @AuthenticationPrincipal org.springframework.security.core.userdetails.User user,
             @PathVariable Long challengeId,
             @RequestPart @Valid RequestUpdateChallenge requestUpdateChallenge,
-            @RequestPart(required = false) List<MultipartFile> updateChallengeImgFiles) {
+            @RequestPart(required = false) List<MultipartFile> updateChallengeImgFiles,
+            @RequestPart(value = "hashtagDto", required = false) List<String> hashtagDto) {
 
         String userEmail = user.getUsername();
         User findUser = userService.findByEmail(userEmail);
@@ -127,8 +130,12 @@ public class ChallengeController {
         Challenge updatedChallenge = challengeService.updateChallenge(challengeId, requestUpdateChallenge,
                 updateChallengeImgFiles, findUser);
 
-        ResponseUpdateChallenge responseChallenge = ResponseUpdateChallenge.create(updatedChallenge);
+        if (hashtagDto != null) {
+            List<Hashtag> hashtags = hashtagService.updateHashtag(hashtagDto, challengeId);
+            challengeHashtagService.updateChallengeHashtag(challengeId,hashtags);
+        }
 
+        ResponseUpdateChallenge responseChallenge = ResponseUpdateChallenge.create(updatedChallenge);
         return ResponseEntity.status(HttpStatus.OK).body(responseChallenge);
     }
 
@@ -142,7 +149,13 @@ public class ChallengeController {
             throw new UserNotFound();
         }
 
+        List<ChallengeHashtag> challengeHashtags = challengeHashtagService.findByChallengeId(challengeId);
+        List<Hashtag> savedTag = challengeHashtags.stream()
+                .map(ChallengeHashtag::getHashtag).collect(Collectors.toList());
+
+        hashtagService.deleteHashtag(savedTag);
         challengeService.deleteChallenge(challengeId, findUser);
+
         return ResponseEntity.noContent().build();
     }
 }

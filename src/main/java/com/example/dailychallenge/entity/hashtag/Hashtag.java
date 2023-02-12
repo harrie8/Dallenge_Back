@@ -31,7 +31,7 @@ public class Hashtag extends BaseEntity {
 
     private Integer tagCount;
 
-    @OneToMany(mappedBy = "hashtag", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "hashtag", cascade = CascadeType.ALL)
     private List<ChallengeHashtag> challengeHashtags= new ArrayList<>();
 
     @Builder
@@ -39,8 +39,11 @@ public class Hashtag extends BaseEntity {
         this.content = content;
         this.tagCount = 1;
     }
-
     public void updateTagCount() {
         this.tagCount += 1;
+    }
+
+    public void minusTagCount(){
+        this.tagCount -= 1;
     }
 }
