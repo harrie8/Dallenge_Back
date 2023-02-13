@@ -9,6 +9,7 @@ import com.example.dailychallenge.service.comment.CommentService;
 import com.example.dailychallenge.service.users.UserService;
 import com.example.dailychallenge.vo.ResponseChallengeComment;
 import com.example.dailychallenge.vo.ResponseComment;
+import com.example.dailychallenge.vo.ResponseUserComment;
 import java.util.HashMap;
 import java.util.List;
 import javax.validation.Valid;
@@ -96,6 +97,20 @@ public class CommentController {
 
         Challenge challenge = challengeService.findById(challengeId);
         Page<ResponseChallengeComment> result = commentService.searchCommentsByChallengeId(challenge, pageable);
+
+        return ResponseEntity.status(HttpStatus.OK).body(result);
+    }
+
+    @GetMapping("/user/{userId}/comment")
+    public ResponseEntity<Page<ResponseUserComment>> searchCommentsByUserId(
+            @AuthenticationPrincipal org.springframework.security.core.userdetails.User user,
+            @PathVariable Long userId,
+            @PageableDefault(page = 0, size = 10, sort = "time", direction = Sort.Direction.DESC) Pageable pageable) {
+
+        String loginUserEmail = user.getUsername();
+        userService.validateUser(loginUserEmail, userId);
+
+        Page<ResponseUserComment> result = commentService.searchCommentsByUserId(userId, pageable);
 
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }

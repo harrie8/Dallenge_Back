@@ -7,6 +7,7 @@ import com.example.dailychallenge.entity.comment.CommentImg;
 import com.example.dailychallenge.entity.users.User;
 import com.example.dailychallenge.repository.CommentRepository;
 import com.example.dailychallenge.vo.ResponseChallengeComment;
+import com.example.dailychallenge.vo.ResponseUserComment;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.EntityNotFoundException;
@@ -92,5 +93,10 @@ public class CommentService {
 
         Long challengeId = challenge.getId();
         return commentRepository.searchCommentsByChallengeId(challengeId, pageable);
+    }
+
+    public Page<ResponseUserComment> searchCommentsByUserId(Long userId, Pageable pageable) {
+
+        return commentRepository.searchCommentsByUserId(userId, pageable);
     }
 }

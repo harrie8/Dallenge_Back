@@ -1,10 +1,12 @@
 package com.example.dailychallenge.controller.comment;
 
 import static com.example.dailychallenge.util.fixture.UserFixture.createOtherUser;
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.startsWith;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
@@ -244,6 +246,60 @@ class CommentControllerTest {
                         hasItems(otherUser.getId().intValue())))
                 .andDo(print());
     }
+
+    @Test
+    @DisplayName("유저가 작성한 챌린지의 댓글들 조회 테스트")
+    public void searchCommentsByUserId() throws Exception {
+        Challenge challenge = createChallenge();
+        User savedUser = challenge.getUsers();
+        for (int i = 0; i < 5; i++) {
+            CommentDto commentDto = CommentDto.builder()
+                    .content("댓글 내용" + i)
+                    .build();
+            List<MultipartFile> commentDtoImg = new ArrayList<>();
+            commentDtoImg.add(createMultipartFiles());
+            commentService.saveComment(commentDto, savedUser, challenge, commentDtoImg);
+        }
+        ChallengeDto challengeDto = ChallengeDto.builder()
+                .title("다른 제목입니다.")
+                .content("다른 내용입니다.")
+                .challengeCategory(ChallengeCategory.STUDY.getDescription())
+                .challengeLocation(ChallengeLocation.INDOOR.getDescription())
+                .challengeDuration(ChallengeDuration.WITHIN_TEN_MINUTES.getDescription())
+                .build();
+        MultipartFile challengeImg = createMultipartFiles();
+        List<MultipartFile> challengeImgFiles = List.of(challengeImg);
+        Challenge otherChallenge = challengeService.saveChallenge(challengeDto, challengeImgFiles, savedUser);
+        for (int i = 5; i < 8; i++) {
+            CommentDto commentDto = CommentDto.builder()
+                    .content("다른 댓글 내용" + i)
+                    .build();
+            List<MultipartFile> commentDtoImg = new ArrayList<>();
+            commentDtoImg.add(createMultipartFiles());
+            commentService.saveComment(commentDto, savedUser, otherChallenge, commentDtoImg);
+        }
+        Long userId = savedUser.getId();
+
+        mockMvc.perform(get("/user/{userId}/comment", userId)
+                        .with(user(userService.loadUserByUsername(savedUser.getEmail())))
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content", hasSize(8)))
+                .andExpect(jsonPath("$.content[*].id").isNotEmpty())
+                .andExpect(jsonPath("$.content[*].content",
+                        contains("다른 댓글 내용7", "다른 댓글 내용6", "다른 댓글 내용5", "댓글 내용4",
+                                "댓글 내용3", "댓글 내용2", "댓글 내용1", "댓글 내용0")))
+                .andExpect(jsonPath("$.content[*].likes", hasItems(0)))
+                .andExpect(jsonPath("$.content[*].createdAt").isNotEmpty())
+                .andExpect(jsonPath("$.content[*].commentImgUrls",
+                        hasItems(hasItem(startsWith("/images/")))))
+                .andExpect(jsonPath("$.content[*].challengeId",
+                        hasItems(challenge.getId().intValue(), otherChallenge.getId().intValue())))
+                .andExpect(jsonPath("$.content[*].challengeTitle",
+                        hasItems(challenge.getTitle(), otherChallenge.getTitle())))
+                .andDo(print());
+    }
+
 
     private String generateToken() {
         Authentication auth = authenticationManager.authenticate(

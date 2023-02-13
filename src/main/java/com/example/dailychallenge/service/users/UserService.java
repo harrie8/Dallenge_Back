@@ -145,7 +145,7 @@ public class UserService implements UserDetailsService {
         return userInfo;
     }
 
-    private void validateUser(String loginUserEmail, Long userId) {
+    public void validateUser(String loginUserEmail, Long userId) {
         User loginUser = findByEmail(loginUserEmail);
         if (loginUser == null) {
             throw new UserNotFound();

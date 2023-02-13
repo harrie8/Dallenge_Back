@@ -2,10 +2,13 @@ package com.example.dailychallenge.repository.comment;
 
 import static com.example.dailychallenge.entity.challenge.QChallenge.challenge;
 import static com.example.dailychallenge.entity.comment.QComment.comment;
+import static com.example.dailychallenge.entity.users.QUser.user;
 
 import com.example.dailychallenge.repository.challenge.OrderByNull;
 import com.example.dailychallenge.vo.QResponseChallengeComment;
+import com.example.dailychallenge.vo.QResponseUserComment;
 import com.example.dailychallenge.vo.ResponseChallengeComment;
+import com.example.dailychallenge.vo.ResponseUserComment;
 import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
@@ -51,11 +54,41 @@ public class CommentRepositoryCustomImpl implements CommentRepositoryCustom {
         return new PageImpl<>(content, pageable, total);
     }
 
+    @Override
+    public Page<ResponseUserComment> searchCommentsByUserId(Long userId, Pageable pageable) {
+        List<ResponseUserComment> content = queryFactory
+                .select(new QResponseUserComment(comment))
+                .from(comment)
+                .leftJoin(comment.users, user)
+                .where(userIdEq(userId))
+                .orderBy(commentSort(pageable))
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+        long total = queryFactory
+                .select(comment)
+                .from(comment)
+                .leftJoin(comment.users, user)
+                .where(userIdEq(userId))
+                .fetch()
+                .size();
+
+        return new PageImpl<>(content, pageable, total);
+    }
+
     private BooleanExpression challengeIdEq(Long challengeId) {
         if (challengeId == null) {
             throw new IllegalArgumentException();
         }
         return comment.challenge.id.eq(challengeId);
+    }
+
+    private BooleanExpression userIdEq(Long userId) {
+        if (userId == null) {
+            throw new IllegalArgumentException();
+        }
+        return comment.users.id.eq(userId);
     }
 
     private OrderSpecifier<?> commentSort(Pageable pageable) {
