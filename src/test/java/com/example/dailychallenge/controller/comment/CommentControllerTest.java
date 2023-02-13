@@ -1,6 +1,8 @@
 package com.example.dailychallenge.controller.comment;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -25,7 +27,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -78,14 +79,6 @@ class CommentControllerTest {
     private UserChallengeRepository userChallengeRepository;
     @Autowired
     private ChallengeImgRepository challengeImgRepository;
-
-    @BeforeEach
-    void beforeEach() throws Exception {
-        userChallengeRepository.deleteAll();
-        challengeImgRepository.deleteAll();
-        challengeRepository.deleteAll();
-        userRepository.deleteAll();
-    }
 
     private static MockMultipartFile createMultipartFiles() {
         String path = "commentDtoImg";

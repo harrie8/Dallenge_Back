@@ -51,15 +51,11 @@ public class UserChallengeRepositoryCustomTest extends RepositoryTest {
     private User otherUser;
 
     @BeforeEach
-    void beforeEach() {
-        userRepository.deleteAll(); // 에러 때문에 일단 넣음
-        userChallengeRepository.deleteAll(); // 에러 때문에 일단 넣음
-        challengeRepository.deleteAll(); // 에러 때문에 일단 넣음
-
+    void beforeEach() throws InterruptedException {
         initData();
     }
 
-    private void initData() {
+    private void initData() throws InterruptedException {
         savedUser = User.builder()
                 .userName("홍길동")
                 .email("test@test.com")
@@ -120,6 +116,7 @@ public class UserChallengeRepositoryCustomTest extends RepositoryTest {
                     .challengeDuration(ChallengeDuration.WITHIN_TEN_MINUTES)
                     .build();
             challenge.setUser(savedUser);
+            Thread.sleep(1);
             challengeRepository.save(challenge);
 
             UserChallenge userChallenge = UserChallenge.builder()

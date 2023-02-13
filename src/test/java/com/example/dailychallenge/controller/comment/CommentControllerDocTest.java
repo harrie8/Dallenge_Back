@@ -7,9 +7,12 @@ import static org.springframework.restdocs.operation.preprocess.Preprocessors.pr
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.removeHeaders;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestPartFields;
-import static org.springframework.restdocs.request.RequestDocumentation.*;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.partWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
+import static org.springframework.restdocs.request.RequestDocumentation.requestParameters;
+import static org.springframework.restdocs.request.RequestDocumentation.requestParts;
 import static org.springframework.restdocs.snippet.Attributes.key;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -36,7 +39,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -55,9 +57,11 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 @SpringBootTest
+@Transactional
 @AutoConfigureMockMvc
 @AutoConfigureRestDocs(uriScheme = "https", uriHost = "api.dailychallenge.com", uriPort = 443)
 @ExtendWith(RestDocumentationExtension.class)
@@ -95,14 +99,6 @@ public class CommentControllerDocTest {
     private UserChallengeRepository userChallengeRepository;
     @Autowired
     private ChallengeImgRepository challengeImgRepository;
-
-    @BeforeEach
-    void beforeEach() throws Exception {
-        userChallengeRepository.deleteAll();
-        challengeImgRepository.deleteAll();
-        challengeRepository.deleteAll();
-        userRepository.deleteAll();
-    }
 
     private static MockMultipartFile createMultipartFiles() {
         String path = "commentDtoImg";
@@ -270,6 +266,7 @@ public class CommentControllerDocTest {
     @DisplayName("좋아요 테스트")
     public void isLikeTest() throws Exception {
         Comment savedComment = createComment();
+        Integer beforeLikes = savedComment.getLikes();
         String token = generateToken();
         mockMvc.perform(RestDocumentationRequestBuilders
                         .post("/{commentId}/like?isLike=1", savedComment.getId())
@@ -277,7 +274,7 @@ public class CommentControllerDocTest {
                         .contentType(MediaType.MULTIPART_FORM_DATA)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.isLike").value(savedComment.getLikes()+1))
+                .andExpect(jsonPath("$.isLike").value(beforeLikes +1))
                 .andDo(document("comment-like",
                         preprocessRequest(prettyPrint()),
                         preprocessResponse(

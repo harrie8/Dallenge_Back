@@ -22,10 +22,8 @@ import com.example.dailychallenge.entity.hashtag.ChallengeHashtag;
 import com.example.dailychallenge.entity.hashtag.Hashtag;
 import com.example.dailychallenge.entity.users.User;
 import com.example.dailychallenge.repository.ChallengeHashtagRepository;
-import com.example.dailychallenge.repository.ChallengeRepository;
 import com.example.dailychallenge.repository.CommentRepository;
 import com.example.dailychallenge.repository.HashtagRepository;
-import com.example.dailychallenge.repository.UserChallengeRepository;
 import com.example.dailychallenge.repository.UserRepository;
 import com.example.dailychallenge.service.challenge.ChallengeService;
 import com.example.dailychallenge.service.challenge.UserChallengeService;
@@ -53,10 +51,6 @@ public class UserChallengeControllerDocTest extends RestDocsTest {
     private HashtagRepository hashtagRepository;
     @Autowired
     private ChallengeHashtagRepository challengeHashtagRepository;
-    @Autowired
-    private ChallengeRepository challengeRepository;
-    @Autowired
-    private UserChallengeRepository userChallengeRepository;
 
     private User savedUser;
     private Challenge challenge1;
@@ -65,10 +59,6 @@ public class UserChallengeControllerDocTest extends RestDocsTest {
 
     @BeforeEach
     void beforeEach() throws Exception {
-        userRepository.deleteAll(); // 에러 때문에 일단 넣음
-        userChallengeRepository.deleteAll(); // 에러 때문에 일단 넣음
-        challengeRepository.deleteAll(); // 에러 때문에 일단 넣음
-
         initData();
         requestPostProcessor = user(userService.loadUserByUsername(savedUser.getEmail()));
     }

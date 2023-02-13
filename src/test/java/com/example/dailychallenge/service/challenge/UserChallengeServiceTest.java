@@ -12,7 +12,6 @@ import com.example.dailychallenge.entity.challenge.UserChallenge;
 import com.example.dailychallenge.entity.users.User;
 import com.example.dailychallenge.exception.userChallenge.UserChallengeDuplicate;
 import com.example.dailychallenge.repository.ChallengeRepository;
-import com.example.dailychallenge.repository.UserRepository;
 import com.example.dailychallenge.service.users.UserService;
 import com.example.dailychallenge.util.ServiceTest;
 import org.junit.jupiter.api.BeforeEach;
@@ -28,8 +27,6 @@ public class UserChallengeServiceTest extends ServiceTest {
     @Autowired
     private UserService userService;
     @Autowired
-    private UserRepository userRepository;
-    @Autowired
     private ChallengeRepository challengeRepository;
 
     private User savedUser;
@@ -38,8 +35,6 @@ public class UserChallengeServiceTest extends ServiceTest {
 
     @BeforeEach
     void beforeEach() throws Exception {
-        userRepository.deleteAll();
-
         savedUser = userService.saveUser(createUser(), passwordEncoder);
         challenge = createChallenge();
         challenge.setUser(savedUser);
