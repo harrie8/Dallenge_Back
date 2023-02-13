@@ -9,9 +9,8 @@ import com.example.dailychallenge.exception.users.UserDuplicateNotCheck;
 import com.example.dailychallenge.exception.users.UserNotFound;
 import com.example.dailychallenge.repository.UserRepository;
 import com.example.dailychallenge.vo.RequestUpdateUser;
-import java.util.ArrayList;
-
 import com.example.dailychallenge.vo.ResponseUserInfo;
+import java.util.ArrayList;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mock.web.MockMultipartFile;
@@ -78,9 +77,7 @@ public class UserService implements UserDetailsService {
     }
 
 
-    public void updateUser(Long userId, RequestUpdateUser requestUpdateUser,
-                           PasswordEncoder passwordEncoder,
-                           MultipartFile userImgFile) throws Exception {
+    public void updateUser(Long userId, RequestUpdateUser requestUpdateUser, MultipartFile userImgFile) {
         User findUser = userRepository.findById(userId)
                 .orElseThrow(UserNotFound::new);
 
@@ -89,7 +86,6 @@ public class UserService implements UserDetailsService {
         UserEditor.UserEditorBuilder editorBuilder = findUser.toEditor();
         UserEditor userEditor = editorBuilder
                 .userName(requestUpdateUser.getUserName())
-                .password(passwordEncoder.encode(requestUpdateUser.getPassword()))
                 .info(requestUpdateUser.getInfo())
                 .build();
 

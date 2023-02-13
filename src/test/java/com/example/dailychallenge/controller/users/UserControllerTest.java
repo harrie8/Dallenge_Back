@@ -126,7 +126,6 @@ class UserControllerTest {
         Long userId = savedUser.getId();
         RequestUpdateUser requestUpdateUserBuild = RequestUpdateUser.builder()
                 .userName("editName")
-                .password("789")
                 .info("editInfo")
                 .build();
 

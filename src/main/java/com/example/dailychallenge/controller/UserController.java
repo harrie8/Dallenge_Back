@@ -7,8 +7,12 @@ import com.example.dailychallenge.exception.users.UserLoginFailure;
 import com.example.dailychallenge.exception.users.UserPasswordCheck;
 import com.example.dailychallenge.service.users.UserService;
 import com.example.dailychallenge.utils.JwtTokenUtil;
-import com.example.dailychallenge.vo.*;
-
+import com.example.dailychallenge.vo.RequestLogin;
+import com.example.dailychallenge.vo.RequestUpdateUser;
+import com.example.dailychallenge.vo.RequestUser;
+import com.example.dailychallenge.vo.ResponseLoginUser;
+import com.example.dailychallenge.vo.ResponseUser;
+import com.example.dailychallenge.vo.ResponseUserInfo;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,7 +27,14 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.core.user.OAuth2User;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
@@ -78,7 +89,7 @@ public class UserController {
     public void updateUser(@PathVariable Long userId,
                            @RequestPart @Valid RequestUpdateUser requestUpdateUser,
                            @RequestPart(value = "userImgFile", required = false) MultipartFile multipartFile) throws Exception {
-        userService.updateUser(userId, requestUpdateUser, passwordEncoder, multipartFile);
+        userService.updateUser(userId, requestUpdateUser, multipartFile);
     }
 
     @DeleteMapping("/user/{userId}")

@@ -4,6 +4,7 @@ import com.example.dailychallenge.dto.UserEditor;
 import com.example.dailychallenge.entity.BaseEntity;
 import com.example.dailychallenge.entity.challenge.Challenge;
 import com.example.dailychallenge.entity.challenge.UserChallenge;
+import com.example.dailychallenge.entity.comment.Comment;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.CascadeType;
@@ -16,8 +17,6 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
-
-import com.example.dailychallenge.entity.comment.Comment;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -64,14 +63,12 @@ public class User extends BaseEntity {
     public UserEditor.UserEditorBuilder toEditor() {
         return UserEditor.builder()
                 .userName(userName)
-                .info(info)
-                .password(password);
+                .info(info);
     }
 
     public void update(UserEditor userEditor) {
         userName = userEditor.getUserName();
         info = userEditor.getInfo();
-        password = userEditor.getPassword();
     }
 
     public void changePassword(String newPassword){

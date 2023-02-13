@@ -8,13 +8,11 @@ public class UserEditor {
 
     // 수정할 수 있는 필드들만 정의
     private final String userName;
-    private final String password;
     private final String info;
 
     @Builder
-    public UserEditor(String userName, String password, String info) {
+    public UserEditor(String userName, String info) {
         this.userName = userName;
-        this.password = password;
         this.info = info;
     }
 }

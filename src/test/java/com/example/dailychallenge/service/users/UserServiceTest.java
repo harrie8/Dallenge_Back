@@ -1,14 +1,16 @@
 package com.example.dailychallenge.service.users;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.example.dailychallenge.dto.UserDto;
 import com.example.dailychallenge.entity.users.User;
 import com.example.dailychallenge.exception.users.UserDuplicateNotCheck;
 import com.example.dailychallenge.exception.users.UserNotFound;
-import com.example.dailychallenge.exception.users.UserPasswordCheck;
 import com.example.dailychallenge.repository.UserImgRepository;
 import com.example.dailychallenge.repository.UserRepository;
 import com.example.dailychallenge.vo.RequestUpdateUser;
@@ -86,20 +88,15 @@ class UserServiceTest {
         RequestUpdateUser requestUpdateUser = RequestUpdateUser.builder()
                 .userName("editName")
                 .info("editInfo")
-                .password("789")
                 .build();
 
-        userService.updateUser(savedUser.getId(), requestUpdateUser, passwordEncoder, multipartFile);
+        userService.updateUser(savedUser.getId(), requestUpdateUser, multipartFile);
 
         User editUser = userService.findByEmail(savedUser.getEmail());
         System.out.println("editUser>>>"+editUser.toString());
 
         assertEquals(editUser.getUserName(), requestUpdateUser.getUserName());
         assertEquals(editUser.getInfo(), requestUpdateUser.getInfo());
-        assertAll(
-                () -> assertNotEquals(editUser.getPassword(), requestUpdateUser.getPassword()),
-                () -> assertTrue(passwordEncoder.matches(requestUpdateUser.getPassword(), editUser.getPassword()))
-        );
     }
 
     @Test
@@ -110,11 +107,10 @@ class UserServiceTest {
         RequestUpdateUser requestUpdateUser = RequestUpdateUser.builder()
                 .userName("editName")
                 .info("editInfo")
-                .password("789")
                 .build();
         Long userId = savedUser.getId() + 1;
 
-        assertThatThrownBy(() -> userService.updateUser(userId, requestUpdateUser, passwordEncoder, multipartFile))
+        assertThatThrownBy(() -> userService.updateUser(userId, requestUpdateUser, multipartFile))
                 .isInstanceOf(UserNotFound.class)
                 .hasMessage("존재하지 않는 회원입니다.");
     }

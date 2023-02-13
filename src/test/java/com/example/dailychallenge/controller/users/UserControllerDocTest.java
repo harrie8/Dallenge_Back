@@ -179,7 +179,6 @@ public class UserControllerDocTest {
 
         RequestUpdateUser requestUpdateUserBuild = RequestUpdateUser.builder()
                 .userName("editName")
-                .password("789")
                 .info("editInfo")
                 .build();
 
@@ -213,7 +212,6 @@ public class UserControllerDocTest {
                         ),
                         requestPartFields("requestUpdateUser",
                                 fieldWithPath("userName").description("회원 이름"),
-                                fieldWithPath("password").description("회원 비밀번호"),
                                 fieldWithPath("info").description("자기소개 글")
                         )
                 ));
