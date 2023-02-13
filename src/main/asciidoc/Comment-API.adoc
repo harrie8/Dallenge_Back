@@ -71,3 +71,24 @@ include::{snippets}/comment-like/request-parameters.adoc[]
 
 include::{snippets}/comment-like/http-response.adoc[]
 
+[[Comment-특정-챌린지의-댓글-조회]]
+=== 특정 챌린지의 댓글 조회
+
+==== HTTP request
+
+include::{snippets}/search-comments-by-challengeId/http-request.adoc[]
+
+==== 요청값
+
+====
+include::{snippets}/search-comments-by-challengeId/path-parameters.adoc[]
+
+====
+
+==== HTTP response
+
+[%collapsible]
+====
+include::{snippets}/search-comments-by-challengeId/http-response.adoc[]
+include::{snippets}/search-comments-by-challengeId/response-fields.adoc[]
+====

@@ -1,9 +1,16 @@
 package com.example.dailychallenge.controller.comment;
 
+import static com.example.dailychallenge.util.fixture.UserFixture.createOtherUser;
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.hasItems;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.startsWith;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.example.dailychallenge.dto.ChallengeDto;
@@ -201,6 +208,40 @@ class CommentControllerTest {
                         .contentType(MediaType.MULTIPART_FORM_DATA)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("특정 챌린지의 댓글들 조회 테스트")
+    public void searchCommentsByChallengeId() throws Exception {
+        Challenge challenge = createChallenge();
+        User otherUser = userService.saveUser(createOtherUser(), passwordEncoder);
+        for (int i = 0; i < 5; i++) {
+            CommentDto commentDto = CommentDto.builder()
+                    .content("댓글 내용" + i)
+                    .build();
+            List<MultipartFile> commentDtoImg = new ArrayList<>();
+            commentDtoImg.add(createMultipartFiles());
+            commentService.saveComment(commentDto, otherUser, challenge, commentDtoImg);
+        }
+        Long challengeId = challenge.getId();
+
+        mockMvc.perform(get("/{challengeId}/comment", challengeId)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content", hasSize(5)))
+                .andExpect(jsonPath("$.content[*].id").isNotEmpty())
+                .andExpect(jsonPath("$.content[*].content", hasItems(startsWith("댓글 내용"))))
+                .andExpect(jsonPath("$.content[*].likes", hasItems(0)))
+                .andExpect(jsonPath("$.content[*].createdAt").isNotEmpty())
+                .andExpect(jsonPath("$.content[*].commentImgUrls",
+                        hasItems(hasItem(startsWith("/images/")))))
+                .andExpect(jsonPath("$.content[*].commentOwnerUser.userName",
+                        hasItems(otherUser.getUserName())))
+                .andExpect(jsonPath("$.content[*].commentOwnerUser.email",
+                        hasItems(otherUser.getEmail())))
+                .andExpect(jsonPath("$.content[*].commentOwnerUser.userId",
+                        hasItems(otherUser.getId().intValue())))
                 .andDo(print());
     }
 

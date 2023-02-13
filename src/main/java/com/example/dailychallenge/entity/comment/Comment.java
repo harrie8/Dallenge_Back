@@ -3,14 +3,23 @@ package com.example.dailychallenge.entity.comment;
 import com.example.dailychallenge.entity.BaseEntity;
 import com.example.dailychallenge.entity.challenge.Challenge;
 import com.example.dailychallenge.entity.users.User;
+import java.util.ArrayList;
+import java.util.List;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.security.core.parameters.P;
-
-import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity @Table(name = "comment")
 @Getter
@@ -67,4 +76,12 @@ public class Comment extends BaseEntity {
         }
     }
 
+    public List<String> getImgUrls() {
+        List<String> imgUrls = new ArrayList<>();
+        for (CommentImg commentImg : commentImgs) {
+            String imgUrl = commentImg.getImgUrl();
+            imgUrls.add(imgUrl);
+        }
+        return imgUrls;
+    }
 }

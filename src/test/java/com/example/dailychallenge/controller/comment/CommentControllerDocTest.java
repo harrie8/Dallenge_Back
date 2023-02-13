@@ -1,11 +1,18 @@
 package com.example.dailychallenge.controller.comment;
 
+import static com.example.dailychallenge.util.fixture.UserFixture.createOtherUser;
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.hasItems;
+import static org.hamcrest.Matchers.startsWith;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessRequest;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessResponse;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.removeHeaders;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.relaxedResponseFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestPartFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.partWithName;
@@ -286,6 +293,44 @@ public class CommentControllerDocTest {
                         ),
                         pathParameters(
                                 parameterWithName("commentId").description("댓글 아이디")
+                        )
+                ));
+    }
+
+    @Test
+    @DisplayName("특정 챌린지의 댓글들 조회 테스트")
+    public void searchCommentsByChallengeId() throws Exception {
+        Challenge challenge = createChallenge();
+        User otherUser = userService.saveUser(createOtherUser(), passwordEncoder);
+        for (int i = 0; i < 5; i++) {
+            CommentDto commentDto = CommentDto.builder()
+                    .content("댓글 내용" + i)
+                    .build();
+            List<MultipartFile> commentDtoImg = new ArrayList<>();
+            commentDtoImg.add(createMultipartFiles());
+            commentService.saveComment(commentDto, otherUser, challenge, commentDtoImg);
+        }
+        Long challengeId = challenge.getId();
+
+        mockMvc.perform(get("/{challengeId}/comment", challengeId)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andDo(document("search-comments-by-challengeId",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(
+                                removeHeaders("Vary", "X-Content-Type-Options", "X-XSS-Protection", "Pragma", "Expires",
+                                        "Cache-Control", "Strict-Transport-Security", "X-Frame-Options"),
+                                prettyPrint()),
+                        pathParameters(
+                                parameterWithName("challengeId").description("챌린지 아이디")
+                        ),
+                        relaxedResponseFields(
+                                fieldWithPath("content[*].id").description("댓글 id"),
+                                fieldWithPath("content[*].content").description("댓글 내용"),
+                                fieldWithPath("content[*].likes").description("댓글 좋아요 갯수"),
+                                fieldWithPath("content[*].createdAt").description("댓글 생성 시간"),
+                                fieldWithPath("content[*].commentImgUrls").description("댓글 이미지들 url"),
+                                fieldWithPath("content[*].commentOwnerUser").description("댓글 소유자 정보")
                         )
                 ));
     }

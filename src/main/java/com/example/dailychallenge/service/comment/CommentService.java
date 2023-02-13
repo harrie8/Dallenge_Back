@@ -6,10 +6,13 @@ import com.example.dailychallenge.entity.comment.Comment;
 import com.example.dailychallenge.entity.comment.CommentImg;
 import com.example.dailychallenge.entity.users.User;
 import com.example.dailychallenge.repository.CommentRepository;
+import com.example.dailychallenge.vo.ResponseChallengeComment;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -83,5 +86,11 @@ public class CommentService {
             comment.updateLike(false);
         }
         return comment.getLikes();
+    }
+
+    public Page<ResponseChallengeComment> searchCommentsByChallengeId(Challenge challenge, Pageable pageable) {
+
+        Long challengeId = challenge.getId();
+        return commentRepository.searchCommentsByChallengeId(challengeId, pageable);
     }
 }
