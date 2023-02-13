@@ -1,5 +1,6 @@
 package com.example.dailychallenge.service.users;
 
+import static com.example.dailychallenge.util.fixture.UserFixture.createOtherUser;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -9,12 +10,14 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.example.dailychallenge.dto.UserDto;
 import com.example.dailychallenge.entity.users.User;
+import com.example.dailychallenge.exception.AuthorizationException;
 import com.example.dailychallenge.exception.users.UserDuplicateNotCheck;
 import com.example.dailychallenge.exception.users.UserNotFound;
 import com.example.dailychallenge.repository.UserImgRepository;
 import com.example.dailychallenge.repository.UserRepository;
 import com.example.dailychallenge.vo.RequestUpdateUser;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -79,52 +82,89 @@ class UserServiceTest {
         );
     }
 
-
-    @Test
+    @Nested
     @DisplayName("회원 정보 수정 테스트")
-    public void updateUserTest() throws Exception {
-        User savedUser = userService.saveUser(createUser(), passwordEncoder);
-        MultipartFile multipartFile = createMultipartFiles();
-        RequestUpdateUser requestUpdateUser = RequestUpdateUser.builder()
-                .userName("editName")
-                .info("editInfo")
-                .build();
+    class updateUser {
+        @Test
+        public void success() throws Exception {
+            User savedUser = userService.saveUser(createUser(), passwordEncoder);
+            MultipartFile multipartFile = createMultipartFiles();
+            RequestUpdateUser requestUpdateUser = RequestUpdateUser.builder()
+                    .userName("editName")
+                    .info("editInfo")
+                    .build();
 
-        userService.updateUser(savedUser.getId(), requestUpdateUser, multipartFile);
+            userService.updateUser(savedUser.getEmail(), savedUser.getId(), requestUpdateUser, multipartFile);
 
-        User editUser = userService.findByEmail(savedUser.getEmail());
-        System.out.println("editUser>>>"+editUser.toString());
+            User editUser = userService.findByEmail(savedUser.getEmail());
+            System.out.println("editUser>>>"+editUser.toString());
 
-        assertEquals(editUser.getUserName(), requestUpdateUser.getUserName());
-        assertEquals(editUser.getInfo(), requestUpdateUser.getInfo());
+            assertEquals(editUser.getUserName(), requestUpdateUser.getUserName());
+            assertEquals(editUser.getInfo(), requestUpdateUser.getInfo());
+        }
+
+        @Test
+        @DisplayName("존재하지 않는 회원 정보 수정 테스트")
+        public void failByNotExistUser() throws Exception {
+            User savedUser = userService.saveUser(createUser(), passwordEncoder);
+            MultipartFile multipartFile = createMultipartFiles();
+            RequestUpdateUser requestUpdateUser = RequestUpdateUser.builder()
+                    .userName("editName")
+                    .info("editInfo")
+                    .build();
+            String notExistUserEmail = savedUser.getEmail() + "error";
+            Long notExistUserId = savedUser.getId() + 1;
+
+            assertThatThrownBy(() -> userService.updateUser(notExistUserEmail, notExistUserId, requestUpdateUser, multipartFile))
+                    .isInstanceOf(UserNotFound.class)
+                    .hasMessage("존재하지 않는 회원입니다.");
+        }
+
+        @Test
+        @DisplayName("회원 검증에 실패하는 테스트")
+        public void failByAuthorization() throws Exception {
+            User savedUser = userService.saveUser(createUser(), passwordEncoder);
+            User otherSavedUser = userService.saveUser(createOtherUser(), passwordEncoder);
+            MultipartFile multipartFile = createMultipartFiles();
+            RequestUpdateUser requestUpdateUser = RequestUpdateUser.builder()
+                    .userName("editName")
+                    .info("editInfo")
+                    .build();
+            String otherSavedUserEmail = otherSavedUser.getEmail();
+            Long savedUserId = savedUser.getId();
+
+            assertThatThrownBy(() -> userService.updateUser(otherSavedUserEmail, savedUserId, requestUpdateUser, multipartFile))
+                    .isInstanceOf(AuthorizationException.class)
+                    .hasMessage("권한이 없습니다.");
+        }
     }
 
-    @Test
-    @DisplayName("존재하지 않는 회원 정보 수정 테스트")
-    public void updateNotExistUser() throws Exception {
-        User savedUser = userService.saveUser(createUser(), passwordEncoder);
-        MultipartFile multipartFile = createMultipartFiles();
-        RequestUpdateUser requestUpdateUser = RequestUpdateUser.builder()
-                .userName("editName")
-                .info("editInfo")
-                .build();
-        Long userId = savedUser.getId() + 1;
-
-        assertThatThrownBy(() -> userService.updateUser(userId, requestUpdateUser, multipartFile))
-                .isInstanceOf(UserNotFound.class)
-                .hasMessage("존재하지 않는 회원입니다.");
-    }
-
-    @Test
+    @Nested
     @DisplayName("회원 삭제 테스트")
-    public void deleteUserTest() throws Exception {
-        User savedUser = userService.saveUser(createUser(), passwordEncoder);
-        Long userId = savedUser.getId();
+    class deleteUser {
+        @Test
+        public void success() throws Exception {
+            User savedUser = userService.saveUser(createUser(), passwordEncoder);
+            String loginUserEmail = savedUser.getEmail();
+            Long userId = savedUser.getId();
 
-        userService.delete(userId);
+            userService.delete(loginUserEmail, userId);
 
-        assertEquals(0, userRepository.count());
-        assertEquals(0,userImgRepository.count());
+            assertEquals(0, userRepository.count());
+            assertEquals(0,userImgRepository.count());
+        }
+
+        @Test
+        public void failByAuthorization() throws Exception {
+            User savedUser = userService.saveUser(createUser(), passwordEncoder);
+            User otherSavedUser = userService.saveUser(createOtherUser(), passwordEncoder);
+            String loginUserEmail = otherSavedUser.getEmail();
+            Long userId = savedUser.getId();
+
+            assertThatThrownBy(() -> userService.delete(loginUserEmail, userId))
+                    .isInstanceOf(AuthorizationException.class)
+                    .hasMessage("권한이 없습니다.");
+        }
     }
 
     @Test

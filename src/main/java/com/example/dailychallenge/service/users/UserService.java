@@ -5,6 +5,7 @@ import com.example.dailychallenge.dto.UserEditor;
 import com.example.dailychallenge.entity.social.ProviderUser;
 import com.example.dailychallenge.entity.users.User;
 import com.example.dailychallenge.entity.users.UserImg;
+import com.example.dailychallenge.exception.AuthorizationException;
 import com.example.dailychallenge.exception.users.UserDuplicateNotCheck;
 import com.example.dailychallenge.exception.users.UserNotFound;
 import com.example.dailychallenge.repository.UserRepository;
@@ -77,7 +78,11 @@ public class UserService implements UserDetailsService {
     }
 
 
-    public void updateUser(Long userId, RequestUpdateUser requestUpdateUser, MultipartFile userImgFile) {
+    public void updateUser(String loginUserEmail, Long userId, RequestUpdateUser requestUpdateUser,
+                           MultipartFile userImgFile) {
+
+        validateUser(loginUserEmail, userId);
+
         User findUser = userRepository.findById(userId)
                 .orElseThrow(UserNotFound::new);
 
@@ -92,7 +97,9 @@ public class UserService implements UserDetailsService {
         findUser.update(userEditor);
     }
 
-    public void delete(Long userId) {
+    public void delete(String loginUserEmail, Long userId) {
+        validateUser(loginUserEmail, userId);
+
         User findUser = userRepository.findById(userId)
                 .orElseThrow(UserNotFound::new);
 
@@ -136,5 +143,16 @@ public class UserService implements UserDetailsService {
                 .imageUrl(user.getUserImg().getImgUrl())
                 .build();
         return userInfo;
+    }
+
+    private void validateUser(String loginUserEmail, Long userId) {
+        User loginUser = findByEmail(loginUserEmail);
+        if (loginUser == null) {
+            throw new UserNotFound();
+        }
+
+        if (!loginUser.isSameId(userId)) {
+            throw new AuthorizationException();
+        }
     }
 }

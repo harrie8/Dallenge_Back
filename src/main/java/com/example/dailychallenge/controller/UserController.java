@@ -86,15 +86,20 @@ public class UserController {
     }
 
     @PostMapping("/user/{userId}")
-    public void updateUser(@PathVariable Long userId,
+    public void updateUser(@AuthenticationPrincipal org.springframework.security.core.userdetails.User user,
+                           @PathVariable Long userId,
                            @RequestPart @Valid RequestUpdateUser requestUpdateUser,
-                           @RequestPart(value = "userImgFile", required = false) MultipartFile multipartFile) throws Exception {
-        userService.updateUser(userId, requestUpdateUser, multipartFile);
+                           @RequestPart(value = "userImgFile", required = false) MultipartFile multipartFile) {
+
+        String loginUserEmail = user.getUsername();
+        userService.updateUser(loginUserEmail, userId, requestUpdateUser, multipartFile);
     }
 
     @DeleteMapping("/user/{userId}")
-    public void deleteUser(@PathVariable Long userId) {
-        userService.delete(userId);
+    public void deleteUser(@AuthenticationPrincipal org.springframework.security.core.userdetails.User user,
+                           @PathVariable Long userId) {
+        String loginUserEmail = user.getUsername();
+        userService.delete(loginUserEmail, userId);
     }
 
     @PostMapping("/user/check") // 아이디 중복 체크

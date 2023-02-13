@@ -74,4 +74,8 @@ public class User extends BaseEntity {
     public void changePassword(String newPassword){
         this.password = newPassword;
     }
+
+    public boolean isSameId(Long userId) {
+        return id.equals(userId);
+    }
 }
