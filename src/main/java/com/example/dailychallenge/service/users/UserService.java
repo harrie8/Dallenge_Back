@@ -2,6 +2,7 @@ package com.example.dailychallenge.service.users;
 
 import com.example.dailychallenge.dto.UserDto;
 import com.example.dailychallenge.dto.UserEditor;
+import com.example.dailychallenge.entity.challenge.Challenge;
 import com.example.dailychallenge.entity.social.ProviderUser;
 import com.example.dailychallenge.entity.users.User;
 import com.example.dailychallenge.entity.users.UserImg;
@@ -10,10 +11,13 @@ import com.example.dailychallenge.exception.users.UserDuplicateNotCheck;
 import com.example.dailychallenge.exception.users.UserNotFound;
 import com.example.dailychallenge.repository.UserRepository;
 import com.example.dailychallenge.vo.RequestUpdateUser;
+import com.example.dailychallenge.vo.ResponseUserChallenge;
 import com.example.dailychallenge.vo.ResponseUserInfo;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mock.web.MockMultipartFile;
@@ -159,6 +163,24 @@ public class UserService implements UserDetailsService {
                 .imageUrl(user.getUserImg().getImgUrl())
                 .build();
         return userInfo;
+    }
+
+    public List<ResponseUserChallenge> getChallengeByUser(Long userId){
+        User user = userRepository.findById(userId).orElseThrow(UserNotFound::new);
+        List<Challenge> challengeList = user.getChallenges();
+        List<ResponseUserChallenge> userChallenge = new ArrayList<>();
+
+        for (Challenge challenge : challengeList) {
+            userChallenge.add(
+                    ResponseUserChallenge.builder()
+                    .userId(userId)
+                    .challengeId(challenge.getId())
+                    .challengeTitle(challenge.getTitle())
+                    .challengeContent(challenge.getContent())
+                    .build()
+            );
+        }
+        return userChallenge;
     }
 
     public void validateUser(String loginUserEmail, Long userId) {

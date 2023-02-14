@@ -82,4 +82,5 @@ public class ChallengeService {
             throw new AuthorizationException();
         }
     }
+
 }
