@@ -35,7 +35,7 @@ public class CommentService {
 
         commentRepository.save(comment);
 
-        if (!commentImgFiles.isEmpty()) { // commentImgFiles가 null일 수도 있어서 수정해야 될 것 같습니다.
+        if (commentImgFiles != null) {
             for (int i = 0; i < commentImgFiles.size(); i++) {
                 CommentImg commentImg = new CommentImg();
                 commentImg.saveComment(comment);
