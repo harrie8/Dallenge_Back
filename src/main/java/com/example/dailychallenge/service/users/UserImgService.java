@@ -38,7 +38,7 @@ public class UserImgService {
     }
 
     public void updateUserImg(Long userImgId, MultipartFile userImgFile) {
-        if(!userImgFile.isEmpty()){
+        if(userImgFile != null){
             UserImg savedUserImg = userImgRepository.findById(userImgId)
                     .orElseThrow(EntityNotFoundException::new);
             if(!StringUtils.isNullOrEmpty(savedUserImg.getImgName())){
