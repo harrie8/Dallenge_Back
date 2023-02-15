@@ -19,3 +19,5 @@ include::Comment-API.adoc[]
 
 include::UserChallenge-API.adoc[]
 
+include::Bookmark-API.adoc[]
+
