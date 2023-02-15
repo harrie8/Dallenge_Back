@@ -99,3 +99,12 @@ include::{snippets}/user-info/path-parameters.adoc[]
 ====
 
 include::{snippets}/user-info/http-response.adoc[]
+
+
+[[User-작성한-챌린지-조회]]
+=== 내가 작성한 챌린지 조회
+
+include::{snippets}/user-my-challenge/http-request.adoc[]
+
+include::{snippets}/user-my-challenge/http-response.adoc[]
+
