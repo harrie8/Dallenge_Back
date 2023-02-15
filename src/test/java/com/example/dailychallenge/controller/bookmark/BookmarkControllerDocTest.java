@@ -61,7 +61,6 @@ public class BookmarkControllerDocTest  extends RestDocsTest {
         Long challengeId = challenge.getId();
         mockMvc.perform(post("/{challengeId}/bookmark/new", challengeId)
                         .with(requestPostProcessor)
-                        .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated())
                 .andDo(restDocs.document(
@@ -69,6 +68,7 @@ public class BookmarkControllerDocTest  extends RestDocsTest {
                                 parameterWithName("challengeId").description("챌린지 아이디")
                         ),
                         responseFields(
+                                fieldWithPath("id").description("북마크 ID"),
                                 fieldWithPath("title").description("챌린지 제목"),
                                 fieldWithPath("createdAt").description("북마크 생성 시간"),
                                 fieldWithPath("userId").description("회원 ID")
@@ -117,9 +117,10 @@ public class BookmarkControllerDocTest  extends RestDocsTest {
                                 parameterWithName("userId").description("유저 ID")
                         ),
                         relaxedResponseFields(
+                                fieldWithPath("content[*].id").description("북마크 ID"),
                                 fieldWithPath("content[*].title").description("챌린지 제목"),
                                 fieldWithPath("content[*].createdAt").description("북마크한 시간"),
-                                fieldWithPath("content[*].userId").description("유저 id")
+                                fieldWithPath("content[*].userId").description("유저 ID")
                         )
                 ));
     }

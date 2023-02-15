@@ -38,6 +38,7 @@ public class BookmarkController {
         Bookmark bookmark = bookmarkService.saveBookmark(findUser, challenge);
 
         ResponseBookmark responseBookmark = ResponseBookmark.builder()
+                .id(bookmark.getId())
                 .title(bookmark.getChallenge().getTitle())
                 .createdAt(bookmark.getFormattedCreatedAt())
                 .userId(bookmark.getUsers().getId())
@@ -47,7 +48,7 @@ public class BookmarkController {
     }
 
     @DeleteMapping("/user/{userId}/bookmark/{bookmarkId}")
-    public ResponseEntity<?> deleteComment(
+    public ResponseEntity<Void> deleteComment(
             @AuthenticationPrincipal org.springframework.security.core.userdetails.User user,
             @PathVariable Long userId,
             @PathVariable Long bookmarkId){

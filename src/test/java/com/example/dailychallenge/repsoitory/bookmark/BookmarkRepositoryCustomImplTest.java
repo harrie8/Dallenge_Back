@@ -77,6 +77,7 @@ class BookmarkRepositoryCustomImplTest extends RepositoryTest {
 
         assertAll(() -> {
             assertEquals(5L, results.getTotalElements());
+            assertThat(results).extracting("id").isNotEmpty();
             assertThat(results).extracting("title").containsOnly(challenge.getTitle());
             assertThat(results).extracting("createdAt").isNotEmpty();
             assertThat(results).extracting("userId").containsOnly(otherUser.getId());

@@ -59,9 +59,9 @@ class BookmarkControllerTest extends ControllerTest {
         Long challengeId = challenge.getId();
         mockMvc.perform(post("/{challengeId}/bookmark/new", challengeId)
                         .with(requestPostProcessor)
-                        .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id").isNotEmpty())
                 .andExpect(jsonPath("$.title").value(challenge.getTitle()))
                 .andExpect(jsonPath("$.createdAt").isNotEmpty())
                 .andExpect(jsonPath("$.userId").value(otherUser.getId()));
@@ -98,6 +98,7 @@ class BookmarkControllerTest extends ControllerTest {
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content", hasSize(5)))
+                .andExpect(jsonPath("$.content[*].id").isNotEmpty())
                 .andExpect(jsonPath("$.content[*].title",
                         hasItems("제목입니다.")))
                 .andExpect(jsonPath("$.content[*].createdAt").isNotEmpty())
