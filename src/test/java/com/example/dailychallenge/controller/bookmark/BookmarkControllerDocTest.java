@@ -4,6 +4,7 @@ import static com.example.dailychallenge.util.fixture.ChallengeFixture.createCha
 import static com.example.dailychallenge.util.fixture.ChallengeImgFixture.createChallengeImgFiles;
 import static com.example.dailychallenge.util.fixture.UserFixture.createOtherUser;
 import static com.example.dailychallenge.util.fixture.UserFixture.createUser;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
@@ -14,6 +15,7 @@ import static org.springframework.restdocs.request.RequestDocumentation.pathPara
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.example.dailychallenge.entity.bookmark.Bookmark;
 import com.example.dailychallenge.entity.challenge.Challenge;
 import com.example.dailychallenge.entity.users.User;
 import com.example.dailychallenge.service.bookmark.BookmarkService;
@@ -74,78 +76,24 @@ public class BookmarkControllerDocTest  extends RestDocsTest {
                 ));
     }
 
-//    @Test
-//    @DisplayName("댓글 수정 테스트")
-//    public void updateCommentTest() throws Exception {
-//        Comment savedComment = createComment();
-//
-//        CommentDto requestComment = CommentDto.builder()
-//                .content("댓글 수정")
-//                .build();
-//        MockMultipartFile commentDtoImg = createMultipartFiles();
-//
-//        String json = objectMapper.writeValueAsString(requestComment);
-//        MockMultipartFile commentDto = new MockMultipartFile("commentDto",
-//                "commentDto",
-//                "application/json", json.getBytes(StandardCharsets.UTF_8));
-//
-//        Long challengeId = savedComment.getChallenge().getId();
-//        Long commentId = savedComment.getId();
-//        String token = generateToken();
-//        mockMvc.perform(RestDocumentationRequestBuilders
-//                        .multipart("/{challengeId}/comment/{commentId}",challengeId,commentId)
-//                        .file(commentDto)
-//                        .file(commentDtoImg)
-//                        .header(AUTHORIZATION, token)
-//                        .contentType(MediaType.MULTIPART_FORM_DATA)
-//                        .accept(MediaType.APPLICATION_JSON))
-//                .andExpect(status().isOk())
-//                .andDo(print())
-//                .andDo(document("comment-update",
-//                        preprocessRequest(prettyPrint()),
-//                        preprocessResponse(
-//                                removeHeaders("Vary", "X-Content-Type-Options", "X-XSS-Protection", "Pragma", "Expires",
-//                                        "Cache-Control", "Strict-Transport-Security", "X-Frame-Options"),
-//                                prettyPrint()),
-//                        pathParameters(
-//                                parameterWithName("challengeId").description("챌린지 아이디"),
-//                                parameterWithName("commentId").description("댓글 아이디")
-//                        ),
-//                        requestParts(
-//                                partWithName("commentDto").description("댓글 수정 정보 데이터(JSON)").attributes(key("type").value("JSON")),
-//                                partWithName("commentDtoImg").description("댓글 수정 이미지 파일(FILE)").optional().attributes(key("type").value(".jpg"))
-//                        ),
-//                        requestPartFields("commentDto",
-//                                fieldWithPath("content").description("수정할 내용")
-//                        )
-//                ));
-//    }
-//
-//    @Test
-//    @DisplayName("댓글 삭제 테스트")
-//    public void deleteCommentTest() throws Exception {
-//        Comment savedComment = createComment();
-//        Long challengeId = savedComment.getChallenge().getId();
-//        String token = generateToken();
-//        mockMvc.perform(RestDocumentationRequestBuilders
-//                        .delete("/{challengeId}/comment/{commentId}",challengeId,savedComment.getId())
-//                        .header(AUTHORIZATION, token)
-//                        .contentType(MediaType.MULTIPART_FORM_DATA)
-//                        .accept(MediaType.APPLICATION_JSON))
-//                .andExpect(status().isOk())
-//                .andDo(print())
-//                .andDo(document("comment-delete",
-//                        preprocessRequest(prettyPrint()),
-//                        preprocessResponse(
-//                                removeHeaders("Vary", "X-Content-Type-Options", "X-XSS-Protection", "Pragma", "Expires",
-//                                        "Cache-Control", "Strict-Transport-Security", "X-Frame-Options"),
-//                                prettyPrint()),
-//                        pathParameters(
-//                                parameterWithName("challengeId").description("챌린지 아이디"),
-//                                parameterWithName("commentId").description("댓글 아이디")
-//                        )
-//                ));
-//    }
+    @Test
+    @DisplayName("북마크 삭제 테스트")
+    public void deleteBookmark() throws Exception {
+        Bookmark savedBookmark = bookmarkService.saveBookmark(savedUser, challenge);
+        Long userId = savedUser.getId();
+        Long bookmarkId = savedBookmark.getId();
+
+        mockMvc.perform(delete("/user/{userId}/bookmark/{bookmarkId}", userId, bookmarkId)
+                        .with(requestPostProcessor)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNoContent())
+                .andDo(restDocs.document(
+                        pathParameters(
+                                parameterWithName("userId").description("유저 ID"),
+                                parameterWithName("bookmarkId").description("북마크 ID")
+                        )
+                ));
+    }
 
     @Test
     @DisplayName("유저의 북마크들 조회 테스트")

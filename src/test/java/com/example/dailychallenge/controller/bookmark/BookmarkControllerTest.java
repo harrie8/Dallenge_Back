@@ -7,11 +7,13 @@ import static com.example.dailychallenge.util.fixture.UserFixture.createUser;
 import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.example.dailychallenge.entity.bookmark.Bookmark;
 import com.example.dailychallenge.entity.challenge.Challenge;
 import com.example.dailychallenge.entity.users.User;
 import com.example.dailychallenge.service.bookmark.BookmarkService;
@@ -65,46 +67,18 @@ class BookmarkControllerTest extends ControllerTest {
                 .andExpect(jsonPath("$.userId").value(otherUser.getId()));
     }
 
-//    @Test
-//    @DisplayName("댓글 수정 테스트")
-//    public void updateCommentTest() throws Exception {
-//        Comment savedComment = createComment();
-//
-//        CommentDto requestComment = CommentDto.builder()
-//                .content("댓글 수정")
-//                .build();
-//        MockMultipartFile commentDtoImg = createMultipartFiles();
-//
-//        String json = objectMapper.writeValueAsString(requestComment);
-//        MockMultipartFile commentDto = new MockMultipartFile("commentDto",
-//                "commentDto",
-//                "application/json", json.getBytes(StandardCharsets.UTF_8));
-//
-//        Long challengeId = savedComment.getChallenge().getId();
-//        String token = generateToken();
-//        mockMvc.perform(multipart("/{challengeId}/comment/{commentId}",challengeId,savedComment.getId())
-//                        .file(commentDto)
-//                        .file(commentDtoImg)
-//                        .header(AUTHORIZATION, token)
-//                        .contentType(MediaType.MULTIPART_FORM_DATA)
-//                        .accept(MediaType.APPLICATION_JSON))
-//                .andExpect(status().isOk())
-//                .andDo(print());
-//    }
-//
-//    @Test
-//    @DisplayName("댓글 삭제 테스트")
-//    public void deleteCommentTest() throws Exception {
-//        Comment savedComment = createComment();
-//        Long challengeId = savedComment.getChallenge().getId();
-//        String token = generateToken();
-//        mockMvc.perform(delete("/{challengeId}/comment/{commentId}",challengeId,savedComment.getId())
-//                        .header(AUTHORIZATION, token)
-//                        .contentType(MediaType.MULTIPART_FORM_DATA)
-//                        .accept(MediaType.APPLICATION_JSON))
-//                .andExpect(status().isOk())
-//                .andDo(print());
-//    }
+    @Test
+    @DisplayName("북마크 삭제 테스트")
+    public void deleteBookmarkTest() throws Exception {
+        Bookmark savedBookmark = bookmarkService.saveBookmark(savedUser, challenge);
+        Long userId = savedUser.getId();
+        Long bookmarkId = savedBookmark.getId();
+
+        mockMvc.perform(delete("/user/{userId}/bookmark/{bookmarkId}", userId, bookmarkId)
+                        .with(requestPostProcessor)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNoContent());
+    }
 
     @Test
     @DisplayName("유저의 북마크들 조회 테스트")

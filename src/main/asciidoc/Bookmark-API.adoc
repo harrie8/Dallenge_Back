@@ -7,6 +7,12 @@
 operation::bookmark-controller-doc-test/create-bookmark[snippets='http-request,path-parameters,http-response']
 
 
+[[Bookmark-북마크-삭제]]
+=== 북마크 삭제
+
+operation::bookmark-controller-doc-test/delete-bookmark[snippets='http-request,path-parameters,http-response']
+
+
 [[Bookmark-유저의-북마크-조회]]
 === 유저의 북마크 조회
 

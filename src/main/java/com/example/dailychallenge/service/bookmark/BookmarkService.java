@@ -3,7 +3,6 @@ package com.example.dailychallenge.service.bookmark;
 import com.example.dailychallenge.entity.bookmark.Bookmark;
 import com.example.dailychallenge.entity.challenge.Challenge;
 import com.example.dailychallenge.entity.users.User;
-import com.example.dailychallenge.exception.AuthorizationException;
 import com.example.dailychallenge.exception.bookmark.BookmarkNotFound;
 import com.example.dailychallenge.repository.bookmark.BookmarkRepository;
 import com.example.dailychallenge.vo.bookmark.ResponseBookmark;
@@ -30,13 +29,8 @@ public class BookmarkService {
         return bookmark;
     }
 
-    public void deleteBookmark(Long bookmarkId, User user) {
+    public void deleteBookmark(Long bookmarkId) {
         Bookmark findBookmark = bookmarkRepository.findById(bookmarkId).orElseThrow(BookmarkNotFound::new);
-        User findBookmarkUsers = findBookmark.getUsers();
-        if (!findBookmarkUsers.equals(user)) {
-            throw new AuthorizationException();
-        }
-
         bookmarkRepository.delete(findBookmark);
     }
 
