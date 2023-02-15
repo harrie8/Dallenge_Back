@@ -58,4 +58,7 @@ public class UserChallengeService {
 
         return userChallengeRepository.searchChallengesByCondition(condition, pageable);
     }
+    public void challengeParticipate(UserChallenge savedUserChallenge) {
+        savedUserChallenge.challengeParticipate();
+    }
 }

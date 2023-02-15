@@ -1,6 +1,7 @@
 package com.example.dailychallenge.controller;
 
 import com.example.dailychallenge.dto.UserDto;
+import com.example.dailychallenge.entity.challenge.UserChallenge;
 import com.example.dailychallenge.entity.users.User;
 import com.example.dailychallenge.exception.users.UserDuplicateCheck;
 import com.example.dailychallenge.exception.users.UserLoginFailure;
@@ -141,6 +142,15 @@ public class UserController {
         User getUser = userService.findByEmail(user.getUsername());
         List<ResponseUserChallenge> userChallenge = userService.getChallengeByUser(getUser.getId());
         return ResponseEntity.status(HttpStatus.OK).body(userChallenge);
+    }
+
+    @GetMapping("/user/participate")
+    public ResponseEntity<List<ResponseUserChallenge>> getParticipateChallenge(
+            @AuthenticationPrincipal org.springframework.security.core.userdetails.User user){
+
+        User getUser = userService.findByEmail(user.getUsername());
+        List<ResponseUserChallenge> res = userService.getParticipateChallenge(getUser.getId());
+        return ResponseEntity.status(HttpStatus.OK).body(res);
     }
 
     /**

@@ -3,6 +3,7 @@ package com.example.dailychallenge.service.users;
 import com.example.dailychallenge.dto.UserDto;
 import com.example.dailychallenge.dto.UserEditor;
 import com.example.dailychallenge.entity.challenge.Challenge;
+import com.example.dailychallenge.entity.challenge.UserChallenge;
 import com.example.dailychallenge.entity.social.ProviderUser;
 import com.example.dailychallenge.entity.users.User;
 import com.example.dailychallenge.entity.users.UserImg;
@@ -192,5 +193,24 @@ public class UserService implements UserDetailsService {
         if (!loginUser.isSameId(userId)) {
             throw new AuthorizationException();
         }
+    }
+
+    public List<ResponseUserChallenge> getParticipateChallenge(Long id) {
+        User user = userRepository.findById(id).orElseThrow(UserNotFound::new);
+        List<UserChallenge> userChallenges = user.getUserChallenges();
+        List<ResponseUserChallenge> res = new ArrayList<>();
+        for (UserChallenge userChallenge : userChallenges) {
+            if (userChallenge.isParticipated()) {
+                res.add(
+                        ResponseUserChallenge.builder()
+                                .userId(user.getId())
+                                .challengeId(userChallenge.getChallenge().getId())
+                                .challengeTitle(userChallenge.getChallenge().getTitle())
+                                .challengeContent(userChallenge.getChallenge().getContent())
+                                .build()
+                );
+            }
+        }
+        return res;
     }
 }

@@ -37,6 +37,7 @@ public class UserChallengeController {
         Challenge findChallenge = challengeService.findById(challengeId);
 
         UserChallenge savedUserChallenge = userChallengeService.saveUserChallenge(findChallenge, findUser);
+        userChallengeService.challengeParticipate(savedUserChallenge);
 
         ResponseMessage responseMessage = ResponseMessage.builder()
                 .code(201)
