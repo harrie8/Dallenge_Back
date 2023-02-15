@@ -5,3 +5,26 @@
 === 북마크 생성
 
 operation::bookmark-controller-doc-test/create-bookmark[snippets='http-request,path-parameters,http-response']
+
+
+[[Bookmark-유저의-북마크-조회]]
+=== 유저의 북마크 조회
+
+==== HTTP request
+
+include::{snippets}/bookmark-controller-doc-test/search-bookmarks-by-user-id/http-request.adoc[]
+
+==== 요청값
+
+====
+include::{snippets}/bookmark-controller-doc-test/search-bookmarks-by-user-id/path-parameters.adoc[]
+
+====
+
+==== HTTP response
+
+[%collapsible]
+====
+include::{snippets}/bookmark-controller-doc-test/search-bookmarks-by-user-id/http-response.adoc[]
+include::{snippets}/bookmark-controller-doc-test/search-bookmarks-by-user-id/response-fields.adoc[]
+====

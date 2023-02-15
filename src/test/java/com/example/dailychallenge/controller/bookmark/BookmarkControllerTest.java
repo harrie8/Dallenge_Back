@@ -4,13 +4,17 @@ import static com.example.dailychallenge.util.fixture.ChallengeFixture.createCha
 import static com.example.dailychallenge.util.fixture.ChallengeImgFixture.createChallengeImgFiles;
 import static com.example.dailychallenge.util.fixture.UserFixture.createOtherUser;
 import static com.example.dailychallenge.util.fixture.UserFixture.createUser;
+import static org.hamcrest.Matchers.hasItems;
+import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.example.dailychallenge.entity.challenge.Challenge;
 import com.example.dailychallenge.entity.users.User;
+import com.example.dailychallenge.service.bookmark.BookmarkService;
 import com.example.dailychallenge.service.challenge.ChallengeService;
 import com.example.dailychallenge.service.users.UserService;
 import com.example.dailychallenge.util.ControllerTest;
@@ -22,6 +26,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.request.RequestPostProcessor;
 
 class BookmarkControllerTest extends ControllerTest {
+    @Autowired
+    private BookmarkService bookmarkService;
     @Autowired
     private UserService userService;
     @Autowired
@@ -99,106 +105,29 @@ class BookmarkControllerTest extends ControllerTest {
 //                .andExpect(status().isOk())
 //                .andDo(print());
 //    }
-//
-//    @Test
-//    @DisplayName("좋아요 테스트")
-//    public void isLikeTest() throws Exception {
-//        Comment savedComment = createComment();
-//
-//        String token = generateToken();
-//        mockMvc.perform(post("/{commentId}/like", savedComment.getId())
-//                        .param("isLike", String.valueOf(1))
-//                        .header(AUTHORIZATION, token)
-//                        .contentType(MediaType.MULTIPART_FORM_DATA)
-//                        .accept(MediaType.APPLICATION_JSON))
-//                .andExpect(status().isOk())
-//                .andDo(print());
-//    }
-//
-//    @Test
-//    @DisplayName("특정 챌린지의 댓글들 조회 테스트")
-//    public void searchCommentsByChallengeId() throws Exception {
-//        Challenge challenge = createChallenge();
-//        User otherUser = userService.saveUser(createOtherUser(), passwordEncoder);
-//        for (int i = 0; i < 5; i++) {
-//            CommentDto commentDto = CommentDto.builder()
-//                    .content("댓글 내용" + i)
-//                    .build();
-//            List<MultipartFile> commentDtoImg = new ArrayList<>();
-//            commentDtoImg.add(createMultipartFiles());
-//            commentService.saveComment(commentDto, otherUser, challenge, commentDtoImg);
-//        }
-//        Long challengeId = challenge.getId();
-//
-//        mockMvc.perform(get("/{challengeId}/comment", challengeId)
-//                        .accept(MediaType.APPLICATION_JSON))
-//                .andExpect(status().isOk())
-//                .andExpect(jsonPath("$.content", hasSize(5)))
-//                .andExpect(jsonPath("$.content[*].id").isNotEmpty())
-//                .andExpect(jsonPath("$.content[*].content", hasItems(startsWith("댓글 내용"))))
-//                .andExpect(jsonPath("$.content[*].likes", hasItems(0)))
-//                .andExpect(jsonPath("$.content[*].createdAt").isNotEmpty())
-//                .andExpect(jsonPath("$.content[*].commentImgUrls",
-//                        hasItems(hasItem(startsWith("/images/")))))
-//                .andExpect(jsonPath("$.content[*].commentOwnerUser.userName",
-//                        hasItems(otherUser.getUserName())))
-//                .andExpect(jsonPath("$.content[*].commentOwnerUser.email",
-//                        hasItems(otherUser.getEmail())))
-//                .andExpect(jsonPath("$.content[*].commentOwnerUser.userId",
-//                        hasItems(otherUser.getId().intValue())))
-//                .andDo(print());
-//    }
-//
-//    @Test
-//    @DisplayName("유저가 작성한 챌린지의 댓글들 조회 테스트")
-//    public void searchCommentsByUserId() throws Exception {
-//        Challenge challenge = createChallenge();
-//        User savedUser = challenge.getUsers();
-//        for (int i = 0; i < 5; i++) {
-//            CommentDto commentDto = CommentDto.builder()
-//                    .content("댓글 내용" + i)
-//                    .build();
-//            List<MultipartFile> commentDtoImg = new ArrayList<>();
-//            commentDtoImg.add(createMultipartFiles());
-//            commentService.saveComment(commentDto, savedUser, challenge, commentDtoImg);
-//        }
-//        ChallengeDto challengeDto = ChallengeDto.builder()
-//                .title("다른 제목입니다.")
-//                .content("다른 내용입니다.")
-//                .challengeCategory(ChallengeCategory.STUDY.getDescription())
-//                .challengeLocation(ChallengeLocation.INDOOR.getDescription())
-//                .challengeDuration(ChallengeDuration.WITHIN_TEN_MINUTES.getDescription())
-//                .build();
-//        MultipartFile challengeImg = createMultipartFiles();
-//        List<MultipartFile> challengeImgFiles = List.of(challengeImg);
-//        Challenge otherChallenge = challengeService.saveChallenge(challengeDto, challengeImgFiles, savedUser);
-//        for (int i = 5; i < 8; i++) {
-//            CommentDto commentDto = CommentDto.builder()
-//                    .content("다른 댓글 내용" + i)
-//                    .build();
-//            List<MultipartFile> commentDtoImg = new ArrayList<>();
-//            commentDtoImg.add(createMultipartFiles());
-//            commentService.saveComment(commentDto, savedUser, otherChallenge, commentDtoImg);
-//        }
-//        Long userId = savedUser.getId();
-//
-//        mockMvc.perform(get("/user/{userId}/comment", userId)
-//                        .with(user(userService.loadUserByUsername(savedUser.getEmail())))
-//                        .accept(MediaType.APPLICATION_JSON))
-//                .andExpect(status().isOk())
-//                .andExpect(jsonPath("$.content", hasSize(8)))
-//                .andExpect(jsonPath("$.content[*].id").isNotEmpty())
-//                .andExpect(jsonPath("$.content[*].content",
-//                        contains("다른 댓글 내용7", "다른 댓글 내용6", "다른 댓글 내용5", "댓글 내용4",
-//                                "댓글 내용3", "댓글 내용2", "댓글 내용1", "댓글 내용0")))
-//                .andExpect(jsonPath("$.content[*].likes", hasItems(0)))
-//                .andExpect(jsonPath("$.content[*].createdAt").isNotEmpty())
-//                .andExpect(jsonPath("$.content[*].commentImgUrls",
-//                        hasItems(hasItem(startsWith("/images/")))))
-//                .andExpect(jsonPath("$.content[*].challengeId",
-//                        hasItems(challenge.getId().intValue(), otherChallenge.getId().intValue())))
-//                .andExpect(jsonPath("$.content[*].challengeTitle",
-//                        hasItems(challenge.getTitle(), otherChallenge.getTitle())))
-//                .andDo(print());
-//    }
+
+    @Test
+    @DisplayName("유저의 북마크들 조회 테스트")
+    public void searchBookmarksByUserIdTest() throws Exception {
+        User otherUser = userService.saveUser(createOtherUser(), passwordEncoder);
+        for (int i = 0; i < 5; i++) {
+            Challenge otherChallenge = challengeService.saveChallenge(createChallengeDto(), createChallengeImgFiles(),
+                    savedUser);
+
+            Thread.sleep(1);
+            bookmarkService.saveBookmark(otherUser, otherChallenge);
+        }
+        Long otherUserId = otherUser.getId();
+
+        mockMvc.perform(get("/user/{userId}/bookmark", otherUserId)
+                        .with(user(userService.loadUserByUsername(otherUser.getEmail())))
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content", hasSize(5)))
+                .andExpect(jsonPath("$.content[*].title",
+                        hasItems("제목입니다.")))
+                .andExpect(jsonPath("$.content[*].createdAt").isNotEmpty())
+                .andExpect(jsonPath("$.content[*].userId",
+                        hasItems(otherUser.getId().intValue())));
+    }
 }

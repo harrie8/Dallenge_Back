@@ -6,7 +6,10 @@ import com.example.dailychallenge.entity.users.User;
 import com.example.dailychallenge.exception.AuthorizationException;
 import com.example.dailychallenge.exception.bookmark.BookmarkNotFound;
 import com.example.dailychallenge.repository.bookmark.BookmarkRepository;
+import com.example.dailychallenge.vo.bookmark.ResponseBookmark;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,9 +40,7 @@ public class BookmarkService {
         bookmarkRepository.delete(findBookmark);
     }
 
-//    public Page<ResponseBookmark> searchBookmarksByUserId(User user, Pageable pageable) {
-//        Long userId = user.getId();
-//
-//        return bookmarkRepository.searchBookmarksByUserId(userId, pageable);
-//    }
+    public Page<ResponseBookmark> searchBookmarksByUserId(Long userId, Pageable pageable) {
+        return bookmarkRepository.searchBookmarksByUserId(userId, pageable);
+    }
 }

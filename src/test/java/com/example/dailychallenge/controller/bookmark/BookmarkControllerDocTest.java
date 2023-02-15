@@ -4,8 +4,10 @@ import static com.example.dailychallenge.util.fixture.ChallengeFixture.createCha
 import static com.example.dailychallenge.util.fixture.ChallengeImgFixture.createChallengeImgFiles;
 import static com.example.dailychallenge.util.fixture.UserFixture.createOtherUser;
 import static com.example.dailychallenge.util.fixture.UserFixture.createUser;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.relaxedResponseFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
@@ -14,6 +16,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.example.dailychallenge.entity.challenge.Challenge;
 import com.example.dailychallenge.entity.users.User;
+import com.example.dailychallenge.service.bookmark.BookmarkService;
 import com.example.dailychallenge.service.challenge.ChallengeService;
 import com.example.dailychallenge.service.users.UserService;
 import com.example.dailychallenge.util.RestDocsTest;
@@ -25,6 +28,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.request.RequestPostProcessor;
 
 public class BookmarkControllerDocTest  extends RestDocsTest {
+    @Autowired
+    private BookmarkService bookmarkService;
     @Autowired
     private UserService userService;
     @Autowired
@@ -141,129 +146,33 @@ public class BookmarkControllerDocTest  extends RestDocsTest {
 //                        )
 //                ));
 //    }
-//
-//    @Test
-//    @DisplayName("좋아요 테스트")
-//    public void isLikeTest() throws Exception {
-//        Comment savedComment = createComment();
-//        Integer beforeLikes = savedComment.getLikes();
-//        String token = generateToken();
-//        mockMvc.perform(RestDocumentationRequestBuilders
-//                        .post("/{commentId}/like?isLike=1", savedComment.getId())
-//                        .header(AUTHORIZATION, token)
-//                        .contentType(MediaType.MULTIPART_FORM_DATA)
-//                        .accept(MediaType.APPLICATION_JSON))
-//                .andExpect(status().isOk())
-//                .andExpect(jsonPath("$.isLike").value(beforeLikes +1))
-//                .andDo(document("comment-like",
-//                        preprocessRequest(prettyPrint()),
-//                        preprocessResponse(
-//                                removeHeaders("Vary", "X-Content-Type-Options", "X-XSS-Protection", "Pragma", "Expires",
-//                                        "Cache-Control", "Strict-Transport-Security", "X-Frame-Options"),
-//                                prettyPrint()),
-//                        requestParameters(
-//                                parameterWithName("isLike").description("좋아요(1)/좋아요 취소(0)")
-//                        ),
-//                        pathParameters(
-//                                parameterWithName("commentId").description("댓글 아이디")
-//                        )
-//                ));
-//    }
-//
-//    @Test
-//    @DisplayName("특정 챌린지의 댓글들 조회 테스트")
-//    public void searchCommentsByChallengeId() throws Exception {
-//        Challenge challenge = createChallenge();
-//        User otherUser = userService.saveUser(createOtherUser(), passwordEncoder);
-//        for (int i = 0; i < 5; i++) {
-//            CommentDto commentDto = CommentDto.builder()
-//                    .content("댓글 내용" + i)
-//                    .build();
-//            List<MultipartFile> commentDtoImg = new ArrayList<>();
-//            commentDtoImg.add(createMultipartFiles());
-//            commentService.saveComment(commentDto, otherUser, challenge, commentDtoImg);
-//        }
-//        Long challengeId = challenge.getId();
-//
-//        mockMvc.perform(get("/{challengeId}/comment", challengeId)
-//                        .accept(MediaType.APPLICATION_JSON))
-//                .andExpect(status().isOk())
-//                .andDo(document("search-comments-by-challengeId",
-//                        preprocessRequest(prettyPrint()),
-//                        preprocessResponse(
-//                                removeHeaders("Vary", "X-Content-Type-Options", "X-XSS-Protection", "Pragma", "Expires",
-//                                        "Cache-Control", "Strict-Transport-Security", "X-Frame-Options"),
-//                                prettyPrint()),
-//                        pathParameters(
-//                                parameterWithName("challengeId").description("챌린지 아이디")
-//                        ),
-//                        relaxedResponseFields(
-//                                fieldWithPath("content[*].id").description("댓글 id"),
-//                                fieldWithPath("content[*].content").description("댓글 내용"),
-//                                fieldWithPath("content[*].likes").description("댓글 좋아요 갯수"),
-//                                fieldWithPath("content[*].createdAt").description("댓글 생성 시간"),
-//                                fieldWithPath("content[*].commentImgUrls").description("댓글 이미지들 url"),
-//                                fieldWithPath("content[*].commentOwnerUser").description("댓글 소유자 정보")
-//                        )
-//                ));
-//    }
-//
-//    @Test
-//    @DisplayName("유저가 작성한 챌린지의 댓글들 조회 테스트")
-//    public void searchCommentsByUserId() throws Exception {
-//        Challenge challenge = createChallenge();
-//        User savedUser = challenge.getUsers();
-//        for (int i = 0; i < 5; i++) {
-//            CommentDto commentDto = CommentDto.builder()
-//                    .content("댓글 내용" + i)
-//                    .build();
-//            List<MultipartFile> commentDtoImg = new ArrayList<>();
-//            commentDtoImg.add(createMultipartFiles());
-//            commentService.saveComment(commentDto, savedUser, challenge, commentDtoImg);
-//        }
-//        ChallengeDto challengeDto = ChallengeDto.builder()
-//                .title("다른 제목입니다.")
-//                .content("다른 내용입니다.")
-//                .challengeCategory(ChallengeCategory.STUDY.getDescription())
-//                .challengeLocation(ChallengeLocation.INDOOR.getDescription())
-//                .challengeDuration(ChallengeDuration.WITHIN_TEN_MINUTES.getDescription())
-//                .build();
-//        MultipartFile challengeImg = createMultipartFiles();
-//        List<MultipartFile> challengeImgFiles = List.of(challengeImg);
-//        Challenge otherChallenge = challengeService.saveChallenge(challengeDto, challengeImgFiles, savedUser);
-//        for (int i = 5; i < 8; i++) {
-//            CommentDto commentDto = CommentDto.builder()
-//                    .content("다른 댓글 내용" + i)
-//                    .build();
-//            List<MultipartFile> commentDtoImg = new ArrayList<>();
-//            commentDtoImg.add(createMultipartFiles());
-//            commentService.saveComment(commentDto, savedUser, otherChallenge, commentDtoImg);
-//        }
-//        Long userId = savedUser.getId();
-//
-//        mockMvc.perform(get("/user/{userId}/comment", userId)
-//                        .with(user(userService.loadUserByUsername(savedUser.getEmail())))
-//                        .accept(MediaType.APPLICATION_JSON))
-//                .andExpect(status().isOk())
-//                .andDo(print())
-//                .andDo(document("search-comments-by-userId",
-//                        preprocessRequest(prettyPrint()),
-//                        preprocessResponse(
-//                                removeHeaders("Vary", "X-Content-Type-Options", "X-XSS-Protection", "Pragma", "Expires",
-//                                        "Cache-Control", "Strict-Transport-Security", "X-Frame-Options"),
-//                                prettyPrint()),
-//                        pathParameters(
-//                                parameterWithName("userId").description("유저 아이디")
-//                        ),
-//                        relaxedResponseFields(
-//                                fieldWithPath("content[*].id").description("댓글 id"),
-//                                fieldWithPath("content[*].content").description("댓글 내용"),
-//                                fieldWithPath("content[*].likes").description("댓글 좋아요 갯수"),
-//                                fieldWithPath("content[*].createdAt").description("댓글 생성 시간"),
-//                                fieldWithPath("content[*].commentImgUrls").description("댓글 이미지들 url"),
-//                                fieldWithPath("content[*].challengeId").description("챌린지 id"),
-//                                fieldWithPath("content[*].challengeTitle").description("챌린지 제목")
-//                        )
-//                ));
-//    }
+
+    @Test
+    @DisplayName("유저의 북마크들 조회 테스트")
+    public void searchBookmarksByUserId() throws Exception {
+        User otherUser = userService.saveUser(createOtherUser(), passwordEncoder);
+        for (int i = 0; i < 5; i++) {
+            Challenge otherChallenge = challengeService.saveChallenge(createChallengeDto(), createChallengeImgFiles(),
+                    savedUser);
+
+            Thread.sleep(1);
+            bookmarkService.saveBookmark(otherUser, otherChallenge);
+        }
+        Long otherUserId = otherUser.getId();
+
+        mockMvc.perform(get("/user/{userId}/bookmark", otherUserId)
+                        .with(user(userService.loadUserByUsername(otherUser.getEmail())))
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andDo(restDocs.document(
+                        pathParameters(
+                                parameterWithName("userId").description("유저 ID")
+                        ),
+                        relaxedResponseFields(
+                                fieldWithPath("content[*].title").description("챌린지 제목"),
+                                fieldWithPath("content[*].createdAt").description("북마크한 시간"),
+                                fieldWithPath("content[*].userId").description("유저 id")
+                        )
+                ));
+    }
 }
