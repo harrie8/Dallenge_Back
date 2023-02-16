@@ -19,11 +19,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -38,19 +38,18 @@ public class CommentController {
     private final UserService userService;
     private final ChallengeService challengeService;
 
-    @PostMapping(value = "/{challengeId}/comment/new", consumes = {MediaType.APPLICATION_JSON_VALUE,
-            MediaType.MULTIPART_FORM_DATA_VALUE})
+    @PostMapping(value = "/{challengeId}/comment/new")
     public ResponseEntity<ResponseComment> createComment(
             @AuthenticationPrincipal org.springframework.security.core.userdetails.User user,
             @PathVariable("challengeId") Long challengeId,
-            @RequestPart @Valid CommentDto commentDto,
-            @RequestPart(required = false) List<MultipartFile> commentDtoImg) {
+            @ModelAttribute CommentDto commentDto) {
 
         User findUser = userService.findByEmail(user.getUsername());
         Challenge challenge = challengeService.findById(challengeId);
-        Comment comment = commentService.saveComment(commentDto, findUser, challenge,commentDtoImg);
+        Comment comment = commentService.saveComment(commentDto, findUser, challenge);
 
         ResponseComment responseComment = ResponseComment.builder()
+                .id(comment.getId())
                 .content(comment.getContent())
                 .createdAt(comment.getCreated_at())
                 .userId(comment.getUsers().getId())

@@ -3,6 +3,7 @@ package com.example.dailychallenge.service.comment;
 import com.example.dailychallenge.dto.CommentDto;
 import com.example.dailychallenge.entity.challenge.Challenge;
 import com.example.dailychallenge.entity.comment.Comment;
+import com.example.dailychallenge.entity.comment.Comment.CommentBuilder;
 import com.example.dailychallenge.entity.comment.CommentImg;
 import com.example.dailychallenge.entity.users.User;
 import com.example.dailychallenge.repository.CommentRepository;
@@ -25,17 +26,24 @@ public class CommentService {
     private final CommentRepository commentRepository;
     private final CommentImgService commentImgService;
 
-    public Comment saveComment(CommentDto commentDto, User user,
-                               Challenge challenge, List<MultipartFile> commentImgFiles) {
-        Comment comment = Comment.builder()
-                .content(commentDto.getContent())
+    public Comment saveComment(CommentDto commentDto, User user, Challenge challenge) {
+
+        CommentBuilder commentBuilder = Comment.builder();
+
+        if (commentDto.isContentValid()) {
+            commentBuilder
+                    .content(commentDto.getContent());
+        }
+        Comment comment = commentBuilder
                 .build();
+
         comment.saveCommentChallenge(challenge);
         comment.saveCommentUser(user);
 
         commentRepository.save(comment);
 
-        if (commentImgFiles != null) {
+        if (commentDto.isCommentDtoImgValid()) {
+            List<MultipartFile> commentImgFiles = commentDto.getCommentDtoImg();
             for (int i = 0; i < commentImgFiles.size(); i++) {
                 CommentImg commentImg = new CommentImg();
                 commentImg.saveComment(comment);

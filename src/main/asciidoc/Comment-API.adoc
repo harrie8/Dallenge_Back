@@ -6,16 +6,23 @@
 
 operation::comment-create[snippets='http-request']
 
-==== 요청값
-
+.요청값
+[%collapsible]
 ====
-include::{snippets}/comment-create/request-parts.adoc[]
 
-commentDto - 댓글 정보 데이터(JSON)
-include::{snippets}/comment-create/request-part-commentDto-fields.adoc[]
+=====
+include::{snippets}/comment-create/request-parts.adoc[]
 
 commentImgFile - 댓글 이미지 파일(FILE) +
 .jpg 형식의 이미지 파일을 지원합니다.
+
+include::{snippets}/comment-create/request-parameters.adoc[]
+
+content - 댓글 내용(String) +
+파라미터라고 써있지만 form-data에 넣어주시면 됩니다.
+
+image:comment/createComment.png[]
+=====
 
 ====
 

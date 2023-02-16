@@ -4,6 +4,7 @@ import com.example.dailychallenge.exception.AuthorizationException;
 import com.example.dailychallenge.exception.FileNotUpload;
 import com.example.dailychallenge.exception.challenge.ChallengeCategoryNotFound;
 import com.example.dailychallenge.exception.challenge.ChallengeNotFound;
+import com.example.dailychallenge.exception.comment.CommentDtoNotValid;
 import com.example.dailychallenge.exception.users.UserDuplicateCheck;
 import com.example.dailychallenge.exception.users.UserDuplicateNotCheck;
 import com.example.dailychallenge.exception.users.UserLoginFailure;
@@ -103,6 +104,17 @@ public class GlobalExceptionHandler {
         final ResponseError responseError = ResponseError.builder()
                 .code(authorizationException.getStatusCode())
                 .message(authorizationException.getMessage())
+                .build();
+
+        return ResponseEntity.status(responseError.getCode()).body(responseError);
+    }
+
+    @ExceptionHandler(CommentDtoNotValid.class)
+    protected ResponseEntity<ResponseError> handlerCommentDtoNotValid(
+            CommentDtoNotValid commentDtoNotValid) {
+        final ResponseError responseError = ResponseError.builder()
+                .code(commentDtoNotValid.getStatusCode())
+                .message(commentDtoNotValid.getMessage())
                 .build();
 
         return ResponseEntity.status(responseError.getCode()).body(responseError);

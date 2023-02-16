@@ -28,7 +28,6 @@ public class Comment extends BaseEntity {
     @Id @Column(name = "comment_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(nullable = false)
     private String content;
     private Integer likes;
 

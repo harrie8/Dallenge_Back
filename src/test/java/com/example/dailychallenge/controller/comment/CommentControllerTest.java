@@ -24,10 +24,6 @@ import com.example.dailychallenge.entity.challenge.ChallengeDuration;
 import com.example.dailychallenge.entity.challenge.ChallengeLocation;
 import com.example.dailychallenge.entity.comment.Comment;
 import com.example.dailychallenge.entity.users.User;
-import com.example.dailychallenge.repository.ChallengeImgRepository;
-import com.example.dailychallenge.repository.ChallengeRepository;
-import com.example.dailychallenge.repository.UserChallengeRepository;
-import com.example.dailychallenge.repository.UserRepository;
 import com.example.dailychallenge.service.challenge.ChallengeService;
 import com.example.dailychallenge.service.comment.CommentService;
 import com.example.dailychallenge.service.users.UserService;
@@ -80,14 +76,6 @@ class CommentControllerTest {
     private AuthenticationManager authenticationManager;
     @Autowired
     private JwtTokenUtil jwtTokenUtil;
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private ChallengeRepository challengeRepository;
-    @Autowired
-    private UserChallengeRepository userChallengeRepository;
-    @Autowired
-    private ChallengeImgRepository challengeImgRepository;
 
     private static MockMultipartFile createMultipartFiles() {
         String path = "commentDtoImg";
@@ -121,13 +109,14 @@ class CommentControllerTest {
     public Comment createComment() throws Exception {
         Challenge challenge = createChallenge();
         User user = userService.findByEmail(EMAIL);
-        CommentDto commentDto = CommentDto.builder()
-                .content("댓글 내용")
-                .build();
-
         List<MultipartFile> commentDtoImg = new ArrayList<>();
         commentDtoImg.add(createMultipartFiles());
-        return commentService.saveComment(commentDto, user, challenge, commentDtoImg);
+        CommentDto commentDto = CommentDto.builder()
+                .content("댓글 내용")
+                .commentDtoImg(commentDtoImg)
+                .build();
+
+        return commentService.saveComment(commentDto, user, challenge);
     }
 
     @Test
@@ -140,17 +129,11 @@ class CommentControllerTest {
 
         MockMultipartFile commentDtoImg = createMultipartFiles();
 
-        String json = objectMapper.writeValueAsString(requestComment);
-        MockMultipartFile commentDto = new MockMultipartFile("commentDto",
-                "commentDto",
-                "application/json", json.getBytes(StandardCharsets.UTF_8));
-
         Long challengeId = challenge.getId();
-        String token = generateToken();
-        mockMvc.perform(multipart("/{challengeId}/comment/new",challengeId)
-                        .file(commentDto)
+        mockMvc.perform(multipart("/{challengeId}/comment/new", challengeId)
                         .file(commentDtoImg)
-                        .header(AUTHORIZATION, token)
+                        .param("content", requestComment.getContent())
+                        .with(user(userService.loadUserByUsername(EMAIL)))
                         .contentType(MediaType.MULTIPART_FORM_DATA)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated())
@@ -219,12 +202,13 @@ class CommentControllerTest {
         Challenge challenge = createChallenge();
         User otherUser = userService.saveUser(createOtherUser(), passwordEncoder);
         for (int i = 0; i < 5; i++) {
-            CommentDto commentDto = CommentDto.builder()
-                    .content("댓글 내용" + i)
-                    .build();
             List<MultipartFile> commentDtoImg = new ArrayList<>();
             commentDtoImg.add(createMultipartFiles());
-            commentService.saveComment(commentDto, otherUser, challenge, commentDtoImg);
+            CommentDto commentDto = CommentDto.builder()
+                    .content("댓글 내용" + i)
+                    .commentDtoImg(commentDtoImg)
+                    .build();
+            commentService.saveComment(commentDto, otherUser, challenge);
         }
         Long challengeId = challenge.getId();
 
@@ -253,12 +237,13 @@ class CommentControllerTest {
         Challenge challenge = createChallenge();
         User savedUser = challenge.getUsers();
         for (int i = 0; i < 5; i++) {
-            CommentDto commentDto = CommentDto.builder()
-                    .content("댓글 내용" + i)
-                    .build();
             List<MultipartFile> commentDtoImg = new ArrayList<>();
             commentDtoImg.add(createMultipartFiles());
-            commentService.saveComment(commentDto, savedUser, challenge, commentDtoImg);
+            CommentDto commentDto = CommentDto.builder()
+                    .content("댓글 내용" + i)
+                    .commentDtoImg(commentDtoImg)
+                    .build();
+            commentService.saveComment(commentDto, savedUser, challenge);
         }
         ChallengeDto challengeDto = ChallengeDto.builder()
                 .title("다른 제목입니다.")
@@ -271,12 +256,13 @@ class CommentControllerTest {
         List<MultipartFile> challengeImgFiles = List.of(challengeImg);
         Challenge otherChallenge = challengeService.saveChallenge(challengeDto, challengeImgFiles, savedUser);
         for (int i = 5; i < 8; i++) {
-            CommentDto commentDto = CommentDto.builder()
-                    .content("다른 댓글 내용" + i)
-                    .build();
             List<MultipartFile> commentDtoImg = new ArrayList<>();
             commentDtoImg.add(createMultipartFiles());
-            commentService.saveComment(commentDto, savedUser, otherChallenge, commentDtoImg);
+            CommentDto commentDto = CommentDto.builder()
+                    .content("다른 댓글 내용" + i)
+                    .commentDtoImg(commentDtoImg)
+                    .build();
+            commentService.saveComment(commentDto, savedUser, otherChallenge);
         }
         Long userId = savedUser.getId();
 
