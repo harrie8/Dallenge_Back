@@ -92,8 +92,10 @@ public class CommentService {
         return comment;
     }
 
-    public void deleteComment(Long commentId) {
+    public void deleteComment(Long commentId, User user) {
         Comment comment = commentRepository.findById(commentId).orElseThrow(EntityNotFoundException::new);
+        validateOwner(user, comment);
+
         commentRepository.delete(comment);
     }
 

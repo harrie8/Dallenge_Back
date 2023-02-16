@@ -222,4 +222,39 @@ class CommentServiceTest extends ServiceTest {
             assertEquals("권한이 없습니다.", exception.getMessage());
         }
     }
+
+    @Nested
+    @DisplayName("댓글 삭제 테스트")
+    class deleteComment {
+        @Test
+        void success() {
+            CommentDto commentDto = CommentDto.builder()
+                    .content("댓글 내용")
+                    .commentDtoImg(List.of(createMultipartFiles()))
+                    .build();
+            Comment saveComment = commentService.saveComment(commentDto, savedUser, challenge);
+            Long saveCommentId = saveComment.getId();
+
+            commentService.deleteComment(saveCommentId, savedUser);
+
+            assertTrue(commentRepository.findById(saveCommentId).isEmpty());
+        }
+
+        @Test
+        @DisplayName("댓글 주인이 아닌 경우 예외 발생")
+        void failByAuthorization() throws Exception {
+            User otherSavedUser = userService.saveUser(createOtherUser(), passwordEncoder);
+            CommentDto commentDto = CommentDto.builder()
+                    .content("댓글 내용")
+                    .commentDtoImg(List.of(createMultipartFiles()))
+                    .build();
+            Comment saveComment = commentService.saveComment(commentDto, savedUser, challenge);
+            Long saveCommentId = saveComment.getId();
+
+            Throwable exception = assertThrows(AuthorizationException.class, () -> {
+                commentService.deleteComment(saveCommentId, otherSavedUser);
+            });
+            assertEquals("권한이 없습니다.", exception.getMessage());
+        }
+    }
 }

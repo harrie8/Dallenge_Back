@@ -73,8 +73,13 @@ public class CommentController {
     public ResponseEntity<?> deleteComment(
             @AuthenticationPrincipal org.springframework.security.core.userdetails.User user,
             @PathVariable("commentId") Long commentId){
+        String userEmail = user.getUsername();
+        User findUser = userService.findByEmail(userEmail);
+        if (findUser == null) {
+            throw new UserNotFound();
+        }
 
-        commentService.deleteComment(commentId);
+        commentService.deleteComment(commentId, findUser);
         return ResponseEntity.status(HttpStatus.OK).body("댓글이 삭제되었습니다.");
     }
 
