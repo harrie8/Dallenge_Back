@@ -1,5 +1,7 @@
 package com.example.dailychallenge.controller.comment;
 
+import static com.example.dailychallenge.util.fixture.TokenFixture.EMAIL;
+import static com.example.dailychallenge.util.fixture.TokenFixture.PASSWORD;
 import static com.example.dailychallenge.util.fixture.UserFixture.createOtherUser;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
@@ -8,7 +10,6 @@ import static org.springframework.restdocs.operation.preprocess.Preprocessors.pr
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.removeHeaders;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
-import static org.springframework.restdocs.payload.PayloadDocumentation.relaxedRequestPartFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.relaxedResponseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.partWithName;
@@ -34,9 +35,7 @@ import com.example.dailychallenge.repository.CommentRepository;
 import com.example.dailychallenge.service.challenge.ChallengeService;
 import com.example.dailychallenge.service.comment.CommentService;
 import com.example.dailychallenge.service.users.UserService;
-import com.example.dailychallenge.utils.JwtTokenUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
@@ -50,10 +49,6 @@ import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.restdocs.RestDocumentationExtension;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
@@ -67,12 +62,6 @@ import org.springframework.web.multipart.MultipartFile;
 @ExtendWith(RestDocumentationExtension.class)
 @TestPropertySource(locations = "classpath:application-test.properties")
 public class CommentControllerDocTest {
-
-    private final static String TOKEN_PREFIX = "Bearer ";
-    private final static String AUTHORIZATION = "Authorization";
-    private final static String EMAIL = "test1234@test.com";
-    private final static String PASSWORD = "1234";
-
     @Autowired
     private PasswordEncoder passwordEncoder;
     @Autowired
@@ -87,12 +76,8 @@ public class CommentControllerDocTest {
     private MockMvc mockMvc;
     @Autowired
     private ObjectMapper objectMapper;
-    @Autowired
-    private AuthenticationManager authenticationManager;
-    @Autowired
-    private JwtTokenUtil jwtTokenUtil;
 
-    private static MockMultipartFile createMultipartFiles() {
+    private MockMultipartFile createMultipartFiles() {
         String path = "commentDtoImg";
         String imageName = "commentDtoImg.jpg";
         return new MockMultipartFile(path, imageName,
@@ -171,7 +156,7 @@ public class CommentControllerDocTest {
                                         .attributes(key("type").value(".jpg"))
                         ),
                         requestParameters(
-                                parameterWithName("content").description("댓글 내용(빈 값 허용X)").optional()
+                                parameterWithName("content").description("댓글 수정 내용(\"\", \" \" 값 허용X)").optional()
                         )
                 ));
     }
@@ -180,25 +165,19 @@ public class CommentControllerDocTest {
     @DisplayName("댓글 수정 테스트")
     public void updateCommentTest() throws Exception {
         Comment savedComment = createComment();
-
         CommentDto requestComment = CommentDto.builder()
                 .content("댓글 수정")
                 .build();
-        MockMultipartFile commentDtoImg = createMultipartFiles();
 
-        String json = objectMapper.writeValueAsString(requestComment);
-        MockMultipartFile commentDto = new MockMultipartFile("commentDto",
-                "commentDto",
-                "application/json", json.getBytes(StandardCharsets.UTF_8));
+        MockMultipartFile commentDtoImg = createMultipartFiles();
 
         Long challengeId = savedComment.getChallenge().getId();
         Long commentId = savedComment.getId();
-        String token = generateToken();
         mockMvc.perform(RestDocumentationRequestBuilders
-                        .multipart("/{challengeId}/comment/{commentId}",challengeId,commentId)
-                        .file(commentDto)
+                        .multipart("/{challengeId}/comment/{commentId}", challengeId, commentId)
                         .file(commentDtoImg)
-                        .header(AUTHORIZATION, token)
+                        .param("content", requestComment.getContent())
+                        .with(user(userService.loadUserByUsername(EMAIL)))
                         .contentType(MediaType.MULTIPART_FORM_DATA)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -214,11 +193,11 @@ public class CommentControllerDocTest {
                                 parameterWithName("commentId").description("댓글 아이디")
                         ),
                         requestParts(
-                                partWithName("commentDto").description("댓글 수정 정보 데이터(JSON)").attributes(key("type").value("JSON")),
-                                partWithName("commentDtoImg").description("댓글 수정 이미지 파일(FILE)").optional().attributes(key("type").value(".jpg"))
+                                partWithName("commentDtoImg").description("댓글 수정 이미지 파일(FILE)").optional()
+                                        .attributes(key("type").value(".jpg"))
                         ),
-                        relaxedRequestPartFields("commentDto",
-                                fieldWithPath("content").description("수정할 내용")
+                        requestParameters(
+                                parameterWithName("content").description("댓글 수정 내용(\"\", \" \" 값 허용X)").optional()
                         )
                 ));
     }
@@ -228,10 +207,9 @@ public class CommentControllerDocTest {
     public void deleteCommentTest() throws Exception {
         Comment savedComment = createComment();
         Long challengeId = savedComment.getChallenge().getId();
-        String token = generateToken();
         mockMvc.perform(RestDocumentationRequestBuilders
                         .delete("/{challengeId}/comment/{commentId}",challengeId,savedComment.getId())
-                        .header(AUTHORIZATION, token)
+                        .with(user(userService.loadUserByUsername(EMAIL)))
                         .contentType(MediaType.MULTIPART_FORM_DATA)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -254,10 +232,9 @@ public class CommentControllerDocTest {
     public void isLikeTest() throws Exception {
         Comment savedComment = createComment();
         Integer beforeLikes = savedComment.getLikes();
-        String token = generateToken();
         mockMvc.perform(RestDocumentationRequestBuilders
                         .post("/{commentId}/like?isLike=1", savedComment.getId())
-                        .header(AUTHORIZATION, token)
+                        .with(user(userService.loadUserByUsername(EMAIL)))
                         .contentType(MediaType.MULTIPART_FORM_DATA)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -375,16 +352,5 @@ public class CommentControllerDocTest {
                                 fieldWithPath("content[*].challengeTitle").description("챌린지 제목")
                         )
                 ));
-    }
-
-    private String generateToken() {
-        Authentication auth = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(EMAIL, PASSWORD));
-        if (auth.isAuthenticated()) {
-            UserDetails userDetails = userService.loadUserByUsername(EMAIL);
-            return TOKEN_PREFIX + jwtTokenUtil.generateToken(userDetails);
-        }
-
-        throw new IllegalArgumentException("token 생성 오류");
     }
 }

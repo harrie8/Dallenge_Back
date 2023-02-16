@@ -37,16 +37,24 @@ operation::comment-create[snippets='http-response']
 
 include::{snippets}/comment-update/http-request.adoc[]
 
-==== 요청값
-
+.요청값
+[%collapsible]
 ====
-include::{snippets}/comment-update/request-parts.adoc[]
 
-commentDto - 댓글 수정 데이터(JSON)
-include::{snippets}/comment-update/request-part-commentDto-fields.adoc[]
+=====
+include::{snippets}/comment-update/request-parts.adoc[]
 
 commentDtoImg - 댓글 수정 프로필 이미지(FILE) +
 .jpg 형식의 이미지 파일을 지원합니다.
+
+include::{snippets}/comment-update/request-parameters.adoc[]
+
+content - 댓글 수정 내용(String) +
+파라미터라고 써있지만 form-data에 넣어주시면 됩니다.
+
+image:comment/createComment.png[]
+
+=====
 
 ====
 

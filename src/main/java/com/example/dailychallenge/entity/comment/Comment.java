@@ -42,7 +42,7 @@ public class Comment extends BaseEntity {
     @JoinColumn(name = "user_id")
     private User users;
 
-    @OneToMany(mappedBy = "comment", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "comment", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CommentImg> commentImgs = new ArrayList<>();
 
 
@@ -82,5 +82,9 @@ public class Comment extends BaseEntity {
             imgUrls.add(imgUrl);
         }
         return imgUrls;
+    }
+
+    public boolean isOwner(Long userId) {
+        return userId.equals(users.getId());
     }
 }

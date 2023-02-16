@@ -517,7 +517,7 @@ Content-Type: image/jpg
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>content</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">false</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">댓글 내용(빈 값 허용X)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">댓글 수정 내용("", " " 값 허용X)</p></td>
 </tr>
 </tbody>
 </table>
@@ -543,7 +543,7 @@ Content-Length: 113
 {
   "id" : 2,
   "content" : "댓글 내용",
-  "createdAt" : "2023-02-16T17:06:53.2843943",
+  "createdAt" : "2023-02-16T18:41:08.0271874",
   "userId" : 2
 }</code></pre>
 </div>
@@ -558,15 +558,13 @@ Content-Length: 113
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">POST /6/comment/12 HTTP/1.1
 Content-Type: multipart/form-data;charset=UTF-8; boundary=6o2knFse3p53ty9dmcQvWAIx1zInP11uCfbm
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0MTIzNEB0ZXN0LmNvbSIsImlhdCI6MTY3NjUzNDgxMywiZXhwIjoxNjc2NTUyODEzfQ.fy3ORT4boYJQDgErggmqKgyVngnaS063ZhJ__YYrAo0
 Accept: application/json
 Host: api.dailychallenge.com
 
 --6o2knFse3p53ty9dmcQvWAIx1zInP11uCfbm
-Content-Disposition: form-data; name=commentDto; filename=commentDto
-Content-Type: application/json
+Content-Disposition: form-data; name=content
 
-{"content":"댓글 수정","commentDtoImg":null,"commentDtoImgValid":false,"contentValid":true}
+댓글 수정
 --6o2knFse3p53ty9dmcQvWAIx1zInP11uCfbm
 Content-Disposition: form-data; name=commentDtoImg; filename=commentDtoImg.jpg
 Content-Type: image/jpg
@@ -575,77 +573,50 @@ Content-Type: image/jpg
 --6o2knFse3p53ty9dmcQvWAIx1zInP11uCfbm--</code></pre>
 </div>
 </div>
-</div>
-<div class="sect3">
-<h4 id="_요청값">요청값</h4>
+<details>
+<summary class="title">요청값</summary>
+<div class="content">
 <div class="exampleblock">
 <div class="content">
-<table class="tableblock frame-all grid-all stretch">
-<colgroup>
-<col style="width: 25%;">
-<col style="width: 25%;">
-<col style="width: 25%;">
-<col style="width: 25%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-top">Part</th>
-<th class="tableblock halign-left valign-top">타입</th>
-<th class="tableblock halign-left valign-top">필수여부</th>
-<th class="tableblock halign-left valign-top">설명</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>commentDto</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">JSON</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">true</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">댓글 수정 정보 데이터(JSON)</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>commentDtoImg</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">.jpg</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">false</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">댓글 수정 이미지 파일(FILE)</p></td>
-</tr>
-</tbody>
-</table>
 <div class="paragraph">
-<p>commentDto - 댓글 수정 데이터(JSON)</p>
+<p>Unresolved directive in Comment-API.adoc - include::..\..\..\target\generated-snippets/comment-update/request-part-commentDto-fields.adoc[]</p>
+</div>
+<div class="paragraph">
+<p>commentDtoImg - 댓글 수정 프로필 이미지(FILE)<br>
+.jpg 형식의 이미지 파일을 지원합니다.</p>
 </div>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
-<col style="width: 20%;">
-<col style="width: 20%;">
-<col style="width: 20%;">
-<col style="width: 20%;">
-<col style="width: 20%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
 </colgroup>
 <thead>
 <tr>
-<th class="tableblock halign-left valign-top">필드명</th>
-<th class="tableblock halign-left valign-top">타입</th>
+<th class="tableblock halign-left valign-top">파라미터</th>
 <th class="tableblock halign-left valign-top">필수여부</th>
-<th class="tableblock halign-left valign-top">제약조건</th>
 <th class="tableblock halign-left valign-top">설명</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>content</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">true</p></td>
-<td class="tableblock halign-left valign-top"></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">수정할 내용</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">false</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">댓글 수정 내용("", " " 값 허용X)</p></td>
 </tr>
 </tbody>
 </table>
 <div class="paragraph">
-<p>commentDtoImg - 댓글 수정 프로필 이미지(FILE)<br>
-.jpg 형식의 이미지 파일을 지원합니다.</p>
+<p>content - 댓글 수정 내용(String)<br>
+파라미터라고 써있지만 form-data에 넣어주시면 됩니다.</p>
+</div>
+<div class="paragraph">
+<p><span class="image"><img src="comment/createComment.png" alt="createComment"></span></p>
 </div>
 </div>
 </div>
+</div>
+</details>
 </div>
 <div class="sect3">
 <h4 id="_http_response">HTTP response</h4>
@@ -664,7 +635,6 @@ Content-Type: image/jpg
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">DELETE /1/comment/1 HTTP/1.1
 Content-Type: multipart/form-data;charset=UTF-8
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0MTIzNEB0ZXN0LmNvbSIsImlhdCI6MTY3NjUzNDgxMywiZXhwIjoxNjc2NTUyODEzfQ.fy3ORT4boYJQDgErggmqKgyVngnaS063ZhJ__YYrAo0
 Accept: application/json
 Host: api.dailychallenge.com</code></pre>
 </div>
@@ -724,14 +694,13 @@ Content-Length: 32
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">POST /11/like?isLike=1 HTTP/1.1
 Content-Type: multipart/form-data;charset=UTF-8
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0MTIzNEB0ZXN0LmNvbSIsImlhdCI6MTY3NjUzNDgxMywiZXhwIjoxNjc2NTUyODEzfQ.fy3ORT4boYJQDgErggmqKgyVngnaS063ZhJ__YYrAo0
 Accept: application/json
 Host: api.dailychallenge.com</code></pre>
 </div>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_요청값_2">요청값</h4>
+<h4 id="_요청값">요청값</h4>
 <div class="exampleblock">
 <div class="content">
 <table class="tableblock frame-all grid-all stretch">
@@ -810,7 +779,7 @@ Host: api.dailychallenge.com</code></pre>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_요청값_3">요청값</h4>
+<h4 id="_요청값_2">요청값</h4>
 <div class="exampleblock">
 <div class="content">
 <table class="tableblock frame-all grid-all stretch">
@@ -856,8 +825,8 @@ Content-Length: 2097
     "id" : 13,
     "content" : "댓글 내용0",
     "likes" : 0,
-    "createdAt" : "2023-02-16 17:06:53:932",
-    "commentImgUrls" : [ "/images/121632fc-0a70-4e1a-bfcf-92765b6feb08.jpg" ],
+    "createdAt" : "2023-02-16 18:41:08:630",
+    "commentImgUrls" : [ "/images/2321441a-d151-4a5d-871e-da8b68580d89.jpg" ],
     "commentOwnerUser" : {
       "userName" : "김철수",
       "email" : "a@a.com",
@@ -867,8 +836,8 @@ Content-Length: 2097
     "id" : 14,
     "content" : "댓글 내용1",
     "likes" : 0,
-    "createdAt" : "2023-02-16 17:06:53:936",
-    "commentImgUrls" : [ "/images/1a4b82a3-4d04-4fbd-b153-d5be339eb993.jpg" ],
+    "createdAt" : "2023-02-16 18:41:08:631",
+    "commentImgUrls" : [ "/images/e891bd53-b50d-4e3f-95ab-f44613474417.jpg" ],
     "commentOwnerUser" : {
       "userName" : "김철수",
       "email" : "a@a.com",
@@ -878,8 +847,8 @@ Content-Length: 2097
     "id" : 15,
     "content" : "댓글 내용2",
     "likes" : 0,
-    "createdAt" : "2023-02-16 17:06:53:939",
-    "commentImgUrls" : [ "/images/cb3f57bb-197b-4708-8bdf-c1501b7e4641.jpg" ],
+    "createdAt" : "2023-02-16 18:41:08:633",
+    "commentImgUrls" : [ "/images/c54af5fb-e36c-4f43-b900-b8ea26d3471f.jpg" ],
     "commentOwnerUser" : {
       "userName" : "김철수",
       "email" : "a@a.com",
@@ -889,8 +858,8 @@ Content-Length: 2097
     "id" : 16,
     "content" : "댓글 내용3",
     "likes" : 0,
-    "createdAt" : "2023-02-16 17:06:53:943",
-    "commentImgUrls" : [ "/images/f5e888b9-0f93-48bc-ba22-575ed10592fc.jpg" ],
+    "createdAt" : "2023-02-16 18:41:08:635",
+    "commentImgUrls" : [ "/images/00a22e63-4438-44bf-9a38-5f4e088ef70c.jpg" ],
     "commentOwnerUser" : {
       "userName" : "김철수",
       "email" : "a@a.com",
@@ -900,8 +869,8 @@ Content-Length: 2097
     "id" : 17,
     "content" : "댓글 내용4",
     "likes" : 0,
-    "createdAt" : "2023-02-16 17:06:53:946",
-    "commentImgUrls" : [ "/images/7788556f-7a26-4dbe-b9e3-ea13b88667b0.jpg" ],
+    "createdAt" : "2023-02-16 18:41:08:636",
+    "commentImgUrls" : [ "/images/744614f1-b450-4381-8fa6-68898f5faf96.jpg" ],
     "commentOwnerUser" : {
       "userName" : "김철수",
       "email" : "a@a.com",
@@ -917,12 +886,12 @@ Content-Length: 2097
     "offset" : 0,
     "pageSize" : 10,
     "pageNumber" : 0,
-    "paged" : true,
-    "unpaged" : false
+    "unpaged" : false,
+    "paged" : true
   },
+  "totalElements" : 5,
   "totalPages" : 1,
   "last" : true,
-  "totalElements" : 5,
   "size" : 10,
   "number" : 0,
   "sort" : {
@@ -930,8 +899,8 @@ Content-Length: 2097
     "sorted" : true,
     "unsorted" : false
   },
-  "numberOfElements" : 5,
   "first" : true,
+  "numberOfElements" : 5,
   "empty" : false
 }</code></pre>
 </div>
@@ -1007,7 +976,7 @@ Host: api.dailychallenge.com</code></pre>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_요청값_4">요청값</h4>
+<h4 id="_요청값_3">요청값</h4>
 <div class="exampleblock">
 <div class="content">
 <table class="tableblock frame-all grid-all stretch">
@@ -1053,64 +1022,64 @@ Content-Length: 2697
     "id" : 10,
     "content" : "다른 댓글 내용7",
     "likes" : 0,
-    "createdAt" : "2023-02-16 17:06:53:378",
-    "commentImgUrls" : [ "/images/5acdee3a-9c3a-422c-bdc1-4707e8c880a3.jpg" ],
+    "createdAt" : "2023-02-16 18:41:08:148",
+    "commentImgUrls" : [ "/images/d97b0893-ee05-4cf6-99e8-2770f66dccbb.jpg" ],
     "challengeId" : 4,
     "challengeTitle" : "다른 제목입니다."
   }, {
     "id" : 9,
     "content" : "다른 댓글 내용6",
     "likes" : 0,
-    "createdAt" : "2023-02-16 17:06:53:376",
-    "commentImgUrls" : [ "/images/bc96df34-5163-4bd5-808f-e6724fd718ff.jpg" ],
+    "createdAt" : "2023-02-16 18:41:08:147",
+    "commentImgUrls" : [ "/images/546a9e2f-a8f2-408f-8f8d-cbe904f4fcfc.jpg" ],
     "challengeId" : 4,
     "challengeTitle" : "다른 제목입니다."
   }, {
     "id" : 8,
     "content" : "다른 댓글 내용5",
     "likes" : 0,
-    "createdAt" : "2023-02-16 17:06:53:375",
-    "commentImgUrls" : [ "/images/21cb8744-1b87-478c-9981-e1620f2dbd5e.jpg" ],
+    "createdAt" : "2023-02-16 18:41:08:144",
+    "commentImgUrls" : [ "/images/4a0ad56b-ef37-4645-a401-e3126f702f98.jpg" ],
     "challengeId" : 4,
     "challengeTitle" : "다른 제목입니다."
   }, {
     "id" : 7,
     "content" : "댓글 내용4",
     "likes" : 0,
-    "createdAt" : "2023-02-16 17:06:53:372",
-    "commentImgUrls" : [ "/images/7612e5aa-6322-4a9b-aba2-e1dfe249c5fb.jpg" ],
+    "createdAt" : "2023-02-16 18:41:08:140",
+    "commentImgUrls" : [ "/images/3be042e7-565c-418f-aaa9-e2549655e1ad.jpg" ],
     "challengeId" : 3,
     "challengeTitle" : "제목입니다."
   }, {
     "id" : 6,
     "content" : "댓글 내용3",
     "likes" : 0,
-    "createdAt" : "2023-02-16 17:06:53:371",
-    "commentImgUrls" : [ "/images/99259ba3-3296-4023-be73-7b1aef575870.jpg" ],
+    "createdAt" : "2023-02-16 18:41:08:139",
+    "commentImgUrls" : [ "/images/a48a271b-4e82-4b09-aead-a59d6a415811.jpg" ],
     "challengeId" : 3,
     "challengeTitle" : "제목입니다."
   }, {
     "id" : 5,
     "content" : "댓글 내용2",
     "likes" : 0,
-    "createdAt" : "2023-02-16 17:06:53:370",
-    "commentImgUrls" : [ "/images/26c6d04a-0644-4fa3-8a36-3b4970220dfa.jpg" ],
+    "createdAt" : "2023-02-16 18:41:08:137",
+    "commentImgUrls" : [ "/images/f5fb95b9-25a9-44e8-b7d3-3876c013e70e.jpg" ],
     "challengeId" : 3,
     "challengeTitle" : "제목입니다."
   }, {
     "id" : 4,
     "content" : "댓글 내용1",
     "likes" : 0,
-    "createdAt" : "2023-02-16 17:06:53:369",
-    "commentImgUrls" : [ "/images/f005ca1e-3e5e-4bc1-80af-13520ee42107.jpg" ],
+    "createdAt" : "2023-02-16 18:41:08:136",
+    "commentImgUrls" : [ "/images/8cf97285-c81d-41f2-af45-a8a86f7ccfe2.jpg" ],
     "challengeId" : 3,
     "challengeTitle" : "제목입니다."
   }, {
     "id" : 3,
     "content" : "댓글 내용0",
     "likes" : 0,
-    "createdAt" : "2023-02-16 17:06:53:367",
-    "commentImgUrls" : [ "/images/8c71a395-5be4-4278-8cbb-7ecc82a822ca.jpg" ],
+    "createdAt" : "2023-02-16 18:41:08:135",
+    "commentImgUrls" : [ "/images/d54c3711-926f-4638-bcc2-282ae80f6d76.jpg" ],
     "challengeId" : 3,
     "challengeTitle" : "제목입니다."
   } ],
@@ -1123,12 +1092,12 @@ Content-Length: 2697
     "offset" : 0,
     "pageSize" : 10,
     "pageNumber" : 0,
-    "paged" : true,
-    "unpaged" : false
+    "unpaged" : false,
+    "paged" : true
   },
+  "totalElements" : 8,
   "totalPages" : 1,
   "last" : true,
-  "totalElements" : 8,
   "size" : 10,
   "number" : 0,
   "sort" : {
@@ -1136,8 +1105,8 @@ Content-Length: 2697
     "sorted" : true,
     "unsorted" : false
   },
-  "numberOfElements" : 8,
   "first" : true,
+  "numberOfElements" : 8,
   "empty" : false
 }</code></pre>
 </div>
@@ -1211,7 +1180,7 @@ Content-Length: 2697
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2023-02-16 17:05:40 +0900
+Last updated 2023-02-16 18:37:47 +0900
 </div>
 </div>
 </body>

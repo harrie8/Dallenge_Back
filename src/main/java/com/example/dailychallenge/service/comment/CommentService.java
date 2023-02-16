@@ -6,6 +6,7 @@ import com.example.dailychallenge.entity.comment.Comment;
 import com.example.dailychallenge.entity.comment.Comment.CommentBuilder;
 import com.example.dailychallenge.entity.comment.CommentImg;
 import com.example.dailychallenge.entity.users.User;
+import com.example.dailychallenge.exception.AuthorizationException;
 import com.example.dailychallenge.repository.CommentRepository;
 import com.example.dailychallenge.vo.ResponseChallengeComment;
 import com.example.dailychallenge.vo.ResponseUserComment;
@@ -53,30 +54,39 @@ public class CommentService {
         return comment;
     }
 
-    public Comment updateComment(Long commentId, CommentDto commentDto,
-                                 List<MultipartFile> commentImgFiles) {
+    public Comment updateComment(Long commentId, CommentDto commentDto, User user) {
         Comment comment = commentRepository.findById(commentId).orElseThrow(EntityNotFoundException::new);
+        validateOwner(user, comment);
+
         comment.updateComment(commentDto.getContent());
 
-        List<CommentImg> commentImgs = comment.getCommentImgs();
-        List<Long> deleteCommentImgIds = new ArrayList<>();
-        int idx=0;
-        for (CommentImg commentImg : commentImgs) { // 기존에 저장된 이미지가 더 많을 때
-            if (commentImgFiles.size() <= idx) {
-                deleteCommentImgIds.add(commentImg.getId());
-                continue;
+        if (commentDto.isCommentDtoImgValid()) {
+            List<MultipartFile> commentImgFiles = commentDto.getCommentDtoImg();
+            List<CommentImg> commentImgs = comment.getCommentImgs();
+            List<Long> deleteCommentImgIds = new ArrayList<>();
+            int idx=0;
+            for (CommentImg commentImg : commentImgs) { // 기존에 저장된 이미지가 더 많을 때
+                if (commentImgFiles.size() <= idx) {
+                    deleteCommentImgIds.add(commentImg.getId());
+                    continue;
+                }
+                commentImgService.updateCommentImg(commentImg.getId(),commentImgFiles.get(idx++));
             }
-            commentImgService.updateCommentImg(commentImg.getId(),commentImgFiles.get(idx++));
+
+            for (Long commentImgId : deleteCommentImgIds) {
+                commentImgService.deleteCommentImg(commentImgId);
+            }
+
+            for (int i = idx; i < commentImgFiles.size(); i++) { // 추가한 이미지가 더 많을 때
+                CommentImg commentImg = new CommentImg();
+                commentImg.saveComment(comment);
+                commentImgService.saveCommentImg(commentImg, commentImgFiles.get(i));
+            }
         }
 
-        for (Long commentImgId : deleteCommentImgIds) {
-            commentImgService.deleteCommentImg(commentImgId);
-        }
-
-        for (int i = idx; i < commentImgFiles.size(); i++) { // 추가한 이미지가 더 많을 때
-            CommentImg commentImg = new CommentImg();
-            commentImg.saveComment(comment);
-            commentImgService.saveCommentImg(commentImg, commentImgFiles.get(i));
+        if (!commentDto.isCommentDtoImgValid()) {
+            List<CommentImg> commentImgs = comment.getCommentImgs();
+            commentImgs.clear();
         }
 
         return comment;
@@ -106,5 +116,11 @@ public class CommentService {
     public Page<ResponseUserComment> searchCommentsByUserId(Long userId, Pageable pageable) {
 
         return commentRepository.searchCommentsByUserId(userId, pageable);
+    }
+
+    private void validateOwner(User user, Comment comment) {
+        if (!comment.isOwner(user.getId())) {
+            throw new AuthorizationException();
+        }
     }
 }

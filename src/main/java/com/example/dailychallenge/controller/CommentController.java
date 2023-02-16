@@ -4,6 +4,7 @@ import com.example.dailychallenge.dto.CommentDto;
 import com.example.dailychallenge.entity.challenge.Challenge;
 import com.example.dailychallenge.entity.comment.Comment;
 import com.example.dailychallenge.entity.users.User;
+import com.example.dailychallenge.exception.users.UserNotFound;
 import com.example.dailychallenge.service.challenge.ChallengeService;
 import com.example.dailychallenge.service.comment.CommentService;
 import com.example.dailychallenge.service.users.UserService;
@@ -11,8 +12,6 @@ import com.example.dailychallenge.vo.ResponseChallengeComment;
 import com.example.dailychallenge.vo.ResponseComment;
 import com.example.dailychallenge.vo.ResponseUserComment;
 import java.util.HashMap;
-import java.util.List;
-import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -27,9 +26,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequiredArgsConstructor
@@ -62,10 +59,14 @@ public class CommentController {
     public void updateComment(
             @AuthenticationPrincipal org.springframework.security.core.userdetails.User user,
             @PathVariable("commentId") Long commentId,
-            @RequestPart @Valid CommentDto commentDto,
-            @RequestPart(required = false) List<MultipartFile> commentDtoImg) {
+            @ModelAttribute CommentDto commentDto) {
+        String userEmail = user.getUsername();
+        User findUser = userService.findByEmail(userEmail);
+        if (findUser == null) {
+            throw new UserNotFound();
+        }
 
-        commentService.updateComment(commentId, commentDto, commentDtoImg);
+        commentService.updateComment(commentId, commentDto, findUser);
     }
 
     @DeleteMapping("/{challengeId}/comment/{commentId}")

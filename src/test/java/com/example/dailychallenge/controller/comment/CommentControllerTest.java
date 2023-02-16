@@ -1,5 +1,7 @@
 package com.example.dailychallenge.controller.comment;
 
+import static com.example.dailychallenge.util.fixture.TokenFixture.EMAIL;
+import static com.example.dailychallenge.util.fixture.TokenFixture.PASSWORD;
 import static com.example.dailychallenge.util.fixture.UserFixture.createOtherUser;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.hasItem;
@@ -11,7 +13,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -27,57 +28,25 @@ import com.example.dailychallenge.entity.users.User;
 import com.example.dailychallenge.service.challenge.ChallengeService;
 import com.example.dailychallenge.service.comment.CommentService;
 import com.example.dailychallenge.service.users.UserService;
-import com.example.dailychallenge.utils.JwtTokenUtil;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import java.nio.charset.StandardCharsets;
+import com.example.dailychallenge.util.ControllerTest;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-@SpringBootTest
-@Transactional
-@AutoConfigureMockMvc
-@TestPropertySource(locations = "classpath:application-test.properties")
-class CommentControllerTest {
-
-    private final static String TOKEN_PREFIX = "Bearer ";
-    private final static String AUTHORIZATION = "Authorization";
-    private final static String EMAIL = "test1234@test.com";
-    private final static String PASSWORD = "1234";
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+class CommentControllerTest extends ControllerTest {
     @Autowired
     private UserService userService;
     @Autowired
     private ChallengeService challengeService;
     @Autowired
     private CommentService commentService;
-    @Autowired
-    private MockMvc mockMvc;
-    @Autowired
-    private ObjectMapper objectMapper;
-    @Autowired
-    private AuthenticationManager authenticationManager;
-    @Autowired
-    private JwtTokenUtil jwtTokenUtil;
 
-    private static MockMultipartFile createMultipartFiles() {
+    private MockMultipartFile createMultipartFiles() {
         String path = "commentDtoImg";
         String imageName = "commentDtoImg.jpg";
         return new MockMultipartFile(path, imageName,
@@ -136,35 +105,27 @@ class CommentControllerTest {
                         .with(user(userService.loadUserByUsername(EMAIL)))
                         .contentType(MediaType.MULTIPART_FORM_DATA)
                         .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isCreated())
-                .andDo(print());
+                .andExpect(status().isCreated());
     }
 
     @Test
     @DisplayName("댓글 수정 테스트")
     public void updateCommentTest() throws Exception {
         Comment savedComment = createComment();
-
         CommentDto requestComment = CommentDto.builder()
                 .content("댓글 수정")
                 .build();
+
         MockMultipartFile commentDtoImg = createMultipartFiles();
 
-        String json = objectMapper.writeValueAsString(requestComment);
-        MockMultipartFile commentDto = new MockMultipartFile("commentDto",
-                "commentDto",
-                "application/json", json.getBytes(StandardCharsets.UTF_8));
-
         Long challengeId = savedComment.getChallenge().getId();
-        String token = generateToken();
-        mockMvc.perform(multipart("/{challengeId}/comment/{commentId}",challengeId,savedComment.getId())
-                        .file(commentDto)
+        mockMvc.perform(multipart("/{challengeId}/comment/{commentId}", challengeId, savedComment.getId())
                         .file(commentDtoImg)
-                        .header(AUTHORIZATION, token)
+                        .param("content", requestComment.getContent())
+                        .with(user(userService.loadUserByUsername(EMAIL)))
                         .contentType(MediaType.MULTIPART_FORM_DATA)
                         .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andDo(print());
+                .andExpect(status().isOk());
     }
 
     @Test
@@ -172,13 +133,11 @@ class CommentControllerTest {
     public void deleteCommentTest() throws Exception {
         Comment savedComment = createComment();
         Long challengeId = savedComment.getChallenge().getId();
-        String token = generateToken();
-        mockMvc.perform(delete("/{challengeId}/comment/{commentId}",challengeId,savedComment.getId())
-                        .header(AUTHORIZATION, token)
+        mockMvc.perform(delete("/{challengeId}/comment/{commentId}", challengeId, savedComment.getId())
+                        .with(user(userService.loadUserByUsername(EMAIL)))
                         .contentType(MediaType.MULTIPART_FORM_DATA)
                         .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andDo(print());
+                .andExpect(status().isOk());
     }
 
     @Test
@@ -186,14 +145,12 @@ class CommentControllerTest {
     public void isLikeTest() throws Exception {
         Comment savedComment = createComment();
 
-        String token = generateToken();
         mockMvc.perform(post("/{commentId}/like", savedComment.getId())
                         .param("isLike", String.valueOf(1))
-                        .header(AUTHORIZATION, token)
+                        .with(user(userService.loadUserByUsername(EMAIL)))
                         .contentType(MediaType.MULTIPART_FORM_DATA)
                         .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andDo(print());
+                .andExpect(status().isOk());
     }
 
     @Test
@@ -227,8 +184,7 @@ class CommentControllerTest {
                 .andExpect(jsonPath("$.content[*].commentOwnerUser.email",
                         hasItems(otherUser.getEmail())))
                 .andExpect(jsonPath("$.content[*].commentOwnerUser.userId",
-                        hasItems(otherUser.getId().intValue())))
-                .andDo(print());
+                        hasItems(otherUser.getId().intValue())));
     }
 
     @Test
@@ -282,20 +238,6 @@ class CommentControllerTest {
                 .andExpect(jsonPath("$.content[*].challengeId",
                         hasItems(challenge.getId().intValue(), otherChallenge.getId().intValue())))
                 .andExpect(jsonPath("$.content[*].challengeTitle",
-                        hasItems(challenge.getTitle(), otherChallenge.getTitle())))
-                .andDo(print());
+                        hasItems(challenge.getTitle(), otherChallenge.getTitle())));
     }
-
-
-    private String generateToken() {
-        Authentication auth = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(EMAIL, PASSWORD));
-        if (auth.isAuthenticated()) {
-            UserDetails userDetails = userService.loadUserByUsername(EMAIL);
-            return TOKEN_PREFIX + jwtTokenUtil.generateToken(userDetails);
-        }
-
-        throw new IllegalArgumentException("token 생성 오류");
-    }
-
 }

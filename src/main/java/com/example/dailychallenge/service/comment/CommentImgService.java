@@ -4,13 +4,11 @@ import com.example.dailychallenge.entity.comment.CommentImg;
 import com.example.dailychallenge.repository.CommentImgRepository;
 import com.example.dailychallenge.service.FileService;
 import com.querydsl.core.util.StringUtils;
+import javax.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-
-import javax.persistence.EntityNotFoundException;
-import java.util.List;
 
 @Service @Transactional
 @RequiredArgsConstructor
@@ -38,7 +36,7 @@ public class CommentImgService {
     }
 
     public void updateCommentImg(Long commentImgId, MultipartFile commentImgFile) {
-        if(!commentImgFile.isEmpty()){
+        if(commentImgFile != null){
             CommentImg savedCommentImg = commentImgRepository.findById(commentImgId)
                     .orElseThrow(EntityNotFoundException::new);
             if(!StringUtils.isNullOrEmpty(savedCommentImg.getImgName())){
