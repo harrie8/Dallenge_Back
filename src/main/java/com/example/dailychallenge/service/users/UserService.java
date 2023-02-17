@@ -8,6 +8,7 @@ import com.example.dailychallenge.entity.social.ProviderUser;
 import com.example.dailychallenge.entity.users.User;
 import com.example.dailychallenge.entity.users.UserImg;
 import com.example.dailychallenge.exception.AuthorizationException;
+import com.example.dailychallenge.exception.CommonException;
 import com.example.dailychallenge.exception.users.UserDuplicateNotCheck;
 import com.example.dailychallenge.exception.users.UserNotFound;
 import com.example.dailychallenge.repository.UserRepository;
@@ -45,7 +46,7 @@ public class UserService implements UserDetailsService {
 //            이미지 출처
 //            <a href="[https://www.flaticon.com/kr/free-icons/](https://www.flaticon.com/kr/free-icons/)" title="프로필 아이콘">프로필 아이콘 제작자: Freepik - Flaticon</a>
         } catch (IOException e) {
-            throw new IllegalArgumentException("해당 경로에서 이미지를 찾을 수 없습니다.");
+            throw new CommonException(defaultUserImgLocation + "에서 회원 기본 이미지를 찾을 수 없습니다.");
         }
     }
 

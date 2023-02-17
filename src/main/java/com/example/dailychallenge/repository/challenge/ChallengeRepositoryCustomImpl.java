@@ -3,6 +3,7 @@ package com.example.dailychallenge.repository.challenge;
 import static com.example.dailychallenge.entity.challenge.QChallenge.challenge;
 import static com.example.dailychallenge.entity.challenge.QUserChallenge.userChallenge;
 
+import com.example.dailychallenge.exception.CommonException;
 import com.example.dailychallenge.vo.challenge.QResponseChallenge;
 import com.example.dailychallenge.vo.challenge.ResponseChallenge;
 import com.querydsl.core.types.dsl.BooleanExpression;
@@ -34,7 +35,7 @@ public class ChallengeRepositoryCustomImpl implements
 
     private BooleanExpression challengeIdEq(Long challengeId) {
         if (challengeId == null) {
-            throw new IllegalArgumentException();
+            throw new CommonException("challengeId is Null");
         }
         return userChallenge.challenge.id.eq(challengeId);
     }

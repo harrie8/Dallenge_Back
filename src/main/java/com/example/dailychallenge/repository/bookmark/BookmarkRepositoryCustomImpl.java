@@ -5,6 +5,7 @@ import static com.example.dailychallenge.entity.challenge.QChallenge.challenge;
 import static com.example.dailychallenge.entity.users.QUser.user;
 
 import com.example.dailychallenge.entity.bookmark.Bookmark;
+import com.example.dailychallenge.exception.CommonException;
 import com.example.dailychallenge.repository.challenge.OrderByNull;
 import com.example.dailychallenge.vo.bookmark.QResponseBookmark;
 import com.example.dailychallenge.vo.bookmark.ResponseBookmark;
@@ -66,14 +67,14 @@ public class BookmarkRepositoryCustomImpl implements BookmarkRepositoryCustom {
 
     private BooleanExpression userIdEq(Long userId) {
         if (userId == null) {
-            throw new IllegalArgumentException();
+            throw new CommonException("userId is Null");
         }
         return bookmark.users.id.eq(userId);
     }
 
     private BooleanExpression challengeIdEq(Long challengeId) {
         if (challengeId == null) {
-            throw new IllegalArgumentException();
+            throw new CommonException("challengeId is Null");
         }
         return bookmark.challenge.id.eq(challengeId);
     }

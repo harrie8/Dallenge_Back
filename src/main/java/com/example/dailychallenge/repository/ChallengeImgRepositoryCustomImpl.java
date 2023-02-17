@@ -2,6 +2,7 @@ package com.example.dailychallenge.repository;
 
 import static com.example.dailychallenge.entity.challenge.QChallengeImg.challengeImg;
 
+import com.example.dailychallenge.exception.CommonException;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import javax.persistence.EntityManager;
@@ -25,7 +26,7 @@ public class ChallengeImgRepositoryCustomImpl implements
 
     private BooleanExpression challengeIdEq(Long challengeId) {
         if (challengeId == null) {
-            throw new IllegalArgumentException();
+            throw new CommonException("challengeId is Null");
         }
         return challengeImg.challenge.id.eq(challengeId);
     }

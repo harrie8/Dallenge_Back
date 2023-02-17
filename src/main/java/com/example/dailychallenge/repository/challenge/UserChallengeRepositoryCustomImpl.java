@@ -7,6 +7,7 @@ import static org.aspectj.util.LangUtil.isEmpty;
 import com.example.dailychallenge.dto.ChallengeSearchCondition;
 import com.example.dailychallenge.entity.challenge.ChallengeCategory;
 import com.example.dailychallenge.entity.challenge.UserChallenge;
+import com.example.dailychallenge.exception.CommonException;
 import com.example.dailychallenge.vo.challenge.QResponseChallenge;
 import com.example.dailychallenge.vo.challenge.QResponseUserChallenge;
 import com.example.dailychallenge.vo.challenge.ResponseChallenge;
@@ -126,14 +127,14 @@ public class UserChallengeRepositoryCustomImpl implements
 
     private BooleanExpression challengeIdEq(Long challengeId) {
         if (challengeId == null) {
-            throw new IllegalArgumentException();
+            throw new CommonException("challengeId is Null");
         }
         return userChallenge.challenge.id.eq(challengeId);
     }
 
     private BooleanExpression userIdEq(Long userId) {
         if (userId == null) {
-            throw new IllegalArgumentException();
+            throw new CommonException("userId is Null");
         }
         return userChallenge.users.id.eq(userId);
     }

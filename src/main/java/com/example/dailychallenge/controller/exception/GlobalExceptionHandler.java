@@ -1,6 +1,7 @@
 package com.example.dailychallenge.controller.exception;
 
 import com.example.dailychallenge.exception.AuthorizationException;
+import com.example.dailychallenge.exception.CommonException;
 import com.example.dailychallenge.exception.FileNotUpload;
 import com.example.dailychallenge.exception.bookmark.BookmarkDuplicate;
 import com.example.dailychallenge.exception.bookmark.BookmarkNotFound;
@@ -20,6 +21,16 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    @ExceptionHandler(CommonException.class)
+    protected ResponseEntity<ResponseError> handlerCommonException(CommonException commonException) {
+        final ResponseError responseError = ResponseError.builder()
+                .code(commonException.getStatusCode())
+                .message(commonException.getMessage())
+                .build();
+
+        return ResponseEntity.status(responseError.getCode()).body(responseError);
+    }
 
     @ExceptionHandler(ChallengeCategoryNotFound.class)
     protected ResponseEntity<ResponseError> handlerChallengeCategoryNotFound(ChallengeCategoryNotFound challengeCategoryNotFound) {
