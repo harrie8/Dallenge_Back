@@ -12,6 +12,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import com.example.dailychallenge.entity.bookmark.Bookmark;
 import com.example.dailychallenge.entity.challenge.Challenge;
 import com.example.dailychallenge.entity.users.User;
+import com.example.dailychallenge.exception.bookmark.BookmarkDuplicate;
 import com.example.dailychallenge.exception.bookmark.BookmarkNotFound;
 import com.example.dailychallenge.repository.bookmark.BookmarkRepository;
 import com.example.dailychallenge.service.challenge.ChallengeService;
@@ -43,17 +44,31 @@ class BookmarkServiceTest extends ServiceTest {
         challenge = challengeService.saveChallenge(createChallengeDto(), createChallengeImgFiles(), savedUser);
     }
 
-    @Test
+    @Nested
     @DisplayName("북마크 생성 테스트")
-    void saveBookmarkTest() throws Exception {
-        User otherUser = userService.saveUser(createOtherUser(), passwordEncoder);
+    class saveBookmark {
+        @Test
+        void success() throws Exception {
+            User otherUser = userService.saveUser(createOtherUser(), passwordEncoder);
 
-        Bookmark savedBookmark = bookmarkService.saveBookmark(otherUser, challenge);
+            Bookmark savedBookmark = bookmarkService.saveBookmark(otherUser, challenge);
 
-        assertAll(() -> {
-            assertEquals(otherUser, savedBookmark.getUsers());
-            assertEquals(challenge, savedBookmark.getChallenge());
-        });
+            assertAll(() -> {
+                assertEquals(otherUser, savedBookmark.getUsers());
+                assertEquals(challenge, savedBookmark.getChallenge());
+            });
+        }
+
+        @Test
+        @DisplayName("이미 챌린지를 북마크한 경우 예외 발생")
+        void failByDuplication() throws Exception {
+            User otherUser = userService.saveUser(createOtherUser(), passwordEncoder);
+            bookmarkService.saveBookmark(otherUser, challenge);
+
+            Throwable exception = assertThrows(BookmarkDuplicate.class,
+                    () -> bookmarkService.saveBookmark(otherUser, challenge));
+            assertEquals("이미 북마크한 챌린지입니다.", exception.getMessage());
+        }
     }
 
     @Nested

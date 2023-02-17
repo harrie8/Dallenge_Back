@@ -6,6 +6,7 @@ import static com.example.dailychallenge.util.fixture.TokenFixture.PASSWORD;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.example.dailychallenge.entity.bookmark.Bookmark;
 import com.example.dailychallenge.entity.challenge.Challenge;
@@ -15,8 +16,10 @@ import com.example.dailychallenge.repository.UserRepository;
 import com.example.dailychallenge.repository.bookmark.BookmarkRepository;
 import com.example.dailychallenge.util.RepositoryTest;
 import com.example.dailychallenge.vo.bookmark.ResponseBookmark;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -82,5 +85,45 @@ class BookmarkRepositoryCustomImplTest extends RepositoryTest {
             assertThat(results).extracting("createdAt").isNotEmpty();
             assertThat(results).extracting("userId").containsOnly(otherUser.getId());
         });
+    }
+
+    @Nested
+    @DisplayName("유저가 북마크한 챌린지인지 확인하는 테스트")
+    class findByUserIdAndChallengeId {
+        @Test
+        void present() {
+            Bookmark bookmark = Bookmark.builder()
+                    .users(savedUser)
+                    .challenge(challenge)
+                    .build();
+            bookmarkRepository.save(bookmark);
+            Long userId = savedUser.getId();
+            Long challengeId = challenge.getId();
+
+            Optional<Bookmark> findBookmark = bookmarkRepository.findByUserIdAndChallengeId(userId, challengeId);
+
+            assertTrue(findBookmark.isPresent());
+        }
+
+        @Test
+        void empty() {
+            Bookmark bookmark = Bookmark.builder()
+                    .users(savedUser)
+                    .challenge(challenge)
+                    .build();
+            User otherUser = User.builder()
+                    .userName("김철수")
+                    .email("a@a.com")
+                    .password(PASSWORD)
+                    .build();
+            userRepository.save(otherUser);
+            bookmarkRepository.save(bookmark);
+            Long userId = otherUser.getId();
+            Long challengeId = challenge.getId();
+
+            Optional<Bookmark> findBookmark = bookmarkRepository.findByUserIdAndChallengeId(userId, challengeId);
+
+            assertTrue(findBookmark.isEmpty());
+        }
     }
 }

@@ -2,6 +2,7 @@ package com.example.dailychallenge.controller.exception;
 
 import com.example.dailychallenge.exception.AuthorizationException;
 import com.example.dailychallenge.exception.FileNotUpload;
+import com.example.dailychallenge.exception.bookmark.BookmarkDuplicate;
 import com.example.dailychallenge.exception.bookmark.BookmarkNotFound;
 import com.example.dailychallenge.exception.challenge.ChallengeCategoryNotFound;
 import com.example.dailychallenge.exception.challenge.ChallengeNotFound;
@@ -116,6 +117,17 @@ public class GlobalExceptionHandler {
         final ResponseError responseError = ResponseError.builder()
                 .code(bookmarkNotFound.getStatusCode())
                 .message(bookmarkNotFound.getMessage())
+                .build();
+
+        return ResponseEntity.status(responseError.getCode()).body(responseError);
+    }
+
+    @ExceptionHandler(BookmarkDuplicate.class)
+    protected ResponseEntity<ResponseError> handlerBookmarkDuplicate(
+            BookmarkDuplicate bookmarkDuplicate) {
+        final ResponseError responseError = ResponseError.builder()
+                .code(bookmarkDuplicate.getStatusCode())
+                .message(bookmarkDuplicate.getMessage())
                 .build();
 
         return ResponseEntity.status(responseError.getCode()).body(responseError);

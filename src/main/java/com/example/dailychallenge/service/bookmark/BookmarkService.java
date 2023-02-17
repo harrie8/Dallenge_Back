@@ -3,6 +3,7 @@ package com.example.dailychallenge.service.bookmark;
 import com.example.dailychallenge.entity.bookmark.Bookmark;
 import com.example.dailychallenge.entity.challenge.Challenge;
 import com.example.dailychallenge.entity.users.User;
+import com.example.dailychallenge.exception.bookmark.BookmarkDuplicate;
 import com.example.dailychallenge.exception.bookmark.BookmarkNotFound;
 import com.example.dailychallenge.repository.bookmark.BookmarkRepository;
 import com.example.dailychallenge.vo.bookmark.ResponseBookmark;
@@ -19,6 +20,12 @@ public class BookmarkService {
     private final BookmarkRepository bookmarkRepository;
 
     public Bookmark saveBookmark(User user, Challenge challenge) {
+        Long userId = user.getId();
+        Long challengeId = challenge.getId();
+        bookmarkRepository.findByUserIdAndChallengeId(userId, challengeId).ifPresent(bookmark -> {
+            throw new BookmarkDuplicate();
+        });
+
         Bookmark bookmark = Bookmark.builder()
                 .users(user)
                 .challenge(challenge)

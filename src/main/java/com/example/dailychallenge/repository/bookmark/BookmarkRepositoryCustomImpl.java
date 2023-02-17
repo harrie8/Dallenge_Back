@@ -1,8 +1,10 @@
 package com.example.dailychallenge.repository.bookmark;
 
 import static com.example.dailychallenge.entity.bookmark.QBookmark.bookmark;
+import static com.example.dailychallenge.entity.challenge.QChallenge.challenge;
 import static com.example.dailychallenge.entity.users.QUser.user;
 
+import com.example.dailychallenge.entity.bookmark.Bookmark;
 import com.example.dailychallenge.repository.challenge.OrderByNull;
 import com.example.dailychallenge.vo.bookmark.QResponseBookmark;
 import com.example.dailychallenge.vo.bookmark.ResponseBookmark;
@@ -11,6 +13,7 @@ import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.List;
+import java.util.Optional;
 import javax.persistence.EntityManager;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -48,11 +51,31 @@ public class BookmarkRepositoryCustomImpl implements BookmarkRepositoryCustom {
         return new PageImpl<>(content, pageable, total);
     }
 
+    @Override
+    public Optional<Bookmark> findByUserIdAndChallengeId(Long userId, Long challengeId) {
+        Bookmark findBookmark = queryFactory
+                .select(bookmark)
+                .from(bookmark)
+                .leftJoin(bookmark.users, user)
+                .leftJoin(bookmark.challenge, challenge)
+                .where(userIdEq(userId), challengeIdEq(challengeId))
+                .fetchOne();
+
+        return Optional.ofNullable(findBookmark);
+    }
+
     private BooleanExpression userIdEq(Long userId) {
         if (userId == null) {
             throw new IllegalArgumentException();
         }
         return bookmark.users.id.eq(userId);
+    }
+
+    private BooleanExpression challengeIdEq(Long challengeId) {
+        if (challengeId == null) {
+            throw new IllegalArgumentException();
+        }
+        return bookmark.challenge.id.eq(challengeId);
     }
 
     private OrderSpecifier<?> bookmarkSort(Pageable pageable) {
