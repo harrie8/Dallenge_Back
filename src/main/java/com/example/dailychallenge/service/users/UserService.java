@@ -18,7 +18,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mock.web.MockMultipartFile;
@@ -35,18 +34,9 @@ import org.springframework.web.multipart.MultipartFile;
 public class UserService implements UserDetailsService {
     private final UserRepository userRepository;
     private final UserImgService userImgService;
-    @Value("${userImgLocation}")
-    private String userImgLocation;
+
     @Value("${defaultUserImgLocation}")
     private String defaultUserImgLocation;
-
-    MultipartFile createMultipartFiles() throws Exception {
-        String path = userImgLocation+ "/";
-        String imageName = "image.jpg";
-        MockMultipartFile multipartFile = new MockMultipartFile(path, imageName,
-                "image/jpg", new byte[]{1, 2, 3, 4});
-        return multipartFile;
-    }
 
     private MultipartFile createDefaultMultipartFile() {
         try {
@@ -74,7 +64,6 @@ public class UserService implements UserDetailsService {
 
         UserImg userImg = new UserImg();
         userImg.saveUser(user);
-//        userImgService.saveUserImg(userImg, createMultipartFiles());
         userImgService.saveUserImg(userImg, createDefaultMultipartFile());
 
         return user;
@@ -98,33 +87,22 @@ public class UserService implements UserDetailsService {
         return userRepository.findByEmail(email);
     }
 
-
-    public void updateUser(String loginUserEmail, Long userId, RequestUpdateUser requestUpdateUser,
+    public void updateUser(User user, RequestUpdateUser requestUpdateUser,
                            MultipartFile userImgFile) {
 
-        validateUser(loginUserEmail, userId);
+        userImgService.updateUserImg(user.getUserImg().getId(), userImgFile);
 
-        User findUser = userRepository.findById(userId)
-                .orElseThrow(UserNotFound::new);
-
-        userImgService.updateUserImg(findUser.getUserImg().getId(), userImgFile);
-
-        UserEditor.UserEditorBuilder editorBuilder = findUser.toEditor();
+        UserEditor.UserEditorBuilder editorBuilder = user.toEditor();
         UserEditor userEditor = editorBuilder
                 .userName(requestUpdateUser.getUserName())
                 .info(requestUpdateUser.getInfo())
                 .build();
 
-        findUser.update(userEditor);
+        user.update(userEditor);
     }
 
-    public void delete(String loginUserEmail, Long userId) {
-        validateUser(loginUserEmail, userId);
-
-        User findUser = userRepository.findById(userId)
-                .orElseThrow(UserNotFound::new);
-
-        userRepository.delete(findUser);
+    public void delete(User user) {
+        userRepository.delete(user);
     }
 
     public void saveSocialUser(String registrationId, ProviderUser providerUser){
@@ -184,17 +162,6 @@ public class UserService implements UserDetailsService {
         return userChallenge;
     }
 
-    public void validateUser(String loginUserEmail, Long userId) {
-        User loginUser = findByEmail(loginUserEmail);
-        if (loginUser == null) {
-            throw new UserNotFound();
-        }
-
-        if (!loginUser.isSameId(userId)) {
-            throw new AuthorizationException();
-        }
-    }
-
     public List<ResponseUserChallenge> getParticipateChallenge(Long id) {
         User user = userRepository.findById(id).orElseThrow(UserNotFound::new);
         List<UserChallenge> userChallenges = user.getUserChallenges();
@@ -212,5 +179,22 @@ public class UserService implements UserDetailsService {
             }
         }
         return res;
+    }
+
+    public User getValidateUser(String loginUserEmail, Long userId) {
+        User loginUser = findByEmail(loginUserEmail);
+        if (loginUser == null) {
+            throw new UserNotFound();
+        }
+
+        if (!loginUser.isSameId(userId)) {
+            throw new AuthorizationException();
+        }
+
+        return loginUser;
+    }
+
+    public void validateUser(String loginUserEmail, Long userId) {
+        getValidateUser(loginUserEmail, userId);
     }
 }

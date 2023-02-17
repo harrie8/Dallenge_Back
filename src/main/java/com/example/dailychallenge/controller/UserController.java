@@ -1,15 +1,20 @@
 package com.example.dailychallenge.controller;
 
 import com.example.dailychallenge.dto.UserDto;
-import com.example.dailychallenge.entity.challenge.UserChallenge;
 import com.example.dailychallenge.entity.users.User;
 import com.example.dailychallenge.exception.users.UserDuplicateCheck;
 import com.example.dailychallenge.exception.users.UserLoginFailure;
 import com.example.dailychallenge.exception.users.UserPasswordCheck;
 import com.example.dailychallenge.service.users.UserService;
 import com.example.dailychallenge.utils.JwtTokenUtil;
-import com.example.dailychallenge.vo.*;
-
+import com.example.dailychallenge.vo.RequestLogin;
+import com.example.dailychallenge.vo.RequestUpdateUser;
+import com.example.dailychallenge.vo.RequestUser;
+import com.example.dailychallenge.vo.ResponseLoginUser;
+import com.example.dailychallenge.vo.ResponseUser;
+import com.example.dailychallenge.vo.ResponseUserChallenge;
+import com.example.dailychallenge.vo.ResponseUserInfo;
+import java.util.List;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -33,8 +38,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -91,14 +94,19 @@ public class UserController {
                            @RequestPart(value = "userImgFile", required = false) MultipartFile multipartFile) {
 
         String loginUserEmail = user.getUsername();
-        userService.updateUser(loginUserEmail, userId, requestUpdateUser, multipartFile);
+        User loginUser = userService.getValidateUser(loginUserEmail, userId);
+
+        userService.updateUser(loginUser, requestUpdateUser, multipartFile);
     }
 
     @DeleteMapping("/user/{userId}")
     public void deleteUser(@AuthenticationPrincipal org.springframework.security.core.userdetails.User user,
                            @PathVariable Long userId) {
+
         String loginUserEmail = user.getUsername();
-        userService.delete(loginUserEmail, userId);
+        User loginUser = userService.getValidateUser(loginUserEmail, userId);
+
+        userService.delete(loginUser);
     }
 
     @PostMapping("/user/check") // 아이디 중복 체크

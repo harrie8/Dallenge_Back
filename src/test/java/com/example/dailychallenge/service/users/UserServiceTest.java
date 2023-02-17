@@ -59,7 +59,7 @@ class UserServiceTest {
     }
 
     /** 프로필 이미지 추가한 후 **/
-    MultipartFile createMultipartFiles() throws Exception {
+    private MultipartFile createMultipartFiles() {
         String path = userImgLocation+"/";
         String imageName = "editImage.jpg";
         MockMultipartFile multipartFile = new MockMultipartFile(path, imageName,
@@ -82,89 +82,38 @@ class UserServiceTest {
         );
     }
 
-    @Nested
+    @Test
     @DisplayName("회원 정보 수정 테스트")
-    class updateUser {
-        @Test
-        public void success() throws Exception {
-            User savedUser = userService.saveUser(createUser(), passwordEncoder);
-            MultipartFile multipartFile = createMultipartFiles();
-            RequestUpdateUser requestUpdateUser = RequestUpdateUser.builder()
-                    .userName("editName")
-                    .info("editInfo")
-                    .build();
+    public void updateUserTest() throws Exception {
+        User savedUser = userService.saveUser(createUser(), passwordEncoder);
+        MultipartFile multipartFile = createMultipartFiles();
+        RequestUpdateUser requestUpdateUser = RequestUpdateUser.builder()
+                .userName("editName")
+                .info("editInfo")
+                .build();
 
-            userService.updateUser(savedUser.getEmail(), savedUser.getId(), requestUpdateUser, multipartFile);
+        userService.updateUser(savedUser, requestUpdateUser, multipartFile);
 
-            User editUser = userService.findByEmail(savedUser.getEmail());
-            System.out.println("editUser>>>"+editUser.toString());
+        User editUser = userService.findByEmail(savedUser.getEmail());
 
+        assertAll(() -> {
             assertEquals(editUser.getUserName(), requestUpdateUser.getUserName());
             assertEquals(editUser.getInfo(), requestUpdateUser.getInfo());
-        }
-
-        @Test
-        @DisplayName("존재하지 않는 회원 정보 수정 테스트")
-        public void failByNotExistUser() throws Exception {
-            User savedUser = userService.saveUser(createUser(), passwordEncoder);
-            MultipartFile multipartFile = createMultipartFiles();
-            RequestUpdateUser requestUpdateUser = RequestUpdateUser.builder()
-                    .userName("editName")
-                    .info("editInfo")
-                    .build();
-            String notExistUserEmail = savedUser.getEmail() + "error";
-            Long notExistUserId = savedUser.getId() + 1;
-
-            assertThatThrownBy(() -> userService.updateUser(notExistUserEmail, notExistUserId, requestUpdateUser, multipartFile))
-                    .isInstanceOf(UserNotFound.class)
-                    .hasMessage("존재하지 않는 회원입니다.");
-        }
-
-        @Test
-        @DisplayName("회원 검증에 실패하는 테스트")
-        public void failByAuthorization() throws Exception {
-            User savedUser = userService.saveUser(createUser(), passwordEncoder);
-            User otherSavedUser = userService.saveUser(createOtherUser(), passwordEncoder);
-            MultipartFile multipartFile = createMultipartFiles();
-            RequestUpdateUser requestUpdateUser = RequestUpdateUser.builder()
-                    .userName("editName")
-                    .info("editInfo")
-                    .build();
-            String otherSavedUserEmail = otherSavedUser.getEmail();
-            Long savedUserId = savedUser.getId();
-
-            assertThatThrownBy(() -> userService.updateUser(otherSavedUserEmail, savedUserId, requestUpdateUser, multipartFile))
-                    .isInstanceOf(AuthorizationException.class)
-                    .hasMessage("권한이 없습니다.");
-        }
+        });
     }
 
-    @Nested
+    @Test
     @DisplayName("회원 삭제 테스트")
-    class deleteUser {
-        @Test
-        public void success() throws Exception {
-            User savedUser = userService.saveUser(createUser(), passwordEncoder);
-            String loginUserEmail = savedUser.getEmail();
-            Long userId = savedUser.getId();
+    public void success() throws Exception {
+        User savedUser = userService.saveUser(createUser(), passwordEncoder);
 
-            userService.delete(loginUserEmail, userId);
+        userService.delete(savedUser);
 
+        assertAll(() -> {
+            assertTrue(userRepository.findById(savedUser.getId()).isEmpty());
             assertEquals(0, userRepository.count());
             assertEquals(0,userImgRepository.count());
-        }
-
-        @Test
-        public void failByAuthorization() throws Exception {
-            User savedUser = userService.saveUser(createUser(), passwordEncoder);
-            User otherSavedUser = userService.saveUser(createOtherUser(), passwordEncoder);
-            String loginUserEmail = otherSavedUser.getEmail();
-            Long userId = savedUser.getId();
-
-            assertThatThrownBy(() -> userService.delete(loginUserEmail, userId))
-                    .isInstanceOf(AuthorizationException.class)
-                    .hasMessage("권한이 없습니다.");
-        }
+        });
     }
 
     @Test
@@ -194,5 +143,45 @@ class UserServiceTest {
         assertAll(
                 () -> assertTrue(passwordEncoder.matches("12345", savedUser.getPassword()))
         );
+    }
+
+    @Nested
+    @DisplayName("회원 검증 테스트")
+    class getValidateUser {
+        @Test
+        public void success() throws Exception {
+            User savedUser = userService.saveUser(createUser(), passwordEncoder);
+            String userEmil = savedUser.getEmail();
+            Long userId = savedUser.getId();
+
+            User validateUser = userService.getValidateUser(userEmil, userId);
+
+            assertEquals(savedUser, validateUser);
+        }
+
+        @Test
+        @DisplayName("EMAIL이 존재하지 않는 예외 발생")
+        public void failByNotExistUser() throws Exception {
+            User savedUser = userService.saveUser(createUser(), passwordEncoder);
+            String notExistUserEmail = savedUser.getEmail() + "error";
+            Long userId = savedUser.getId();
+
+            assertThatThrownBy(() -> userService.getValidateUser(notExistUserEmail, userId))
+                    .isInstanceOf(UserNotFound.class)
+                    .hasMessage("존재하지 않는 회원입니다.");
+        }
+
+        @Test
+        @DisplayName("권한이 없는 경우 예외 발생")
+        public void failByAuthorization() throws Exception {
+            User savedUser = userService.saveUser(createUser(), passwordEncoder);
+            User otherSavedUser = userService.saveUser(createOtherUser(), passwordEncoder);
+            String otherSavedUserEmail = otherSavedUser.getEmail();
+            Long savedUserId = savedUser.getId();
+
+            assertThatThrownBy(() -> userService.getValidateUser(otherSavedUserEmail, savedUserId))
+                    .isInstanceOf(AuthorizationException.class)
+                    .hasMessage("권한이 없습니다.");
+        }
     }
 }
