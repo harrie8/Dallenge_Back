@@ -47,4 +47,8 @@ public class Bookmark extends BaseEntity {
     public void saveBookmarkChallenge(Challenge challenge) {
         this.challenge = challenge;
     }
+
+    public boolean isOwner(Long userId) {
+        return userId.equals(users.getId());
+    }
 }

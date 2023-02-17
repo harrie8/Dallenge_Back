@@ -56,7 +56,7 @@ public class BookmarkController {
         String loginUserEmail = user.getUsername();
         userService.validateUser(loginUserEmail, userId);
 
-        bookmarkService.deleteBookmark(bookmarkId);
+        bookmarkService.deleteBookmark(userId, bookmarkId);
 
         return ResponseEntity.noContent().build();
     }

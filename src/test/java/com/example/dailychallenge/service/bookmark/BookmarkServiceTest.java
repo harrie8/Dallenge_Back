@@ -5,6 +5,7 @@ import static com.example.dailychallenge.util.fixture.ChallengeImgFixture.create
 import static com.example.dailychallenge.util.fixture.UserFixture.createOtherUser;
 import static com.example.dailychallenge.util.fixture.UserFixture.createUser;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -12,6 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import com.example.dailychallenge.entity.bookmark.Bookmark;
 import com.example.dailychallenge.entity.challenge.Challenge;
 import com.example.dailychallenge.entity.users.User;
+import com.example.dailychallenge.exception.AuthorizationException;
 import com.example.dailychallenge.exception.bookmark.BookmarkDuplicate;
 import com.example.dailychallenge.exception.bookmark.BookmarkNotFound;
 import com.example.dailychallenge.repository.bookmark.BookmarkRepository;
@@ -79,8 +81,9 @@ class BookmarkServiceTest extends ServiceTest {
             User otherUser = userService.saveUser(createOtherUser(), passwordEncoder);
             Bookmark savedBookmark = bookmarkService.saveBookmark(otherUser, challenge);
             Long bookmarkId = savedBookmark.getId();
+            Long otherUserId = otherUser.getId();
 
-            bookmarkService.deleteBookmark(bookmarkId);
+            bookmarkService.deleteBookmark(otherUserId, bookmarkId);
 
             assertTrue(bookmarkRepository.findById(bookmarkId).isEmpty());
         }
@@ -91,10 +94,37 @@ class BookmarkServiceTest extends ServiceTest {
             User otherUser = userService.saveUser(createOtherUser(), passwordEncoder);
             Bookmark savedBookmark = bookmarkService.saveBookmark(otherUser, challenge);
             Long notFoundBookmarkId = savedBookmark.getId() + 100L;
+            Long otherUserId = otherUser.getId();
 
             Throwable exception = assertThrows(BookmarkNotFound.class,
-                    () -> bookmarkService.deleteBookmark(notFoundBookmarkId));
+                    () -> bookmarkService.deleteBookmark(otherUserId, notFoundBookmarkId));
             assertEquals("북마크를 찾을 수 없습니다.", exception.getMessage());
+        }
+    }
+
+    @Nested
+    @DisplayName("북마크한 회원인지 확인하는 테스트")
+    class validateOwner {
+        @Test
+        void success() throws Exception {
+            User otherUser = userService.saveUser(createOtherUser(), passwordEncoder);
+            Bookmark savedBookmark = bookmarkService.saveBookmark(otherUser, challenge);
+            Long otherUserId = otherUser.getId();
+
+            assertDoesNotThrow(() -> bookmarkService.validateOwner(otherUserId, savedBookmark));
+        }
+
+        @Test
+        @DisplayName("북마크한 회원이 아닌 경우 예외 발생")
+        void failByAuthorization() throws Exception {
+            User otherUser = userService.saveUser(createOtherUser(), passwordEncoder);
+            Bookmark savedBookmark = bookmarkService.saveBookmark(otherUser, challenge);
+            Long bookmarkId = savedBookmark.getId();
+            Long savedUserId = savedUser.getId();
+
+            Throwable exception = assertThrows(AuthorizationException.class,
+                    () -> bookmarkService.deleteBookmark(savedUserId, bookmarkId));
+            assertEquals("권한이 없습니다.", exception.getMessage());
         }
     }
 }
