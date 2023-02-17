@@ -58,6 +58,7 @@ public class CommentController {
     @PostMapping("/{challengeId}/comment/{commentId}")
     public void updateComment(
             @AuthenticationPrincipal org.springframework.security.core.userdetails.User user,
+            @PathVariable("challengeId") Long challengeId,
             @PathVariable("commentId") Long commentId,
             @ModelAttribute CommentDto commentDto) {
         String userEmail = user.getUsername();
@@ -66,7 +67,7 @@ public class CommentController {
             throw new UserNotFound();
         }
 
-        commentService.updateComment(commentId, commentDto, findUser);
+        commentService.updateComment(challengeId, commentId, commentDto, findUser);
     }
 
     @DeleteMapping("/{challengeId}/comment/{commentId}")

@@ -5,6 +5,7 @@ import static com.example.dailychallenge.util.fixture.ChallengeImgFixture.create
 import static com.example.dailychallenge.util.fixture.UserFixture.createOtherUser;
 import static com.example.dailychallenge.util.fixture.UserFixture.createUser;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -119,6 +120,7 @@ class CommentServiceTest extends ServiceTest {
                     .build();
             Comment saveComment = commentService.saveComment(commentDto, savedUser, challenge);
             Long saveCommentId = saveComment.getId();
+            Long challengeId = challenge.getId();
 
             CommentDto updateCommentDto = CommentDto.builder()
                     .content("수정된 댓글 내용")
@@ -128,7 +130,7 @@ class CommentServiceTest extends ServiceTest {
             entityManager.flush();
             entityManager.clear();
 
-            Comment updateComment = commentService.updateComment(saveCommentId, updateCommentDto, savedUser);
+            Comment updateComment = commentService.updateComment(challengeId, saveCommentId, updateCommentDto, savedUser);
 
             assertAll(() -> {
                 assertEquals(updateCommentDto.getContent(), updateComment.getContent());
@@ -149,6 +151,7 @@ class CommentServiceTest extends ServiceTest {
                     .build();
             Comment saveComment = commentService.saveComment(commentDto, savedUser, challenge);
             Long saveCommentId = saveComment.getId();
+            Long challengeId = challenge.getId();
 
             CommentDto updateCommentDto = CommentDto.builder()
                     .content("수정된 댓글 내용")
@@ -157,7 +160,7 @@ class CommentServiceTest extends ServiceTest {
             entityManager.flush();
             entityManager.clear();
 
-            Comment updateComment = commentService.updateComment(saveCommentId, updateCommentDto, savedUser);
+            Comment updateComment = commentService.updateComment(challengeId, saveCommentId, updateCommentDto, savedUser);
 
             assertAll(() -> {
                 assertEquals(updateCommentDto.getContent(), updateComment.getContent());
@@ -178,6 +181,7 @@ class CommentServiceTest extends ServiceTest {
                     .build();
             Comment saveComment = commentService.saveComment(commentDto, savedUser, challenge);
             Long saveCommentId = saveComment.getId();
+            Long challengeId = challenge.getId();
 
             CommentDto updateCommentDto = CommentDto.builder()
                     .commentDtoImg(List.of(createMultipartFiles(), createMultipartFiles()))
@@ -186,7 +190,7 @@ class CommentServiceTest extends ServiceTest {
             entityManager.flush();
             entityManager.clear();
 
-            Comment updateComment = commentService.updateComment(saveCommentId, updateCommentDto, savedUser);
+            Comment updateComment = commentService.updateComment(challengeId, saveCommentId, updateCommentDto, savedUser);
 
             assertAll(() -> {
                 assertEquals(updateCommentDto.getContent(), updateComment.getContent());
@@ -197,35 +201,26 @@ class CommentServiceTest extends ServiceTest {
                 assertEquals(2, updateComment.getCommentImgs().size());
             });
         }
+    }
 
-        @Test
-        @DisplayName("댓글 주인이 아닌 경우 예외 발생")
-        void failByAuthorization() throws Exception {
-            User otherSavedUser = userService.saveUser(createOtherUser(), passwordEncoder);
-            CommentDto commentDto = CommentDto.builder()
-                    .content("댓글 내용")
-                    .commentDtoImg(List.of(createMultipartFiles()))
-                    .build();
-            Comment saveComment = commentService.saveComment(commentDto, savedUser, challenge);
-            Long saveCommentId = saveComment.getId();
+    @Test
+    @DisplayName("댓글 삭제 테스트")
+    void deleteCommentTest() {
+        CommentDto commentDto = CommentDto.builder()
+                .content("댓글 내용")
+                .commentDtoImg(List.of(createMultipartFiles()))
+                .build();
+        Comment saveComment = commentService.saveComment(commentDto, savedUser, challenge);
+        Long saveCommentId = saveComment.getId();
 
-            CommentDto updateCommentDto = CommentDto.builder()
-                    .content("수정된 댓글 내용")
-                    .build();
+        commentService.deleteComment(saveCommentId, savedUser);
 
-            entityManager.flush();
-            entityManager.clear();
-
-            Throwable exception = assertThrows(AuthorizationException.class, () -> {
-                commentService.updateComment(saveCommentId, updateCommentDto, otherSavedUser);
-            });
-            assertEquals("권한이 없습니다.", exception.getMessage());
-        }
+        assertTrue(commentRepository.findById(saveCommentId).isEmpty());
     }
 
     @Nested
-    @DisplayName("댓글 삭제 테스트")
-    class deleteComment {
+    @DisplayName("댓글을 작성한 회원인지 확인하는 테스트")
+    class validateOwner {
         @Test
         void success() {
             CommentDto commentDto = CommentDto.builder()
@@ -233,15 +228,12 @@ class CommentServiceTest extends ServiceTest {
                     .commentDtoImg(List.of(createMultipartFiles()))
                     .build();
             Comment saveComment = commentService.saveComment(commentDto, savedUser, challenge);
-            Long saveCommentId = saveComment.getId();
 
-            commentService.deleteComment(saveCommentId, savedUser);
-
-            assertTrue(commentRepository.findById(saveCommentId).isEmpty());
+            assertDoesNotThrow(() -> commentService.validateOwner(savedUser, saveComment));
         }
 
         @Test
-        @DisplayName("댓글 주인이 아닌 경우 예외 발생")
+        @DisplayName("댓글을 작성한 회원이 아닌 경우 예외 발생")
         void failByAuthorization() throws Exception {
             User otherSavedUser = userService.saveUser(createOtherUser(), passwordEncoder);
             CommentDto commentDto = CommentDto.builder()
@@ -249,11 +241,42 @@ class CommentServiceTest extends ServiceTest {
                     .commentDtoImg(List.of(createMultipartFiles()))
                     .build();
             Comment saveComment = commentService.saveComment(commentDto, savedUser, challenge);
-            Long saveCommentId = saveComment.getId();
 
-            Throwable exception = assertThrows(AuthorizationException.class, () -> {
-                commentService.deleteComment(saveCommentId, otherSavedUser);
-            });
+            Throwable exception = assertThrows(AuthorizationException.class,
+                    () -> commentService.validateOwner(otherSavedUser, saveComment));
+            assertEquals("권한이 없습니다.", exception.getMessage());
+        }
+    }
+
+    @Nested
+    @DisplayName("챌린지의 댓글인지 확인하는 테스트")
+    class validateChallenge {
+        @Test
+        void success() {
+            CommentDto commentDto = CommentDto.builder()
+                    .content("댓글 내용")
+                    .commentDtoImg(List.of(createMultipartFiles()))
+                    .build();
+            Comment saveComment = commentService.saveComment(commentDto, savedUser, challenge);
+            Long challengeId = challenge.getId();
+
+            assertDoesNotThrow(() -> commentService.validateChallenge(challengeId, saveComment));
+        }
+
+        @Test
+        @DisplayName("챌린지의 댓글이 아닌 경우 예외 발생")
+        void failByAuthorization() {
+            Challenge otherChallenge = challengeService.saveChallenge(createChallengeDto(), createChallengeImgFiles(),
+                    savedUser);
+            CommentDto commentDto = CommentDto.builder()
+                    .content("댓글 내용")
+                    .commentDtoImg(List.of(createMultipartFiles()))
+                    .build();
+            Comment saveComment = commentService.saveComment(commentDto, savedUser, challenge);
+            Long otherChallengeId = otherChallenge.getId();
+
+            Throwable exception = assertThrows(AuthorizationException.class,
+                    () -> commentService.validateChallenge(otherChallengeId, saveComment));
             assertEquals("권한이 없습니다.", exception.getMessage());
         }
     }

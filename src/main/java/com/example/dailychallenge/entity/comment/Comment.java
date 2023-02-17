@@ -87,4 +87,8 @@ public class Comment extends BaseEntity {
     public boolean isOwner(Long userId) {
         return userId.equals(users.getId());
     }
+
+    public boolean isValidChallenge(Long challengeId) {
+        return challengeId.equals(challenge.getId());
+    }
 }

@@ -54,9 +54,10 @@ public class CommentService {
         return comment;
     }
 
-    public Comment updateComment(Long commentId, CommentDto commentDto, User user) {
+    public Comment updateComment(Long challengeId, Long commentId, CommentDto commentDto, User user) {
         Comment comment = commentRepository.findById(commentId).orElseThrow(CommentNotFound::new);
         validateOwner(user, comment);
+        validateChallenge(challengeId, comment);
 
         comment.updateComment(commentDto.getContent());
 
@@ -120,8 +121,14 @@ public class CommentService {
         return commentRepository.searchCommentsByUserId(userId, pageable);
     }
 
-    private void validateOwner(User user, Comment comment) {
+    public void validateOwner(User user, Comment comment) {
         if (!comment.isOwner(user.getId())) {
+            throw new AuthorizationException();
+        }
+    }
+
+    public void validateChallenge(Long challengeId, Comment comment) {
+        if (!comment.isValidChallenge(challengeId)) {
             throw new AuthorizationException();
         }
     }
