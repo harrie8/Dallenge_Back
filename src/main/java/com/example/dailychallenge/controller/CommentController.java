@@ -73,6 +73,7 @@ public class CommentController {
     @DeleteMapping("/{challengeId}/comment/{commentId}")
     public ResponseEntity<?> deleteComment(
             @AuthenticationPrincipal org.springframework.security.core.userdetails.User user,
+            @PathVariable("challengeId") Long challengeId,
             @PathVariable("commentId") Long commentId){
         String userEmail = user.getUsername();
         User findUser = userService.findByEmail(userEmail);
@@ -80,7 +81,7 @@ public class CommentController {
             throw new UserNotFound();
         }
 
-        commentService.deleteComment(commentId, findUser);
+        commentService.deleteComment(challengeId, commentId, findUser);
         return ResponseEntity.status(HttpStatus.OK).body("댓글이 삭제되었습니다.");
     }
 

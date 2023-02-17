@@ -211,9 +211,10 @@ class CommentServiceTest extends ServiceTest {
                 .commentDtoImg(List.of(createMultipartFiles()))
                 .build();
         Comment saveComment = commentService.saveComment(commentDto, savedUser, challenge);
+        Long challengeId = challenge.getId();
         Long saveCommentId = saveComment.getId();
 
-        commentService.deleteComment(saveCommentId, savedUser);
+        commentService.deleteComment(challengeId, saveCommentId, savedUser);
 
         assertTrue(commentRepository.findById(saveCommentId).isEmpty());
     }

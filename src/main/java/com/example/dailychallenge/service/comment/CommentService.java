@@ -93,9 +93,10 @@ public class CommentService {
         return comment;
     }
 
-    public void deleteComment(Long commentId, User user) {
+    public void deleteComment(Long challengeId, Long commentId, User user) {
         Comment comment = commentRepository.findById(commentId).orElseThrow(CommentNotFound::new);
         validateOwner(user, comment);
+        validateChallenge(challengeId, comment);
 
         commentRepository.delete(comment);
     }

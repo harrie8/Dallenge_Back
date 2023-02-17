@@ -3,8 +3,8 @@ POST 127.0.0.1:8080/user/new
 Content-Type: application/json
 
 {
-  "userName": "a",
-  "email": "a@a.com",
+  "userName": "b",
+  "email": "b@b.com",
   "password": "123"
 }
 
@@ -13,7 +13,7 @@ POST 127.0.0.1:8080/user/login
 Content-Type: application/json
 
 {
-  "email": "a@a.com",
+  "email": "b@b.com",
   "password": "123"
 }
 
@@ -29,33 +29,6 @@ Content-Type: application/json
  %}
 
 ### 1. 댓글 생성
-POST 127.0.0.1:8080/challenge/new
-Content-Type: multipart/form-data; boundary=boundary
-Authorization: Bearer {{token}}
-Accept: application/json
-
---boundary
-Content-Disposition: form-data; name="challengeImgFile"; filename="editImage.jpg
-
---boundary
-Content-Disposition: form-data; name="requestCreateChallenge"
-Content-Type: application/json
-
-{
-  "title": "제목 입니다.",
-  "content": "내용 입니다.",
-  "challengeCategory": "공부",
-  "challengeLocation": "실내",
-  "challengeDuration": "10분 이내"
-}
-
---boundary
-Content-Disposition: form-data; name="hashtagDto"
-Content-Type: application/json
-
-["tag1", "tag2"]
-
-### 1-1. 잘못된 카테고리로 챌린지 생성
 POST 127.0.0.1:8080/1/comment/new
 Content-Type: multipart/form-data; boundary=boundary
 Authorization: Bearer {{token}}
@@ -74,6 +47,21 @@ Content-Type: text/plain
 POST 127.0.0.1:8080/1/like?isLike=0
 Authorization: Bearer {{token}}
 Accept: application/json
+
+### 3. 댓글 수정
+POST 127.0.0.1:8080/1/comment/1
+Content-Type: multipart/form-data; boundary=boundary
+Authorization: Bearer {{token}}
+Accept: application/json
+
+--boundary
+Content-Disposition: form-data; name="commentDtoImg"; filename="commentDtoImg.jpg
+
+--boundary
+Content-Disposition: form-data; name="content"
+Content-Type: text/plain
+
+수정된 댓글 내용.
 
 ### 2. 모든 챌린지 조회
 GET 127.0.0.1:8080/challenge?page=0&size=1
