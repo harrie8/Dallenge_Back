@@ -1,10 +1,10 @@
 package com.example.dailychallenge.service.comment;
 
 import com.example.dailychallenge.entity.comment.CommentImg;
+import com.example.dailychallenge.exception.comment.CommentImgNotFound;
 import com.example.dailychallenge.repository.CommentImgRepository;
 import com.example.dailychallenge.service.FileService;
 import com.querydsl.core.util.StringUtils;
-import javax.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,7 +38,7 @@ public class CommentImgService {
     public void updateCommentImg(Long commentImgId, MultipartFile commentImgFile) {
         if(commentImgFile != null){
             CommentImg savedCommentImg = commentImgRepository.findById(commentImgId)
-                    .orElseThrow(EntityNotFoundException::new);
+                    .orElseThrow(CommentImgNotFound::new);
             if(!StringUtils.isNullOrEmpty(savedCommentImg.getImgName())){
                 fileService.deleteFile(savedCommentImg.getImgName());
             }
@@ -52,7 +52,7 @@ public class CommentImgService {
 
     public void deleteCommentImg(Long commentImgId) {
         CommentImg savedCommentImg = commentImgRepository.findById(commentImgId)
-                .orElseThrow(EntityNotFoundException::new);
+                .orElseThrow(CommentImgNotFound::new);
         savedCommentImg.getComment().getCommentImgs().remove(savedCommentImg);
         commentImgRepository.delete(savedCommentImg);
         fileService.deleteFile(savedCommentImg.getImgName());

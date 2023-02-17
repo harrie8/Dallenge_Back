@@ -7,12 +7,12 @@ import com.example.dailychallenge.entity.comment.Comment.CommentBuilder;
 import com.example.dailychallenge.entity.comment.CommentImg;
 import com.example.dailychallenge.entity.users.User;
 import com.example.dailychallenge.exception.AuthorizationException;
+import com.example.dailychallenge.exception.comment.CommentNotFound;
 import com.example.dailychallenge.repository.CommentRepository;
 import com.example.dailychallenge.vo.ResponseChallengeComment;
 import com.example.dailychallenge.vo.ResponseUserComment;
 import java.util.ArrayList;
 import java.util.List;
-import javax.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -55,7 +55,7 @@ public class CommentService {
     }
 
     public Comment updateComment(Long commentId, CommentDto commentDto, User user) {
-        Comment comment = commentRepository.findById(commentId).orElseThrow(EntityNotFoundException::new);
+        Comment comment = commentRepository.findById(commentId).orElseThrow(CommentNotFound::new);
         validateOwner(user, comment);
 
         comment.updateComment(commentDto.getContent());
@@ -93,14 +93,14 @@ public class CommentService {
     }
 
     public void deleteComment(Long commentId, User user) {
-        Comment comment = commentRepository.findById(commentId).orElseThrow(EntityNotFoundException::new);
+        Comment comment = commentRepository.findById(commentId).orElseThrow(CommentNotFound::new);
         validateOwner(user, comment);
 
         commentRepository.delete(comment);
     }
 
     public Integer likeUpdate(Long commentId, Integer isLike) {
-        Comment comment = commentRepository.findById(commentId).orElseThrow(EntityNotFoundException::new);
+        Comment comment = commentRepository.findById(commentId).orElseThrow(CommentNotFound::new);
         if (isLike==1) {
             comment.updateLike(true);
         } else if(isLike == 0){

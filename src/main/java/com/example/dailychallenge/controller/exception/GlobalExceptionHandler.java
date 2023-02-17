@@ -8,9 +8,15 @@ import com.example.dailychallenge.exception.bookmark.BookmarkNotFound;
 import com.example.dailychallenge.exception.challenge.ChallengeCategoryNotFound;
 import com.example.dailychallenge.exception.challenge.ChallengeNotFound;
 import com.example.dailychallenge.exception.comment.CommentDtoNotValid;
+import com.example.dailychallenge.exception.comment.CommentImgNotFound;
+import com.example.dailychallenge.exception.comment.CommentNotFound;
+import com.example.dailychallenge.exception.hashtag.HashTagNotFound;
+import com.example.dailychallenge.exception.userChallenge.UserChallengeDuplicate;
 import com.example.dailychallenge.exception.users.UserDuplicateCheck;
 import com.example.dailychallenge.exception.users.UserDuplicateNotCheck;
+import com.example.dailychallenge.exception.users.UserImgNotFound;
 import com.example.dailychallenge.exception.users.UserLoginFailure;
+import com.example.dailychallenge.exception.users.UserNotFound;
 import com.example.dailychallenge.exception.users.UserPasswordCheck;
 import com.example.dailychallenge.vo.ResponseError;
 import org.springframework.http.HttpStatus;
@@ -150,6 +156,72 @@ public class GlobalExceptionHandler {
         final ResponseError responseError = ResponseError.builder()
                 .code(commentDtoNotValid.getStatusCode())
                 .message(commentDtoNotValid.getMessage())
+                .build();
+
+        return ResponseEntity.status(responseError.getCode()).body(responseError);
+    }
+
+    @ExceptionHandler(CommentImgNotFound.class)
+    protected ResponseEntity<ResponseError> handlerCommentImgNotFound(
+            CommentImgNotFound commentImgNotFound) {
+        final ResponseError responseError = ResponseError.builder()
+                .code(commentImgNotFound.getStatusCode())
+                .message(commentImgNotFound.getMessage())
+                .build();
+
+        return ResponseEntity.status(responseError.getCode()).body(responseError);
+    }
+
+    @ExceptionHandler(CommentNotFound.class)
+    protected ResponseEntity<ResponseError> handlerCommentNotFound(
+            CommentNotFound commentNotFound) {
+        final ResponseError responseError = ResponseError.builder()
+                .code(commentNotFound.getStatusCode())
+                .message(commentNotFound.getMessage())
+                .build();
+
+        return ResponseEntity.status(responseError.getCode()).body(responseError);
+    }
+
+    @ExceptionHandler(HashTagNotFound.class)
+    protected ResponseEntity<ResponseError> handlerHashTagNotFound(
+            HashTagNotFound hashTagNotFound) {
+        final ResponseError responseError = ResponseError.builder()
+                .code(hashTagNotFound.getStatusCode())
+                .message(hashTagNotFound.getMessage())
+                .build();
+
+        return ResponseEntity.status(responseError.getCode()).body(responseError);
+    }
+
+    @ExceptionHandler(UserImgNotFound.class)
+    protected ResponseEntity<ResponseError> handlerUserImgNotFound(
+            UserImgNotFound userImgNotFound) {
+        final ResponseError responseError = ResponseError.builder()
+                .code(userImgNotFound.getStatusCode())
+                .message(userImgNotFound.getMessage())
+                .build();
+
+        return ResponseEntity.status(responseError.getCode()).body(responseError);
+    }
+
+    @ExceptionHandler(UserNotFound.class)
+    protected ResponseEntity<ResponseError> handlerUserNotFound(
+            UserNotFound userNotFound) {
+        final ResponseError responseError = ResponseError.builder()
+                .code(userNotFound.getStatusCode())
+                .message(userNotFound.getMessage())
+                .build();
+
+        return ResponseEntity.status(responseError.getCode()).body(responseError);
+    }
+
+    @ExceptionHandler(UserChallengeDuplicate.class)
+    protected ResponseEntity<ResponseError> handlerUserChallengeDuplicate(
+            UserChallengeDuplicate userChallengeDuplicate) {
+        final ResponseError responseError = ResponseError.builder()
+                .code(userChallengeDuplicate.getStatusCode())
+                .message(userChallengeDuplicate.getMessage())
                 .build();
 
         return ResponseEntity.status(responseError.getCode()).body(responseError);

@@ -2,15 +2,14 @@ package com.example.dailychallenge.service.hashtag;
 
 import com.example.dailychallenge.entity.hashtag.ChallengeHashtag;
 import com.example.dailychallenge.entity.hashtag.Hashtag;
+import com.example.dailychallenge.exception.hashtag.HashTagNotFound;
 import com.example.dailychallenge.repository.HashtagRepository;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import javax.persistence.EntityNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional
@@ -71,7 +70,7 @@ public class HashtagService {
     public void deleteHashtag(List<Hashtag> hashtags){
         for (Hashtag hashtag : hashtags) {
             Hashtag deleteHashtag = hashtagRepository.findById(hashtag.getId())
-                    .orElseThrow(EntityNotFoundException::new);
+                    .orElseThrow(HashTagNotFound::new);
             if(deleteHashtag.getTagCount()>1) deleteHashtag.minusTagCount();  // 1 빼기
             else {
                 hashtagRepository.delete(deleteHashtag); // 삭제

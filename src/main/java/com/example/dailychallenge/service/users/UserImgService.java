@@ -1,10 +1,10 @@
 package com.example.dailychallenge.service.users;
 
 import com.example.dailychallenge.entity.users.UserImg;
+import com.example.dailychallenge.exception.users.UserImgNotFound;
 import com.example.dailychallenge.repository.UserImgRepository;
 import com.example.dailychallenge.service.FileService;
 import com.querydsl.core.util.StringUtils;
-import javax.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -40,7 +40,7 @@ public class UserImgService {
     public void updateUserImg(Long userImgId, MultipartFile userImgFile) {
         if(userImgFile != null){
             UserImg savedUserImg = userImgRepository.findById(userImgId)
-                    .orElseThrow(EntityNotFoundException::new);
+                    .orElseThrow(UserImgNotFound::new);
             if(!StringUtils.isNullOrEmpty(savedUserImg.getImgName())){
                 fileService.deleteFile(savedUserImg.getImgName());
             }
