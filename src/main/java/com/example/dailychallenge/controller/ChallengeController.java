@@ -69,6 +69,7 @@ public class ChallengeController {
 
         Challenge challenge = challengeService.saveChallenge(challengeDto, challengeImgFiles, findUser);
         UserChallenge userChallenge = userChallengeService.saveUserChallenge(challenge, findUser);
+        userChallenge.challengeParticipate();
 
         ResponseCreateChallenge responseCreateChallenge = ResponseCreateChallenge.create(challenge, userChallenge);
 

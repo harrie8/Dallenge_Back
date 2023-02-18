@@ -108,3 +108,11 @@ include::{snippets}/user-my-challenge/http-request.adoc[]
 
 include::{snippets}/user-my-challenge/http-response.adoc[]
 
+
+[[User-참여한-챌린지-조회]]
+=== 내가 참여한 챌린지 조회
+
+include::{snippets}/user-participate-challenge/http-request.adoc[]
+
+include::{snippets}/user-participate-challenge/http-response.adoc[]
+

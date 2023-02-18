@@ -27,13 +27,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.example.dailychallenge.dto.ChallengeDto;
 import com.example.dailychallenge.dto.UserDto;
-import com.example.dailychallenge.entity.challenge.Challenge;
-import com.example.dailychallenge.entity.challenge.ChallengeCategory;
-import com.example.dailychallenge.entity.challenge.ChallengeDuration;
-import com.example.dailychallenge.entity.challenge.ChallengeLocation;
+import com.example.dailychallenge.entity.challenge.*;
 import com.example.dailychallenge.entity.users.User;
 import com.example.dailychallenge.repository.UserRepository;
 import com.example.dailychallenge.service.challenge.ChallengeService;
+import com.example.dailychallenge.service.challenge.UserChallengeService;
 import com.example.dailychallenge.service.users.UserService;
 import com.example.dailychallenge.utils.JwtTokenUtil;
 import com.example.dailychallenge.vo.RequestLogin;
@@ -83,6 +81,8 @@ public class UserControllerDocTest {
     @Autowired
     private ChallengeService challengeService;
     @Autowired
+    private UserChallengeService userChallengeService;
+    @Autowired
     private MockMvc mockMvc;
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -112,6 +112,25 @@ public class UserControllerDocTest {
 
     public Challenge createChallenge() throws Exception {
         User savedUser = userService.saveUser(createUser(), passwordEncoder);
+        ChallengeDto challengeDto = ChallengeDto.builder()
+                .title("제목입니다.")
+                .content("내용입니다.")
+                .challengeCategory(ChallengeCategory.STUDY.getDescription())
+                .challengeLocation(ChallengeLocation.INDOOR.getDescription())
+                .challengeDuration(ChallengeDuration.WITHIN_TEN_MINUTES.getDescription())
+                .build();
+        MultipartFile challengeImg = createMultipartFiles();
+        List<MultipartFile> challengeImgFiles = List.of(challengeImg);
+        return challengeService.saveChallenge(challengeDto, challengeImgFiles, savedUser);
+    }
+    public Challenge createChallenge2() throws Exception {
+        UserDto userDto = new UserDto();
+        userDto.setEmail("test12345@test.com");
+        userDto.setUserName("홍길동");
+        userDto.setInfo("testInfo");
+        userDto.setPassword("1234");
+
+        User savedUser = userService.saveUser(userDto, passwordEncoder);
         ChallengeDto challengeDto = ChallengeDto.builder()
                 .title("제목입니다.")
                 .content("내용입니다.")
@@ -386,6 +405,35 @@ public class UserControllerDocTest {
                 .andExpect(jsonPath("$[0].challengeTitle").value(challenge.getTitle()))
                 .andExpect(jsonPath("$[0].challengeContent").value(challenge.getContent()))
                 .andDo(document("user-my-challenge",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(
+                                removeHeaders("Vary", "X-Content-Type-Options", "X-XSS-Protection", "Pragma", "Expires",
+                                        "Cache-Control", "Strict-Transport-Security", "X-Frame-Options"),
+                                prettyPrint())));
+    }
+
+    @Test
+    @DisplayName("내가 참가한 챌린지 조회 테스트")
+    public void getParticipateChallenge() throws Exception {
+        Challenge challenge = createChallenge2();
+
+        User savedUser = userService.saveUser(createUser(), passwordEncoder);
+
+        UserChallenge savedUserChallenge = userChallengeService.saveUserChallenge(challenge, savedUser);
+        userChallengeService.challengeParticipate(savedUserChallenge);
+
+        String token = generateToken();
+        mockMvc.perform(RestDocumentationRequestBuilders
+                        .get("/user/participate")
+                        .header(AUTHORIZATION, token)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andDo(print())
+                .andExpect(jsonPath("$[0].userId").value(savedUser.getId())) // 참가한 user
+                .andExpect(jsonPath("$[0].challengeId").value(challenge.getId()))
+                .andExpect(jsonPath("$[0].challengeTitle").value(challenge.getTitle()))
+                .andExpect(jsonPath("$[0].challengeContent").value(challenge.getContent()))
+                .andDo(document("user-participate-challenge",
                         preprocessRequest(prettyPrint()),
                         preprocessResponse(
                                 removeHeaders("Vary", "X-Content-Type-Options", "X-XSS-Protection", "Pragma", "Expires",

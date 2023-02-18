@@ -10,16 +10,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.example.dailychallenge.dto.ChallengeDto;
 import com.example.dailychallenge.dto.UserDto;
-import com.example.dailychallenge.entity.challenge.Challenge;
-import com.example.dailychallenge.entity.challenge.ChallengeCategory;
-import com.example.dailychallenge.entity.challenge.ChallengeDuration;
-import com.example.dailychallenge.entity.challenge.ChallengeLocation;
+import com.example.dailychallenge.entity.challenge.*;
 import com.example.dailychallenge.entity.users.User;
 import com.example.dailychallenge.exception.users.UserDuplicateCheck;
 import com.example.dailychallenge.exception.users.UserDuplicateNotCheck;
 import com.example.dailychallenge.exception.users.UserPasswordCheck;
 import com.example.dailychallenge.repository.UserRepository;
 import com.example.dailychallenge.service.challenge.ChallengeService;
+import com.example.dailychallenge.service.challenge.UserChallengeService;
 import com.example.dailychallenge.service.users.UserService;
 import com.example.dailychallenge.utils.JwtTokenUtil;
 import com.example.dailychallenge.vo.RequestUpdateUser;
@@ -62,9 +60,10 @@ class UserControllerTest {
     PasswordEncoder passwordEncoder;
     @Autowired
     private UserService userService;
-
     @Autowired
     private ChallengeService challengeService;
+    @Autowired
+    private UserChallengeService userChallengeService;
     @Autowired
     private MockMvc mockMvc;
     @Autowired
@@ -93,6 +92,25 @@ class UserControllerTest {
 
     public Challenge createChallenge() throws Exception {
         User savedUser = userService.saveUser(createUser(), passwordEncoder);
+        ChallengeDto challengeDto = ChallengeDto.builder()
+                .title("제목입니다.")
+                .content("내용입니다.")
+                .challengeCategory(ChallengeCategory.STUDY.getDescription())
+                .challengeLocation(ChallengeLocation.INDOOR.getDescription())
+                .challengeDuration(ChallengeDuration.WITHIN_TEN_MINUTES.getDescription())
+                .build();
+        MultipartFile challengeImg = createMultipartFiles();
+        List<MultipartFile> challengeImgFiles = List.of(challengeImg);
+        return challengeService.saveChallenge(challengeDto, challengeImgFiles, savedUser);
+    }
+    public Challenge createChallenge2() throws Exception {
+        UserDto userDto = new UserDto();
+        userDto.setEmail("test12345@test.com");
+        userDto.setUserName("홍길동");
+        userDto.setInfo("testInfo");
+        userDto.setPassword("1234");
+
+        User savedUser = userService.saveUser(userDto, passwordEncoder);
         ChallengeDto challengeDto = ChallengeDto.builder()
                 .title("제목입니다.")
                 .content("내용입니다.")
@@ -277,6 +295,23 @@ class UserControllerTest {
         String token = generateToken();
 
         mockMvc.perform(get("/user/challenge")
+                        .header(AUTHORIZATION, token)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andDo(print());
+    }
+    @Test
+    @DisplayName("내가 참가한 챌린지 조회 테스트")
+    public void getParticipateChallenge() throws Exception {
+        Challenge challenge = createChallenge2();
+
+        User savedUser = userService.saveUser(createUser(), passwordEncoder);
+
+        UserChallenge savedUserChallenge = userChallengeService.saveUserChallenge(challenge, savedUser);
+        userChallengeService.challengeParticipate(savedUserChallenge);
+
+        String token = generateToken();
+        mockMvc.perform(get("/user/participate")
                         .header(AUTHORIZATION, token)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
