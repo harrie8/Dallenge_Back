@@ -1,6 +1,7 @@
 package com.example.dailychallenge.controller.userChallenge;
 
 import static com.example.dailychallenge.util.fixture.ChallengeImgFixture.createChallengeImgFiles;
+import static com.example.dailychallenge.util.fixture.TokenFixture.AUTHORIZATION;
 import static com.example.dailychallenge.util.fixture.UserFixture.createOtherUser;
 import static com.example.dailychallenge.util.fixture.UserFixture.createUser;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
@@ -8,7 +9,6 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWit
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -34,7 +34,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.request.RequestPostProcessor;
 
 public class UserChallengeControllerDocTest extends RestDocsTest {
     @Autowired
@@ -55,12 +54,10 @@ public class UserChallengeControllerDocTest extends RestDocsTest {
     private User savedUser;
     private Challenge challenge1;
     private User otherUser;
-    private RequestPostProcessor requestPostProcessor;
 
     @BeforeEach
     void beforeEach() throws Exception {
         initData();
-        requestPostProcessor = user(userService.loadUserByUsername(savedUser.getEmail()));
     }
 
     private void initData() throws Exception {
@@ -152,10 +149,9 @@ public class UserChallengeControllerDocTest extends RestDocsTest {
     @DisplayName("챌린지 참가 테스트")
     void participateInChallenge() throws Exception {
         Long challenge1Id = challenge1.getId();
-        RequestPostProcessor otherRequestPostProcessor = user(userService.loadUserByUsername(otherUser.getEmail()));
 
         mockMvc.perform(post("/challenge/{challengeId}/participate", challenge1Id)
-                        .with(otherRequestPostProcessor)
+                        .header(AUTHORIZATION, generateToken(otherUser.getEmail(), userService))
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.code").value(201))

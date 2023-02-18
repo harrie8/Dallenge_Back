@@ -2,6 +2,7 @@ package com.example.dailychallenge.controller.bookmark;
 
 import static com.example.dailychallenge.util.fixture.ChallengeFixture.createChallengeDto;
 import static com.example.dailychallenge.util.fixture.ChallengeImgFixture.createChallengeImgFiles;
+import static com.example.dailychallenge.util.fixture.TokenFixture.AUTHORIZATION;
 import static com.example.dailychallenge.util.fixture.UserFixture.createOtherUser;
 import static com.example.dailychallenge.util.fixture.UserFixture.createUser;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
@@ -12,7 +13,6 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.relaxedR
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.example.dailychallenge.entity.bookmark.Bookmark;
@@ -27,7 +27,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.request.RequestPostProcessor;
 
 public class BookmarkControllerDocTest  extends RestDocsTest {
     @Autowired
@@ -39,12 +38,10 @@ public class BookmarkControllerDocTest  extends RestDocsTest {
 
     private User savedUser;
     private Challenge challenge;
-    private RequestPostProcessor requestPostProcessor;
 
     @BeforeEach
     void beforeEach() throws Exception {
         initData();
-        requestPostProcessor = user(userService.loadUserByUsername(savedUser.getEmail()));
     }
 
     private void initData() throws Exception {
@@ -56,11 +53,10 @@ public class BookmarkControllerDocTest  extends RestDocsTest {
     @DisplayName("북마크 생성 테스트")
     public void createBookmark() throws Exception {
         User otherUser = userService.saveUser(createOtherUser(), passwordEncoder);
-        requestPostProcessor = user(userService.loadUserByUsername(otherUser.getEmail()));
 
         Long challengeId = challenge.getId();
         mockMvc.perform(post("/{challengeId}/bookmark/new", challengeId)
-                        .with(requestPostProcessor)
+                        .header(AUTHORIZATION, generateToken(otherUser.getEmail(), userService))
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated())
                 .andDo(restDocs.document(
@@ -84,7 +80,7 @@ public class BookmarkControllerDocTest  extends RestDocsTest {
         Long bookmarkId = savedBookmark.getId();
 
         mockMvc.perform(delete("/user/{userId}/bookmark/{bookmarkId}", userId, bookmarkId)
-                        .with(requestPostProcessor)
+                        .header(AUTHORIZATION, generateToken(savedUser.getEmail(), userService))
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNoContent())
                 .andDo(restDocs.document(
@@ -109,7 +105,7 @@ public class BookmarkControllerDocTest  extends RestDocsTest {
         Long otherUserId = otherUser.getId();
 
         mockMvc.perform(get("/user/{userId}/bookmark", otherUserId)
-                        .with(user(userService.loadUserByUsername(otherUser.getEmail())))
+                        .header(AUTHORIZATION, generateToken(otherUser.getEmail(), userService))
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andDo(restDocs.document(

@@ -1,9 +1,13 @@
 package com.example.dailychallenge.util;
 
+import static com.example.dailychallenge.util.fixture.TokenFixture.PASSWORD;
+import static com.example.dailychallenge.util.fixture.TokenFixture.TOKEN_PREFIX;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
+import com.example.dailychallenge.service.users.UserService;
+import com.example.dailychallenge.utils.JwtTokenUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -15,6 +19,10 @@ import org.springframework.context.annotation.Import;
 import org.springframework.restdocs.RestDocumentationContextProvider;
 import org.springframework.restdocs.RestDocumentationExtension;
 import org.springframework.restdocs.mockmvc.RestDocumentationResultHandler;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
@@ -33,6 +41,10 @@ import org.springframework.web.filter.CharacterEncodingFilter;
 public class RestDocsTest {
     @Autowired
     protected PasswordEncoder passwordEncoder;
+    @Autowired
+    protected AuthenticationManager authenticationManager;
+    @Autowired
+    protected JwtTokenUtil jwtTokenUtil;
 
     @Autowired
     protected ObjectMapper objectMapper;
@@ -51,5 +63,16 @@ public class RestDocsTest {
                 .alwaysDo(restDocs) // pretty 패턴과 문서 디렉토리 명 정해준것 적용
                 .addFilters(new CharacterEncodingFilter("UTF-8", true)) // 한글 깨짐 방지
                 .build();
+    }
+
+    public String generateToken(String loginUserEmail, UserService userService) {
+        Authentication auth = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(loginUserEmail, PASSWORD));
+        if (auth.isAuthenticated()) {
+            UserDetails userDetails = userService.loadUserByUsername(loginUserEmail);
+            return TOKEN_PREFIX + jwtTokenUtil.generateToken(userDetails);
+        }
+
+        throw new IllegalArgumentException("token 생성 오류");
     }
 }
