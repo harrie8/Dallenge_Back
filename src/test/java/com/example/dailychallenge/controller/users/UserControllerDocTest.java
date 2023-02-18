@@ -393,6 +393,8 @@ public class UserControllerDocTest {
     @DisplayName("내가 작성한 챌린지 조회 테스트")
     public void getChallengeByUser() throws Exception {
         Challenge challenge = createChallenge();
+        User user = userService.findByEmail(EMAIL);
+        UserChallenge userChallenge = userChallengeService.saveUserChallenge(challenge, user);
         String token = generateToken();
 
         mockMvc.perform(RestDocumentationRequestBuilders
@@ -403,6 +405,7 @@ public class UserControllerDocTest {
                 .andExpect(jsonPath("$[0].challengeId").value(challenge.getId()))
                 .andExpect(jsonPath("$[0].challengeTitle").value(challenge.getTitle()))
                 .andExpect(jsonPath("$[0].challengeContent").value(challenge.getContent()))
+                .andExpect(jsonPath("$[0].challengeStatus").value(userChallenge.getChallengeStatus().toString()))
                 .andDo(document("user-my-challenge",
                         preprocessRequest(prettyPrint()),
                         preprocessResponse(
@@ -431,6 +434,7 @@ public class UserControllerDocTest {
                 .andExpect(jsonPath("$[0].challengeId").value(challenge.getId()))
                 .andExpect(jsonPath("$[0].challengeTitle").value(challenge.getTitle()))
                 .andExpect(jsonPath("$[0].challengeContent").value(challenge.getContent()))
+                .andExpect(jsonPath("$[0].challengeStatus").value(savedUserChallenge.getChallengeStatus().toString()))
                 .andDo(document("user-participate-challenge",
                         preprocessRequest(prettyPrint()),
                         preprocessResponse(

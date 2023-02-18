@@ -6,9 +6,12 @@ import com.example.dailychallenge.entity.challenge.ChallengeStatus;
 import com.example.dailychallenge.entity.challenge.UserChallenge;
 import com.example.dailychallenge.entity.users.User;
 import com.example.dailychallenge.exception.userChallenge.UserChallengeDuplicate;
+import com.example.dailychallenge.exception.users.UserNotFound;
 import com.example.dailychallenge.repository.UserChallengeRepository;
 import com.example.dailychallenge.vo.challenge.ResponseChallenge;
 import com.example.dailychallenge.vo.challenge.ResponseUserChallenge;
+
+import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;

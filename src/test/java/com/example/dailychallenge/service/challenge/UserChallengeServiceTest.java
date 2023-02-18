@@ -91,7 +91,7 @@ public class UserChallengeServiceTest extends ServiceTest {
         void succeedInChallenge(){
             userChallengeService.saveUserChallenge(challenge, savedUser);
             UserChallenge userChallenge = userChallengeService.succeedInChallenge(savedUser.getId(), challenge.getId());
-            assertTrue(userChallenge.isSuccess());
+            assertEquals(userChallenge.getChallengeStatus().getDescription(),"성공");
         }
 
     }

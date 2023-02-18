@@ -12,6 +12,7 @@ import com.example.dailychallenge.exception.CommonException;
 import com.example.dailychallenge.exception.users.UserDuplicateNotCheck;
 import com.example.dailychallenge.exception.users.UserNotFound;
 import com.example.dailychallenge.repository.UserRepository;
+import com.example.dailychallenge.service.challenge.UserChallengeService;
 import com.example.dailychallenge.vo.RequestUpdateUser;
 import com.example.dailychallenge.vo.ResponseUserChallenge;
 import com.example.dailychallenge.vo.ResponseUserInfo;
@@ -147,19 +148,22 @@ public class UserService implements UserDetailsService {
 
     public List<ResponseUserChallenge> getChallengeByUser(Long userId){
         User user = userRepository.findById(userId).orElseThrow(UserNotFound::new);
-        List<Challenge> challengeList = user.getChallenges();
-        List<ResponseUserChallenge> userChallenge = new ArrayList<>();
+        List<UserChallenge> userChallenges = user.getUserChallenges();
+        List<ResponseUserChallenge> userChallengeList = new ArrayList<>();
 
-        for (Challenge challenge : challengeList) {
-            userChallenge.add(
-                    ResponseUserChallenge.builder()
-                    .challengeId(challenge.getId())
-                    .challengeTitle(challenge.getTitle())
-                    .challengeContent(challenge.getContent())
-                    .build()
-            );
+        for (UserChallenge userChallenge : userChallenges) {
+            if(userChallenge.getChallenge().getUsers().getId()==userId) {
+                userChallengeList.add(
+                        ResponseUserChallenge.builder()
+                                .challengeId(userChallenge.getChallenge().getId())
+                                .challengeTitle(userChallenge.getChallenge().getTitle())
+                                .challengeContent(userChallenge.getChallenge().getContent())
+                                .challengeStatus(userChallenge.getChallengeStatus())
+                                .build()
+                );
+            }
         }
-        return userChallenge;
+        return userChallengeList;
     }
 
     public List<ResponseUserChallenge> getParticipateChallenge(Long id) {
@@ -173,6 +177,7 @@ public class UserService implements UserDetailsService {
                                 .challengeId(userChallenge.getChallenge().getId())
                                 .challengeTitle(userChallenge.getChallenge().getTitle())
                                 .challengeContent(userChallenge.getChallenge().getContent())
+                                .challengeStatus(userChallenge.getChallengeStatus())
                                 .build()
                 );
             }
