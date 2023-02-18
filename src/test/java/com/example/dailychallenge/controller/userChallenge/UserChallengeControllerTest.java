@@ -3,16 +3,14 @@ package com.example.dailychallenge.controller.userChallenge;
 import static com.example.dailychallenge.util.fixture.ChallengeImgFixture.createChallengeImgFiles;
 import static com.example.dailychallenge.util.fixture.UserFixture.createOtherUser;
 import static com.example.dailychallenge.util.fixture.UserFixture.createUser;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.example.dailychallenge.dto.ChallengeDto;
-import com.example.dailychallenge.entity.challenge.Challenge;
-import com.example.dailychallenge.entity.challenge.ChallengeCategory;
-import com.example.dailychallenge.entity.challenge.ChallengeDuration;
-import com.example.dailychallenge.entity.challenge.ChallengeLocation;
+import com.example.dailychallenge.entity.challenge.*;
 import com.example.dailychallenge.entity.comment.Comment;
 import com.example.dailychallenge.entity.hashtag.ChallengeHashtag;
 import com.example.dailychallenge.entity.hashtag.Hashtag;
@@ -156,5 +154,16 @@ class UserChallengeControllerTest extends ControllerTest {
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.code").value(201))
                 .andExpect(jsonPath("$.message").value("챌린지 참가 완료!"));
+    }
+
+    @Test
+    @DisplayName("챌린지 달성 완료 테스트")
+    void succeedInChallengeTest() throws Exception {
+        mockMvc.perform(post("/challenge/{challengeId}/success", challenge1.getId())
+                        .with(requestPostProcessor)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value(200))
+                .andExpect(jsonPath("$.message").value("챌린지 달성 완료!"));
     }
 }

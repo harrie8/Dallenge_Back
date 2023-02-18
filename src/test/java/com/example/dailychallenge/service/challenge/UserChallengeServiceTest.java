@@ -3,8 +3,8 @@ package com.example.dailychallenge.service.challenge;
 import static com.example.dailychallenge.util.fixture.ChallengeFixture.createChallenge;
 import static com.example.dailychallenge.util.fixture.UserFixture.createOtherUser;
 import static com.example.dailychallenge.util.fixture.UserFixture.createUser;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import com.example.dailychallenge.entity.challenge.Challenge;
 import com.example.dailychallenge.entity.challenge.ChallengeStatus;
@@ -85,5 +85,14 @@ public class UserChallengeServiceTest extends ServiceTest {
                     () -> userChallengeService.saveUserChallenge(challenge, savedUser));
             assertEquals("이미 참가한 챌린지입니다.", exception.getMessage());
         }
+
+        @Test
+        @DisplayName("챌린지 달성")
+        void succeedInChallenge(){
+            userChallengeService.saveUserChallenge(challenge, savedUser);
+            UserChallenge userChallenge = userChallengeService.succeedInChallenge(savedUser.getId(), challenge.getId());
+            assertTrue(userChallenge.isSuccess());
+        }
+
     }
 }

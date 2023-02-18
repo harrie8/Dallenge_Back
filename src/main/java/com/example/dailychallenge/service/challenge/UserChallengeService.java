@@ -69,8 +69,9 @@ public class UserChallengeService {
         savedUserChallenge.challengeParticipate();
     }
 
-    public void succeedInChallenge(Long userId, Long challengeId) {
+    public UserChallenge succeedInChallenge(Long userId, Long challengeId) {
         UserChallenge userChallenge = findByChallengeIdAndUserId(challengeId, userId);
         userChallenge.challengeSuccess();
+        return userChallenge;
     }
 }

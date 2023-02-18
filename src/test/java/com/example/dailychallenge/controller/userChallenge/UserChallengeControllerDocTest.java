@@ -9,6 +9,7 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWit
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -34,6 +35,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.request.RequestPostProcessor;
 
 public class UserChallengeControllerDocTest extends RestDocsTest {
     @Autowired
@@ -159,6 +162,27 @@ public class UserChallengeControllerDocTest extends RestDocsTest {
                 .andDo(restDocs.document(
                         pathParameters(
                                 parameterWithName("challengeId").description("참가하고 싶은 챌린지 ID")
+                        ),
+                        responseFields(
+                                fieldWithPath("code").description("HTTP STATUS"),
+                                fieldWithPath("message").description("메시지")
+                        )
+                ));
+    }
+
+    @Test
+    @DisplayName("챌린지 달성 완료 테스트")
+    void succeedInChallengeTest() throws Exception {
+
+        mockMvc.perform(post("/challenge/{challengeId}/success", challenge1.getId())
+                        .header(AUTHORIZATION, generateToken(savedUser.getEmail(), userService))
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value(200))
+                .andExpect(jsonPath("$.message").value("챌린지 달성 완료!"))
+                .andDo(restDocs.document(
+                        pathParameters(
+                                parameterWithName("challengeId").description("내가 달성한 챌린지 ID")
                         ),
                         responseFields(
                                 fieldWithPath("code").description("HTTP STATUS"),

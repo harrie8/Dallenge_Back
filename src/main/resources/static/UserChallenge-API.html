@@ -450,7 +450,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div class="listingblock">
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">POST /challenge/15/participate HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhQGEuY29tIiwiaWF0IjoxNjc2NzEzMTg2LCJleHAiOjE2NzY3MzExODZ9.QdWTlwTYOa4usT-xiPP2_OuM1sgQi5p90yor6dj6SsI
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhQGEuY29tIiwiaWF0IjoxNjc2NzE2NDE1LCJleHAiOjE2NzY3MzQ0MTV9.gZ5aBuGbpjbrkiX5Wt4mEBMMRQW40vFG_nz4QT7bFjc
 Accept: application/json
 Host: localhost:8080</code></pre>
 </div>
@@ -499,12 +499,68 @@ Content-Length: 63
 </div>
 </div>
 </div>
+<div class="sect2">
+<h3 id="UserChallenge-챌린지-달성">챌린지 달성</h3>
+<div class="sect3">
+<h4 id="UserChallenge-챌린지-달성_http_request">HTTP request</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight nowrap"><code class="language-http" data-lang="http">POST /challenge/25/success HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0MTIzNEB0ZXN0LmNvbSIsImlhdCI6MTY3NjcxNjQxNiwiZXhwIjoxNjc2NzM0NDE2fQ.c_HX6oF29K8rD9Gq4KuFjIb34hqa4DNN6r2lXl36X_8
+Accept: application/json
+Host: localhost:8080</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="UserChallenge-챌린지-달성_path_parameters">Path parameters</h4>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Path</th>
+<th class="tableblock halign-left valign-top">필수여부</th>
+<th class="tableblock halign-left valign-top">설명</th>
+<th class="tableblock halign-left valign-top">Validation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>challengeId</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">true</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">내가 달성한 챌린지 ID</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect3">
+<h4 id="UserChallenge-챌린지-달성_http_response">HTTP response</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight nowrap"><code class="language-http" data-lang="http">HTTP/1.1 200 OK
+Content-Type: application/json;charset=UTF-8
+Content-Length: 63
+
+{
+  "code" : 200,
+  "message" : "챌린지 달성 완료!"
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2023-02-18 17:42:26 +0900
+Last updated 2023-02-18 19:30:32 +0900
 </div>
 </div>
 </body>
