@@ -450,7 +450,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div class="listingblock">
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">POST /7/bookmark/new HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhQGEuY29tIiwiaWF0IjoxNjc2NzE4OTEwLCJleHAiOjE2NzY3MzY5MTB9.lY3yav5656p-PAC3BZubLG0ujeXkRhYnrSxy_TqJ2fI
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhQGEuY29tIiwiaWF0IjoxNjc2NzI0NTMyLCJleHAiOjE2NzY3NDI1MzJ9.CxFb0xWNl4WLH7KEPxPMJG719Htro9bU4ATuUTISlnU
 Accept: application/json
 Host: localhost:8080</code></pre>
 </div>
@@ -494,7 +494,7 @@ Content-Length: 110
 {
   "id" : 6,
   "title" : "제목입니다.",
-  "createdAt" : "2023-02-18 20:15:10:269",
+  "createdAt" : "2023-02-18 21:48:53:072",
   "userId" : 4
 }</code></pre>
 </div>
@@ -508,7 +508,7 @@ Content-Length: 110
 <div class="listingblock">
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">DELETE /user/5/bookmark/7 HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0MTIzNEB0ZXN0LmNvbSIsImlhdCI6MTY3NjcxODkxMSwiZXhwIjoxNjc2NzM2OTExfQ.nXkqZ6WdIRJZrstKqhl7cnJi6CIfK2Akj57eLRSI64U
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0MTIzNEB0ZXN0LmNvbSIsImlhdCI6MTY3NjcyNDUzMywiZXhwIjoxNjc2NzQyNTMzfQ.xzWfE16srmtQdJVyRKbWPeVMw_kMnbnKwebvj_6wa60
 Accept: application/json
 Host: localhost:8080</code></pre>
 </div>
@@ -563,7 +563,7 @@ Host: localhost:8080</code></pre>
 <div class="listingblock">
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">GET /user/2/bookmark HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhQGEuY29tIiwiaWF0IjoxNjc2NzE4OTA2LCJleHAiOjE2NzY3MzY5MDZ9.JKJq3jM8dpGcaqZDGxI960GSZfS3p3IFDpByVmbWgqA
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhQGEuY29tIiwiaWF0IjoxNjc2NzI0NTMwLCJleHAiOjE2NzY3NDI1MzB9.a6iL2IgxNRvvfKK247YZGksviLqQi4XZbIKJh69pFXY
 Accept: application/json
 Host: localhost:8080</code></pre>
 </div>
@@ -615,53 +615,53 @@ Content-Length: 1112
   "content" : [ {
     "id" : 5,
     "title" : "제목입니다.",
-    "createdAt" : "2023-02-18 20:15:05:918",
+    "createdAt" : "2023-02-18 21:48:49:345",
     "userId" : 2
   }, {
     "id" : 4,
     "title" : "제목입니다.",
-    "createdAt" : "2023-02-18 20:15:05:812",
+    "createdAt" : "2023-02-18 21:48:49:243",
     "userId" : 2
   }, {
     "id" : 3,
     "title" : "제목입니다.",
-    "createdAt" : "2023-02-18 20:15:05:691",
+    "createdAt" : "2023-02-18 21:48:49:119",
     "userId" : 2
   }, {
     "id" : 2,
     "title" : "제목입니다.",
-    "createdAt" : "2023-02-18 20:15:05:602",
+    "createdAt" : "2023-02-18 21:48:49:034",
     "userId" : 2
   }, {
     "id" : 1,
     "title" : "제목입니다.",
-    "createdAt" : "2023-02-18 20:15:05:496",
+    "createdAt" : "2023-02-18 21:48:48:943",
     "userId" : 2
   } ],
   "pageable" : {
     "sort" : {
+      "empty" : false,
       "sorted" : true,
-      "unsorted" : false,
-      "empty" : false
+      "unsorted" : false
     },
-    "pageSize" : 10,
-    "pageNumber" : 0,
     "offset" : 0,
-    "unpaged" : false,
-    "paged" : true
+    "pageNumber" : 0,
+    "pageSize" : 10,
+    "paged" : true,
+    "unpaged" : false
   },
-  "totalElements" : 5,
   "last" : true,
+  "totalElements" : 5,
   "totalPages" : 1,
-  "first" : true,
   "size" : 10,
   "number" : 0,
   "sort" : {
+    "empty" : false,
     "sorted" : true,
-    "unsorted" : false,
-    "empty" : false
+    "unsorted" : false
   },
   "numberOfElements" : 5,
+  "first" : true,
   "empty" : false
 }</code></pre>
 </div>

@@ -10,14 +10,12 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.response
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.example.dailychallenge.dto.ChallengeDto;
-import com.example.dailychallenge.entity.challenge.Challenge;
-import com.example.dailychallenge.entity.challenge.ChallengeCategory;
-import com.example.dailychallenge.entity.challenge.ChallengeDuration;
-import com.example.dailychallenge.entity.challenge.ChallengeLocation;
+import com.example.dailychallenge.entity.challenge.*;
 import com.example.dailychallenge.entity.comment.Comment;
 import com.example.dailychallenge.entity.hashtag.ChallengeHashtag;
 import com.example.dailychallenge.entity.hashtag.Hashtag;
@@ -35,6 +33,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.request.RequestPostProcessor;
 
@@ -187,6 +186,30 @@ public class UserChallengeControllerDocTest extends RestDocsTest {
                         responseFields(
                                 fieldWithPath("code").description("HTTP STATUS"),
                                 fieldWithPath("message").description("메시지")
+                        )
+                ));
+    }
+
+    @Test
+    @DisplayName("오늘 수행(성공)한 챌린지 조회 테스트")
+    void getTodayUserChallengeTest() throws Exception {
+        UserChallenge userChallenge = userChallengeService.succeedInChallenge(savedUser.getId(), challenge1.getId());
+
+        mockMvc.perform(RestDocumentationRequestBuilders
+                        .get("/user/done")
+                        .header(AUTHORIZATION, generateToken(savedUser.getEmail(), userService))
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].challengeId").value(challenge1.getId()))
+                .andExpect(jsonPath("$[0].challengeTitle").value(challenge1.getTitle()))
+                .andExpect(jsonPath("$[0].challengeContent").value(challenge1.getContent()))
+                .andExpect(jsonPath("$[0].challengeStatus").value(userChallenge.getChallengeStatus().toString()))
+                .andDo(restDocs.document(
+                        responseFields(
+                                fieldWithPath("[].challengeId").description("성공한 챌린지 ID"),
+                                fieldWithPath("[].challengeTitle").description("성공한 챌린지 제목"),
+                                fieldWithPath("[].challengeContent").description("성공한 챌린지 내용"),
+                                fieldWithPath("[].challengeStatus").description("성공한 챌린지 상태")
                         )
                 ));
     }

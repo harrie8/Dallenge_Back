@@ -14,11 +14,14 @@ import com.example.dailychallenge.exception.userChallenge.UserChallengeDuplicate
 import com.example.dailychallenge.repository.ChallengeRepository;
 import com.example.dailychallenge.service.users.UserService;
 import com.example.dailychallenge.util.ServiceTest;
+import com.example.dailychallenge.vo.ResponseChallengeByUserChallenge;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.List;
 
 public class UserChallengeServiceTest extends ServiceTest {
 
@@ -92,6 +95,19 @@ public class UserChallengeServiceTest extends ServiceTest {
             userChallengeService.saveUserChallenge(challenge, savedUser);
             UserChallenge userChallenge = userChallengeService.succeedInChallenge(savedUser.getId(), challenge.getId());
             assertEquals(userChallenge.getChallengeStatus().getDescription(),"성공");
+        }
+
+        @Test
+        @DisplayName("오늘 수행(성공)한 챌린지 조회")
+        void getTodayUserChallenge(){
+            userChallengeService.saveUserChallenge(challenge, savedUser);
+            userChallengeService.succeedInChallenge(savedUser.getId(), challenge.getId());
+
+            List<ResponseChallengeByUserChallenge> userChallenges = userChallengeService.getTodayUserChallenge(savedUser.getId());
+            assertEquals(userChallenges.get(0).getChallengeId(),challenge.getId());
+            assertEquals(userChallenges.get(0).getChallengeTitle(),challenge.getTitle());
+            assertEquals(userChallenges.get(0).getChallengeContent(),challenge.getContent());
+            assertEquals(userChallenges.get(0).getChallengeStatus().getDescription(),"성공");
         }
 
     }

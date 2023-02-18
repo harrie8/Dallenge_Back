@@ -3,8 +3,10 @@ package com.example.dailychallenge.controller.userChallenge;
 import static com.example.dailychallenge.util.fixture.ChallengeImgFixture.createChallengeImgFiles;
 import static com.example.dailychallenge.util.fixture.UserFixture.createOtherUser;
 import static com.example.dailychallenge.util.fixture.UserFixture.createUser;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -23,12 +25,15 @@ import com.example.dailychallenge.service.challenge.ChallengeService;
 import com.example.dailychallenge.service.challenge.UserChallengeService;
 import com.example.dailychallenge.service.users.UserService;
 import com.example.dailychallenge.util.ControllerTest;
+import com.example.dailychallenge.vo.ResponseChallengeByUserChallenge;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.request.RequestPostProcessor;
+
+import java.util.List;
 
 class UserChallengeControllerTest extends ControllerTest {
     @Autowired
@@ -165,5 +170,20 @@ class UserChallengeControllerTest extends ControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.code").value(200))
                 .andExpect(jsonPath("$.message").value("챌린지 달성 완료!"));
+    }
+
+    @Test
+    @DisplayName("오늘 수행(성공)한 챌린지 조회 테스트")
+    void getTodayUserChallengeTest() throws Exception {
+        UserChallenge userChallenge = userChallengeService.succeedInChallenge(savedUser.getId(), challenge1.getId());
+
+        mockMvc.perform(get("/user/done")
+                        .with(requestPostProcessor)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].challengeId").value(challenge1.getId()))
+                .andExpect(jsonPath("$[0].challengeTitle").value(challenge1.getTitle()))
+                .andExpect(jsonPath("$[0].challengeContent").value(challenge1.getContent()))
+                .andExpect(jsonPath("$[0].challengeStatus").value(userChallenge.getChallengeStatus().toString()));
     }
 }
