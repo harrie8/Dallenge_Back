@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -45,5 +46,24 @@ public class UserChallengeController {
                 .build();
 
         return ResponseEntity.status(HttpStatus.CREATED).body(responseMessage);
+    }
+
+    @PostMapping("/challenge/{challengeId}/success")
+    public ResponseEntity<ResponseMessage> succeedInChallenge(
+            @AuthenticationPrincipal org.springframework.security.core.userdetails.User user,
+            @PathVariable Long challengeId){
+        String userEmail = user.getUsername();
+        User findUser = userService.findByEmail(userEmail);
+        if (findUser == null) {
+            throw new UserNotFound();
+        }
+        userChallengeService.succeedInChallenge(findUser.getId(), challengeId);
+
+        ResponseMessage responseMessage = ResponseMessage.builder()
+                .code(200)
+                .message("챌린지 달성 완료!")
+                .build();
+
+        return ResponseEntity.status(HttpStatus.OK).body(responseMessage);
     }
 }

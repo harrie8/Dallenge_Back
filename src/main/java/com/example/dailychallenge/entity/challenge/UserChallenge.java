@@ -30,6 +30,7 @@ public class UserChallenge extends BaseEntity {
     private ChallengeStatus challengeStatus;
 
     private boolean isParticipated;
+    private boolean isSuccess;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
@@ -45,6 +46,7 @@ public class UserChallenge extends BaseEntity {
         this.users = users;
         this.challenge = challenge;
         this.isParticipated = false;
+        this.isSuccess = false;
     }
 
     public void setUser(User users) {
@@ -64,6 +66,10 @@ public class UserChallenge extends BaseEntity {
     }
     public void challengeParticipate(){
         this.isParticipated = true;
+    }
+
+    public void challengeSuccess() {
+        this.isSuccess = true;
     }
 
 }

@@ -16,6 +16,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityNotFoundException;
+
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -48,6 +50,11 @@ public class UserChallengeService {
         return userChallengeRepository.searchUserChallengeByChallengeId(challengeId);
     }
 
+    public UserChallenge findByChallengeIdAndUserId(Long challengeId, Long userId){
+        return userChallengeRepository.findByChallengeIdAndUserId(challengeId, userId)
+                .orElseThrow(EntityNotFoundException::new);
+    }
+
     public Page<ResponseChallenge> searchAll(Pageable pageable) {
 
         return userChallengeRepository.searchAllChallenges(pageable);
@@ -60,5 +67,10 @@ public class UserChallengeService {
     }
     public void challengeParticipate(UserChallenge savedUserChallenge) {
         savedUserChallenge.challengeParticipate();
+    }
+
+    public void succeedInChallenge(Long userId, Long challengeId) {
+        UserChallenge userChallenge = findByChallengeIdAndUserId(challengeId, userId);
+        userChallenge.challengeSuccess();
     }
 }
