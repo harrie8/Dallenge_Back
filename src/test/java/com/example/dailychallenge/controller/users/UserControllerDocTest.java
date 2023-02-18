@@ -400,7 +400,6 @@ public class UserControllerDocTest {
                         .header(AUTHORIZATION, token)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].userId").value(challenge.getUsers().getId()))
                 .andExpect(jsonPath("$[0].challengeId").value(challenge.getId()))
                 .andExpect(jsonPath("$[0].challengeTitle").value(challenge.getTitle()))
                 .andExpect(jsonPath("$[0].challengeContent").value(challenge.getContent()))
@@ -429,7 +428,6 @@ public class UserControllerDocTest {
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andDo(print())
-                .andExpect(jsonPath("$[0].userId").value(savedUser.getId())) // 참가한 user
                 .andExpect(jsonPath("$[0].challengeId").value(challenge.getId()))
                 .andExpect(jsonPath("$[0].challengeTitle").value(challenge.getTitle()))
                 .andExpect(jsonPath("$[0].challengeContent").value(challenge.getContent()))

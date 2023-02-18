@@ -153,7 +153,6 @@ public class UserService implements UserDetailsService {
         for (Challenge challenge : challengeList) {
             userChallenge.add(
                     ResponseUserChallenge.builder()
-                    .userId(userId)
                     .challengeId(challenge.getId())
                     .challengeTitle(challenge.getTitle())
                     .challengeContent(challenge.getContent())
@@ -171,7 +170,6 @@ public class UserService implements UserDetailsService {
             if (userChallenge.isParticipated()) {
                 res.add(
                         ResponseUserChallenge.builder()
-                                .userId(user.getId())
                                 .challengeId(userChallenge.getChallenge().getId())
                                 .challengeTitle(userChallenge.getChallenge().getTitle())
                                 .challengeContent(userChallenge.getChallenge().getContent())
