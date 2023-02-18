@@ -1,7 +1,9 @@
 package com.example.dailychallenge.controller.comment;
 
+import static com.example.dailychallenge.util.fixture.TokenFixture.AUTHORIZATION;
 import static com.example.dailychallenge.util.fixture.TokenFixture.EMAIL;
 import static com.example.dailychallenge.util.fixture.TokenFixture.PASSWORD;
+import static com.example.dailychallenge.util.fixture.TokenFixture.TOKEN_PREFIX;
 import static com.example.dailychallenge.util.fixture.UserFixture.createOtherUser;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
@@ -17,7 +19,6 @@ import static org.springframework.restdocs.request.RequestDocumentation.pathPara
 import static org.springframework.restdocs.request.RequestDocumentation.requestParameters;
 import static org.springframework.restdocs.request.RequestDocumentation.requestParts;
 import static org.springframework.restdocs.snippet.Attributes.key;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -35,6 +36,7 @@ import com.example.dailychallenge.repository.CommentRepository;
 import com.example.dailychallenge.service.challenge.ChallengeService;
 import com.example.dailychallenge.service.comment.CommentService;
 import com.example.dailychallenge.service.users.UserService;
+import com.example.dailychallenge.utils.JwtTokenUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.ArrayList;
 import java.util.List;
@@ -49,6 +51,10 @@ import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.restdocs.RestDocumentationExtension;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
@@ -76,6 +82,10 @@ public class CommentControllerDocTest {
     private MockMvc mockMvc;
     @Autowired
     private ObjectMapper objectMapper;
+    @Autowired
+    protected AuthenticationManager authenticationManager;
+    @Autowired
+    protected JwtTokenUtil jwtTokenUtil;
 
     private MockMultipartFile createMultipartFiles() {
         String path = "commentDtoImg";
@@ -131,11 +141,12 @@ public class CommentControllerDocTest {
         MockMultipartFile commentDtoImg = createMultipartFiles();
 
         Long challengeId = challenge.getId();
+        String token = generateToken();
         mockMvc.perform(RestDocumentationRequestBuilders
                         .multipart("/{challengeId}/comment/new", challengeId)
                         .file(commentDtoImg)
                         .param("content", requestComment.getContent())
-                        .with(user(userService.loadUserByUsername(EMAIL)))
+                        .header(AUTHORIZATION, token)
                         .contentType(MediaType.MULTIPART_FORM_DATA)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated())
@@ -173,11 +184,12 @@ public class CommentControllerDocTest {
 
         Long challengeId = savedComment.getChallenge().getId();
         Long commentId = savedComment.getId();
+        String token = generateToken();
         mockMvc.perform(RestDocumentationRequestBuilders
                         .multipart("/{challengeId}/comment/{commentId}", challengeId, commentId)
                         .file(commentDtoImg)
                         .param("content", requestComment.getContent())
-                        .with(user(userService.loadUserByUsername(EMAIL)))
+                        .header(AUTHORIZATION, token)
                         .contentType(MediaType.MULTIPART_FORM_DATA)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -207,9 +219,10 @@ public class CommentControllerDocTest {
     public void deleteCommentTest() throws Exception {
         Comment savedComment = createComment();
         Long challengeId = savedComment.getChallenge().getId();
+        String token = generateToken();
         mockMvc.perform(RestDocumentationRequestBuilders
                         .delete("/{challengeId}/comment/{commentId}",challengeId,savedComment.getId())
-                        .with(user(userService.loadUserByUsername(EMAIL)))
+                        .header(AUTHORIZATION, token)
                         .contentType(MediaType.MULTIPART_FORM_DATA)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -232,9 +245,10 @@ public class CommentControllerDocTest {
     public void isLikeTest() throws Exception {
         Comment savedComment = createComment();
         Integer beforeLikes = savedComment.getLikes();
+        String token = generateToken();
         mockMvc.perform(RestDocumentationRequestBuilders
                         .post("/{commentId}/like?isLike=1", savedComment.getId())
-                        .with(user(userService.loadUserByUsername(EMAIL)))
+                        .header(AUTHORIZATION, token)
                         .contentType(MediaType.MULTIPART_FORM_DATA)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -328,8 +342,9 @@ public class CommentControllerDocTest {
         }
         Long userId = savedUser.getId();
 
+        String token = generateToken();
         mockMvc.perform(get("/user/{userId}/comment", userId)
-                        .with(user(userService.loadUserByUsername(savedUser.getEmail())))
+                        .header(AUTHORIZATION, token)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andDo(print())
@@ -352,5 +367,16 @@ public class CommentControllerDocTest {
                                 fieldWithPath("content[*].challengeTitle").description("챌린지 제목")
                         )
                 ));
+    }
+
+    private String generateToken() {
+        Authentication auth = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(EMAIL, PASSWORD));
+        if (auth.isAuthenticated()) {
+            UserDetails userDetails = userService.loadUserByUsername(EMAIL);
+            return TOKEN_PREFIX + jwtTokenUtil.generateToken(userDetails);
+        }
+
+        throw new IllegalArgumentException("token 생성 오류");
     }
 }

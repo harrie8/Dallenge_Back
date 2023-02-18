@@ -2,6 +2,7 @@ package com.example.dailychallenge.controller.challenge;
 
 import static com.example.dailychallenge.util.fixture.ChallengeImgFixture.createChallengeImgFiles;
 import static com.example.dailychallenge.util.fixture.ChallengeImgFixture.updateChallengeImgFiles;
+import static com.example.dailychallenge.util.fixture.TokenFixture.AUTHORIZATION;
 import static com.example.dailychallenge.util.fixture.UserFixture.createUser;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.hamcrest.Matchers.contains;
@@ -22,7 +23,6 @@ import static org.springframework.restdocs.request.RequestDocumentation.pathPara
 import static org.springframework.restdocs.request.RequestDocumentation.requestParameters;
 import static org.springframework.restdocs.request.RequestDocumentation.requestParts;
 import static org.springframework.restdocs.snippet.Attributes.key;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -55,7 +55,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.mock.web.MockPart;
-import org.springframework.test.web.servlet.request.RequestPostProcessor;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -77,12 +76,10 @@ public class ChallengeControllerDocTest extends RestDocsTest {
 
     private User savedUser;
     private Challenge challenge1;
-    private RequestPostProcessor requestPostProcessor;
 
     @BeforeEach
     void beforeEach() throws Exception {
         initData();
-        requestPostProcessor = user(userService.loadUserByUsername(savedUser.getEmail()));
     }
 
     private void initData() throws Exception {
@@ -200,7 +197,7 @@ public class ChallengeControllerDocTest extends RestDocsTest {
                         .part(new MockPart("challengeImgFiles", "challengeImgFile", challengeImgFiles.get(2).getBytes()))
                         .part(tag1)
                         .part(tag2)
-                        .with(requestPostProcessor)
+                        .header(AUTHORIZATION, generateToken(savedUser.getEmail(), userService))
                         .contentType(MediaType.MULTIPART_FORM_DATA)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated())
@@ -245,7 +242,7 @@ public class ChallengeControllerDocTest extends RestDocsTest {
         Long challenge1Id = challenge1.getId();
 
         mockMvc.perform(get("/challenge/{challengeId}", challenge1Id)
-                        .with(requestPostProcessor)
+                        .header(AUTHORIZATION, generateToken(savedUser.getEmail(), userService))
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.responseChallenge.title").value(challenge1.getTitle()))
@@ -285,7 +282,7 @@ public class ChallengeControllerDocTest extends RestDocsTest {
     @DisplayName("모든 챌린지 조회하고 인기순으로 내림차순 정렬 테스트")
     public void searchAllChallengesSortByPopularTest() throws Exception {
         mockMvc.perform(get("/challenge")
-                        .with(requestPostProcessor)
+                        .header(AUTHORIZATION, generateToken(savedUser.getEmail(), userService))
                         .param("size", "20")
                         .param("page", "0")
                         .param("sort", "popular")
@@ -343,7 +340,7 @@ public class ChallengeControllerDocTest extends RestDocsTest {
     @DisplayName("모든 챌린지 조회하고 생성순으로 오름차순 정렬 테스트")
     public void searchAllChallengesSortByTimeTest() throws Exception {
         mockMvc.perform(get("/challenge")
-                        .with(requestPostProcessor)
+                        .header(AUTHORIZATION, generateToken(savedUser.getEmail(), userService))
                         .param("size", "20")
                         .param("page", "0")
                         .param("sort", "time")
@@ -371,7 +368,7 @@ public class ChallengeControllerDocTest extends RestDocsTest {
     public void searchChallengesByConditionSortByPopularTest() throws Exception {
         mockMvc.perform(get("/challenge/condition")
                         .characterEncoding(UTF_8)
-                        .with(requestPostProcessor)
+                        .header(AUTHORIZATION, generateToken(savedUser.getEmail(), userService))
                         .param("title", "")
                         .param("category", ChallengeCategory.WORKOUT.getDescription())
                         .param("size", "20")
@@ -421,7 +418,7 @@ public class ChallengeControllerDocTest extends RestDocsTest {
     @DisplayName("챌린지들을 검색 조건으로 조회하고 생성순으로 내림차순 정렬 테스트")
     public void searchChallengesByConditionSortByTimeTest() throws Exception {
         mockMvc.perform(get("/challenge/condition")
-                        .with(requestPostProcessor)
+                        .header(AUTHORIZATION, generateToken(savedUser.getEmail(), userService))
                         .param("title", "")
                         .param("category", ChallengeCategory.WORKOUT.getDescription())
                         .param("size", "20")
@@ -471,7 +468,7 @@ public class ChallengeControllerDocTest extends RestDocsTest {
                                 updateChallengeImgFiles.get(0).getBytes()))
                         .part(new MockPart("updateChallengeImgFiles", "updateChallengeImgFiles",
                                 updateChallengeImgFiles.get(1).getBytes()))
-                        .with(requestPostProcessor)
+                        .header(AUTHORIZATION, generateToken(savedUser.getEmail(), userService))
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.title").value(requestUpdateChallenge.getTitle()))
@@ -519,7 +516,7 @@ public class ChallengeControllerDocTest extends RestDocsTest {
     @DisplayName("챌린지 삭제 테스트")
     void deleteChallenge() throws Exception {
         mockMvc.perform(delete("/challenge/{challengeId}", challenge1.getId())
-                        .with(requestPostProcessor)
+                        .header(AUTHORIZATION, generateToken(savedUser.getEmail(), userService))
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNoContent())
                 .andDo(restDocs.document(
