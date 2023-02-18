@@ -12,6 +12,7 @@ import org.springframework.data.domain.Pageable;
 public interface UserChallengeRepositoryCustom {
     Optional<UserChallenge> findByChallengeIdAndUserId(Long challengeId, Long userId);
     List<ResponseUserChallenge> searchUserChallengeByChallengeId(Long challengeId);
+    List<UserChallenge> searchUserChallengeByUserId(Long userId);
     Page<ResponseChallenge> searchAllChallenges(Pageable pageable);
     Page<ResponseChallenge> searchChallengesByCondition(ChallengeSearchCondition condition, Pageable pageable);
 }

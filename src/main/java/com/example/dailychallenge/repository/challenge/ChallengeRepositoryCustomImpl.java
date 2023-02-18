@@ -33,6 +33,8 @@ public class ChallengeRepositoryCustomImpl implements
         return Optional.ofNullable(responseChallenge);
     }
 
+
+
     private BooleanExpression challengeIdEq(Long challengeId) {
         if (challengeId == null) {
             throw new CommonException("challengeId is Null");

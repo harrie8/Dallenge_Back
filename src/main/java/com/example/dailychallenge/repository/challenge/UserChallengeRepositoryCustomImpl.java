@@ -6,6 +6,7 @@ import static org.aspectj.util.LangUtil.isEmpty;
 
 import com.example.dailychallenge.dto.ChallengeSearchCondition;
 import com.example.dailychallenge.entity.challenge.ChallengeCategory;
+import com.example.dailychallenge.entity.challenge.QUserChallenge;
 import com.example.dailychallenge.entity.challenge.UserChallenge;
 import com.example.dailychallenge.exception.CommonException;
 import com.example.dailychallenge.vo.challenge.QResponseChallenge;
@@ -53,6 +54,15 @@ public class UserChallengeRepositoryCustomImpl implements
                 .from(userChallenge)
                 .leftJoin(userChallenge.challenge, challenge)
                 .where(challengeIdEq(challengeId))
+                .fetch();
+    }
+
+    @Override
+    public List<UserChallenge> searchUserChallengeByUserId(Long userId) {
+        return queryFactory
+                .select(new QUserChallenge(userChallenge))
+                .from(userChallenge)
+                .where(userIdEq(userId))
                 .fetch();
     }
 

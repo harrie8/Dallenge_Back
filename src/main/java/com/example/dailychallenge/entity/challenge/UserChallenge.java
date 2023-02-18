@@ -14,6 +14,7 @@ import javax.persistence.ManyToOne;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.scheduling.annotation.Scheduled;
 
 @Entity
 @Getter
@@ -68,6 +69,11 @@ public class UserChallenge extends BaseEntity {
 
     public void challengeSuccess() {
         this.challengeStatus = ChallengeStatus.SUCCESS;
+    }
+
+    @Scheduled(cron = "0 0 0 * * *")
+    public void resetChallengeStatus(){
+        this.challengeStatus = ChallengeStatus.TRYING;
     }
 
 }

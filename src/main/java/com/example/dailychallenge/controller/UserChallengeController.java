@@ -8,6 +8,7 @@ import com.example.dailychallenge.service.challenge.ChallengeService;
 import com.example.dailychallenge.service.challenge.UserChallengeService;
 import com.example.dailychallenge.service.users.UserService;
 import com.example.dailychallenge.vo.ResponseMessage;
+import com.example.dailychallenge.vo.ResponseChallengeByUserChallenge;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +17,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -65,5 +68,17 @@ public class UserChallengeController {
                 .build();
 
         return ResponseEntity.status(HttpStatus.OK).body(responseMessage);
+    }
+
+    @GetMapping("/user/done") // 오늘 수행한 챌린지
+    public ResponseEntity<List<ResponseChallengeByUserChallenge>> getTodayUserChallenge(
+            @AuthenticationPrincipal org.springframework.security.core.userdetails.User user
+    ){
+        User findUser = userService.findByEmail(user.getUsername());
+
+        List<ResponseChallengeByUserChallenge> userChallenge
+                = userChallengeService.getTodayUserChallenge(findUser.getId());
+
+        return ResponseEntity.status(HttpStatus.OK).body(userChallenge);
     }
 }

@@ -10,7 +10,7 @@ import javax.persistence.Enumerated;
 
 @Getter
 @NoArgsConstructor
-public class ResponseUserChallenge {
+public class ResponseChallengeByUserChallenge {
     private Long challengeId;
     private String challengeTitle;
     private String challengeContent;
@@ -18,8 +18,8 @@ public class ResponseUserChallenge {
     private ChallengeStatus challengeStatus;
 
     @Builder
-    public ResponseUserChallenge(Long challengeId, String challengeTitle,
-                                 String challengeContent,ChallengeStatus challengeStatus) {
+    public ResponseChallengeByUserChallenge(Long challengeId, String challengeTitle,
+                                            String challengeContent, ChallengeStatus challengeStatus) {
         this.challengeId = challengeId;
         this.challengeTitle = challengeTitle;
         this.challengeContent = challengeContent;

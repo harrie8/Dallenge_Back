@@ -12,7 +12,7 @@ import com.example.dailychallenge.vo.RequestUpdateUser;
 import com.example.dailychallenge.vo.RequestUser;
 import com.example.dailychallenge.vo.ResponseLoginUser;
 import com.example.dailychallenge.vo.ResponseUser;
-import com.example.dailychallenge.vo.ResponseUserChallenge;
+import com.example.dailychallenge.vo.ResponseChallengeByUserChallenge;
 import com.example.dailychallenge.vo.ResponseUserInfo;
 import java.util.List;
 import javax.validation.Valid;
@@ -145,19 +145,19 @@ public class UserController {
     }
 
     @GetMapping("/user/challenge") // 내가 작성한 챌린지 조회
-    public ResponseEntity<List<ResponseUserChallenge>> getChallengeByUser(
+    public ResponseEntity<List<ResponseChallengeByUserChallenge>> getChallengeByUser(
             @AuthenticationPrincipal org.springframework.security.core.userdetails.User user){
         User getUser = userService.findByEmail(user.getUsername());
-        List<ResponseUserChallenge> userChallenge = userService.getChallengeByUser(getUser.getId());
+        List<ResponseChallengeByUserChallenge> userChallenge = userService.getChallengeByUser(getUser.getId());
         return ResponseEntity.status(HttpStatus.OK).body(userChallenge);
     }
 
     @GetMapping("/user/participate")
-    public ResponseEntity<List<ResponseUserChallenge>> getParticipateChallenge(
+    public ResponseEntity<List<ResponseChallengeByUserChallenge>> getParticipateChallenge(
             @AuthenticationPrincipal org.springframework.security.core.userdetails.User user){
 
         User getUser = userService.findByEmail(user.getUsername());
-        List<ResponseUserChallenge> res = userService.getParticipateChallenge(getUser.getId());
+        List<ResponseChallengeByUserChallenge> res = userService.getParticipateChallenge(getUser.getId());
         return ResponseEntity.status(HttpStatus.OK).body(res);
     }
 

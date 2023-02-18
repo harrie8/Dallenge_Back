@@ -6,8 +6,8 @@ import com.example.dailychallenge.entity.challenge.ChallengeStatus;
 import com.example.dailychallenge.entity.challenge.UserChallenge;
 import com.example.dailychallenge.entity.users.User;
 import com.example.dailychallenge.exception.userChallenge.UserChallengeDuplicate;
-import com.example.dailychallenge.exception.users.UserNotFound;
 import com.example.dailychallenge.repository.UserChallengeRepository;
+import com.example.dailychallenge.vo.ResponseChallengeByUserChallenge;
 import com.example.dailychallenge.vo.challenge.ResponseChallenge;
 import com.example.dailychallenge.vo.challenge.ResponseUserChallenge;
 
@@ -53,6 +53,8 @@ public class UserChallengeService {
         return userChallengeRepository.searchUserChallengeByChallengeId(challengeId);
     }
 
+
+
     public UserChallenge findByChallengeIdAndUserId(Long challengeId, Long userId){
         return userChallengeRepository.findByChallengeIdAndUserId(challengeId, userId)
                 .orElseThrow(EntityNotFoundException::new);
@@ -76,5 +78,24 @@ public class UserChallengeService {
         UserChallenge userChallenge = findByChallengeIdAndUserId(challengeId, userId);
         userChallenge.challengeSuccess();
         return userChallenge;
+    }
+
+    public List<ResponseChallengeByUserChallenge> getTodayUserChallenge(Long userId) {
+        List<UserChallenge> userChallenges = userChallengeRepository.searchUserChallengeByUserId(userId);
+        List<ResponseChallengeByUserChallenge> res = new ArrayList<>();
+
+        for (UserChallenge userChallenge : userChallenges) {
+            if (userChallenge.getChallengeStatus().equals(ChallengeStatus.SUCCESS)) {
+                res.add(
+                        ResponseChallengeByUserChallenge.builder()
+                                .challengeId(userChallenge.getChallenge().getId())
+                                .challengeTitle(userChallenge.getChallenge().getTitle())
+                                .challengeContent(userChallenge.getChallenge().getContent())
+                                .challengeStatus(userChallenge.getChallengeStatus())
+                                .build()
+                );
+            }
+        }
+        return res;
     }
 }

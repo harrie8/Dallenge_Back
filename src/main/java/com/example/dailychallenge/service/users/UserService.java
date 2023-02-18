@@ -2,7 +2,6 @@ package com.example.dailychallenge.service.users;
 
 import com.example.dailychallenge.dto.UserDto;
 import com.example.dailychallenge.dto.UserEditor;
-import com.example.dailychallenge.entity.challenge.Challenge;
 import com.example.dailychallenge.entity.challenge.UserChallenge;
 import com.example.dailychallenge.entity.social.ProviderUser;
 import com.example.dailychallenge.entity.users.User;
@@ -12,9 +11,8 @@ import com.example.dailychallenge.exception.CommonException;
 import com.example.dailychallenge.exception.users.UserDuplicateNotCheck;
 import com.example.dailychallenge.exception.users.UserNotFound;
 import com.example.dailychallenge.repository.UserRepository;
-import com.example.dailychallenge.service.challenge.UserChallengeService;
 import com.example.dailychallenge.vo.RequestUpdateUser;
-import com.example.dailychallenge.vo.ResponseUserChallenge;
+import com.example.dailychallenge.vo.ResponseChallengeByUserChallenge;
 import com.example.dailychallenge.vo.ResponseUserInfo;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -146,15 +144,15 @@ public class UserService implements UserDetailsService {
         return userInfo;
     }
 
-    public List<ResponseUserChallenge> getChallengeByUser(Long userId){
+    public List<ResponseChallengeByUserChallenge> getChallengeByUser(Long userId){
         User user = userRepository.findById(userId).orElseThrow(UserNotFound::new);
         List<UserChallenge> userChallenges = user.getUserChallenges();
-        List<ResponseUserChallenge> userChallengeList = new ArrayList<>();
+        List<ResponseChallengeByUserChallenge> userChallengeList = new ArrayList<>();
 
         for (UserChallenge userChallenge : userChallenges) {
             if(userChallenge.getChallenge().getUsers().getId()==userId) {
                 userChallengeList.add(
-                        ResponseUserChallenge.builder()
+                        ResponseChallengeByUserChallenge.builder()
                                 .challengeId(userChallenge.getChallenge().getId())
                                 .challengeTitle(userChallenge.getChallenge().getTitle())
                                 .challengeContent(userChallenge.getChallenge().getContent())
@@ -166,14 +164,14 @@ public class UserService implements UserDetailsService {
         return userChallengeList;
     }
 
-    public List<ResponseUserChallenge> getParticipateChallenge(Long id) {
+    public List<ResponseChallengeByUserChallenge> getParticipateChallenge(Long id) {
         User user = userRepository.findById(id).orElseThrow(UserNotFound::new);
         List<UserChallenge> userChallenges = user.getUserChallenges();
-        List<ResponseUserChallenge> res = new ArrayList<>();
+        List<ResponseChallengeByUserChallenge> res = new ArrayList<>();
         for (UserChallenge userChallenge : userChallenges) {
             if (userChallenge.isParticipated()) {
                 res.add(
-                        ResponseUserChallenge.builder()
+                        ResponseChallengeByUserChallenge.builder()
                                 .challengeId(userChallenge.getChallenge().getId())
                                 .challengeTitle(userChallenge.getChallenge().getTitle())
                                 .challengeContent(userChallenge.getChallenge().getContent())
