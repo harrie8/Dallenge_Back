@@ -285,6 +285,9 @@ public class CommentControllerDocTest {
         Long challengeId = challenge.getId();
 
         mockMvc.perform(get("/{challengeId}/comment", challengeId)
+                        .param("size", "20")
+                        .param("page", "0")
+                        .param("sort", "likes")
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andDo(document("search-comments-by-challengeId",
@@ -295,6 +298,11 @@ public class CommentControllerDocTest {
                                 prettyPrint()),
                         pathParameters(
                                 parameterWithName("challengeId").description("챌린지 아이디")
+                        ),
+                        requestParameters(
+                                parameterWithName("size").description("기본값: 10").optional(),
+                                parameterWithName("page").description("기본값: 0, 0번부터 시작합니다.").optional(),
+                                parameterWithName("sort").description("기본값: likes-내림차순").optional()
                         ),
                         relaxedResponseFields(
                                 fieldWithPath("content[*].id").description("댓글 id"),
@@ -345,6 +353,9 @@ public class CommentControllerDocTest {
         String token = generateToken();
         mockMvc.perform(get("/user/{userId}/comment", userId)
                         .header(AUTHORIZATION, token)
+                        .param("size", "20")
+                        .param("page", "0")
+                        .param("sort", "time")
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andDo(print())
@@ -356,6 +367,11 @@ public class CommentControllerDocTest {
                                 prettyPrint()),
                         pathParameters(
                                 parameterWithName("userId").description("유저 아이디")
+                        ),
+                        requestParameters(
+                                parameterWithName("size").description("기본값: 10").optional(),
+                                parameterWithName("page").description("기본값: 0, 0번부터 시작합니다.").optional(),
+                                parameterWithName("sort").description("기본값: time-내림차순").optional()
                         ),
                         relaxedResponseFields(
                                 fieldWithPath("content[*].id").description("댓글 id"),
