@@ -18,12 +18,13 @@ public class ResponseUpdateChallenge {
     private String created_at;
     private String updated_at;
     private List<String> challengeImgUrls;
+    private List<String> challengeHashtags;
 
     @Builder
     public ResponseUpdateChallenge(Long id, String title, String content, String challengeCategory,
                                    String challengeLocation,
                                    String challengeDuration, String created_at, String updated_at,
-                                   List<String> challengeImgUrls) {
+                                   List<String> challengeImgUrls, List<String> challengeHashtags) {
         this.id = id;
         this.title = title;
         this.content = content;
@@ -33,6 +34,7 @@ public class ResponseUpdateChallenge {
         this.created_at = created_at;
         this.updated_at = updated_at;
         this.challengeImgUrls = challengeImgUrls;
+        this.challengeHashtags = challengeHashtags;
     }
 
     public static ResponseUpdateChallenge create(Challenge updatedChallenge) {
@@ -46,6 +48,7 @@ public class ResponseUpdateChallenge {
                 .created_at(updatedChallenge.getFormattedCreatedAt())
                 .updated_at(updatedChallenge.getFormattedUpdatedAt())
                 .challengeImgUrls(updatedChallenge.getImgUrls())
+                .challengeHashtags(updatedChallenge.getHashtags())
                 .build();
     }
 }

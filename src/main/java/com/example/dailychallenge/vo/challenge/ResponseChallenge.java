@@ -19,14 +19,15 @@ public class ResponseChallenge {
     private String challengeDuration;
     private String created_at;
     private List<String> challengeImgUrls;
+    private List<String> challengeHashtags;
     private Long howManyUsersAreInThisChallenge;
     private ResponseUser challengeOwnerUser;
 
     @Builder
     public ResponseChallenge(Long id, String title, String content, String challengeCategory, String challengeLocation,
                              String challengeDuration, String created_at, List<String> challengeImgUrls,
-                             Long howManyUsersAreInThisChallenge, ResponseUser responseUser) {
-
+                             List<String> challengeHashtags, Long howManyUsersAreInThisChallenge,
+                             ResponseUser responseUser) {
         this.id = id;
         this.title = title;
         this.content = content;
@@ -35,6 +36,7 @@ public class ResponseChallenge {
         this.challengeDuration = challengeDuration;
         this.created_at = created_at;
         this.challengeImgUrls = challengeImgUrls;
+        this.challengeHashtags = challengeHashtags;
         this.howManyUsersAreInThisChallenge = howManyUsersAreInThisChallenge;
         this.challengeOwnerUser = responseUser;
     }
@@ -49,6 +51,7 @@ public class ResponseChallenge {
         this.challengeDuration = challenge.getChallengeDuration().getDescription();
         this.created_at = challenge.getFormattedCreatedAt();
         this.challengeImgUrls = challenge.getImgUrls();
+        this.challengeHashtags = challenge.getHashtags();
         this.howManyUsersAreInThisChallenge = howManyUsersAreInThisChallenge;
         this.challengeOwnerUser = ResponseUser.create(challenge.getUsers());
     }

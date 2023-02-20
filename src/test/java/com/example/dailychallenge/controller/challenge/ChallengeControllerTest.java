@@ -1,7 +1,15 @@
 package com.example.dailychallenge.controller.challenge;
 
+import static com.example.dailychallenge.entity.challenge.ChallengeCategory.ECONOMY;
+import static com.example.dailychallenge.entity.challenge.ChallengeCategory.STUDY;
+import static com.example.dailychallenge.entity.challenge.ChallengeCategory.WORKOUT;
+import static com.example.dailychallenge.entity.challenge.ChallengeDuration.OVER_ONE_HOUR;
+import static com.example.dailychallenge.entity.challenge.ChallengeDuration.WITHIN_TEN_MINUTES;
+import static com.example.dailychallenge.entity.challenge.ChallengeLocation.INDOOR;
+import static com.example.dailychallenge.entity.challenge.ChallengeLocation.OUTDOOR;
 import static com.example.dailychallenge.util.fixture.ChallengeImgFixture.createChallengeImgFiles;
 import static com.example.dailychallenge.util.fixture.ChallengeImgFixture.updateChallengeImgFiles;
+import static com.example.dailychallenge.util.fixture.UserFixture.createSpecificUserDto;
 import static com.example.dailychallenge.util.fixture.UserFixture.createUser;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.hamcrest.Matchers.contains;
@@ -19,24 +27,20 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.example.dailychallenge.dto.ChallengeDto;
 import com.example.dailychallenge.dto.ChallengeSearchCondition;
 import com.example.dailychallenge.entity.challenge.Challenge;
-import com.example.dailychallenge.entity.challenge.ChallengeCategory;
-import com.example.dailychallenge.entity.challenge.ChallengeDuration;
-import com.example.dailychallenge.entity.challenge.ChallengeLocation;
 import com.example.dailychallenge.entity.challenge.ChallengeStatus;
 import com.example.dailychallenge.entity.comment.Comment;
-import com.example.dailychallenge.entity.hashtag.ChallengeHashtag;
 import com.example.dailychallenge.entity.hashtag.Hashtag;
 import com.example.dailychallenge.entity.users.User;
-import com.example.dailychallenge.repository.ChallengeHashtagRepository;
 import com.example.dailychallenge.repository.CommentRepository;
-import com.example.dailychallenge.repository.HashtagRepository;
-import com.example.dailychallenge.repository.UserRepository;
 import com.example.dailychallenge.service.challenge.ChallengeService;
 import com.example.dailychallenge.service.challenge.UserChallengeService;
+import com.example.dailychallenge.service.hashtag.ChallengeHashtagService;
+import com.example.dailychallenge.service.hashtag.HashtagService;
 import com.example.dailychallenge.service.users.UserService;
 import com.example.dailychallenge.util.ControllerTest;
 import com.example.dailychallenge.vo.challenge.RequestCreateChallenge;
 import com.example.dailychallenge.vo.challenge.RequestUpdateChallenge;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 import org.hamcrest.Matcher;
@@ -60,15 +64,13 @@ class ChallengeControllerTest extends ControllerTest {
     @Autowired
     private ChallengeService challengeService;
     @Autowired
-    private UserRepository userRepository;
-    @Autowired
     private UserChallengeService userChallengeService;
     @Autowired
     private CommentRepository commentRepository;
     @Autowired
-    private HashtagRepository hashtagRepository;
+    private HashtagService hashtagService;
     @Autowired
-    private ChallengeHashtagRepository challengeHashtagRepository;
+    private ChallengeHashtagService challengeHashtagService;
 
     private User savedUser;
     private Challenge challenge1;
@@ -86,9 +88,9 @@ class ChallengeControllerTest extends ControllerTest {
         ChallengeDto challengeDto1 = ChallengeDto.builder()
                 .title("제목입니다.1")
                 .content("내용입니다.1")
-                .challengeCategory(ChallengeCategory.STUDY.getDescription())
-                .challengeLocation(ChallengeLocation.INDOOR.getDescription())
-                .challengeDuration(ChallengeDuration.WITHIN_TEN_MINUTES.getDescription())
+                .challengeCategory(STUDY.getDescription())
+                .challengeLocation(INDOOR.getDescription())
+                .challengeDuration(WITHIN_TEN_MINUTES.getDescription())
                 .build();
         challenge1 = challengeService.saveChallenge(challengeDto1, createChallengeImgFiles(), savedUser);
 
@@ -100,25 +102,16 @@ class ChallengeControllerTest extends ControllerTest {
         comment.saveCommentChallenge(challenge1);
         commentRepository.save(comment);
 
-        Hashtag hashtag = Hashtag.builder()
-                .content("content")
-                .build();
-        hashtagRepository.save(hashtag);
-
-        ChallengeHashtag challengeHashtag = ChallengeHashtag.builder()
-                .hashtag(hashtag)
-                .challenge(challenge1)
-                .build();
-        challenge1.getChallengeHashtags().add(challengeHashtag);
-        hashtag.getChallengeHashtags().add(challengeHashtag);
-        challengeHashtagRepository.save(challengeHashtag);
+        List<String> hashtagDto = List.of("tag1", "tag2");
+        List<Hashtag> hashtags = hashtagService.saveHashtag(hashtagDto);
+        challengeHashtagService.saveChallengeHashtag(challenge1, hashtags);
 
         ChallengeDto challengeDto2 = ChallengeDto.builder()
                 .title("제목입니다.2")
                 .content("내용입니다.2")
-                .challengeCategory(ChallengeCategory.ECONOMY.getDescription())
-                .challengeLocation(ChallengeLocation.OUTDOOR.getDescription())
-                .challengeDuration(ChallengeDuration.OVER_ONE_HOUR.getDescription())
+                .challengeCategory(ECONOMY.getDescription())
+                .challengeLocation(OUTDOOR.getDescription())
+                .challengeDuration(OVER_ONE_HOUR.getDescription())
                 .build();
         Challenge challenge2 = challengeService.saveChallenge(challengeDto2, createChallengeImgFiles(), savedUser);
 
@@ -130,9 +123,9 @@ class ChallengeControllerTest extends ControllerTest {
             ChallengeDto challengeDto = ChallengeDto.builder()
                     .title("제목입니다." + i)
                     .content("내용입니다." + i)
-                    .challengeCategory(ChallengeCategory.WORKOUT.getDescription())
-                    .challengeLocation(ChallengeLocation.INDOOR.getDescription())
-                    .challengeDuration(ChallengeDuration.WITHIN_TEN_MINUTES.getDescription())
+                    .challengeCategory(WORKOUT.getDescription())
+                    .challengeLocation(INDOOR.getDescription())
+                    .challengeDuration(WITHIN_TEN_MINUTES.getDescription())
                     .build();
             Challenge challenge = challengeService.saveChallenge(challengeDto, createChallengeImgFiles(), savedUser);
 
@@ -144,21 +137,16 @@ class ChallengeControllerTest extends ControllerTest {
         }
 
         for (int i = 1; i <= 8; i++) {
-            User user = User.builder()
-                    .userName("홍길동" + i)
-                    .email(i + "@test.com")
-                    .password("1234")
-                    .build();
-            userRepository.save(user);
+            User otherUser = userService.saveUser(
+                    createSpecificUserDto("홍길동" + i, i + "@test.com"), passwordEncoder);
             if (i == 1) {
-                userChallengeService.saveUserChallenge(challenge1, user);
+                userChallengeService.saveUserChallenge(challenge1, otherUser);
             }
             if (2 <= i && i <= 5) {
-                userChallengeService.saveUserChallenge(challenge2, user);
+                userChallengeService.saveUserChallenge(challenge2, otherUser);
             }
-
             if (i == 6) {
-                userChallengeService.saveUserChallenge(challenge6, user);
+                userChallengeService.saveUserChallenge(challenge6, otherUser);
             }
         }
     }
@@ -181,17 +169,20 @@ class ChallengeControllerTest extends ControllerTest {
                 "requestCreateChallenge",
                 "application/json", json.getBytes(UTF_8));
 
-        MockPart tag1 = new MockPart("\"hashtagDto\"", "tag1".getBytes(UTF_8));
-        MockPart tag2 = new MockPart("\"hashtagDto\"", "tag2".getBytes(UTF_8));
-        // TODO: 2023-02-07 현재 hashtag 값이 안 넘어와서  hashtag 테스트 코드 수정하기
+        List<String> hashtags = new ArrayList<>();
+        hashtags.add("tag1");
+        hashtags.add("tag2");
+        String hashtagJson = objectMapper.writeValueAsString(hashtags);
+        MockMultipartFile hashtagDto = new MockMultipartFile("hashtagDto",
+                "hashtagDto",
+                "application/json", hashtagJson.getBytes(UTF_8));
 
         mockMvc.perform(multipart("/challenge/new")
                         .file(requestCreateChallenge)
                         .part(new MockPart("challengeImgFiles", "challengeImgFile", challengeImgFiles.get(0).getBytes()))
                         .part(new MockPart("challengeImgFiles", "challengeImgFile", challengeImgFiles.get(1).getBytes()))
                         .part(new MockPart("challengeImgFiles", "challengeImgFile", challengeImgFiles.get(2).getBytes()))
-                        .part(tag1)
-                        .part(tag2)
+                        .file(hashtagDto)
                         .with(requestPostProcessor) // 토큰 인증 처리, 입력한 정보로 인증된 사용자 생성
                         .contentType(MediaType.MULTIPART_FORM_DATA)
                         .accept(MediaType.APPLICATION_JSON))
@@ -203,6 +194,7 @@ class ChallengeControllerTest extends ControllerTest {
                 .andExpect(jsonPath("$.challengeDuration").value(requestCreatChallenge.getChallengeDuration()))
                 .andExpect(jsonPath("$.challengeStatus").value(ChallengeStatus.TRYING.getDescription()))
                 .andExpect(jsonPath("$.challengeImgUrls[*]", hasItem(startsWith("/images/"))))
+                .andExpect(jsonPath("$.challengeHashtags[*]", hasItems("tag1", "tag2")))
                 .andExpect(jsonPath("$.challengeOwnerUser.userName").value(savedUser.getUserName()))
                 .andExpect(jsonPath("$.challengeOwnerUser.email").value(savedUser.getEmail()))
                 .andExpect(jsonPath("$.challengeOwnerUser.userId").value(savedUser.getId()));
@@ -228,6 +220,8 @@ class ChallengeControllerTest extends ControllerTest {
                 .andExpect(jsonPath("$.responseChallenge.created_at").value(challenge1.getFormattedCreatedAt()))
                 .andExpect(
                         jsonPath("$.responseChallenge.challengeImgUrls[*]").value(challenge1.getImgUrls()))
+                .andExpect(
+                        jsonPath("$.responseChallenge.challengeHashtags[*]").value(challenge1.getHashtags()))
                 .andExpect(jsonPath("$.responseChallenge.howManyUsersAreInThisChallenge").value(2))
                 .andExpect(
                         jsonPath("$.responseChallenge.challengeOwnerUser.userName").value(savedUser.getUserName()))
@@ -257,16 +251,18 @@ class ChallengeControllerTest extends ControllerTest {
                         "내용입니다.2", "내용입니다.1", "내용입니다.6", "내용입니다.3", "내용입니다.4",
                         "내용입니다.5", "내용입니다.7", "내용입니다.8", "내용입니다.9", "내용입니다.10")))
                 .andExpect(jsonPath("$.content[*].challengeCategory",
-                        hasItems(ChallengeCategory.ECONOMY.getDescription(), ChallengeCategory.STUDY.getDescription(),
-                                ChallengeCategory.WORKOUT.getDescription())))
+                        hasItems(ECONOMY.getDescription(), STUDY.getDescription(),
+                                WORKOUT.getDescription())))
                 .andExpect(jsonPath("$.content[*].challengeLocation",
-                        hasItems(ChallengeLocation.OUTDOOR.getDescription(),
-                                ChallengeLocation.INDOOR.getDescription())))
+                        hasItems(OUTDOOR.getDescription(),
+                                INDOOR.getDescription())))
                 .andExpect(jsonPath("$.content[*].challengeDuration",
-                        hasItems(ChallengeDuration.OVER_ONE_HOUR.getDescription(),
-                                ChallengeDuration.WITHIN_TEN_MINUTES.getDescription())))
+                        hasItems(OVER_ONE_HOUR.getDescription(),
+                                WITHIN_TEN_MINUTES.getDescription())))
                 .andExpect(jsonPath("$.content[*].challengeImgUrls",
                         hasItems(hasItem(startsWith("/images/")))))
+                .andExpect(jsonPath("$.content[*].challengeHashtags",
+                        hasItems(List.of("tag1", "tag2"))))
                 .andExpect(jsonPath("$.content[*].howManyUsersAreInThisChallenge",
                         contains(5, 2, 2, 1, 1, 1, 1, 1, 1, 1)))
                 .andExpect(jsonPath("$.content[*].challengeOwnerUser.userName",
@@ -285,50 +281,50 @@ class ChallengeControllerTest extends ControllerTest {
                         List.of(
                                 contains("제목입니다.1", "제목입니다.10"),
                                 contains("내용입니다.1", "내용입니다.10"),
-                                contains(ChallengeCategory.STUDY.getDescription(),
-                                        ChallengeCategory.WORKOUT.getDescription()),
-                                hasItem(ChallengeLocation.INDOOR.getDescription()),
-                                hasItem(ChallengeDuration.WITHIN_TEN_MINUTES.getDescription()),
+                                contains(STUDY.getDescription(),
+                                        WORKOUT.getDescription()),
+                                hasItem(INDOOR.getDescription()),
+                                hasItem(WITHIN_TEN_MINUTES.getDescription()),
                                 hasItem(hasItem(startsWith("/images/"))),
                                 contains(2, 1)
                         )),
                 Arguments.of(ChallengeSearchCondition.builder()
-                                .title(null).category(ChallengeCategory.WORKOUT.getDescription()).build(),
+                                .title(null).category(WORKOUT.getDescription()).build(),
                         "popular",
                         List.of(
                                 contains("제목입니다.6", "제목입니다.3", "제목입니다.4", "제목입니다.5", "제목입니다.7", "제목입니다.8",
                                         "제목입니다.9", "제목입니다.10"),
                                 contains("내용입니다.6", "내용입니다.3", "내용입니다.4", "내용입니다.5", "내용입니다.7", "내용입니다.8",
                                         "내용입니다.9", "내용입니다.10"),
-                                hasItem(ChallengeCategory.WORKOUT.getDescription()),
-                                hasItem(ChallengeLocation.INDOOR.getDescription()),
-                                hasItem(ChallengeDuration.WITHIN_TEN_MINUTES.getDescription()),
+                                hasItem(WORKOUT.getDescription()),
+                                hasItem(INDOOR.getDescription()),
+                                hasItem(WITHIN_TEN_MINUTES.getDescription()),
                                 hasItem(hasItem(startsWith("/images/"))),
                                 contains(2, 1, 1, 1, 1, 1, 1, 1)
                         )),
                 Arguments.of(ChallengeSearchCondition.builder()
-                                .title(null).category(ChallengeCategory.WORKOUT.getDescription()).build(),
+                                .title(null).category(WORKOUT.getDescription()).build(),
                         "time",
                         List.of(
                                 contains("제목입니다.10", "제목입니다.9", "제목입니다.8", "제목입니다.7", "제목입니다.6", "제목입니다.5",
                                         "제목입니다.4", "제목입니다.3"),
                                 contains("내용입니다.10", "내용입니다.9", "내용입니다.8", "내용입니다.7", "내용입니다.6", "내용입니다.5",
                                         "내용입니다.4", "내용입니다.3"),
-                                hasItem(ChallengeCategory.WORKOUT.getDescription()),
-                                hasItem(ChallengeLocation.INDOOR.getDescription()),
-                                hasItem(ChallengeDuration.WITHIN_TEN_MINUTES.getDescription()),
+                                hasItem(WORKOUT.getDescription()),
+                                hasItem(INDOOR.getDescription()),
+                                hasItem(WITHIN_TEN_MINUTES.getDescription()),
                                 hasItem(hasItem(startsWith("/images/"))),
                                 contains(1, 1, 1, 1, 2, 1, 1, 1)
                         )),
                 Arguments.of(ChallengeSearchCondition.builder()
-                                .title("1").category(ChallengeCategory.STUDY.getDescription()).build(),
+                                .title("1").category(STUDY.getDescription()).build(),
                         "popular",
                         List.of(
                                 contains("제목입니다.1"),
                                 contains("내용입니다.1"),
-                                contains(ChallengeCategory.STUDY.getDescription()),
-                                contains(ChallengeLocation.INDOOR.getDescription()),
-                                contains(ChallengeDuration.WITHIN_TEN_MINUTES.getDescription()),
+                                contains(STUDY.getDescription()),
+                                contains(INDOOR.getDescription()),
+                                contains(WITHIN_TEN_MINUTES.getDescription()),
                                 hasItem(hasItem(startsWith("/images/"))),
                                 contains(2))
                 ));
@@ -385,9 +381,11 @@ class ChallengeControllerTest extends ControllerTest {
         RequestUpdateChallenge requestUpdateChallenge = RequestUpdateChallenge.builder()
                 .title("수정된 제목")
                 .content("수정된 내용")
-                .challengeCategory(ChallengeCategory.WORKOUT.getDescription())
+                .challengeCategory(WORKOUT.getDescription())
                 .build();
         List<MultipartFile> updateChallengeImgFiles = updateChallengeImgFiles();
+
+        // TODO: 2023-02-20 hastag 수정도 추가하기
 
         String json = objectMapper.writeValueAsString(requestUpdateChallenge);
         MockMultipartFile mockRequestUpdateChallenge = new MockMultipartFile("requestUpdateChallenge",
@@ -414,6 +412,7 @@ class ChallengeControllerTest extends ControllerTest {
                 .andExpect(jsonPath("$.created_at").value(challenge1.getFormattedCreatedAt()))
                 .andExpect(jsonPath("$.updated_at").isNotEmpty())
                 .andExpect(jsonPath("$.challengeImgUrls[*]", hasItem(startsWith("/images/"))))
+                .andExpect(jsonPath("$.challengeHashtags[*]", hasItems("tag1", "tag2")))
                 .andExpect(jsonPath("$.challengeImgUrls", hasSize(2)));
     }
 

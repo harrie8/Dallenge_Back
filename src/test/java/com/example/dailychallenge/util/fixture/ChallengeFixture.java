@@ -5,6 +5,7 @@ import com.example.dailychallenge.entity.challenge.Challenge;
 import com.example.dailychallenge.entity.challenge.ChallengeCategory;
 import com.example.dailychallenge.entity.challenge.ChallengeDuration;
 import com.example.dailychallenge.entity.challenge.ChallengeLocation;
+import com.example.dailychallenge.entity.users.User;
 
 public class ChallengeFixture {
 
@@ -26,5 +27,20 @@ public class ChallengeFixture {
                 .challengeLocation(ChallengeLocation.INDOOR)
                 .challengeDuration(ChallengeDuration.WITHIN_TEN_MINUTES)
                 .build();
+    }
+
+    public static Challenge createSpecificChallenge(String title, String content, ChallengeCategory challengeCategory,
+                                                    ChallengeLocation challengeLocation,
+                                                    ChallengeDuration challengeDuration, User user) {
+        Challenge challenge = Challenge.builder()
+                .title(title)
+                .content(content)
+                .challengeCategory(challengeCategory)
+                .challengeLocation(challengeLocation)
+                .challengeDuration(challengeDuration)
+                .build();
+        challenge.setUser(user);
+
+        return challenge;
     }
 }

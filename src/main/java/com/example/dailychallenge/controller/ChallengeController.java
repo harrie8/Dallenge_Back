@@ -71,12 +71,12 @@ public class ChallengeController {
         UserChallenge userChallenge = userChallengeService.saveUserChallenge(challenge, findUser);
         userChallenge.challengeParticipate();
 
-        ResponseCreateChallenge responseCreateChallenge = ResponseCreateChallenge.create(challenge, userChallenge);
-
         if (hashtagDto != null) {
             List<Hashtag> hashtags = hashtagService.saveHashtag(hashtagDto);
             challengeHashtagService.saveChallengeHashtag(challenge, hashtags);
         }
+
+        ResponseCreateChallenge responseCreateChallenge = ResponseCreateChallenge.create(challenge, userChallenge);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(responseCreateChallenge);
     }

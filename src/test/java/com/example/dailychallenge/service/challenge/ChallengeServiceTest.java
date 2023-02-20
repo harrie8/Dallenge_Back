@@ -167,6 +167,7 @@ public class ChallengeServiceTest extends ServiceTest {
                         responseChallenge.getChallengeDuration());
                 assertEquals(savedChallenge.getFormattedCreatedAt(), responseChallenge.getCreated_at());
                 assertEquals(savedChallenge.getImgUrls(), responseChallenge.getChallengeImgUrls());
+                assertEquals(savedChallenge.getHashtags(), responseChallenge.getChallengeHashtags());
                 assertEquals(1L, responseChallenge.getHowManyUsersAreInThisChallenge());
                 assertEquals(savedChallenge.getUsers().getUserName(),
                         responseChallenge.getChallengeOwnerUser().getUserName());
@@ -221,6 +222,7 @@ public class ChallengeServiceTest extends ServiceTest {
                 assertEquals(requestUpdateChallenge.getChallengeCategory(),
                         updatedChallenge.getChallengeCategory().getDescription());
                 assertNotEquals(savedChallenge.getUpdated_at(), updatedChallenge.getUpdated_at());
+                // TODO: 2023-02-20 중복 이미지 저장 문제
                 List<ChallengeImg> all = challengeImgRepository.findAll(); // 이게 없으면 같은 데이터가 두 번 저장되는 오류 발생
                 assertThat(all).extracting("oriImgName")
                         .containsExactly("updatedChallengeImage0.jpg", "updatedChallengeImage1.jpg");

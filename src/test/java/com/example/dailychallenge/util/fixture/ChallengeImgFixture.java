@@ -1,5 +1,7 @@
 package com.example.dailychallenge.util.fixture;
 
+import com.example.dailychallenge.entity.challenge.Challenge;
+import com.example.dailychallenge.entity.challenge.ChallengeImg;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Value;
@@ -29,5 +31,20 @@ public class ChallengeImgFixture {
             updateChallengeImgFiles.add(new MockMultipartFile(path, imageName, "image/jpg", new byte[]{1, 2, 3, 4}));
         }
         return updateChallengeImgFiles;
+    }
+
+    public static List<ChallengeImg> createSpecificChallengeImgs(String imgUrl, String imgName, String oriImgName,
+                                                                 Challenge challenge, int repeatCount) {
+        List<ChallengeImg> challengeImgs = new ArrayList<>();
+        for (int i = 0; i < repeatCount; i++) {
+            ChallengeImg challengeImg = new ChallengeImg();
+            challengeImg.setImgUrl(imgUrl);
+            challengeImg.setImgName(imgName);
+            challengeImg.setOriImgName(oriImgName);
+            challengeImg.setChallenge(challenge);
+            challengeImg.getChallenge().addChallengeImg(challengeImg);
+            challengeImgs.add(challengeImg);
+        }
+        return challengeImgs;
     }
 }

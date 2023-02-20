@@ -92,6 +92,15 @@ public class Challenge extends BaseEntity {
         return imgUrls;
     }
 
+    public List<String> getHashtags() {
+        List<String> hashtags = new ArrayList<>();
+        for (ChallengeHashtag challengeHashtag : challengeHashtags) {
+            String hashtagContent = challengeHashtag.getHashtag().getContent();
+            hashtags.add(hashtagContent);
+        }
+        return hashtags;
+    }
+
     public ChallengeEditor.ChallengeEditorBuilder toEditor() {
         return ChallengeEditor.builder()
                 .title(title)
