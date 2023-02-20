@@ -137,6 +137,7 @@ public class ChallengeController {
         }
 
         ResponseUpdateChallenge responseChallenge = ResponseUpdateChallenge.create(updatedChallenge);
+
         return ResponseEntity.status(HttpStatus.OK).body(responseChallenge);
     }
 

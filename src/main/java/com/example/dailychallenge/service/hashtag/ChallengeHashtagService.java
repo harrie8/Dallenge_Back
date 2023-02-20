@@ -5,13 +5,12 @@ import com.example.dailychallenge.entity.hashtag.ChallengeHashtag;
 import com.example.dailychallenge.entity.hashtag.Hashtag;
 import com.example.dailychallenge.repository.ChallengeHashtagRepository;
 import com.example.dailychallenge.service.challenge.ChallengeService;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional
@@ -66,7 +65,7 @@ public class ChallengeHashtagService {
     public void deleteChallengeHashtag(Long challengeId, Long hashtagId) {
         try {
             ChallengeHashtag challengeHashtag = challengeHashtagRepository
-                    .findByChallengeIdAndHashtagId(hashtagId, challengeId);
+                    .findByChallengeIdAndHashtagId(challengeId, hashtagId);
 
             challengeHashtag.getChallenge().getChallengeHashtags().remove(challengeHashtag);
             challengeHashtagRepository.delete(challengeHashtag);

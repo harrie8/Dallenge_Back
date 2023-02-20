@@ -1,5 +1,6 @@
 package com.example.dailychallenge.service.hashtag;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.example.dailychallenge.dto.ChallengeDto;
@@ -89,5 +90,22 @@ class ChallengeHashtagServiceTest {
 
         assertEquals(challengeHashtags.get(0).getChallenge(),challenge);
         assertEquals(challengeHashtags.get(0).getHashtag(),hashtag.get(0));
+    }
+
+    @Test
+    @DisplayName("챌린지 해시태그 수정 테스트")
+    void updateUserChallenge() throws Exception {
+        Challenge challenge = createChallenge();
+        List<Hashtag> hashtag = createHashtag();
+        challengeHashtagService.saveChallengeHashtag(challenge, hashtag);
+        Long challengeId = challenge.getId();
+        List<String> updateHashtagDto = List.of("editTag1", "editTag2");
+        List<Hashtag> updateHashTag = hashtagService.updateHashtag(updateHashtagDto, challengeId);
+
+        List<ChallengeHashtag> updateChallengeHashtag = challengeHashtagService.updateChallengeHashtag(challengeId,
+                updateHashTag);
+
+        assertThat(updateChallengeHashtag).extracting("challenge").containsOnly(challenge);
+        assertThat(updateChallengeHashtag).extracting("hashtag").containsExactlyElementsOf(updateHashTag);
     }
 }

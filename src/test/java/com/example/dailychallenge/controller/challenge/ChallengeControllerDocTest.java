@@ -3,6 +3,7 @@ package com.example.dailychallenge.controller.challenge;
 import static com.example.dailychallenge.util.fixture.ChallengeImgFixture.createChallengeImgFiles;
 import static com.example.dailychallenge.util.fixture.ChallengeImgFixture.updateChallengeImgFiles;
 import static com.example.dailychallenge.util.fixture.TokenFixture.AUTHORIZATION;
+import static com.example.dailychallenge.util.fixture.UserFixture.createSpecificUserDto;
 import static com.example.dailychallenge.util.fixture.UserFixture.createUser;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.hamcrest.Matchers.contains;
@@ -33,20 +34,20 @@ import com.example.dailychallenge.entity.challenge.ChallengeDuration;
 import com.example.dailychallenge.entity.challenge.ChallengeLocation;
 import com.example.dailychallenge.entity.challenge.ChallengeStatus;
 import com.example.dailychallenge.entity.comment.Comment;
-import com.example.dailychallenge.entity.hashtag.ChallengeHashtag;
 import com.example.dailychallenge.entity.hashtag.Hashtag;
 import com.example.dailychallenge.entity.users.User;
-import com.example.dailychallenge.repository.ChallengeHashtagRepository;
 import com.example.dailychallenge.repository.CommentRepository;
-import com.example.dailychallenge.repository.HashtagRepository;
 import com.example.dailychallenge.repository.UserRepository;
 import com.example.dailychallenge.service.challenge.ChallengeService;
 import com.example.dailychallenge.service.challenge.UserChallengeService;
+import com.example.dailychallenge.service.hashtag.ChallengeHashtagService;
+import com.example.dailychallenge.service.hashtag.HashtagService;
 import com.example.dailychallenge.service.users.UserService;
 import com.example.dailychallenge.util.RestDocsTest;
 import com.example.dailychallenge.vo.challenge.RequestCreateChallenge;
 import com.example.dailychallenge.vo.challenge.RequestUpdateChallenge;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -70,9 +71,9 @@ public class ChallengeControllerDocTest extends RestDocsTest {
     @Autowired
     private CommentRepository commentRepository;
     @Autowired
-    private HashtagRepository hashtagRepository;
+    private HashtagService hashtagService;
     @Autowired
-    private ChallengeHashtagRepository challengeHashtagRepository;
+    private ChallengeHashtagService challengeHashtagService;
 
     private User savedUser;
     private Challenge challenge1;
@@ -102,18 +103,9 @@ public class ChallengeControllerDocTest extends RestDocsTest {
         comment.saveCommentChallenge(challenge1);
         commentRepository.save(comment);
 
-        Hashtag hashtag = Hashtag.builder()
-                .content("content")
-                .build();
-        hashtagRepository.save(hashtag);
-
-        ChallengeHashtag challengeHashtag = ChallengeHashtag.builder()
-                .hashtag(hashtag)
-                .challenge(challenge1)
-                .build();
-        challenge1.getChallengeHashtags().add(challengeHashtag);
-        hashtag.getChallengeHashtags().add(challengeHashtag);
-        challengeHashtagRepository.save(challengeHashtag);
+        List<String> hashtagDto = List.of("tag1", "tag2");
+        List<Hashtag> hashtags = hashtagService.saveHashtag(hashtagDto);
+        challengeHashtagService.saveChallengeHashtag(challenge1, hashtags);
 
         ChallengeDto challengeDto2 = ChallengeDto.builder()
                 .title("제목입니다.2")
@@ -146,21 +138,17 @@ public class ChallengeControllerDocTest extends RestDocsTest {
         }
 
         for (int i = 1; i <= 8; i++) {
-            User user = User.builder()
-                    .userName("홍길동" + i)
-                    .email(i + "@test.com")
-                    .password("1234")
-                    .build();
-            userRepository.save(user);
+            User otherUser = userService.saveUser(
+                    createSpecificUserDto("홍길동" + i, i + "@test.com"), passwordEncoder);
             if (i == 1) {
-                userChallengeService.saveUserChallenge(challenge1, user);
+                userChallengeService.saveUserChallenge(challenge1, otherUser);
             }
             if (2 <= i && i <= 5) {
-                userChallengeService.saveUserChallenge(challenge2, user);
+                userChallengeService.saveUserChallenge(challenge2, otherUser);
             }
 
             if (i == 6) {
-                userChallengeService.saveUserChallenge(challenge6, user);
+                userChallengeService.saveUserChallenge(challenge6, otherUser);
             }
         }
     }
@@ -184,8 +172,13 @@ public class ChallengeControllerDocTest extends RestDocsTest {
                 "application/json", json.getBytes(
                 StandardCharsets.UTF_8));
 
-        MockPart tag1 = new MockPart("\"hashtagDto\"", "tag1".getBytes(UTF_8));
-        MockPart tag2 = new MockPart("\"hashtagDto\"", "tag2".getBytes(UTF_8));
+        List<String> hashtags = new ArrayList<>();
+        hashtags.add("tag1");
+        hashtags.add("tag2");
+        String hashtagJson = objectMapper.writeValueAsString(hashtags);
+        MockMultipartFile hashtagDto = new MockMultipartFile("hashtagDto",
+                "hashtagDto",
+                "application/json", hashtagJson.getBytes(UTF_8));
 
         String challengeCategoryDescriptions = String.join(", ", ChallengeCategory.getDescriptions());
         String challengeLocationDescriptions = String.join(", ", ChallengeLocation.getDescriptions());
@@ -195,8 +188,7 @@ public class ChallengeControllerDocTest extends RestDocsTest {
                         .part(new MockPart("challengeImgFiles", "challengeImgFile", challengeImgFiles.get(0).getBytes()))
                         .part(new MockPart("challengeImgFiles", "challengeImgFile", challengeImgFiles.get(1).getBytes()))
                         .part(new MockPart("challengeImgFiles", "challengeImgFile", challengeImgFiles.get(2).getBytes()))
-                        .part(tag1)
-                        .part(tag2)
+                        .file(hashtagDto)
                         .header(AUTHORIZATION, generateToken(savedUser.getEmail(), userService))
                         .contentType(MediaType.MULTIPART_FORM_DATA)
                         .accept(MediaType.APPLICATION_JSON))
@@ -208,6 +200,7 @@ public class ChallengeControllerDocTest extends RestDocsTest {
                 .andExpect(jsonPath("$.challengeDuration").value(requestCreatChallenge.getChallengeDuration()))
                 .andExpect(jsonPath("$.challengeStatus").value(ChallengeStatus.TRYING.getDescription()))
                 .andExpect(jsonPath("$.challengeImgUrls[*]", hasItem(startsWith("/images/"))))
+                .andExpect(jsonPath("$.challengeHashtags[*]", hasItems("tag1", "tag2")))
                 .andExpect(jsonPath("$.challengeOwnerUser.userName").value(savedUser.getUserName()))
                 .andExpect(jsonPath("$.challengeOwnerUser.email").value(savedUser.getEmail()))
                 .andExpect(jsonPath("$.challengeOwnerUser.userId").value(savedUser.getId()))
@@ -217,7 +210,7 @@ public class ChallengeControllerDocTest extends RestDocsTest {
                                         .attributes(key("type").value("JSON")),
                                 partWithName("challengeImgFiles").description("챌린지 이미지 파일들(FILE)").optional()
                                         .attributes(key("type").value(".jpg")),
-                                partWithName("\"hashtagDto\"").description("해시태그 데이터(LIST)").optional()
+                                partWithName("hashtagDto").description("해시태그 데이터(LIST)").optional()
                                         .attributes(key("type").value("LIST"))
                         ),
                         requestPartFields("requestCreateChallenge",
@@ -460,6 +453,14 @@ public class ChallengeControllerDocTest extends RestDocsTest {
                 "requestUpdateChallenge",
                 "application/json", json.getBytes(UTF_8));
 
+        List<String> hashtags = new ArrayList<>();
+        hashtags.add("editTag1");
+        hashtags.add("editTag2");
+        String hashtagJson = objectMapper.writeValueAsString(hashtags);
+        MockMultipartFile hashtagDto = new MockMultipartFile("hashtagDto",
+                "hashtagDto",
+                "application/json", hashtagJson.getBytes(UTF_8));
+
         String challengeCategoryDescriptions = String.join(", ", ChallengeCategory.getDescriptions());
         Long challenge1Id = challenge1.getId();
         mockMvc.perform(multipart("/challenge/{challengeId}", challenge1Id)
@@ -468,6 +469,7 @@ public class ChallengeControllerDocTest extends RestDocsTest {
                                 updateChallengeImgFiles.get(0).getBytes()))
                         .part(new MockPart("updateChallengeImgFiles", "updateChallengeImgFiles",
                                 updateChallengeImgFiles.get(1).getBytes()))
+                        .file(hashtagDto)
                         .header(AUTHORIZATION, generateToken(savedUser.getEmail(), userService))
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -479,6 +481,7 @@ public class ChallengeControllerDocTest extends RestDocsTest {
                 .andExpect(jsonPath("$.created_at").value(challenge1.getFormattedCreatedAt()))
                 .andExpect(jsonPath("$.updated_at").isNotEmpty())
                 .andExpect(jsonPath("$.challengeImgUrls[*]", hasItem(startsWith("/images/"))))
+                .andExpect(jsonPath("$.challengeHashtags[*]", hasItems("editTag1", "editTag2")))
                 .andExpect(jsonPath("$.challengeImgUrls", hasSize(2)))
                 .andDo(restDocs.document(
                         pathParameters(
@@ -488,9 +491,9 @@ public class ChallengeControllerDocTest extends RestDocsTest {
                                 partWithName("requestUpdateChallenge").description("챌린지 정보 데이터(JSON)")
                                         .attributes(key("type").value("JSON")),
                                 partWithName("updateChallengeImgFiles").description("챌린지 이미지 파일들(FILE)").optional()
-                                        .attributes(key("type").value(".jpg"))
-//                                partWithName("\"hashtagDto\"").description("해시태그 데이터(LIST)").optional()
-//                                        .attributes(key("type").value("LIST"))
+                                        .attributes(key("type").value(".jpg")),
+                                partWithName("hashtagDto").description("해시태그 데이터(LIST)").optional()
+                                        .attributes(key("type").value("LIST"))
                         ),
                         requestPartFields("requestUpdateChallenge",
                                 fieldWithPath("title").description("제목"),
@@ -507,7 +510,8 @@ public class ChallengeControllerDocTest extends RestDocsTest {
                                 fieldWithPath("challengeDuration").description("기간"),
                                 fieldWithPath("created_at").description("생성일"),
                                 fieldWithPath("updated_at").description("수정일"),
-                                fieldWithPath("challengeImgUrls").description("사진 url들")
+                                fieldWithPath("challengeImgUrls").description("사진 url들"),
+                                fieldWithPath("challengeHashtags").description("해시태그들")
                         )
                 ));
     }

@@ -385,12 +385,18 @@ class ChallengeControllerTest extends ControllerTest {
                 .build();
         List<MultipartFile> updateChallengeImgFiles = updateChallengeImgFiles();
 
-        // TODO: 2023-02-20 hastag 수정도 추가하기
-
         String json = objectMapper.writeValueAsString(requestUpdateChallenge);
         MockMultipartFile mockRequestUpdateChallenge = new MockMultipartFile("requestUpdateChallenge",
                 "requestUpdateChallenge",
                 "application/json", json.getBytes(UTF_8));
+
+        List<String> hashtags = new ArrayList<>();
+        hashtags.add("editTag1");
+        hashtags.add("editTag2");
+        String hashtagJson = objectMapper.writeValueAsString(hashtags);
+        MockMultipartFile hashtagDto = new MockMultipartFile("hashtagDto",
+                "hashtagDto",
+                "application/json", hashtagJson.getBytes(UTF_8));
 
         Long challenge1Id = challenge1.getId();
         mockMvc.perform(multipart("/challenge/{challengeId}", challenge1Id)
@@ -399,6 +405,7 @@ class ChallengeControllerTest extends ControllerTest {
                                 updateChallengeImgFiles.get(0).getBytes()))
                         .part(new MockPart("updateChallengeImgFiles", "updateChallengeImgFiles",
                                 updateChallengeImgFiles.get(1).getBytes()))
+                        .file(hashtagDto)
                         .with(requestPostProcessor)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -412,7 +419,7 @@ class ChallengeControllerTest extends ControllerTest {
                 .andExpect(jsonPath("$.created_at").value(challenge1.getFormattedCreatedAt()))
                 .andExpect(jsonPath("$.updated_at").isNotEmpty())
                 .andExpect(jsonPath("$.challengeImgUrls[*]", hasItem(startsWith("/images/"))))
-                .andExpect(jsonPath("$.challengeHashtags[*]", hasItems("tag1", "tag2")))
+                .andExpect(jsonPath("$.challengeHashtags[*]", hasItems("editTag1", "editTag2")))
                 .andExpect(jsonPath("$.challengeImgUrls", hasSize(2)));
     }
 

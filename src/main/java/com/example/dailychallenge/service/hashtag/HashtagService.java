@@ -56,11 +56,13 @@ public class HashtagService {
             if (!hashtagDto.contains(hashtag)) { // 기존 태그가 수정할 태그에 포함이 안되면
                 Hashtag deleteHashtag = hashtagRepository.findByContent(hashtag);
 
-                if(deleteHashtag.getTagCount()>1) deleteHashtag.minusTagCount();  // 1 빼기
-                else {
+                challengeHashtagService.deleteChallengeHashtag(challengeId, deleteHashtag.getId());
+
+                if (deleteHashtag.getTagCount() > 1) {
+                    deleteHashtag.minusTagCount();  // 1 빼기}
+                } else {
                     hashtagRepository.delete(deleteHashtag); // 삭제
                 }
-                challengeHashtagService.deleteChallengeHashtag(challengeId, deleteHashtag.getId());
             }
         }
         return res;
