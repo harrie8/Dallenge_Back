@@ -100,7 +100,7 @@ public class CommentController {
     @GetMapping("/{challengeId}/comment")
     public ResponseEntity<Page<ResponseChallengeComment>> searchCommentsByChallengeId(
             @PathVariable Long challengeId,
-            @PageableDefault(page = 0, size = 10, sort = "likes", direction = Sort.Direction.DESC) Pageable pageable) {
+            @PageableDefault(page = 0, size = 10, sort = "time", direction = Sort.Direction.DESC) Pageable pageable) {
 
         Challenge challenge = challengeService.findById(challengeId);
         Page<ResponseChallengeComment> result = commentService.searchCommentsByChallengeId(challenge, pageable);

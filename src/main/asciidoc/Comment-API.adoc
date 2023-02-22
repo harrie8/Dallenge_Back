@@ -91,6 +91,10 @@ include::{snippets}/comment-like/http-response.adoc[]
 [[Comment-특정-챌린지의-댓글-조회]]
 === 특정 챌린지의 댓글 조회
 
+- 최근 생성된 순서로 조회하려면 sort=time
+- 좋아요 순서로 조회하려면 sort=likes
+- sort 값을 입력하지 않으면 sort=time이 적용됩니다.
+
 operation::search-comments-by-challengeId[snippets='http-request,path-parameters,request-parameters']
 
 ==== HTTP response
@@ -103,6 +107,10 @@ include::{snippets}/search-comments-by-challengeId/response-fields.adoc[]
 
 [[Comment-특정-유저의-댓글-조회]]
 === 특정 유저의 댓글 조회
+
+- 최근 생성된 순서로 조회하려면 sort=time
+- 좋아요 순서로 조회하려면 sort=likes
+- sort 값을 입력하지 않으면 sort=time이 적용됩니다.
 
 operation::search-comments-by-userId[snippets='http-request,path-parameters,request-parameters']
 
