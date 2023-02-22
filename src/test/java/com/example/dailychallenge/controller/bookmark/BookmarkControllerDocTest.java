@@ -67,7 +67,8 @@ public class BookmarkControllerDocTest  extends RestDocsTest {
                                 fieldWithPath("id").description("북마크 ID"),
                                 fieldWithPath("title").description("챌린지 제목"),
                                 fieldWithPath("createdAt").description("북마크 생성 시간"),
-                                fieldWithPath("userId").description("회원 ID")
+                                fieldWithPath("userId").description("회원 ID"),
+                                fieldWithPath("challengeId").description("챌린지 ID")
                         )
                 ));
     }
@@ -116,7 +117,8 @@ public class BookmarkControllerDocTest  extends RestDocsTest {
                                 fieldWithPath("content[*].id").description("북마크 ID"),
                                 fieldWithPath("content[*].title").description("챌린지 제목"),
                                 fieldWithPath("content[*].createdAt").description("북마크한 시간"),
-                                fieldWithPath("content[*].userId").description("유저 ID")
+                                fieldWithPath("content[*].userId").description("유저 ID"),
+                                fieldWithPath("content[*].challengeId").description("챌린지 ID")
                         )
                 ));
     }

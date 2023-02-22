@@ -20,6 +20,9 @@ import com.example.dailychallenge.service.bookmark.BookmarkService;
 import com.example.dailychallenge.service.challenge.ChallengeService;
 import com.example.dailychallenge.service.users.UserService;
 import com.example.dailychallenge.util.ControllerTest;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -64,7 +67,8 @@ class BookmarkControllerTest extends ControllerTest {
                 .andExpect(jsonPath("$.id").isNotEmpty())
                 .andExpect(jsonPath("$.title").value(challenge.getTitle()))
                 .andExpect(jsonPath("$.createdAt").isNotEmpty())
-                .andExpect(jsonPath("$.userId").value(otherUser.getId()));
+                .andExpect(jsonPath("$.userId").value(otherUser.getId()))
+                .andExpect(jsonPath("$.challengeId").value(challenge.getId()));
     }
 
     @Test
@@ -84,14 +88,17 @@ class BookmarkControllerTest extends ControllerTest {
     @DisplayName("유저의 북마크들 조회 테스트")
     public void searchBookmarksByUserIdTest() throws Exception {
         User otherUser = userService.saveUser(createOtherUser(), passwordEncoder);
+        List<Long> otherChallengeIds = new ArrayList<>();
         for (int i = 0; i < 5; i++) {
             Challenge otherChallenge = challengeService.saveChallenge(createChallengeDto(), createChallengeImgFiles(),
                     savedUser);
+            otherChallengeIds.add(otherChallenge.getId());
 
             Thread.sleep(1);
             bookmarkService.saveBookmark(otherUser, otherChallenge);
         }
         Long otherUserId = otherUser.getId();
+        otherChallengeIds.sort(Comparator.reverseOrder());
 
         mockMvc.perform(get("/user/{userId}/bookmark", otherUserId)
                         .with(user(userService.loadUserByUsername(otherUser.getEmail())))
@@ -103,6 +110,10 @@ class BookmarkControllerTest extends ControllerTest {
                         hasItems("제목입니다.")))
                 .andExpect(jsonPath("$.content[*].createdAt").isNotEmpty())
                 .andExpect(jsonPath("$.content[*].userId",
-                        hasItems(otherUser.getId().intValue())));
+                        hasItems(otherUser.getId().intValue())))
+                .andExpect(jsonPath("$.content[*].challengeId",
+                        hasItems(otherChallengeIds.get(0).intValue(), otherChallengeIds.get(1).intValue(),
+                                otherChallengeIds.get(2).intValue(), otherChallengeIds.get(3).intValue(),
+                                otherChallengeIds.get(4).intValue())));
     }
 }

@@ -13,14 +13,16 @@ public class ResponseBookmark {
     private String title;
     private String createdAt;
     private Long userId;
+    private Long challengeId;
 
 
     @Builder
-    public ResponseBookmark(Long id, String title, String createdAt, Long userId) {
+    public ResponseBookmark(Long id, String title, String createdAt, Long userId, Long challengeId) {
         this.id = id;
         this.title = title;
         this.createdAt = createdAt;
         this.userId = userId;
+        this.challengeId = challengeId;
     }
 
     @QueryProjection
@@ -29,5 +31,6 @@ public class ResponseBookmark {
         this.title = bookmark.getChallenge().getTitle();
         this.createdAt = bookmark.getFormattedCreatedAt();
         this.userId = bookmark.getUsers().getId();
+        this.challengeId = bookmark.getChallenge().getId();
     }
 }
