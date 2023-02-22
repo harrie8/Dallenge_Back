@@ -4,6 +4,9 @@
 [[Comment-댓글-생성]]
 === 댓글 생성
 
+- postman 예시
+image:comment/createComment.png[]
+
 operation::comment-create[snippets='http-request,path-parameters']
 
 .요청값
@@ -11,17 +14,13 @@ operation::comment-create[snippets='http-request,path-parameters']
 ====
 
 =====
-include::{snippets}/comment-create/request-parts.adoc[]
+operation::comment-create/[snippets='request-parts']
+
+operation::comment-create/[snippets='request-part-commentDto-fields']
 
 commentImgFile - 댓글 이미지 파일(FILE) +
 .jpg 형식의 이미지 파일을 지원합니다.
 
-include::{snippets}/comment-create/request-parameters.adoc[]
-
-content - 댓글 내용(String) +
-파라미터라고 써있지만 form-data에 넣어주시면 됩니다.
-
-image:comment/createComment.png[]
 =====
 
 ====
@@ -33,6 +32,9 @@ operation::comment-create[snippets='http-response']
 [[Comment-댓글-수정]]
 === 댓글 수정
 
+- postman 예시
+image:comment/updateComment.png[]
+
 ==== HTTP request
 
 include::{snippets}/comment-update/http-request.adoc[]
@@ -43,17 +45,12 @@ operation::comment-update[snippets='path-parameters']
 ====
 
 =====
-include::{snippets}/comment-update/request-parts.adoc[]
+operation::comment-update/[snippets='request-parts']
+
+operation::comment-update/[snippets='request-part-commentDto-fields']
 
 commentDtoImg - 댓글 수정 프로필 이미지(FILE) +
 .jpg 형식의 이미지 파일을 지원합니다.
-
-include::{snippets}/comment-update/request-parameters.adoc[]
-
-content - 댓글 수정 내용(String) +
-파라미터라고 써있지만 form-data에 넣어주시면 됩니다.
-
-image:comment/createComment.png[]
 
 =====
 

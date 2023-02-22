@@ -4,6 +4,9 @@
 [[Challenge-챌린지-생성]]
 === 챌린지 생성
 
+- postman 예시
+image:challenge/createChallenge.png[]
+
 .HTTP Request
 [%collapsible]
 ====
@@ -118,6 +121,9 @@ include::{snippets}/challenge-controller-doc-test/search-challenges-by-condition
 
 [[Challenge-챌린지-수정]]
 === 챌린지 수정
+
+- postman 예시
+image:challenge/updateChallenge.png[]
 
 .HTTP Request
 [%collapsible]
