@@ -12,6 +12,8 @@ import com.example.dailychallenge.vo.ResponseChallengeComment;
 import com.example.dailychallenge.vo.ResponseComment;
 import com.example.dailychallenge.vo.ResponseUserComment;
 import java.util.HashMap;
+import java.util.List;
+import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -22,11 +24,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequiredArgsConstructor
@@ -39,11 +42,12 @@ public class CommentController {
     public ResponseEntity<ResponseComment> createComment(
             @AuthenticationPrincipal org.springframework.security.core.userdetails.User user,
             @PathVariable("challengeId") Long challengeId,
-            @ModelAttribute CommentDto commentDto) {
+            @RequestPart(required = false) @Valid CommentDto commentDto,
+            @RequestPart(required = false) List<MultipartFile> commentImgFiles) {
 
         User findUser = userService.findByEmail(user.getUsername()).orElseThrow(UserNotFound::new);
         Challenge challenge = challengeService.findById(challengeId);
-        Comment comment = commentService.saveComment(commentDto, findUser, challenge);
+        Comment comment = commentService.saveComment(commentDto, commentImgFiles, findUser, challenge);
 
         ResponseComment responseComment = ResponseComment.builder()
                 .id(comment.getId())
@@ -60,7 +64,7 @@ public class CommentController {
             @AuthenticationPrincipal org.springframework.security.core.userdetails.User user,
             @PathVariable("challengeId") Long challengeId,
             @PathVariable("commentId") Long commentId,
-            @ModelAttribute CommentDto commentDto) {
+            @RequestPart @Valid CommentDto commentDto) {
         String userEmail = user.getUsername();
         User findUser = userService.findByEmail(userEmail).orElseThrow(UserNotFound::new);
 
