@@ -25,6 +25,7 @@ import com.example.dailychallenge.entity.challenge.ChallengeDuration;
 import com.example.dailychallenge.entity.challenge.ChallengeLocation;
 import com.example.dailychallenge.entity.comment.Comment;
 import com.example.dailychallenge.entity.users.User;
+import com.example.dailychallenge.exception.users.UserNotFound;
 import com.example.dailychallenge.service.challenge.ChallengeService;
 import com.example.dailychallenge.service.comment.CommentService;
 import com.example.dailychallenge.service.users.UserService;
@@ -77,7 +78,7 @@ class CommentControllerTest extends ControllerTest {
 
     public Comment createComment() throws Exception {
         Challenge challenge = createChallenge();
-        User user = userService.findByEmail(EMAIL);
+        User user = userService.findByEmail(EMAIL).orElseThrow(UserNotFound::new);
         List<MultipartFile> commentDtoImg = new ArrayList<>();
         commentDtoImg.add(createMultipartFiles());
         CommentDto commentDto = CommentDto.builder()

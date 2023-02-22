@@ -62,10 +62,7 @@ public class ChallengeController {
             @RequestPart(value = "hashtagDto", required = false) HashtagDto hashtagDto) {
         ModelMapper mapper = new ModelMapper();
         String userEmail = user.getUsername();
-        User findUser = userService.findByEmail(userEmail);
-        if (findUser == null) {
-            throw new UserNotFound();
-        }
+        User findUser = userService.findByEmail(userEmail).orElseThrow(UserNotFound::new);
         ChallengeDto challengeDto = mapper.map(requestCreateChallenge, ChallengeDto.class);
 
         Challenge challenge = challengeService.saveChallenge(challengeDto, challengeImgFiles, findUser);
@@ -125,10 +122,7 @@ public class ChallengeController {
             @RequestPart(value = "hashtagDto", required = false) HashtagDto hashtagDto) {
 
         String userEmail = user.getUsername();
-        User findUser = userService.findByEmail(userEmail);
-        if (findUser == null) {
-            throw new UserNotFound();
-        }
+        User findUser = userService.findByEmail(userEmail).orElseThrow(UserNotFound::new);
 
         Challenge updatedChallenge = challengeService.updateChallenge(challengeId, requestUpdateChallenge,
                 updateChallengeImgFiles, findUser);
@@ -149,10 +143,7 @@ public class ChallengeController {
             @AuthenticationPrincipal org.springframework.security.core.userdetails.User user,
             @PathVariable Long challengeId) {
         String userEmail = user.getUsername();
-        User findUser = userService.findByEmail(userEmail);
-        if (findUser == null) {
-            throw new UserNotFound();
-        }
+        User findUser = userService.findByEmail(userEmail).orElseThrow(UserNotFound::new);
 
         List<ChallengeHashtag> challengeHashtags = challengeHashtagService.findByChallengeId(challengeId);
         List<Hashtag> savedTag = challengeHashtags.stream()

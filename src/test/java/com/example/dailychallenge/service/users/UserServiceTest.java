@@ -94,7 +94,7 @@ class UserServiceTest {
 
         userService.updateUser(savedUser, requestUpdateUser, multipartFile);
 
-        User editUser = userService.findByEmail(savedUser.getEmail());
+        User editUser = userService.findByEmail(savedUser.getEmail()).orElseThrow(UserNotFound::new);
 
         assertAll(() -> {
             assertEquals(editUser.getUserName(), requestUpdateUser.getUserName());

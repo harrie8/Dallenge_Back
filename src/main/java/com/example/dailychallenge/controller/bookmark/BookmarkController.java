@@ -3,6 +3,7 @@ package com.example.dailychallenge.controller.bookmark;
 import com.example.dailychallenge.entity.bookmark.Bookmark;
 import com.example.dailychallenge.entity.challenge.Challenge;
 import com.example.dailychallenge.entity.users.User;
+import com.example.dailychallenge.exception.users.UserNotFound;
 import com.example.dailychallenge.service.bookmark.BookmarkService;
 import com.example.dailychallenge.service.challenge.ChallengeService;
 import com.example.dailychallenge.service.users.UserService;
@@ -33,7 +34,7 @@ public class BookmarkController {
             @AuthenticationPrincipal org.springframework.security.core.userdetails.User user,
             @PathVariable("challengeId") Long challengeId) {
 
-        User findUser = userService.findByEmail(user.getUsername());
+        User findUser = userService.findByEmail(user.getUsername()).orElseThrow(UserNotFound::new);
         Challenge challenge = challengeService.findById(challengeId);
         Bookmark bookmark = bookmarkService.saveBookmark(findUser, challenge);
 

@@ -4,15 +4,16 @@ import com.example.dailychallenge.dto.UserDto;
 import com.example.dailychallenge.entity.users.User;
 import com.example.dailychallenge.exception.users.UserDuplicateCheck;
 import com.example.dailychallenge.exception.users.UserLoginFailure;
+import com.example.dailychallenge.exception.users.UserNotFound;
 import com.example.dailychallenge.exception.users.UserPasswordCheck;
 import com.example.dailychallenge.service.users.UserService;
 import com.example.dailychallenge.utils.JwtTokenUtil;
 import com.example.dailychallenge.vo.RequestLogin;
 import com.example.dailychallenge.vo.RequestUpdateUser;
 import com.example.dailychallenge.vo.RequestUser;
+import com.example.dailychallenge.vo.ResponseChallengeByUserChallenge;
 import com.example.dailychallenge.vo.ResponseLoginUser;
 import com.example.dailychallenge.vo.ResponseUser;
-import com.example.dailychallenge.vo.ResponseChallengeByUserChallenge;
 import com.example.dailychallenge.vo.ResponseUserInfo;
 import java.util.List;
 import javax.validation.Valid;
@@ -71,7 +72,7 @@ public class UserController {
             if (auth.isAuthenticated()) {
                 UserDetails userDetails = userService.loadUserByUsername(requestLogin.getEmail());
                 String token = jwtTokenUtil.generateToken(userDetails);
-                User user = userService.findByEmail(requestLogin.getEmail());
+                User user = userService.findByEmail(requestLogin.getEmail()).orElseThrow(UserNotFound::new);
 
                 ResponseLoginUser responseLoginUser = mapper.map(user, ResponseLoginUser.class);
                 responseLoginUser.setUserId(user.getId());
@@ -111,10 +112,9 @@ public class UserController {
 
     @PostMapping("/user/check") // 아이디 중복 체크
     public ResponseEntity<String> checkDuplicateUser(@RequestParam String email){
-        User user = userService.findByEmail(email);
-        if (user != null) {
+        userService.findByEmail(email).ifPresent(findUser -> {
             throw new UserDuplicateCheck();
-        }
+        });
         return ResponseEntity.status(HttpStatus.OK).body("사용 가능한 아이디입니다.");
     }
 
@@ -147,7 +147,7 @@ public class UserController {
     @GetMapping("/user/challenge") // 내가 작성한 챌린지 조회
     public ResponseEntity<List<ResponseChallengeByUserChallenge>> getChallengeByUser(
             @AuthenticationPrincipal org.springframework.security.core.userdetails.User user){
-        User getUser = userService.findByEmail(user.getUsername());
+        User getUser = userService.findByEmail(user.getUsername()).orElseThrow(UserNotFound::new);
         List<ResponseChallengeByUserChallenge> userChallenge = userService.getChallengeByUser(getUser.getId());
         return ResponseEntity.status(HttpStatus.OK).body(userChallenge);
     }
@@ -156,7 +156,7 @@ public class UserController {
     public ResponseEntity<List<ResponseChallengeByUserChallenge>> getParticipateChallenge(
             @AuthenticationPrincipal org.springframework.security.core.userdetails.User user){
 
-        User getUser = userService.findByEmail(user.getUsername());
+        User getUser = userService.findByEmail(user.getUsername()).orElseThrow(UserNotFound::new);
         List<ResponseChallengeByUserChallenge> res = userService.getParticipateChallenge(getUser.getId());
         return ResponseEntity.status(HttpStatus.OK).body(res);
     }

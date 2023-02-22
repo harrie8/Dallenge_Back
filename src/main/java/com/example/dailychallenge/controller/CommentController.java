@@ -41,7 +41,7 @@ public class CommentController {
             @PathVariable("challengeId") Long challengeId,
             @ModelAttribute CommentDto commentDto) {
 
-        User findUser = userService.findByEmail(user.getUsername());
+        User findUser = userService.findByEmail(user.getUsername()).orElseThrow(UserNotFound::new);
         Challenge challenge = challengeService.findById(challengeId);
         Comment comment = commentService.saveComment(commentDto, findUser, challenge);
 
@@ -62,10 +62,7 @@ public class CommentController {
             @PathVariable("commentId") Long commentId,
             @ModelAttribute CommentDto commentDto) {
         String userEmail = user.getUsername();
-        User findUser = userService.findByEmail(userEmail);
-        if (findUser == null) {
-            throw new UserNotFound();
-        }
+        User findUser = userService.findByEmail(userEmail).orElseThrow(UserNotFound::new);
 
         commentService.updateComment(challengeId, commentId, commentDto, findUser);
     }
@@ -76,10 +73,7 @@ public class CommentController {
             @PathVariable("challengeId") Long challengeId,
             @PathVariable("commentId") Long commentId){
         String userEmail = user.getUsername();
-        User findUser = userService.findByEmail(userEmail);
-        if (findUser == null) {
-            throw new UserNotFound();
-        }
+        User findUser = userService.findByEmail(userEmail).orElseThrow(UserNotFound::new);
 
         commentService.deleteComment(challengeId, commentId, findUser);
         return ResponseEntity.status(HttpStatus.OK).body("댓글이 삭제되었습니다.");

@@ -7,8 +7,9 @@ import com.example.dailychallenge.exception.users.UserNotFound;
 import com.example.dailychallenge.service.challenge.ChallengeService;
 import com.example.dailychallenge.service.challenge.UserChallengeService;
 import com.example.dailychallenge.service.users.UserService;
-import com.example.dailychallenge.vo.ResponseMessage;
 import com.example.dailychallenge.vo.ResponseChallengeByUserChallenge;
+import com.example.dailychallenge.vo.ResponseMessage;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,8 +18,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -34,10 +33,7 @@ public class UserChallengeController {
             @PathVariable Long challengeId) {
 
         String userEmail = user.getUsername();
-        User findUser = userService.findByEmail(userEmail);
-        if (findUser == null) {
-            throw new UserNotFound();
-        }
+        User findUser = userService.findByEmail(userEmail).orElseThrow(UserNotFound::new);
         Challenge findChallenge = challengeService.findById(challengeId);
 
         UserChallenge savedUserChallenge = userChallengeService.saveUserChallenge(findChallenge, findUser);
@@ -56,10 +52,7 @@ public class UserChallengeController {
             @AuthenticationPrincipal org.springframework.security.core.userdetails.User user,
             @PathVariable Long challengeId){
         String userEmail = user.getUsername();
-        User findUser = userService.findByEmail(userEmail);
-        if (findUser == null) {
-            throw new UserNotFound();
-        }
+        User findUser = userService.findByEmail(userEmail).orElseThrow(UserNotFound::new);
         userChallengeService.succeedInChallenge(findUser.getId(), challengeId);
 
         ResponseMessage responseMessage = ResponseMessage.builder()
@@ -74,8 +67,7 @@ public class UserChallengeController {
     public ResponseEntity<List<ResponseChallengeByUserChallenge>> getTodayUserChallenge(
             @AuthenticationPrincipal org.springframework.security.core.userdetails.User user
     ){
-        User findUser = userService.findByEmail(user.getUsername());
-
+        User findUser = userService.findByEmail(user.getUsername()).orElseThrow(UserNotFound::new);
         List<ResponseChallengeByUserChallenge> userChallenge
                 = userChallengeService.getTodayUserChallenge(findUser.getId());
 

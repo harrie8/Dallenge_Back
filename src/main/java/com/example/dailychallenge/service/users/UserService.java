@@ -18,6 +18,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mock.web.MockMultipartFile;
@@ -71,10 +72,7 @@ public class UserService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userRepository.findByEmail(username);
-
-        if(user == null)
-            throw new UsernameNotFoundException(username);
+        User user = userRepository.findByEmail(username).orElseThrow(() -> new UsernameNotFoundException(username));
 
         return new org.springframework.security.core.userdetails.User(
                 user.getEmail(), user.getPassword(),
@@ -83,7 +81,7 @@ public class UserService implements UserDetailsService {
         );
     }
 
-    public User findByEmail(String email) {
+    public Optional<User> findByEmail(String email) {
         return userRepository.findByEmail(email);
     }
 
@@ -117,10 +115,9 @@ public class UserService implements UserDetailsService {
     }
 
     public void validateDuplicateUser(String email) {
-        User user = userRepository.findByEmail(email);
-        if (user != null) {
+        userRepository.findByEmail(email).ifPresent(findUser -> {
             throw new UserDuplicateNotCheck();
-        }
+        });
     }
 
     public boolean checkPassword(Long userId, String pw,PasswordEncoder passwordEncoder) {
@@ -184,10 +181,7 @@ public class UserService implements UserDetailsService {
     }
 
     public User getValidateUser(String loginUserEmail, Long userId) {
-        User loginUser = findByEmail(loginUserEmail);
-        if (loginUser == null) {
-            throw new UserNotFound();
-        }
+        User loginUser = findByEmail(loginUserEmail).orElseThrow(UserNotFound::new);
 
         if (!loginUser.isSameId(userId)) {
             throw new AuthorizationException();

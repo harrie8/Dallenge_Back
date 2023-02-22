@@ -5,6 +5,7 @@ import com.example.dailychallenge.entity.social.ProviderUser;
 import com.example.dailychallenge.entity.users.User;
 import com.example.dailychallenge.repository.UserRepository;
 import com.example.dailychallenge.service.users.UserService;
+import java.util.Optional;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
@@ -23,9 +24,9 @@ public abstract class AbstractOAuth2UserService {
 
     public void register(ProviderUser providerUser, OAuth2UserRequest userRequest) {
 
-        User user = userRepository.findByEmail(providerUser.getEmail());
+        Optional<User> user = userRepository.findByEmail(providerUser.getEmail());
 
-        if(user==null){ // db에 user 정보가 없는 경우, db에 저장
+        if(user.isEmpty()){ // db에 user 정보가 없는 경우, db에 저장
             String registrationId = userRequest.getClientRegistration().getRegistrationId();
             userService.saveSocialUser(registrationId,providerUser);
         }
