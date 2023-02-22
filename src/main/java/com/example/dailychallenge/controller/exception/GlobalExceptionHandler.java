@@ -11,6 +11,7 @@ import com.example.dailychallenge.exception.comment.CommentDtoNotValid;
 import com.example.dailychallenge.exception.comment.CommentImgNotFound;
 import com.example.dailychallenge.exception.comment.CommentNotFound;
 import com.example.dailychallenge.exception.hashtag.HashTagNotFound;
+import com.example.dailychallenge.exception.hashtag.HashtagDtoBlank;
 import com.example.dailychallenge.exception.userChallenge.UserChallengeDuplicate;
 import com.example.dailychallenge.exception.users.UserDuplicateCheck;
 import com.example.dailychallenge.exception.users.UserDuplicateNotCheck;
@@ -222,6 +223,17 @@ public class GlobalExceptionHandler {
         final ResponseError responseError = ResponseError.builder()
                 .code(userChallengeDuplicate.getStatusCode())
                 .message(userChallengeDuplicate.getMessage())
+                .build();
+
+        return ResponseEntity.status(responseError.getCode()).body(responseError);
+    }
+
+    @ExceptionHandler(HashtagDtoBlank.class)
+    protected ResponseEntity<ResponseError> handlerHashtagDtoBlank(
+            HashtagDtoBlank hashtagDtoBlank) {
+        final ResponseError responseError = ResponseError.builder()
+                .code(hashtagDtoBlank.getStatusCode())
+                .message(hashtagDtoBlank.getMessage())
                 .build();
 
         return ResponseEntity.status(responseError.getCode()).body(responseError);

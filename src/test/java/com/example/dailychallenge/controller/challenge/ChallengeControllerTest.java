@@ -26,6 +26,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.example.dailychallenge.dto.ChallengeDto;
 import com.example.dailychallenge.dto.ChallengeSearchCondition;
+import com.example.dailychallenge.dto.HashtagDto;
 import com.example.dailychallenge.entity.challenge.Challenge;
 import com.example.dailychallenge.entity.challenge.ChallengeStatus;
 import com.example.dailychallenge.entity.comment.Comment;
@@ -40,7 +41,6 @@ import com.example.dailychallenge.service.users.UserService;
 import com.example.dailychallenge.util.ControllerTest;
 import com.example.dailychallenge.vo.challenge.RequestCreateChallenge;
 import com.example.dailychallenge.vo.challenge.RequestUpdateChallenge;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 import org.hamcrest.Matcher;
@@ -155,7 +155,7 @@ class ChallengeControllerTest extends ControllerTest {
     @DisplayName("챌린지 생성 테스트")
 //    @WithAuthUser
     void createChallengeTest() throws Exception {
-        RequestCreateChallenge requestCreatChallenge = RequestCreateChallenge.builder()
+        RequestCreateChallenge requestCreateChallenge = RequestCreateChallenge.builder()
                 .title("제목입니다.")
                 .content("내용입니다.")
                 .challengeCategory("공부")
@@ -164,37 +164,37 @@ class ChallengeControllerTest extends ControllerTest {
                 .build();
         List<MultipartFile> challengeImgFiles = createChallengeImgFiles();
 
-        String json = objectMapper.writeValueAsString(requestCreatChallenge);
-        MockMultipartFile requestCreateChallenge = new MockMultipartFile("requestCreateChallenge",
+        String json = objectMapper.writeValueAsString(requestCreateChallenge);
+        MockMultipartFile mockRequestCreateChallenge = new MockMultipartFile("requestCreateChallenge",
                 "requestCreateChallenge",
                 "application/json", json.getBytes(UTF_8));
 
-        List<String> hashtags = new ArrayList<>();
-        hashtags.add("tag1");
-        hashtags.add("tag2");
-        String hashtagJson = objectMapper.writeValueAsString(hashtags);
-        MockMultipartFile hashtagDto = new MockMultipartFile("hashtagDto",
+        HashtagDto hashtagDto = HashtagDto.builder()
+                .content(List.of("tag1", "tag2"))
+                .build();
+        String hashtagDtoJson = objectMapper.writeValueAsString(hashtagDto);
+        MockMultipartFile mockHashtagDto = new MockMultipartFile("hashtagDto",
                 "hashtagDto",
-                "application/json", hashtagJson.getBytes(UTF_8));
+                "application/json", hashtagDtoJson.getBytes(UTF_8));
 
         mockMvc.perform(multipart("/challenge/new")
-                        .file(requestCreateChallenge)
+                        .file(mockRequestCreateChallenge)
                         .part(new MockPart("challengeImgFiles", "challengeImgFile", challengeImgFiles.get(0).getBytes()))
                         .part(new MockPart("challengeImgFiles", "challengeImgFile", challengeImgFiles.get(1).getBytes()))
                         .part(new MockPart("challengeImgFiles", "challengeImgFile", challengeImgFiles.get(2).getBytes()))
-                        .file(hashtagDto)
+                        .file(mockHashtagDto)
                         .with(requestPostProcessor) // 토큰 인증 처리, 입력한 정보로 인증된 사용자 생성
                         .contentType(MediaType.MULTIPART_FORM_DATA)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.title").value(requestCreatChallenge.getTitle()))
-                .andExpect(jsonPath("$.content").value(requestCreatChallenge.getContent()))
-                .andExpect(jsonPath("$.challengeCategory").value(requestCreatChallenge.getChallengeCategory()))
-                .andExpect(jsonPath("$.challengeLocation").value(requestCreatChallenge.getChallengeLocation()))
-                .andExpect(jsonPath("$.challengeDuration").value(requestCreatChallenge.getChallengeDuration()))
+                .andExpect(jsonPath("$.title").value(requestCreateChallenge.getTitle()))
+                .andExpect(jsonPath("$.content").value(requestCreateChallenge.getContent()))
+                .andExpect(jsonPath("$.challengeCategory").value(requestCreateChallenge.getChallengeCategory()))
+                .andExpect(jsonPath("$.challengeLocation").value(requestCreateChallenge.getChallengeLocation()))
+                .andExpect(jsonPath("$.challengeDuration").value(requestCreateChallenge.getChallengeDuration()))
                 .andExpect(jsonPath("$.challengeStatus").value(ChallengeStatus.TRYING.getDescription()))
                 .andExpect(jsonPath("$.challengeImgUrls[*]", hasItem(startsWith("/images/"))))
-                .andExpect(jsonPath("$.challengeHashtags[*]", hasItems("tag1", "tag2")))
+                .andExpect(jsonPath("$.challengeHashtags[*]", contains("tag1", "tag2")))
                 .andExpect(jsonPath("$.challengeOwnerUser.userName").value(savedUser.getUserName()))
                 .andExpect(jsonPath("$.challengeOwnerUser.email").value(savedUser.getEmail()))
                 .andExpect(jsonPath("$.challengeOwnerUser.userId").value(savedUser.getId()));
@@ -390,13 +390,13 @@ class ChallengeControllerTest extends ControllerTest {
                 "requestUpdateChallenge",
                 "application/json", json.getBytes(UTF_8));
 
-        List<String> hashtags = new ArrayList<>();
-        hashtags.add("editTag1");
-        hashtags.add("editTag2");
-        String hashtagJson = objectMapper.writeValueAsString(hashtags);
-        MockMultipartFile hashtagDto = new MockMultipartFile("hashtagDto",
+        HashtagDto hashtagDto = HashtagDto.builder()
+                .content(List.of("editTag1", "editTag2"))
+                .build();
+        String hashtagDtoJson = objectMapper.writeValueAsString(hashtagDto);
+        MockMultipartFile mockHashtagDto = new MockMultipartFile("hashtagDto",
                 "hashtagDto",
-                "application/json", hashtagJson.getBytes(UTF_8));
+                "application/json", hashtagDtoJson.getBytes(UTF_8));
 
         Long challenge1Id = challenge1.getId();
         mockMvc.perform(multipart("/challenge/{challengeId}", challenge1Id)
@@ -405,7 +405,7 @@ class ChallengeControllerTest extends ControllerTest {
                                 updateChallengeImgFiles.get(0).getBytes()))
                         .part(new MockPart("updateChallengeImgFiles", "updateChallengeImgFiles",
                                 updateChallengeImgFiles.get(1).getBytes()))
-                        .file(hashtagDto)
+                        .file(mockHashtagDto)
                         .with(requestPostProcessor)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -419,7 +419,7 @@ class ChallengeControllerTest extends ControllerTest {
                 .andExpect(jsonPath("$.created_at").value(challenge1.getFormattedCreatedAt()))
                 .andExpect(jsonPath("$.updated_at").isNotEmpty())
                 .andExpect(jsonPath("$.challengeImgUrls[*]", hasItem(startsWith("/images/"))))
-                .andExpect(jsonPath("$.challengeHashtags[*]", hasItems("editTag1", "editTag2")))
+                .andExpect(jsonPath("$.challengeHashtags[*]", contains("editTag1", "editTag2")))
                 .andExpect(jsonPath("$.challengeImgUrls", hasSize(2)));
     }
 

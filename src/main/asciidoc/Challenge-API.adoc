@@ -20,14 +20,14 @@ operation::challenge-controller-doc-test/create-challenge-test[snippets='http-re
 ======
 include::{snippets}/challenge-controller-doc-test/create-challenge-test/request-parts.adoc[]
 
-requestCreateChallenge - 챌린지 정보 데이터(JSON)
+requestCreateChallenge - 챌린지 데이터(JSON)
 include::{snippets}/challenge-controller-doc-test/create-challenge-test/request-part-requestCreateChallenge-fields.adoc[]
 
 challengeImgFile - 챌린지 이미지 파일(FILE) +
 .jpg 형식의 이미지 파일을 지원합니다.
 
-hashtagDto - 해시태그 데이터(LIST) +
-["tag1","tag2"] 의 형식으로 여러 개의 문자열을 리스트로 받아옵니다.
+hashtagDto - 해시태그 데이터(JSON)
+include::{snippets}/challenge-controller-doc-test/create-challenge-test/request-part-hashtagDto-fields.adoc[]
 ======
 =====
 
@@ -135,14 +135,14 @@ include::{snippets}/challenge-controller-doc-test/update-challenge/http-request.
 =======
 include::{snippets}/challenge-controller-doc-test/update-challenge/request-parts.adoc[]
 
-requestUpdateChallenge - 챌린지 정보 데이터(JSON)
+requestUpdateChallenge - 챌린지 데이터(JSON)
 include::{snippets}/challenge-controller-doc-test/update-challenge/request-part-requestUpdateChallenge-fields.adoc[]
 
 updateChallengeImgFiles - 챌린지 이미지 파일(FILE) +
 .jpg 형식의 이미지 파일을 지원합니다.
 
-hashtagDto - 해시태그 데이터(LIST) +
-["tag1","tag2"] 의 형식으로 여러 개의 문자열을 리스트로 받아옵니다.
+hashtagDto - 해시태그 데이터(JSON)
+include::{snippets}/challenge-controller-doc-test/update-challenge/request-part-hashtagDto-fields.adoc[]
 =======
 ======
 

@@ -2,6 +2,7 @@ package com.example.dailychallenge.controller;
 
 import com.example.dailychallenge.dto.ChallengeDto;
 import com.example.dailychallenge.dto.ChallengeSearchCondition;
+import com.example.dailychallenge.dto.HashtagDto;
 import com.example.dailychallenge.entity.challenge.Challenge;
 import com.example.dailychallenge.entity.challenge.UserChallenge;
 import com.example.dailychallenge.entity.hashtag.ChallengeHashtag;
@@ -58,7 +59,7 @@ public class ChallengeController {
             @AuthenticationPrincipal org.springframework.security.core.userdetails.User user,
             @RequestPart @Valid RequestCreateChallenge requestCreateChallenge,
             @RequestPart(required = false) List<MultipartFile> challengeImgFiles,
-            @RequestPart(value = "hashtagDto", required = false) List<String> hashtagDto) {
+            @RequestPart(value = "hashtagDto", required = false) HashtagDto hashtagDto) {
         ModelMapper mapper = new ModelMapper();
         String userEmail = user.getUsername();
         User findUser = userService.findByEmail(userEmail);
@@ -72,7 +73,8 @@ public class ChallengeController {
         userChallenge.challengeParticipate();
 
         if (hashtagDto != null) {
-            List<Hashtag> hashtags = hashtagService.saveHashtag(hashtagDto);
+            List<String> hashtagContents = hashtagDto.getContent();
+            List<Hashtag> hashtags = hashtagService.saveHashtag(hashtagContents);
             challengeHashtagService.saveChallengeHashtag(challenge, hashtags);
         }
 
@@ -120,7 +122,7 @@ public class ChallengeController {
             @PathVariable Long challengeId,
             @RequestPart @Valid RequestUpdateChallenge requestUpdateChallenge,
             @RequestPart(required = false) List<MultipartFile> updateChallengeImgFiles,
-            @RequestPart(value = "hashtagDto", required = false) List<String> hashtagDto) {
+            @RequestPart(value = "hashtagDto", required = false) HashtagDto hashtagDto) {
 
         String userEmail = user.getUsername();
         User findUser = userService.findByEmail(userEmail);
@@ -132,7 +134,8 @@ public class ChallengeController {
                 updateChallengeImgFiles, findUser);
 
         if (hashtagDto != null) {
-            List<Hashtag> hashtags = hashtagService.updateHashtag(hashtagDto, challengeId);
+            List<String> hashtagContents = hashtagDto.getContent();
+            List<Hashtag> hashtags = hashtagService.updateHashtag(hashtagContents, challengeId);
             challengeHashtagService.updateChallengeHashtag(challengeId,hashtags);
         }
 

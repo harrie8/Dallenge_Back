@@ -28,6 +28,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.example.dailychallenge.dto.ChallengeDto;
+import com.example.dailychallenge.dto.HashtagDto;
 import com.example.dailychallenge.entity.challenge.Challenge;
 import com.example.dailychallenge.entity.challenge.ChallengeCategory;
 import com.example.dailychallenge.entity.challenge.ChallengeDuration;
@@ -47,7 +48,6 @@ import com.example.dailychallenge.util.RestDocsTest;
 import com.example.dailychallenge.vo.challenge.RequestCreateChallenge;
 import com.example.dailychallenge.vo.challenge.RequestUpdateChallenge;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -157,7 +157,7 @@ public class ChallengeControllerDocTest extends RestDocsTest {
     @DisplayName("챌린지 생성")
 //    @WithAuthUser
     void createChallengeTest() throws Exception {
-        RequestCreateChallenge requestCreatChallenge = RequestCreateChallenge.builder()
+        RequestCreateChallenge requestCreateChallenge = RequestCreateChallenge.builder()
                 .title("제목입니다.")
                 .content("내용입니다.")
                 .challengeCategory("공부")
@@ -166,52 +166,52 @@ public class ChallengeControllerDocTest extends RestDocsTest {
                 .build();
         List<MultipartFile> challengeImgFiles = createChallengeImgFiles();
 
-        String json = objectMapper.writeValueAsString(requestCreatChallenge);
-        MockMultipartFile requestCreateChallenge = new MockMultipartFile("requestCreateChallenge",
+        String json = objectMapper.writeValueAsString(requestCreateChallenge);
+        MockMultipartFile mockRequestCreateChallenge = new MockMultipartFile("requestCreateChallenge",
                 "requestCreateChallenge",
                 "application/json", json.getBytes(
                 StandardCharsets.UTF_8));
 
-        List<String> hashtags = new ArrayList<>();
-        hashtags.add("tag1");
-        hashtags.add("tag2");
-        String hashtagJson = objectMapper.writeValueAsString(hashtags);
-        MockMultipartFile hashtagDto = new MockMultipartFile("hashtagDto",
+        HashtagDto hashtagDto = HashtagDto.builder()
+                .content(List.of("tag1", "tag2"))
+                .build();
+        String hashtagDtoJson = objectMapper.writeValueAsString(hashtagDto);
+        MockMultipartFile mockHashtagDto = new MockMultipartFile("hashtagDto",
                 "hashtagDto",
-                "application/json", hashtagJson.getBytes(UTF_8));
+                "application/json", hashtagDtoJson.getBytes(UTF_8));
 
         String challengeCategoryDescriptions = String.join(", ", ChallengeCategory.getDescriptions());
         String challengeLocationDescriptions = String.join(", ", ChallengeLocation.getDescriptions());
         String challengeDurationDescriptions = String.join(", ", ChallengeDuration.getDescriptions());
         mockMvc.perform(multipart("/challenge/new")
-                        .file(requestCreateChallenge)
+                        .file(mockRequestCreateChallenge)
                         .part(new MockPart("challengeImgFiles", "challengeImgFile", challengeImgFiles.get(0).getBytes()))
                         .part(new MockPart("challengeImgFiles", "challengeImgFile", challengeImgFiles.get(1).getBytes()))
                         .part(new MockPart("challengeImgFiles", "challengeImgFile", challengeImgFiles.get(2).getBytes()))
-                        .file(hashtagDto)
+                        .file(mockHashtagDto)
                         .header(AUTHORIZATION, generateToken(savedUser.getEmail(), userService))
                         .contentType(MediaType.MULTIPART_FORM_DATA)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.title").value(requestCreatChallenge.getTitle()))
-                .andExpect(jsonPath("$.content").value(requestCreatChallenge.getContent()))
-                .andExpect(jsonPath("$.challengeCategory").value(requestCreatChallenge.getChallengeCategory()))
-                .andExpect(jsonPath("$.challengeLocation").value(requestCreatChallenge.getChallengeLocation()))
-                .andExpect(jsonPath("$.challengeDuration").value(requestCreatChallenge.getChallengeDuration()))
+                .andExpect(jsonPath("$.title").value(requestCreateChallenge.getTitle()))
+                .andExpect(jsonPath("$.content").value(requestCreateChallenge.getContent()))
+                .andExpect(jsonPath("$.challengeCategory").value(requestCreateChallenge.getChallengeCategory()))
+                .andExpect(jsonPath("$.challengeLocation").value(requestCreateChallenge.getChallengeLocation()))
+                .andExpect(jsonPath("$.challengeDuration").value(requestCreateChallenge.getChallengeDuration()))
                 .andExpect(jsonPath("$.challengeStatus").value(ChallengeStatus.TRYING.getDescription()))
                 .andExpect(jsonPath("$.challengeImgUrls[*]", hasItem(startsWith("/images/"))))
-                .andExpect(jsonPath("$.challengeHashtags[*]", hasItems("tag1", "tag2")))
+                .andExpect(jsonPath("$.challengeHashtags[*]", contains("tag1", "tag2")))
                 .andExpect(jsonPath("$.challengeOwnerUser.userName").value(savedUser.getUserName()))
                 .andExpect(jsonPath("$.challengeOwnerUser.email").value(savedUser.getEmail()))
                 .andExpect(jsonPath("$.challengeOwnerUser.userId").value(savedUser.getId()))
                 .andDo(restDocs.document(
                         requestParts(
-                                partWithName("requestCreateChallenge").description("챌린지 정보 데이터(JSON)")
+                                partWithName("requestCreateChallenge").description("챌린지 데이터(JSON)")
                                         .attributes(key("type").value("JSON")),
                                 partWithName("challengeImgFiles").description("챌린지 이미지 파일들(FILE)").optional()
                                         .attributes(key("type").value(".jpg")),
-                                partWithName("hashtagDto").description("해시태그 데이터(LIST)").optional()
-                                        .attributes(key("type").value("LIST"))
+                                partWithName("hashtagDto").description("해시태그 데이터(JSON)").optional()
+                                        .attributes(key("type").value("JSON"))
                         ),
                         requestPartFields("requestCreateChallenge",
                                 fieldWithPath("title").description("제목"),
@@ -225,6 +225,10 @@ public class ChallengeControllerDocTest extends RestDocsTest {
                                 fieldWithPath("challengeDuration").description("기간")
                                         .attributes(key("format").value(
                                                 challengeDurationDescriptions))
+                        ),
+                        requestPartFields("hashtagDto",
+                                fieldWithPath("content").description("해시태그 내용")
+                                        .attributes(key("format").value("\"\", \" \"은 허용하지 않습니다."))
                         )
                 ));
     }
@@ -453,13 +457,13 @@ public class ChallengeControllerDocTest extends RestDocsTest {
                 "requestUpdateChallenge",
                 "application/json", json.getBytes(UTF_8));
 
-        List<String> hashtags = new ArrayList<>();
-        hashtags.add("editTag1");
-        hashtags.add("editTag2");
-        String hashtagJson = objectMapper.writeValueAsString(hashtags);
-        MockMultipartFile hashtagDto = new MockMultipartFile("hashtagDto",
+        HashtagDto hashtagDto = HashtagDto.builder()
+                .content(List.of("editTag1", "editTag2"))
+                .build();
+        String hashtagDtoJson = objectMapper.writeValueAsString(hashtagDto);
+        MockMultipartFile mockHashtagDto = new MockMultipartFile("hashtagDto",
                 "hashtagDto",
-                "application/json", hashtagJson.getBytes(UTF_8));
+                "application/json", hashtagDtoJson.getBytes(UTF_8));
 
         String challengeCategoryDescriptions = String.join(", ", ChallengeCategory.getDescriptions());
         Long challenge1Id = challenge1.getId();
@@ -469,7 +473,7 @@ public class ChallengeControllerDocTest extends RestDocsTest {
                                 updateChallengeImgFiles.get(0).getBytes()))
                         .part(new MockPart("updateChallengeImgFiles", "updateChallengeImgFiles",
                                 updateChallengeImgFiles.get(1).getBytes()))
-                        .file(hashtagDto)
+                        .file(mockHashtagDto)
                         .header(AUTHORIZATION, generateToken(savedUser.getEmail(), userService))
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -481,25 +485,29 @@ public class ChallengeControllerDocTest extends RestDocsTest {
                 .andExpect(jsonPath("$.created_at").value(challenge1.getFormattedCreatedAt()))
                 .andExpect(jsonPath("$.updated_at").isNotEmpty())
                 .andExpect(jsonPath("$.challengeImgUrls[*]", hasItem(startsWith("/images/"))))
-                .andExpect(jsonPath("$.challengeHashtags[*]", hasItems("editTag1", "editTag2")))
+                .andExpect(jsonPath("$.challengeHashtags[*]", contains("editTag1", "editTag2")))
                 .andExpect(jsonPath("$.challengeImgUrls", hasSize(2)))
                 .andDo(restDocs.document(
                         pathParameters(
                                 parameterWithName("challengeId").description("수정하고 싶은 챌린지 ID")
                         ),
                         requestParts(
-                                partWithName("requestUpdateChallenge").description("챌린지 정보 데이터(JSON)")
+                                partWithName("requestUpdateChallenge").description("챌린지 데이터(JSON)")
                                         .attributes(key("type").value("JSON")),
                                 partWithName("updateChallengeImgFiles").description("챌린지 이미지 파일들(FILE)").optional()
                                         .attributes(key("type").value(".jpg")),
-                                partWithName("hashtagDto").description("해시태그 데이터(LIST)").optional()
-                                        .attributes(key("type").value("LIST"))
+                                partWithName("hashtagDto").description("해시태그 데이터(JSON)").optional()
+                                        .attributes(key("type").value("JSON"))
                         ),
                         requestPartFields("requestUpdateChallenge",
                                 fieldWithPath("title").description("제목"),
                                 fieldWithPath("content").description("내용"),
                                 fieldWithPath("challengeCategory").description("카테고리")
                                         .attributes(key("format").value(challengeCategoryDescriptions))
+                        ),
+                        requestPartFields("hashtagDto",
+                                fieldWithPath("content").description("해시태그 내용")
+                                        .attributes(key("format").value("\"\", \" \"은 허용하지 않습니다."))
                         ),
                         responseFields(
                                 fieldWithPath("id").description("챌린지 ID"),
