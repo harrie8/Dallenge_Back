@@ -61,7 +61,9 @@ public class Comment extends BaseEntity {
     }
 
     public void addCommentImg(CommentImg commentImg) {
-        this.commentImgs.add(commentImg);
+        if (!this.commentImgs.contains(commentImg)) {
+            this.commentImgs.add(commentImg);
+        }
     }
 
     public void updateComment(String content){

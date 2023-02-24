@@ -12,6 +12,7 @@ import com.example.dailychallenge.exception.comment.CommentNotFound;
 import com.example.dailychallenge.repository.CommentRepository;
 import com.example.dailychallenge.vo.ResponseChallengeComment;
 import com.example.dailychallenge.vo.ResponseUserComment;
+import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -61,12 +62,41 @@ public class CommentService {
         }
     }
 
-    public Comment updateComment(Long challengeId, Long commentId, CommentDto commentDto, User user) {
+    public Comment updateComment(Long challengeId, Long commentId, CommentDto commentDto,
+                                 List<MultipartFile> commentImgFiles, User user) {
+
+        isCommentContentOrImagesNotNull(commentDto, commentImgFiles);
+
         Comment comment = commentRepository.findById(commentId).orElseThrow(CommentNotFound::new);
         validateOwner(user, comment);
         validateChallenge(challengeId, comment);
 
-        comment.updateComment(commentDto.getContent());
+        if (commentDto != null) {
+            comment.updateComment(commentDto.getContent());
+        }
+
+        if (commentImgFiles != null) {
+            List<CommentImg> commentImgs = comment.getCommentImgs();
+            List<Long> deleteCommentImgIds = new ArrayList<>();
+            int idx=0;
+            for (CommentImg commentImg : commentImgs) { // 기존에 저장된 이미지가 더 많을 때
+                if (commentImgFiles.size() <= idx) {
+                    deleteCommentImgIds.add(commentImg.getId());
+                    continue;
+                }
+                commentImgService.updateCommentImg(commentImg.getId(),commentImgFiles.get(idx++));
+            }
+
+            for (Long commentImgId : deleteCommentImgIds) {
+                commentImgService.deleteCommentImg(commentImgId);
+            }
+
+            for (int i = idx; i < commentImgFiles.size(); i++) { // 추가한 이미지가 더 많을 때
+                CommentImg commentImg = new CommentImg();
+                commentImg.saveComment(comment);
+                commentImgService.saveCommentImg(commentImg, commentImgFiles.get(i));
+            }
+        }
 
         return comment;
     }

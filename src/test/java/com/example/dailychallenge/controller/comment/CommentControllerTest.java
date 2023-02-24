@@ -157,6 +157,8 @@ class CommentControllerTest extends ControllerTest {
         Long challengeId = savedComment.getChallenge().getId();
         mockMvc.perform(multipart("/{challengeId}/comment/{commentId}", challengeId, savedComment.getId())
                         .file(mockCommentDto)
+                        .part(new MockPart("commentImgFiles", "commentImgFiles", createMultipartFiles().getBytes()))
+                        .part(new MockPart("commentImgFiles", "commentImgFiles", createMultipartFiles().getBytes()))
                         .with(user(userService.loadUserByUsername(EMAIL)))
                         .contentType(MediaType.MULTIPART_FORM_DATA)
                         .accept(MediaType.APPLICATION_JSON))

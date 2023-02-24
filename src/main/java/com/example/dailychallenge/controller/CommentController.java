@@ -64,11 +64,12 @@ public class CommentController {
             @AuthenticationPrincipal org.springframework.security.core.userdetails.User user,
             @PathVariable("challengeId") Long challengeId,
             @PathVariable("commentId") Long commentId,
-            @RequestPart @Valid CommentDto commentDto) {
+            @RequestPart(required = false) @Valid CommentDto commentDto,
+            @RequestPart(required = false) List<MultipartFile> commentImgFiles) {
         String userEmail = user.getUsername();
         User findUser = userService.findByEmail(userEmail).orElseThrow(UserNotFound::new);
 
-        commentService.updateComment(challengeId, commentId, commentDto, findUser);
+        commentService.updateComment(challengeId, commentId, commentDto, commentImgFiles, findUser);
     }
 
     @DeleteMapping("/{challengeId}/comment/{commentId}")

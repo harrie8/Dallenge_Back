@@ -8,6 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -134,33 +135,120 @@ class CommentServiceTest extends ServiceTest {
         }
     }
 
-    @Test
+    @Nested
     @DisplayName("댓글 수정 테스트")
-    void updateCommentTest() {
-        CommentDto commentDto = CommentDto.builder()
-                .content("댓글 내용")
-                .build();
-        List<MultipartFile> commentImgFiles = List.of(createMultipartFiles());
-        Comment saveComment = commentService.saveComment(commentDto, commentImgFiles, savedUser, challenge);
-        Long saveCommentId = saveComment.getId();
-        Long challengeId = challenge.getId();
+    class updateComment {
+        @Test
+        void success() {
+            CommentDto commentDto = CommentDto.builder()
+                    .content("댓글 내용")
+                    .build();
+            List<MultipartFile> commentImgFiles = List.of(createMultipartFiles());
+            Comment saveComment = commentService.saveComment(commentDto, commentImgFiles, savedUser, challenge);
+            Long saveCommentId = saveComment.getId();
+            Long challengeId = challenge.getId();
 
-        CommentDto updateCommentDto = CommentDto.builder()
-                .content("수정된 댓글 내용")
-                .build();
+            CommentDto updateCommentDto = CommentDto.builder()
+                    .content("수정된 댓글 내용")
+                    .build();
+            List<MultipartFile> updateCommentImgFiles = List.of(createMultipartFiles(), createMultipartFiles());
 
-        entityManager.flush();
-        entityManager.clear();
+            entityManager.flush();
+            entityManager.clear();
 
-        Comment updateComment = commentService.updateComment(challengeId, saveCommentId, updateCommentDto, savedUser);
+            Comment updateComment = commentService.updateComment(challengeId, saveCommentId, updateCommentDto,
+                    updateCommentImgFiles, savedUser);
 
-        assertAll(() -> {
-            assertEquals(updateCommentDto.getContent(), updateComment.getContent());
-            assertEquals(saveComment.getLikes(), updateComment.getLikes());
-            assertEquals(challenge.getId(), updateComment.getChallenge().getId());
-            assertEquals(savedUser.getId(), updateComment.getUsers().getId());
-            assertEquals(saveComment.getImgUrls(), updateComment.getImgUrls());
-        });
+            assertAll(() -> {
+                assertEquals(updateCommentDto.getContent(), updateComment.getContent());
+                assertEquals(saveComment.getLikes(), updateComment.getLikes());
+                assertEquals(challenge.getId(), updateComment.getChallenge().getId());
+                assertEquals(savedUser.getId(), updateComment.getUsers().getId());
+                assertNotEquals(saveComment.getImgUrls(), updateComment.getImgUrls());
+                assertEquals(updateCommentImgFiles.size(), updateComment.getImgUrls().size());
+            });
+        }
+
+        @Test
+        @DisplayName("내용만 수정하는 경우")
+        void successByContentOnly() {
+            CommentDto commentDto = CommentDto.builder()
+                    .content("댓글 내용")
+                    .build();
+            List<MultipartFile> commentImgFiles = List.of(createMultipartFiles());
+            Comment saveComment = commentService.saveComment(commentDto, commentImgFiles, savedUser, challenge);
+            Long saveCommentId = saveComment.getId();
+            Long challengeId = challenge.getId();
+
+            CommentDto updateCommentDto = CommentDto.builder()
+                    .content("수정된 댓글 내용")
+                    .build();
+            List<MultipartFile> updateCommentImgFiles = null;
+
+            entityManager.flush();
+            entityManager.clear();
+
+            Comment updateComment = commentService.updateComment(challengeId, saveCommentId, updateCommentDto,
+                    updateCommentImgFiles, savedUser);
+
+            assertAll(() -> {
+                assertEquals(updateCommentDto.getContent(), updateComment.getContent());
+                assertEquals(saveComment.getLikes(), updateComment.getLikes());
+                assertEquals(challenge.getId(), updateComment.getChallenge().getId());
+                assertEquals(savedUser.getId(), updateComment.getUsers().getId());
+                assertEquals(saveComment.getImgUrls(), updateComment.getImgUrls());
+                assertEquals(commentImgFiles.size(), updateComment.getImgUrls().size());
+            });
+        }
+
+        @Test
+        @DisplayName("이미지만 수정하는 경우")
+        void successByImageOnly() {
+            CommentDto commentDto = CommentDto.builder()
+                    .content("댓글 내용")
+                    .build();
+            List<MultipartFile> commentImgFiles = List.of(createMultipartFiles());
+            Comment saveComment = commentService.saveComment(commentDto, commentImgFiles, savedUser, challenge);
+            Long saveCommentId = saveComment.getId();
+            Long challengeId = challenge.getId();
+
+            CommentDto updateCommentDto = null;
+            List<MultipartFile> updateCommentImgFiles = List.of(createMultipartFiles(), createMultipartFiles());
+
+            entityManager.flush();
+            entityManager.clear();
+
+            Comment updateComment = commentService.updateComment(challengeId, saveCommentId, updateCommentDto,
+                    updateCommentImgFiles, savedUser);
+
+            assertAll(() -> {
+                assertEquals(commentDto.getContent(), updateComment.getContent());
+                assertEquals(saveComment.getLikes(), updateComment.getLikes());
+                assertEquals(challenge.getId(), updateComment.getChallenge().getId());
+                assertEquals(savedUser.getId(), updateComment.getUsers().getId());
+                assertNotEquals(saveComment.getImgUrls(), updateComment.getImgUrls());
+                assertEquals(updateCommentImgFiles.size(), updateComment.getImgUrls().size());
+            });
+        }
+
+        @Test
+        @DisplayName("댓글 내용 또는 이미지가 존재하지 않는 경우 예외 발생")
+        void failByCommentContentOrImagesAreNull() {
+            CommentDto commentDto = CommentDto.builder()
+                    .content("댓글 내용")
+                    .build();
+            List<MultipartFile> commentImgFiles = List.of(createMultipartFiles());
+            Comment saveComment = commentService.saveComment(commentDto, commentImgFiles, savedUser, challenge);
+            Long saveCommentId = saveComment.getId();
+            Long challengeId = challenge.getId();
+            CommentDto updateCommentDto = null;
+            List<MultipartFile> updateCommentImgFiles = null;
+
+            Throwable exception = assertThrows(CommentCreateNotValid.class,
+                    () -> commentService.updateComment(challengeId, saveCommentId, updateCommentDto,
+                            updateCommentImgFiles, savedUser));
+            assertEquals("댓글은 내용 또는 이미지가 필요합니다.", exception.getMessage());
+        }
     }
 
     @Test

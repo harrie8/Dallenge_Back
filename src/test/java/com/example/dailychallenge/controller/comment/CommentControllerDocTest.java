@@ -199,6 +199,8 @@ public class CommentControllerDocTest {
         mockMvc.perform(RestDocumentationRequestBuilders
                         .multipart("/{challengeId}/comment/{commentId}", challengeId, commentId)
                         .file(mockCommentDto)
+                        .part(new MockPart("commentImgFiles", "commentImgFiles", createMultipartFiles().getBytes()))
+                        .part(new MockPart("commentImgFiles", "commentImgFiles", createMultipartFiles().getBytes()))
                         .header(AUTHORIZATION, token)
                         .contentType(MediaType.MULTIPART_FORM_DATA)
                         .accept(MediaType.APPLICATION_JSON))
@@ -216,7 +218,9 @@ public class CommentControllerDocTest {
                         ),
                         requestParts(
                                 partWithName("commentDto").description("댓글 데이터(JSON)").optional()
-                                        .attributes(key("type").value("JSON"))
+                                        .attributes(key("type").value("JSON")),
+                                partWithName("commentImgFiles").description("댓글 이미지 파일(FILE)").optional()
+                                        .attributes(key("type").value(".jpg"))
                         ),
                         requestPartFields("commentDto",
                                 fieldWithPath("content").description("댓글 내용")
