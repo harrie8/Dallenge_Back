@@ -3,8 +3,9 @@ package com.example.dailychallenge.service.challenge;
 import static com.example.dailychallenge.util.fixture.ChallengeFixture.createChallenge;
 import static com.example.dailychallenge.util.fixture.UserFixture.createOtherUser;
 import static com.example.dailychallenge.util.fixture.UserFixture.createUser;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.example.dailychallenge.entity.challenge.Challenge;
 import com.example.dailychallenge.entity.challenge.ChallengeStatus;
@@ -12,21 +13,23 @@ import com.example.dailychallenge.entity.challenge.UserChallenge;
 import com.example.dailychallenge.entity.users.User;
 import com.example.dailychallenge.exception.userChallenge.UserChallengeDuplicate;
 import com.example.dailychallenge.repository.ChallengeRepository;
+import com.example.dailychallenge.repository.UserChallengeRepository;
 import com.example.dailychallenge.service.users.UserService;
 import com.example.dailychallenge.util.ServiceTest;
 import com.example.dailychallenge.vo.ResponseChallengeByUserChallenge;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.List;
-
 public class UserChallengeServiceTest extends ServiceTest {
 
     @Autowired
     private UserChallengeService userChallengeService;
+    @Autowired
+    private UserChallengeRepository userChallengeRepository;
     @Autowired
     private UserService userService;
     @Autowired
@@ -110,5 +113,14 @@ public class UserChallengeServiceTest extends ServiceTest {
             assertEquals(userChallenges.get(0).getChallengeStatus().getDescription(),"성공");
         }
 
+    }
+    @Test
+    @DisplayName("참여한 챌린지에서 나가는 테스트")
+    void challengeLeaveTest() {
+        UserChallenge userChallenge = userChallengeService.saveUserChallenge(challenge, savedUser);
+
+        userChallengeService.challengeLeave(challenge.getId(), savedUser.getId());
+
+        assertTrue(userChallengeRepository.findById(userChallenge.getId()).isEmpty());
     }
 }

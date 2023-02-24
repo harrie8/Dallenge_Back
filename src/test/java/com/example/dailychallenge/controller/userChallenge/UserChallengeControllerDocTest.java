@@ -3,19 +3,23 @@ package com.example.dailychallenge.controller.userChallenge;
 import static com.example.dailychallenge.util.fixture.ChallengeImgFixture.createChallengeImgFiles;
 import static com.example.dailychallenge.util.fixture.TokenFixture.AUTHORIZATION;
 import static com.example.dailychallenge.util.fixture.UserFixture.createOtherUser;
+import static com.example.dailychallenge.util.fixture.UserFixture.createSpecificUserDto;
 import static com.example.dailychallenge.util.fixture.UserFixture.createUser;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.example.dailychallenge.dto.ChallengeDto;
-import com.example.dailychallenge.entity.challenge.*;
+import com.example.dailychallenge.entity.challenge.Challenge;
+import com.example.dailychallenge.entity.challenge.ChallengeCategory;
+import com.example.dailychallenge.entity.challenge.ChallengeDuration;
+import com.example.dailychallenge.entity.challenge.ChallengeLocation;
+import com.example.dailychallenge.entity.challenge.UserChallenge;
 import com.example.dailychallenge.entity.comment.Comment;
 import com.example.dailychallenge.entity.hashtag.ChallengeHashtag;
 import com.example.dailychallenge.entity.hashtag.Hashtag;
@@ -23,7 +27,6 @@ import com.example.dailychallenge.entity.users.User;
 import com.example.dailychallenge.repository.ChallengeHashtagRepository;
 import com.example.dailychallenge.repository.CommentRepository;
 import com.example.dailychallenge.repository.HashtagRepository;
-import com.example.dailychallenge.repository.UserRepository;
 import com.example.dailychallenge.service.challenge.ChallengeService;
 import com.example.dailychallenge.service.challenge.UserChallengeService;
 import com.example.dailychallenge.service.users.UserService;
@@ -34,16 +37,12 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.request.RequestPostProcessor;
 
 public class UserChallengeControllerDocTest extends RestDocsTest {
     @Autowired
     private UserService userService;
     @Autowired
     private ChallengeService challengeService;
-    @Autowired
-    private UserRepository userRepository;
     @Autowired
     private UserChallengeService userChallengeService;
     @Autowired
@@ -126,12 +125,8 @@ public class UserChallengeControllerDocTest extends RestDocsTest {
         }
 
         for (int i = 1; i <= 8; i++) {
-            User user = User.builder()
-                    .userName("홍길동" + i)
-                    .email(i + "@test.com")
-                    .password("1234")
-                    .build();
-            userRepository.save(user);
+            User user = userService.saveUser(
+                    createSpecificUserDto("홍길동" + i, i + "@test.com"), passwordEncoder);
             if (i == 1) {
                 userChallengeService.saveUserChallenge(challenge1, user);
             }
@@ -161,6 +156,29 @@ public class UserChallengeControllerDocTest extends RestDocsTest {
                 .andDo(restDocs.document(
                         pathParameters(
                                 parameterWithName("challengeId").description("참가하고 싶은 챌린지 ID")
+                        ),
+                        responseFields(
+                                fieldWithPath("code").description("HTTP STATUS"),
+                                fieldWithPath("message").description("메시지")
+                        )
+                ));
+    }
+
+    @Test
+    @DisplayName("챌린지 나가기 테스트")
+    void leaveChallengeTest() throws Exception {
+        userChallengeService.saveUserChallenge(challenge1, otherUser);
+        Long challenge1Id = challenge1.getId();
+
+        mockMvc.perform(delete("/challenge/{challengeId}/leave", challenge1Id)
+                        .header(AUTHORIZATION, generateToken(otherUser.getEmail(), userService))
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value(200))
+                .andExpect(jsonPath("$.message").value("챌린지 나가기 완료!"))
+                .andDo(restDocs.document(
+                        pathParameters(
+                                parameterWithName("challengeId").description("나가고 싶은 챌린지 ID")
                         ),
                         responseFields(
                                 fieldWithPath("code").description("HTTP STATUS"),

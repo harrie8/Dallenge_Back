@@ -4,9 +4,6 @@
 [[Comment-댓글-생성]]
 === 댓글 생성
 
-- postman 예시
-image:comment/createComment.png[]
-
 operation::comment-create[snippets='http-request,path-parameters']
 
 .요청값
@@ -31,9 +28,6 @@ operation::comment-create[snippets='http-response']
 
 [[Comment-댓글-수정]]
 === 댓글 수정
-
-- postman 예시
-image:comment/updateComment.png[]
 
 ==== HTTP request
 

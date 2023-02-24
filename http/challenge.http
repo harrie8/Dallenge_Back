@@ -53,7 +53,9 @@ Content-Type: application/json
 Content-Disposition: form-data; name="hashtagDto"
 Content-Type: application/json
 
-["tag1", "tag2"]
+{
+  "content": ["tag1", "tag2"]
+}
 
 ### 1-1. 잘못된 카테고리로 챌린지 생성
 POST 127.0.0.1:8080/challenge/new
@@ -89,5 +91,10 @@ Accept: application/json
 
 ### 3. 이름 또는 카테고리로 챌린지 조회
 GET 127.0.0.1:8080/challenge/condition?title=제목 입니다.&category=
+Authorization: Bearer {{token}}
+Accept: application/json
+
+### 4. 챌린지 나가기
+DELETE 127.0.0.1:8080/challenge/1/leave
 Authorization: Bearer {{token}}
 Accept: application/json

@@ -67,6 +67,10 @@ public class UserChallenge extends BaseEntity {
         this.isParticipated = true;
     }
 
+    public void challengeLeave(){
+        this.isParticipated = false;
+    }
+
     public void challengeSuccess() {
         this.challengeStatus = ChallengeStatus.SUCCESS;
     }

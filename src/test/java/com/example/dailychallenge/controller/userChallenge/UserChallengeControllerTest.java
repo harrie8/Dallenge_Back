@@ -2,17 +2,21 @@ package com.example.dailychallenge.controller.userChallenge;
 
 import static com.example.dailychallenge.util.fixture.ChallengeImgFixture.createChallengeImgFiles;
 import static com.example.dailychallenge.util.fixture.UserFixture.createOtherUser;
+import static com.example.dailychallenge.util.fixture.UserFixture.createSpecificUserDto;
 import static com.example.dailychallenge.util.fixture.UserFixture.createUser;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.example.dailychallenge.dto.ChallengeDto;
-import com.example.dailychallenge.entity.challenge.*;
+import com.example.dailychallenge.entity.challenge.Challenge;
+import com.example.dailychallenge.entity.challenge.ChallengeCategory;
+import com.example.dailychallenge.entity.challenge.ChallengeDuration;
+import com.example.dailychallenge.entity.challenge.ChallengeLocation;
+import com.example.dailychallenge.entity.challenge.UserChallenge;
 import com.example.dailychallenge.entity.comment.Comment;
 import com.example.dailychallenge.entity.hashtag.ChallengeHashtag;
 import com.example.dailychallenge.entity.hashtag.Hashtag;
@@ -20,12 +24,10 @@ import com.example.dailychallenge.entity.users.User;
 import com.example.dailychallenge.repository.ChallengeHashtagRepository;
 import com.example.dailychallenge.repository.CommentRepository;
 import com.example.dailychallenge.repository.HashtagRepository;
-import com.example.dailychallenge.repository.UserRepository;
 import com.example.dailychallenge.service.challenge.ChallengeService;
 import com.example.dailychallenge.service.challenge.UserChallengeService;
 import com.example.dailychallenge.service.users.UserService;
 import com.example.dailychallenge.util.ControllerTest;
-import com.example.dailychallenge.vo.ResponseChallengeByUserChallenge;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -33,15 +35,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.request.RequestPostProcessor;
 
-import java.util.List;
-
 class UserChallengeControllerTest extends ControllerTest {
     @Autowired
     private UserService userService;
     @Autowired
     private ChallengeService challengeService;
-    @Autowired
-    private UserRepository userRepository;
     @Autowired
     private UserChallengeService userChallengeService;
     @Autowired
@@ -126,12 +124,8 @@ class UserChallengeControllerTest extends ControllerTest {
         }
 
         for (int i = 1; i <= 8; i++) {
-            User user = User.builder()
-                    .userName("홍길동" + i)
-                    .email(i + "@test.com")
-                    .password("1234")
-                    .build();
-            userRepository.save(user);
+            User user = userService.saveUser(
+                    createSpecificUserDto("홍길동" + i, i + "@test.com"), passwordEncoder);
             if (i == 1) {
                 userChallengeService.saveUserChallenge(challenge1, user);
             }
@@ -159,6 +153,21 @@ class UserChallengeControllerTest extends ControllerTest {
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.code").value(201))
                 .andExpect(jsonPath("$.message").value("챌린지 참가 완료!"));
+    }
+
+    @Test
+    @DisplayName("챌린지 나가기 테스트")
+    void leaveChallengeTest() throws Exception {
+        userChallengeService.saveUserChallenge(challenge1, otherUser);
+        Long challenge1Id = challenge1.getId();
+        RequestPostProcessor otherRequestPostProcessor = user(userService.loadUserByUsername(otherUser.getEmail()));
+
+        mockMvc.perform(delete("/challenge/{challengeId}/leave", challenge1Id)
+                        .with(otherRequestPostProcessor)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value(200))
+                .andExpect(jsonPath("$.message").value("챌린지 나가기 완료!"));
     }
 
     @Test
