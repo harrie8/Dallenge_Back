@@ -16,7 +16,6 @@ import com.example.dailychallenge.dto.ChallengeDto;
 import com.example.dailychallenge.entity.challenge.Challenge;
 import com.example.dailychallenge.entity.challenge.ChallengeCategory;
 import com.example.dailychallenge.entity.challenge.ChallengeDuration;
-import com.example.dailychallenge.entity.challenge.ChallengeImg;
 import com.example.dailychallenge.entity.challenge.ChallengeLocation;
 import com.example.dailychallenge.entity.challenge.ChallengeStatus;
 import com.example.dailychallenge.entity.challenge.UserChallenge;
@@ -222,12 +221,8 @@ public class ChallengeServiceTest extends ServiceTest {
                 assertEquals(requestUpdateChallenge.getChallengeCategory(),
                         updatedChallenge.getChallengeCategory().getDescription());
                 assertNotEquals(savedChallenge.getUpdated_at(), updatedChallenge.getUpdated_at());
-                // TODO: 2023-02-20 중복 이미지 저장 문제
-                List<ChallengeImg> all = challengeImgRepository.findAll(); // 이게 없으면 같은 데이터가 두 번 저장되는 오류 발생
-                assertThat(all).extracting("oriImgName")
-                        .containsExactly("updatedChallengeImage0.jpg", "updatedChallengeImage1.jpg");
-                assertThat(updatedChallenge.getChallengeImgs()).extracting("oriImgName")
-                        .containsExactly("updatedChallengeImage0.jpg", "updatedChallengeImage1.jpg");
+                assertNotEquals(savedChallenge.getImgUrls(), updatedChallenge.getImgUrls());
+                assertEquals(updateChallengeImgFiles.size(), updatedChallenge.getImgUrls().size());
             });
         }
 
@@ -241,7 +236,6 @@ public class ChallengeServiceTest extends ServiceTest {
                     .challengeCategory(ChallengeCategory.WORKOUT.getDescription())
                     .build();
             List<MultipartFile> updateChallengeImgFiles = updateChallengeImgFiles();
-//        List<String> updateChallengeHashtags = List.of("editTag1", "editTag2");
 
             entityManager.flush();
             entityManager.clear();
@@ -263,7 +257,6 @@ public class ChallengeServiceTest extends ServiceTest {
                     .challengeCategory("error")
                     .build();
             List<MultipartFile> updateChallengeImgFiles = updateChallengeImgFiles();
-//        List<String> updateChallengeHashtags = List.of("editTag1", "editTag2");
 
             entityManager.flush();
             entityManager.clear();
@@ -285,7 +278,6 @@ public class ChallengeServiceTest extends ServiceTest {
                     .challengeCategory(ChallengeCategory.WORKOUT.getDescription())
                     .build();
             List<MultipartFile> updateChallengeImgFiles = updateChallengeImgFiles();
-//        List<String> updateChallengeHashtags = List.of("editTag1", "editTag2");
             User otherUser = userService.saveUser(createOtherUser(), passwordEncoder);
 
             entityManager.flush();

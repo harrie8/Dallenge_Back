@@ -72,7 +72,9 @@ public class Challenge extends BaseEntity {
     }
 
     public void addChallengeImg(ChallengeImg challengeImg) {
-        this.challengeImgs.add(challengeImg);
+        if (!this.challengeImgs.contains(challengeImg)) {
+            this.challengeImgs.add(challengeImg);
+        }
     }
 
     public void setUser(User users) {
