@@ -1,8 +1,8 @@
 package com.example.dailychallenge.service.challenge;
 
-import static com.example.dailychallenge.util.fixture.ChallengeFixture.createChallengeDto;
-import static com.example.dailychallenge.util.fixture.ChallengeImgFixture.createChallengeImgFiles;
-import static com.example.dailychallenge.util.fixture.UserFixture.createUser;
+import static com.example.dailychallenge.util.fixture.challenge.ChallengeFixture.createChallengeDto;
+import static com.example.dailychallenge.util.fixture.challenge.ChallengeImgFixture.createChallengeImgFiles;
+import static com.example.dailychallenge.util.fixture.user.UserFixture.createUser;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.example.dailychallenge.dto.ChallengeDto;
@@ -12,7 +12,7 @@ import com.example.dailychallenge.entity.users.User;
 import com.example.dailychallenge.repository.ChallengeImgRepository;
 import com.example.dailychallenge.service.users.UserService;
 import com.example.dailychallenge.util.ServiceTest;
-import com.example.dailychallenge.util.fixture.ChallengeImgFixture;
+import com.example.dailychallenge.util.fixture.challenge.ChallengeImgFixture;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

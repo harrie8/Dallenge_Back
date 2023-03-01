@@ -1,10 +1,10 @@
 package com.example.dailychallenge.controller.userChallenge;
 
-import static com.example.dailychallenge.util.fixture.ChallengeImgFixture.createChallengeImgFiles;
 import static com.example.dailychallenge.util.fixture.TokenFixture.AUTHORIZATION;
-import static com.example.dailychallenge.util.fixture.UserFixture.createOtherUser;
-import static com.example.dailychallenge.util.fixture.UserFixture.createSpecificUserDto;
-import static com.example.dailychallenge.util.fixture.UserFixture.createUser;
+import static com.example.dailychallenge.util.fixture.challenge.ChallengeImgFixture.createChallengeImgFiles;
+import static com.example.dailychallenge.util.fixture.user.UserFixture.createOtherUser;
+import static com.example.dailychallenge.util.fixture.user.UserFixture.createSpecificUserDto;
+import static com.example.dailychallenge.util.fixture.user.UserFixture.createUser;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;

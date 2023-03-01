@@ -1,8 +1,8 @@
 package com.example.dailychallenge.service.challenge;
 
-import static com.example.dailychallenge.util.fixture.ChallengeFixture.createChallenge;
-import static com.example.dailychallenge.util.fixture.UserFixture.createOtherUser;
-import static com.example.dailychallenge.util.fixture.UserFixture.createUser;
+import static com.example.dailychallenge.util.fixture.challenge.ChallengeFixture.createChallenge;
+import static com.example.dailychallenge.util.fixture.user.UserFixture.createOtherUser;
+import static com.example.dailychallenge.util.fixture.user.UserFixture.createUser;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;

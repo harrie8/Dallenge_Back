@@ -1,7 +1,7 @@
 package com.example.dailychallenge.service.hashtag;
 
-import static com.example.dailychallenge.util.fixture.ChallengeFixture.createChallengeDto;
-import static com.example.dailychallenge.util.fixture.UserFixture.createUser;
+import static com.example.dailychallenge.util.fixture.challenge.ChallengeFixture.createChallengeDto;
+import static com.example.dailychallenge.util.fixture.user.UserFixture.createUser;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 

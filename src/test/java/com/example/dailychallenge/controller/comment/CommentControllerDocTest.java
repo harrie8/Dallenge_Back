@@ -4,7 +4,7 @@ import static com.example.dailychallenge.util.fixture.TokenFixture.AUTHORIZATION
 import static com.example.dailychallenge.util.fixture.TokenFixture.EMAIL;
 import static com.example.dailychallenge.util.fixture.TokenFixture.PASSWORD;
 import static com.example.dailychallenge.util.fixture.TokenFixture.TOKEN_PREFIX;
-import static com.example.dailychallenge.util.fixture.UserFixture.createOtherUser;
+import static com.example.dailychallenge.util.fixture.user.UserFixture.createOtherUser;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;

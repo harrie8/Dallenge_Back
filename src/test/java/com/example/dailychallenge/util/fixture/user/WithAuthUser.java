@@ -1,4 +1,4 @@
-package com.example.dailychallenge.util.fixture;
+package com.example.dailychallenge.util.fixture.user;
 
 import static com.example.dailychallenge.util.fixture.TokenFixture.EMAIL;
 import static com.example.dailychallenge.util.fixture.TokenFixture.PASSWORD;

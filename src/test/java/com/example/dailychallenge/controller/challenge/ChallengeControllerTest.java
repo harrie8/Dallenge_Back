@@ -7,10 +7,10 @@ import static com.example.dailychallenge.entity.challenge.ChallengeDuration.OVER
 import static com.example.dailychallenge.entity.challenge.ChallengeDuration.WITHIN_TEN_MINUTES;
 import static com.example.dailychallenge.entity.challenge.ChallengeLocation.INDOOR;
 import static com.example.dailychallenge.entity.challenge.ChallengeLocation.OUTDOOR;
-import static com.example.dailychallenge.util.fixture.ChallengeImgFixture.createChallengeImgFiles;
-import static com.example.dailychallenge.util.fixture.ChallengeImgFixture.updateChallengeImgFiles;
-import static com.example.dailychallenge.util.fixture.UserFixture.createSpecificUserDto;
-import static com.example.dailychallenge.util.fixture.UserFixture.createUser;
+import static com.example.dailychallenge.util.fixture.challenge.ChallengeImgFixture.createChallengeImgFiles;
+import static com.example.dailychallenge.util.fixture.challenge.ChallengeImgFixture.updateChallengeImgFiles;
+import static com.example.dailychallenge.util.fixture.user.UserFixture.createSpecificUserDto;
+import static com.example.dailychallenge.util.fixture.user.UserFixture.createUser;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.hasItem;
