@@ -35,21 +35,13 @@ import static org.springframework.restdocs.snippet.Attributes.key;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.example.dailychallenge.dto.ChallengeDto;
 import com.example.dailychallenge.dto.HashtagDto;
 import com.example.dailychallenge.entity.challenge.Challenge;
 import com.example.dailychallenge.entity.challenge.ChallengeCategory;
 import com.example.dailychallenge.entity.challenge.ChallengeDuration;
 import com.example.dailychallenge.entity.challenge.ChallengeLocation;
 import com.example.dailychallenge.entity.challenge.ChallengeStatus;
-import com.example.dailychallenge.entity.comment.Comment;
-import com.example.dailychallenge.entity.hashtag.Hashtag;
 import com.example.dailychallenge.entity.users.User;
-import com.example.dailychallenge.repository.CommentRepository;
-import com.example.dailychallenge.service.challenge.ChallengeService;
-import com.example.dailychallenge.service.challenge.UserChallengeService;
-import com.example.dailychallenge.service.hashtag.ChallengeHashtagService;
-import com.example.dailychallenge.service.hashtag.HashtagService;
 import com.example.dailychallenge.util.RestDocsTest;
 import com.example.dailychallenge.util.fixture.TestDataSetup;
 import com.example.dailychallenge.vo.challenge.RequestCreateChallenge;
@@ -68,17 +60,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 public class ChallengeControllerDocTest extends RestDocsTest {
     @Autowired
-    private ChallengeService challengeService;
-    @Autowired
-    private UserChallengeService userChallengeService;
-    @Autowired
-    private CommentRepository commentRepository;
-    @Autowired
-    private HashtagService hashtagService;
-    @Autowired
-    private ChallengeHashtagService challengeHashtagService;
-
-    @Autowired
     private TestDataSetup testDataSetup;
 
     private User user;
@@ -87,39 +68,7 @@ public class ChallengeControllerDocTest extends RestDocsTest {
     @BeforeEach
     void beforeEach() {
         user = testDataSetup.saveUser(USERNAME, EMAIL, PASSWORD);
-        token = generateToken(user.getEmail(), user);
-    }
-
-    private Challenge 챌린지를_생성한다(String title, String content, String challengeCategoryDescription,
-                                String challengeLocationDescription, String challengeDurationDescription,
-                                User user) {
-        ChallengeDto challengeDto = ChallengeDto.builder()
-                .title(title)
-                .content(content)
-                .challengeCategory(challengeCategoryDescription)
-                .challengeLocation(challengeLocationDescription)
-                .challengeDuration(challengeDurationDescription)
-                .build();
-
-        return challengeService.saveChallenge(challengeDto, createChallengeImgFiles(), user);
-    }
-
-    private void 챌린지에_참가한다(Challenge challenge, User user) {
-        userChallengeService.saveUserChallenge(challenge, user);
-    }
-
-    private void 챌린지예_댓글을_단다(Challenge challenge) {
-        Comment comment = Comment.builder()
-                .content("content")
-                .build();
-        comment.saveCommentChallenge(challenge);
-        commentRepository.save(comment);
-    }
-
-    private void 챌린지에_해시태그를_단다(Challenge challenge) {
-        List<String> hashtagDto = List.of("tag1", "tag2");
-        List<Hashtag> hashtags = hashtagService.saveHashtag(hashtagDto);
-        challengeHashtagService.saveChallengeHashtag(challenge, hashtags);
+        token = generateToken(user);
     }
 
     @Test
@@ -208,18 +157,18 @@ public class ChallengeControllerDocTest extends RestDocsTest {
         private Challenge challenge1;
         @BeforeEach
         void beforeEach() {
-            challenge1 = 챌린지를_생성한다(
+            challenge1 = testDataSetup.챌린지를_생성한다(
                     "제목입니다.1",
                     "내용입니다.1",
                     STUDY.getDescription(),
                     INDOOR.getDescription(),
                     WITHIN_TEN_MINUTES.getDescription(),
                     user);
-            챌린지에_참가한다(challenge1, user);
-            챌린지예_댓글을_단다(challenge1);
-            챌린지에_해시태그를_단다(challenge1);
+            testDataSetup.챌린지에_참가한다(challenge1, user);
+            testDataSetup.챌린지예_댓글을_단다(challenge1);
+            testDataSetup.챌린지에_해시태그를_단다(challenge1);
 
-            Challenge challenge2 = 챌린지를_생성한다(
+            Challenge challenge2 = testDataSetup.챌린지를_생성한다(
                     "제목입니다.2",
                     "내용입니다.2",
                     ECONOMY.getDescription(),
@@ -227,12 +176,12 @@ public class ChallengeControllerDocTest extends RestDocsTest {
                     OVER_ONE_HOUR.getDescription(),
                     user
             );
-            챌린지에_참가한다(challenge2, user);
+            testDataSetup.챌린지에_참가한다(challenge2, user);
 
             Challenge challenge6 = null;
 
             for (int i = 3; i <= 10; i++) {
-                Challenge challenge = 챌린지를_생성한다(
+                Challenge challenge = testDataSetup.챌린지를_생성한다(
                         "제목입니다." + i,
                         "내용입니다." + i,
                         WORKOUT.getDescription(),
@@ -240,7 +189,7 @@ public class ChallengeControllerDocTest extends RestDocsTest {
                         WITHIN_TEN_MINUTES.getDescription(),
                         user
                 );
-                챌린지에_참가한다(challenge, user);
+                testDataSetup.챌린지에_참가한다(challenge, user);
 
                 if (i == 6) {
                     challenge6 = challenge;
@@ -250,13 +199,13 @@ public class ChallengeControllerDocTest extends RestDocsTest {
             for (int i = 1; i <= 8; i++) {
                 User otherUser = testDataSetup.saveUser(USERNAME + i, i + "@test.com", PASSWORD);
                 if (i == 1) {
-                    챌린지에_참가한다(challenge1, otherUser);
+                    testDataSetup.챌린지에_참가한다(challenge1, otherUser);
                 }
                 if (2 <= i && i <= 5) {
-                    챌린지에_참가한다(challenge2, otherUser);
+                    testDataSetup.챌린지에_참가한다(challenge2, otherUser);
                 }
                 if (i == 6) {
-                    챌린지에_참가한다(challenge6, otherUser);
+                    testDataSetup.챌린지에_참가한다(challenge6, otherUser);
                 }
             }
         }
@@ -477,16 +426,16 @@ public class ChallengeControllerDocTest extends RestDocsTest {
         private Challenge challenge1;
         @BeforeEach
         void beforeEach() {
-            challenge1 = 챌린지를_생성한다(
+            challenge1 = testDataSetup.챌린지를_생성한다(
                     "제목입니다.1",
                     "내용입니다.1",
                     STUDY.getDescription(),
                     INDOOR.getDescription(),
                     WITHIN_TEN_MINUTES.getDescription(),
                     user);
-            챌린지에_참가한다(challenge1, user);
-            챌린지예_댓글을_단다(challenge1);
-            챌린지에_해시태그를_단다(challenge1);
+            testDataSetup.챌린지에_참가한다(challenge1, user);
+            testDataSetup.챌린지예_댓글을_단다(challenge1);
+            testDataSetup.챌린지에_해시태그를_단다(challenge1);
         }
 
         @Test

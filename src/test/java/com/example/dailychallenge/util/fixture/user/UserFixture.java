@@ -2,9 +2,12 @@ package com.example.dailychallenge.util.fixture.user;
 
 import static com.example.dailychallenge.util.fixture.TokenFixture.EMAIL;
 import static com.example.dailychallenge.util.fixture.TokenFixture.PASSWORD;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 
 import com.example.dailychallenge.dto.UserDto;
 import com.example.dailychallenge.entity.users.User;
+import java.util.ArrayList;
+import org.springframework.test.web.servlet.request.RequestPostProcessor;
 
 public class UserFixture {
 
@@ -45,5 +48,13 @@ public class UserFixture {
         userDto.setInfo("info");
         userDto.setPassword(PASSWORD);
         return userDto;
+    }
+
+    public static RequestPostProcessor getRequestPostProcessor(User user) {
+        return user(new org.springframework.security.core.userdetails.User(
+                user.getEmail(), user.getPassword(),
+                true, true, true, true,
+                new ArrayList<>()
+        ));
     }
 }

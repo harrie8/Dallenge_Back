@@ -7,7 +7,6 @@ import static org.springframework.security.test.web.servlet.setup.SecurityMockMv
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
 import com.example.dailychallenge.entity.users.User;
-import com.example.dailychallenge.service.users.UserService;
 import com.example.dailychallenge.util.fixture.TestImgCleanup;
 import com.example.dailychallenge.utils.JwtTokenUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -76,20 +75,9 @@ public class RestDocsTest {
         testImgCleanup.afterPropertiesSet();
     }
 
-    protected String generateToken(String loginUserEmail, UserService userService) {
+    protected String generateToken(User user) {
         Authentication auth = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(loginUserEmail, PASSWORD));
-        if (auth.isAuthenticated()) {
-            UserDetails userDetails = userService.loadUserByUsername(loginUserEmail);
-            return TOKEN_PREFIX + jwtTokenUtil.generateToken(userDetails);
-        }
-
-        throw new IllegalArgumentException("token 생성 오류");
-    }
-
-    protected String generateToken(String loginUserEmail, User user) {
-        Authentication auth = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(loginUserEmail, PASSWORD));
+                new UsernamePasswordAuthenticationToken(user.getEmail(), PASSWORD));
         if (auth.isAuthenticated()) {
             UserDetails userDetails = new org.springframework.security.core.userdetails.User(
                     user.getEmail(), user.getPassword(),

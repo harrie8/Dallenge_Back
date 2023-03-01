@@ -12,37 +12,28 @@ import static com.example.dailychallenge.util.fixture.TokenFixture.PASSWORD;
 import static com.example.dailychallenge.util.fixture.challenge.ChallengeImgFixture.createChallengeImgFiles;
 import static com.example.dailychallenge.util.fixture.challenge.ChallengeImgFixture.updateChallengeImgFiles;
 import static com.example.dailychallenge.util.fixture.user.UserFixture.USERNAME;
+import static com.example.dailychallenge.util.fixture.user.UserFixture.getRequestPostProcessor;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.startsWith;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.example.dailychallenge.dto.ChallengeDto;
 import com.example.dailychallenge.dto.ChallengeSearchCondition;
 import com.example.dailychallenge.dto.HashtagDto;
 import com.example.dailychallenge.entity.challenge.Challenge;
 import com.example.dailychallenge.entity.challenge.ChallengeStatus;
-import com.example.dailychallenge.entity.comment.Comment;
-import com.example.dailychallenge.entity.hashtag.Hashtag;
 import com.example.dailychallenge.entity.users.User;
-import com.example.dailychallenge.repository.CommentRepository;
-import com.example.dailychallenge.service.challenge.ChallengeService;
-import com.example.dailychallenge.service.challenge.UserChallengeService;
-import com.example.dailychallenge.service.hashtag.ChallengeHashtagService;
-import com.example.dailychallenge.service.hashtag.HashtagService;
 import com.example.dailychallenge.util.ControllerTest;
 import com.example.dailychallenge.util.fixture.TestDataSetup;
 import com.example.dailychallenge.vo.challenge.RequestCreateChallenge;
 import com.example.dailychallenge.vo.challenge.RequestUpdateChallenge;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 import org.hamcrest.Matcher;
@@ -65,17 +56,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 class ChallengeControllerTest extends ControllerTest {
     @Autowired
-    private ChallengeService challengeService;
-    @Autowired
-    private UserChallengeService userChallengeService;
-    @Autowired
-    private CommentRepository commentRepository;
-    @Autowired
-    private HashtagService hashtagService;
-    @Autowired
-    private ChallengeHashtagService challengeHashtagService;
-
-    @Autowired
     private TestDataSetup testDataSetup;
 
     private User user;
@@ -84,43 +64,7 @@ class ChallengeControllerTest extends ControllerTest {
     @BeforeEach
     void beforeEach() {
         user = testDataSetup.saveUser(USERNAME, EMAIL, PASSWORD);
-        requestPostProcessor = user(new org.springframework.security.core.userdetails.User(
-                user.getEmail(), user.getPassword(),
-                true, true, true, true,
-                new ArrayList<>()
-        ));
-    }
-
-    private Challenge 챌린지를_생성한다(String title, String content, String challengeCategoryDescription,
-                                String challengeLocationDescription, String challengeDurationDescription,
-                                User user) {
-        ChallengeDto challengeDto = ChallengeDto.builder()
-                .title(title)
-                .content(content)
-                .challengeCategory(challengeCategoryDescription)
-                .challengeLocation(challengeLocationDescription)
-                .challengeDuration(challengeDurationDescription)
-                .build();
-
-        return challengeService.saveChallenge(challengeDto, createChallengeImgFiles(), user);
-    }
-
-    private void 챌린지에_참가한다(Challenge challenge, User user) {
-        userChallengeService.saveUserChallenge(challenge, user);
-    }
-
-    private void 챌린지예_댓글을_단다(Challenge challenge) {
-        Comment comment = Comment.builder()
-                .content("content")
-                .build();
-        comment.saveCommentChallenge(challenge);
-        commentRepository.save(comment);
-    }
-
-    private void 챌린지에_해시태그를_단다(Challenge challenge) {
-        List<String> hashtagDto = List.of("tag1", "tag2");
-        List<Hashtag> hashtags = hashtagService.saveHashtag(hashtagDto);
-        challengeHashtagService.saveChallengeHashtag(challenge, hashtags);
+        requestPostProcessor = getRequestPostProcessor(user);
     }
 
     @Test
@@ -179,18 +123,18 @@ class ChallengeControllerTest extends ControllerTest {
         private Challenge challenge1;
         @BeforeEach
         void beforeEach() {
-            challenge1 = 챌린지를_생성한다(
+            challenge1 = testDataSetup.챌린지를_생성한다(
                     "제목입니다.1",
                     "내용입니다.1",
                     STUDY.getDescription(),
                     INDOOR.getDescription(),
                     WITHIN_TEN_MINUTES.getDescription(),
                     user);
-            챌린지에_참가한다(challenge1, user);
-            챌린지예_댓글을_단다(challenge1);
-            챌린지에_해시태그를_단다(challenge1);
+            testDataSetup.챌린지에_참가한다(challenge1, user);
+            testDataSetup.챌린지예_댓글을_단다(challenge1);
+            testDataSetup.챌린지에_해시태그를_단다(challenge1);
 
-            Challenge challenge2 = 챌린지를_생성한다(
+            Challenge challenge2 = testDataSetup.챌린지를_생성한다(
                     "제목입니다.2",
                     "내용입니다.2",
                     ECONOMY.getDescription(),
@@ -198,12 +142,12 @@ class ChallengeControllerTest extends ControllerTest {
                     OVER_ONE_HOUR.getDescription(),
                     user
             );
-            챌린지에_참가한다(challenge2, user);
+            testDataSetup.챌린지에_참가한다(challenge2, user);
 
             Challenge challenge6 = null;
 
             for (int i = 3; i <= 10; i++) {
-                Challenge challenge = 챌린지를_생성한다(
+                Challenge challenge = testDataSetup.챌린지를_생성한다(
                         "제목입니다." + i,
                         "내용입니다." + i,
                         WORKOUT.getDescription(),
@@ -211,7 +155,7 @@ class ChallengeControllerTest extends ControllerTest {
                         WITHIN_TEN_MINUTES.getDescription(),
                         user
                 );
-                챌린지에_참가한다(challenge, user);
+                testDataSetup.챌린지에_참가한다(challenge, user);
 
                 if (i == 6) {
                     challenge6 = challenge;
@@ -221,13 +165,13 @@ class ChallengeControllerTest extends ControllerTest {
             for (int i = 1; i <= 8; i++) {
                 User otherUser = testDataSetup.saveUser(USERNAME + i, i + "@test.com", PASSWORD);
                 if (i == 1) {
-                    챌린지에_참가한다(challenge1, otherUser);
+                    testDataSetup.챌린지에_참가한다(challenge1, otherUser);
                 }
                 if (2 <= i && i <= 5) {
-                    챌린지에_참가한다(challenge2, otherUser);
+                    testDataSetup.챌린지에_참가한다(challenge2, otherUser);
                 }
                 if (i == 6) {
-                    챌린지에_참가한다(challenge6, otherUser);
+                    testDataSetup.챌린지에_참가한다(challenge6, otherUser);
                 }
             }
         }
@@ -414,16 +358,16 @@ class ChallengeControllerTest extends ControllerTest {
         private Challenge challenge1;
         @BeforeEach
         void beforeEach() {
-            challenge1 = 챌린지를_생성한다(
+            challenge1 = testDataSetup.챌린지를_생성한다(
                     "제목입니다.1",
                     "내용입니다.1",
                     STUDY.getDescription(),
                     INDOOR.getDescription(),
                     WITHIN_TEN_MINUTES.getDescription(),
                     user);
-            챌린지에_참가한다(challenge1, user);
-            챌린지예_댓글을_단다(challenge1);
-            챌린지에_해시태그를_단다(challenge1);
+            testDataSetup.챌린지에_참가한다(challenge1, user);
+            testDataSetup.챌린지예_댓글을_단다(challenge1);
+            testDataSetup.챌린지에_해시태그를_단다(challenge1);
         }
 
         @Test
