@@ -50,7 +50,7 @@ public class UserService implements UserDetailsService {
         }
     }
 
-    public User saveUser(UserDto userDto, PasswordEncoder passwordEncoder) throws Exception {
+    public User saveUser(UserDto userDto, PasswordEncoder passwordEncoder) {
 
         validateDuplicateUser(userDto.getEmail());
 

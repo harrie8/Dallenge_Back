@@ -8,6 +8,8 @@ import com.example.dailychallenge.entity.users.User;
 
 public class UserFixture {
 
+    public static final String USERNAME = "홍길동";
+
     public static UserDto createUser() {
         UserDto userDto = new UserDto();
         userDto.setEmail(EMAIL);
