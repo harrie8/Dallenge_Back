@@ -9,11 +9,13 @@ import com.example.dailychallenge.entity.users.User;
 public class UserFixture {
 
     public static final String USERNAME = "홍길동";
+    public static final String OTHER_USERNAME = "김철수";
+    public static final String OTHER_EMAIL = "a@a.com";
 
     public static UserDto createUser() {
         UserDto userDto = new UserDto();
         userDto.setEmail(EMAIL);
-        userDto.setUserName("홍길동");
+        userDto.setUserName(USERNAME);
         userDto.setInfo("testInfo");
         userDto.setPassword(PASSWORD);
         return userDto;
@@ -21,10 +23,10 @@ public class UserFixture {
 
     public static UserDto createOtherUser() {
         UserDto userDto = new UserDto();
-        userDto.setEmail("a@a.com");
-        userDto.setUserName("김철수");
+        userDto.setEmail(OTHER_EMAIL);
+        userDto.setUserName(OTHER_USERNAME);
         userDto.setInfo("aInfo");
-        userDto.setPassword("1234");
+        userDto.setPassword(PASSWORD);
         return userDto;
     }
 
