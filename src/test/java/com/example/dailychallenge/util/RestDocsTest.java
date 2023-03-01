@@ -7,8 +7,10 @@ import static org.springframework.security.test.web.servlet.setup.SecurityMockMv
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
 import com.example.dailychallenge.service.users.UserService;
+import com.example.dailychallenge.util.fixture.TestImgCleanup;
 import com.example.dailychallenge.utils.JwtTokenUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,6 +42,8 @@ import org.springframework.web.filter.CharacterEncodingFilter;
 @TestPropertySource(locations = "classpath:application-test.properties")
 public class RestDocsTest {
     @Autowired
+    protected TestImgCleanup testImgCleanup;
+    @Autowired
     protected PasswordEncoder passwordEncoder;
     @Autowired
     protected AuthenticationManager authenticationManager;
@@ -65,7 +69,12 @@ public class RestDocsTest {
                 .build();
     }
 
-    public String generateToken(String loginUserEmail, UserService userService) {
+    @AfterEach
+    void afterEach() {
+        testImgCleanup.afterPropertiesSet();
+    }
+
+    protected String generateToken(String loginUserEmail, UserService userService) {
         Authentication auth = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginUserEmail, PASSWORD));
         if (auth.isAuthenticated()) {
