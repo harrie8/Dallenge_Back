@@ -35,7 +35,6 @@ import com.example.dailychallenge.entity.challenge.ChallengeLocation;
 import com.example.dailychallenge.entity.comment.Comment;
 import com.example.dailychallenge.entity.users.User;
 import com.example.dailychallenge.exception.users.UserNotFound;
-import com.example.dailychallenge.repository.CommentRepository;
 import com.example.dailychallenge.service.challenge.ChallengeService;
 import com.example.dailychallenge.service.comment.CommentService;
 import com.example.dailychallenge.service.users.UserService;
@@ -78,8 +77,6 @@ public class CommentControllerDocTest {
     private UserService userService;
     @Autowired
     private ChallengeService challengeService;
-    @Autowired
-    private CommentRepository commentRepository;
     @Autowired
     private CommentService commentService;
     @Autowired

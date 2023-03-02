@@ -212,7 +212,7 @@ class CommentControllerTest extends ControllerTest {
                 .andExpect(jsonPath("$.content[*].id").isNotEmpty())
                 .andExpect(jsonPath("$.content[*].content", hasItems(startsWith("댓글 내용"))))
                 .andExpect(jsonPath("$.content[*].likes", hasItems(0)))
-                .andExpect(jsonPath("$.content[*].createdAt").isNotEmpty())
+                .andExpect(jsonPath("$.content[*].createdAt", hasItem("오늘")))
                 .andExpect(jsonPath("$.content[*].commentImgUrls",
                         hasItems(hasItem(startsWith("/images/")))))
                 .andExpect(jsonPath("$.content[*].commentOwnerUser.userName",
@@ -266,7 +266,7 @@ class CommentControllerTest extends ControllerTest {
                         contains("다른 댓글 내용7", "다른 댓글 내용6", "다른 댓글 내용5", "댓글 내용4",
                                 "댓글 내용3", "댓글 내용2", "댓글 내용1", "댓글 내용0")))
                 .andExpect(jsonPath("$.content[*].likes", hasItems(0)))
-                .andExpect(jsonPath("$.content[*].createdAt").isNotEmpty())
+                .andExpect(jsonPath("$.content[*].createdAt", hasItem("오늘")))
                 .andExpect(jsonPath("$.content[*].commentImgUrls",
                         hasItems(hasItem(startsWith("/images/")))))
                 .andExpect(jsonPath("$.content[*].challengeId",

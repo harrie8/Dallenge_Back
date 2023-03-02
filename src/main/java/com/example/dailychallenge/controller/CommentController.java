@@ -52,7 +52,7 @@ public class CommentController {
         ResponseComment responseComment = ResponseComment.builder()
                 .id(comment.getId())
                 .content(comment.getContent())
-                .createdAt(comment.getCreated_at())
+                .createdAt(comment.getSpecificCreatedAt())
                 .userId(comment.getUsers().getId())
                 .build();
 
