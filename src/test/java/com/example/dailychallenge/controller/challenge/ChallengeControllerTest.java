@@ -39,10 +39,7 @@ import java.util.stream.Stream;
 import org.hamcrest.Matcher;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
-import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -60,11 +57,70 @@ class ChallengeControllerTest extends ControllerTest {
 
     private User user;
     private RequestPostProcessor requestPostProcessor;
+    private Challenge challenge1;
 
     @BeforeEach
     void beforeEach() {
         user = testDataSetup.saveUser(USERNAME, EMAIL, PASSWORD);
         requestPostProcessor = getRequestPostProcessor(user);
+    }
+
+    private void initChallengeData() {
+        challenge1 = testDataSetup.챌린지를_생성한다(
+                "제목입니다.1",
+                "내용입니다.1",
+                STUDY.getDescription(),
+                INDOOR.getDescription(),
+                WITHIN_TEN_MINUTES.getDescription(),
+                user);
+        testDataSetup.챌린지에_참가한다(challenge1, user);
+        testDataSetup.챌린지예_댓글을_단다(challenge1);
+        testDataSetup.챌린지에_해시태그를_단다(challenge1);
+    }
+
+    private void initData() {
+        initChallengeData();
+
+        Challenge challenge2 = testDataSetup.챌린지를_생성한다(
+                "제목입니다.2",
+                "내용입니다.2",
+                ECONOMY.getDescription(),
+                OUTDOOR.getDescription(),
+                OVER_ONE_HOUR.getDescription(),
+                user
+        );
+        testDataSetup.챌린지에_참가한다(challenge2, user);
+
+        Challenge challenge6 = null;
+
+        for (int i = 3; i <= 10; i++) {
+            Challenge challenge = testDataSetup.챌린지를_생성한다(
+                    "제목입니다." + i,
+                    "내용입니다." + i,
+                    WORKOUT.getDescription(),
+                    INDOOR.getDescription(),
+                    WITHIN_TEN_MINUTES.getDescription(),
+                    user
+            );
+            testDataSetup.챌린지에_참가한다(challenge, user);
+
+            if (i == 6) {
+                challenge6 = challenge;
+            }
+        }
+
+        for (int i = 1; i <= 8; i++) {
+            User otherUser = testDataSetup.saveUser(USERNAME + i, i + "@test.com", PASSWORD);
+            if (i == 1) {
+                testDataSetup.챌린지에_참가한다(challenge1, otherUser);
+            }
+            if (2 <= i && i <= 5) {
+                testDataSetup.챌린지에_참가한다(challenge2, otherUser);
+            }
+            if (i == 6) {
+                testDataSetup.챌린지에_참가한다(challenge6, otherUser);
+            }
+        }
     }
 
     @Test
@@ -116,318 +172,249 @@ class ChallengeControllerTest extends ControllerTest {
                 .andExpect(jsonPath("$.challengeOwnerUser.userId").value(user.getId()));
     }
 
-    @Nested
-    @TestInstance(Lifecycle.PER_CLASS)
-    @DisplayName("조회 테스트는 초기값이 필요하다.")
-    class find {
-        private Challenge challenge1;
-        @BeforeEach
-        void beforeEach() {
-            challenge1 = testDataSetup.챌린지를_생성한다(
-                    "제목입니다.1",
-                    "내용입니다.1",
-                    STUDY.getDescription(),
-                    INDOOR.getDescription(),
-                    WITHIN_TEN_MINUTES.getDescription(),
-                    user);
-            testDataSetup.챌린지에_참가한다(challenge1, user);
-            testDataSetup.챌린지예_댓글을_단다(challenge1);
-            testDataSetup.챌린지에_해시태그를_단다(challenge1);
+    @Test
+    @DisplayName("특정 챌린지 조회 테스트")
+    void findChallengeByIdTest() throws Exception {
+        initData();
 
-            Challenge challenge2 = testDataSetup.챌린지를_생성한다(
-                    "제목입니다.2",
-                    "내용입니다.2",
-                    ECONOMY.getDescription(),
-                    OUTDOOR.getDescription(),
-                    OVER_ONE_HOUR.getDescription(),
-                    user
-            );
-            testDataSetup.챌린지에_참가한다(challenge2, user);
+        Long challenge1Id = challenge1.getId();
 
-            Challenge challenge6 = null;
-
-            for (int i = 3; i <= 10; i++) {
-                Challenge challenge = testDataSetup.챌린지를_생성한다(
-                        "제목입니다." + i,
-                        "내용입니다." + i,
-                        WORKOUT.getDescription(),
-                        INDOOR.getDescription(),
-                        WITHIN_TEN_MINUTES.getDescription(),
-                        user
-                );
-                testDataSetup.챌린지에_참가한다(challenge, user);
-
-                if (i == 6) {
-                    challenge6 = challenge;
-                }
-            }
-
-            for (int i = 1; i <= 8; i++) {
-                User otherUser = testDataSetup.saveUser(USERNAME + i, i + "@test.com", PASSWORD);
-                if (i == 1) {
-                    testDataSetup.챌린지에_참가한다(challenge1, otherUser);
-                }
-                if (2 <= i && i <= 5) {
-                    testDataSetup.챌린지에_참가한다(challenge2, otherUser);
-                }
-                if (i == 6) {
-                    testDataSetup.챌린지에_참가한다(challenge6, otherUser);
-                }
-            }
-        }
-
-        @Test
-        @DisplayName("특정 챌린지 조회 테스트")
-        void findChallengeByIdTest() throws Exception {
-            Long challenge1Id = challenge1.getId();
-
-            mockMvc.perform(get("/challenge/{challengeId}", challenge1Id)
-                            .with(requestPostProcessor)
-                            .accept(MediaType.APPLICATION_JSON))
-                    .andExpect(status().isOk())
-                    .andExpect(jsonPath("$.responseChallenge.title").value(challenge1.getTitle()))
-                    .andExpect(jsonPath("$.responseChallenge.content").value(challenge1.getContent()))
-                    .andExpect(jsonPath("$.responseChallenge.challengeCategory").value(
-                            challenge1.getChallengeCategory().getDescription()))
-                    .andExpect(jsonPath("$.responseChallenge.challengeLocation").value(
-                            challenge1.getChallengeLocation().getDescription()))
-                    .andExpect(jsonPath("$.responseChallenge.challengeDuration").value(
-                            challenge1.getChallengeDuration().getDescription()))
-                    .andExpect(jsonPath("$.responseChallenge.created_at").value(challenge1.getFormattedCreatedAt()))
-                    .andExpect(
-                            jsonPath("$.responseChallenge.challengeImgUrls[*]").value(challenge1.getImgUrls()))
-                    .andExpect(
-                            jsonPath("$.responseChallenge.challengeHashtags[*]").value(challenge1.getHashtags()))
-                    .andExpect(jsonPath("$.responseChallenge.howManyUsersAreInThisChallenge").value(2))
-                    .andExpect(
-                            jsonPath("$.responseChallenge.challengeOwnerUser.userName").value(user.getUserName()))
-                    .andExpect(jsonPath("$.responseChallenge.challengeOwnerUser.email").value(user.getEmail()))
-                    .andExpect(jsonPath("$.responseChallenge.challengeOwnerUser.userId").value(user.getId()))
-                    .andExpect(jsonPath("$.responseUserChallenges[*].challengeStatus",
-                            hasItem(ChallengeStatus.TRYING.getDescription())))
-                    .andExpect(jsonPath("$.responseUserChallenges[*].participatedUser.userName",
-                            contains(user.getUserName(), "홍길동1")))
-                    .andExpect(jsonPath("$.responseUserChallenges[*].participatedUser.email",
-                            contains(user.getEmail(), "1@test.com")));
-        }
-
-        @Test
-        @DisplayName("모든 챌린지 조회 테스트")
-        void searchAllChallengesTest() throws Exception {
-            mockMvc.perform(get("/challenge")
-                            .with(requestPostProcessor)
-                            .param("size", "20")
-                            .param("page", "0")
-                            .accept(MediaType.APPLICATION_JSON))
-                    .andExpect(status().isOk())
-                    .andExpect(jsonPath("$.content[*].title", contains(
-                            "제목입니다.2", "제목입니다.1", "제목입니다.6", "제목입니다.3", "제목입니다.4",
-                            "제목입니다.5", "제목입니다.7", "제목입니다.8", "제목입니다.9", "제목입니다.10")))
-                    .andExpect(jsonPath("$.content[*].content", contains(
-                            "내용입니다.2", "내용입니다.1", "내용입니다.6", "내용입니다.3", "내용입니다.4",
-                            "내용입니다.5", "내용입니다.7", "내용입니다.8", "내용입니다.9", "내용입니다.10")))
-                    .andExpect(jsonPath("$.content[*].challengeCategory",
-                            hasItems(ECONOMY.getDescription(), STUDY.getDescription(),
-                                    WORKOUT.getDescription())))
-                    .andExpect(jsonPath("$.content[*].challengeLocation",
-                            hasItems(OUTDOOR.getDescription(),
-                                    INDOOR.getDescription())))
-                    .andExpect(jsonPath("$.content[*].challengeDuration",
-                            hasItems(OVER_ONE_HOUR.getDescription(),
-                                    WITHIN_TEN_MINUTES.getDescription())))
-                    .andExpect(jsonPath("$.content[*].challengeImgUrls",
-                            hasItems(hasItem(startsWith("/images/")))))
-                    .andExpect(jsonPath("$.content[*].challengeHashtags",
-                            hasItems(List.of("tag1", "tag2"))))
-                    .andExpect(jsonPath("$.content[*].howManyUsersAreInThisChallenge",
-                            contains(5, 2, 2, 1, 1, 1, 1, 1, 1, 1)))
-                    .andExpect(jsonPath("$.content[*].challengeOwnerUser.userName",
-                            hasItem(user.getUserName())))
-                    .andExpect(jsonPath("$.content[*].challengeOwnerUser.email",
-                            hasItem(user.getEmail())))
-                    .andExpect(jsonPath("$.content[*].challengeOwnerUser.userId",
-                            hasItem(user.getId().intValue())));
-        }
-
-        Stream<Arguments> generateConditionData() {
-            return Stream.of(
-                    Arguments.of(ChallengeSearchCondition.builder()
-                                    .title("1").category(null).build(),
-                            "popular",
-                            List.of(
-                                    contains("제목입니다.1", "제목입니다.10"),
-                                    contains("내용입니다.1", "내용입니다.10"),
-                                    contains(STUDY.getDescription(),
-                                            WORKOUT.getDescription()),
-                                    hasItem(INDOOR.getDescription()),
-                                    hasItem(WITHIN_TEN_MINUTES.getDescription()),
-                                    hasItem(hasItem(startsWith("/images/"))),
-                                    contains(2, 1)
-                            )),
-                    Arguments.of(ChallengeSearchCondition.builder()
-                                    .title(null).category(WORKOUT.getDescription()).build(),
-                            "popular",
-                            List.of(
-                                    contains("제목입니다.6", "제목입니다.3", "제목입니다.4", "제목입니다.5", "제목입니다.7", "제목입니다.8",
-                                            "제목입니다.9", "제목입니다.10"),
-                                    contains("내용입니다.6", "내용입니다.3", "내용입니다.4", "내용입니다.5", "내용입니다.7", "내용입니다.8",
-                                            "내용입니다.9", "내용입니다.10"),
-                                    hasItem(WORKOUT.getDescription()),
-                                    hasItem(INDOOR.getDescription()),
-                                    hasItem(WITHIN_TEN_MINUTES.getDescription()),
-                                    hasItem(hasItem(startsWith("/images/"))),
-                                    contains(2, 1, 1, 1, 1, 1, 1, 1)
-                            )),
-                    Arguments.of(ChallengeSearchCondition.builder()
-                                    .title(null).category(WORKOUT.getDescription()).build(),
-                            "time",
-                            List.of(
-                                    contains("제목입니다.10", "제목입니다.9", "제목입니다.8", "제목입니다.7", "제목입니다.6", "제목입니다.5",
-                                            "제목입니다.4", "제목입니다.3"),
-                                    contains("내용입니다.10", "내용입니다.9", "내용입니다.8", "내용입니다.7", "내용입니다.6", "내용입니다.5",
-                                            "내용입니다.4", "내용입니다.3"),
-                                    hasItem(WORKOUT.getDescription()),
-                                    hasItem(INDOOR.getDescription()),
-                                    hasItem(WITHIN_TEN_MINUTES.getDescription()),
-                                    hasItem(hasItem(startsWith("/images/"))),
-                                    contains(1, 1, 1, 1, 2, 1, 1, 1)
-                            )),
-                    Arguments.of(ChallengeSearchCondition.builder()
-                                    .title("1").category(STUDY.getDescription()).build(),
-                            "popular",
-                            List.of(
-                                    contains("제목입니다.1"),
-                                    contains("내용입니다.1"),
-                                    contains(STUDY.getDescription()),
-                                    contains(INDOOR.getDescription()),
-                                    contains(WITHIN_TEN_MINUTES.getDescription()),
-                                    hasItem(hasItem(startsWith("/images/"))),
-                                    contains(2))
-                    ));
-        }
-
-        @ParameterizedTest
-        @MethodSource("generateConditionData")
-        @DisplayName("챌린지들을 검색 조건으로 찾는 테스트")
-        void searchChallengesByConditionTest(ChallengeSearchCondition condition, String sortProperties,
-                                             List<Matcher<Iterable<? extends String>>> expects) throws Exception {
-            mockMvc.perform(get("/challenge/condition")
-                            .with(requestPostProcessor)
-                            .param("title", condition.getTitle())
-                            .param("category", condition.getCategory())
-                            .param("size", "20")
-                            .param("page", "0")
-                            .param("sort", sortProperties)
-                            .accept(MediaType.APPLICATION_JSON))
-                    .andExpect(status().isOk())
-                    .andExpect(jsonPath("$.content[*].title", expects.get(0)))
-                    .andExpect(jsonPath("$.content[*].content", expects.get(1)))
-                    .andExpect(jsonPath("$.content[*].challengeCategory", expects.get(2)))
-                    .andExpect(jsonPath("$.content[*].challengeLocation", expects.get(3)))
-                    .andExpect(jsonPath("$.content[*].challengeDuration", expects.get(4)))
-                    .andExpect(jsonPath("$.content[*].challengeImgUrls", expects.get(5)))
-                    .andExpect(jsonPath("$.content[*].howManyUsersAreInThisChallenge", expects.get(6)))
-                    .andExpect(jsonPath("$.content[*].challengeOwnerUser.userName", hasItem(
-                            user.getUserName())))
-                    .andExpect(jsonPath("$.content[*].challengeOwnerUser.email", hasItem(
-                            user.getEmail())))
-                    .andExpect(jsonPath("$.content[*].challengeOwnerUser.userId", hasItem(
-                            user.getId().intValue())));
-        }
-
-        @ParameterizedTest
-        @CsvSource(value = {
-                "10, 2"
-        })
-        @DisplayName("모든 챌린지 조회 페이징 테스트")
-        void searchAllChallengesPagingTest(int totalElements, int numOfPage) throws Exception {
-            mockMvc.perform(get("/challenge")
-                            .with(requestPostProcessor)
-                            .param("size", String.valueOf(numOfPage))
-                            .param("page", "0")
-                            .accept(MediaType.APPLICATION_JSON))
-                    .andExpect(status().isOk())
-                    .andExpect(jsonPath("$.totalElements").value(totalElements))
-                    .andExpect(jsonPath("$.totalPages").value(totalElements / numOfPage));
-        }
+        mockMvc.perform(get("/challenge/{challengeId}", challenge1Id)
+                        .with(requestPostProcessor)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.responseChallenge.title").value(challenge1.getTitle()))
+                .andExpect(jsonPath("$.responseChallenge.content").value(challenge1.getContent()))
+                .andExpect(jsonPath("$.responseChallenge.challengeCategory").value(
+                        challenge1.getChallengeCategory().getDescription()))
+                .andExpect(jsonPath("$.responseChallenge.challengeLocation").value(
+                        challenge1.getChallengeLocation().getDescription()))
+                .andExpect(jsonPath("$.responseChallenge.challengeDuration").value(
+                        challenge1.getChallengeDuration().getDescription()))
+                .andExpect(jsonPath("$.responseChallenge.created_at").value(challenge1.getFormattedCreatedAt()))
+                .andExpect(
+                        jsonPath("$.responseChallenge.challengeImgUrls[*]").value(challenge1.getImgUrls()))
+                .andExpect(
+                        jsonPath("$.responseChallenge.challengeHashtags[*]").value(challenge1.getHashtags()))
+                .andExpect(jsonPath("$.responseChallenge.howManyUsersAreInThisChallenge").value(2))
+                .andExpect(
+                        jsonPath("$.responseChallenge.challengeOwnerUser.userName").value(user.getUserName()))
+                .andExpect(jsonPath("$.responseChallenge.challengeOwnerUser.email").value(user.getEmail()))
+                .andExpect(jsonPath("$.responseChallenge.challengeOwnerUser.userId").value(user.getId()))
+                .andExpect(jsonPath("$.responseUserChallenges[*].challengeStatus",
+                        hasItem(ChallengeStatus.TRYING.getDescription())))
+                .andExpect(jsonPath("$.responseUserChallenges[*].participatedUser.userName",
+                        contains(user.getUserName(), "홍길동1")))
+                .andExpect(jsonPath("$.responseUserChallenges[*].participatedUser.email",
+                        contains(user.getEmail(), "1@test.com")));
     }
 
-    @Nested
-    @DisplayName("챌린지가 존재해야만 하는 테스트 모음")
-    class UpdateAndDelete {
-        private Challenge challenge1;
-        @BeforeEach
-        void beforeEach() {
-            challenge1 = testDataSetup.챌린지를_생성한다(
-                    "제목입니다.1",
-                    "내용입니다.1",
-                    STUDY.getDescription(),
-                    INDOOR.getDescription(),
-                    WITHIN_TEN_MINUTES.getDescription(),
-                    user);
-            testDataSetup.챌린지에_참가한다(challenge1, user);
-            testDataSetup.챌린지예_댓글을_단다(challenge1);
-            testDataSetup.챌린지에_해시태그를_단다(challenge1);
-        }
+    @Test
+    @DisplayName("모든 챌린지 조회 테스트")
+    void searchAllChallengesTest() throws Exception {
+        initData();
 
-        @Test
-        @DisplayName("챌린지 수정 테스트")
-        void updateChallenge() throws Exception {
-            RequestUpdateChallenge requestUpdateChallenge = RequestUpdateChallenge.builder()
-                    .title("수정된 제목")
-                    .content("수정된 내용")
-                    .challengeCategory(WORKOUT.getDescription())
-                    .build();
-            List<MultipartFile> updateChallengeImgFiles = updateChallengeImgFiles();
+        mockMvc.perform(get("/challenge")
+                        .with(requestPostProcessor)
+                        .param("size", "20")
+                        .param("page", "0")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content[*].title", contains(
+                        "제목입니다.2", "제목입니다.1", "제목입니다.6", "제목입니다.3", "제목입니다.4",
+                        "제목입니다.5", "제목입니다.7", "제목입니다.8", "제목입니다.9", "제목입니다.10")))
+                .andExpect(jsonPath("$.content[*].content", contains(
+                        "내용입니다.2", "내용입니다.1", "내용입니다.6", "내용입니다.3", "내용입니다.4",
+                        "내용입니다.5", "내용입니다.7", "내용입니다.8", "내용입니다.9", "내용입니다.10")))
+                .andExpect(jsonPath("$.content[*].challengeCategory",
+                        hasItems(ECONOMY.getDescription(), STUDY.getDescription(),
+                                WORKOUT.getDescription())))
+                .andExpect(jsonPath("$.content[*].challengeLocation",
+                        hasItems(OUTDOOR.getDescription(),
+                                INDOOR.getDescription())))
+                .andExpect(jsonPath("$.content[*].challengeDuration",
+                        hasItems(OVER_ONE_HOUR.getDescription(),
+                                WITHIN_TEN_MINUTES.getDescription())))
+                .andExpect(jsonPath("$.content[*].challengeImgUrls",
+                        hasItems(hasItem(startsWith("/images/")))))
+                .andExpect(jsonPath("$.content[*].challengeHashtags",
+                        hasItems(List.of("tag1", "tag2"))))
+                .andExpect(jsonPath("$.content[*].howManyUsersAreInThisChallenge",
+                        contains(5, 2, 2, 1, 1, 1, 1, 1, 1, 1)))
+                .andExpect(jsonPath("$.content[*].challengeOwnerUser.userName",
+                        hasItem(user.getUserName())))
+                .andExpect(jsonPath("$.content[*].challengeOwnerUser.email",
+                        hasItem(user.getEmail())))
+                .andExpect(jsonPath("$.content[*].challengeOwnerUser.userId",
+                        hasItem(user.getId().intValue())));
+    }
 
-            String json = objectMapper.writeValueAsString(requestUpdateChallenge);
-            MockMultipartFile mockRequestUpdateChallenge = new MockMultipartFile("requestUpdateChallenge",
-                    "requestUpdateChallenge",
-                    "application/json", json.getBytes(UTF_8));
+    static Stream<Arguments> generateConditionData() {
+        return Stream.of(
+                Arguments.of(ChallengeSearchCondition.builder()
+                                .title("1").category(null).build(),
+                        "popular",
+                        List.of(
+                                contains("제목입니다.1", "제목입니다.10"),
+                                contains("내용입니다.1", "내용입니다.10"),
+                                contains(STUDY.getDescription(),
+                                        WORKOUT.getDescription()),
+                                hasItem(INDOOR.getDescription()),
+                                hasItem(WITHIN_TEN_MINUTES.getDescription()),
+                                hasItem(hasItem(startsWith("/images/"))),
+                                contains(2, 1)
+                        )),
+                Arguments.of(ChallengeSearchCondition.builder()
+                                .title(null).category(WORKOUT.getDescription()).build(),
+                        "popular",
+                        List.of(
+                                contains("제목입니다.6", "제목입니다.3", "제목입니다.4", "제목입니다.5", "제목입니다.7", "제목입니다.8",
+                                        "제목입니다.9", "제목입니다.10"),
+                                contains("내용입니다.6", "내용입니다.3", "내용입니다.4", "내용입니다.5", "내용입니다.7", "내용입니다.8",
+                                        "내용입니다.9", "내용입니다.10"),
+                                hasItem(WORKOUT.getDescription()),
+                                hasItem(INDOOR.getDescription()),
+                                hasItem(WITHIN_TEN_MINUTES.getDescription()),
+                                hasItem(hasItem(startsWith("/images/"))),
+                                contains(2, 1, 1, 1, 1, 1, 1, 1)
+                        )),
+                Arguments.of(ChallengeSearchCondition.builder()
+                                .title(null).category(WORKOUT.getDescription()).build(),
+                        "time",
+                        List.of(
+                                contains("제목입니다.10", "제목입니다.9", "제목입니다.8", "제목입니다.7", "제목입니다.6", "제목입니다.5",
+                                        "제목입니다.4", "제목입니다.3"),
+                                contains("내용입니다.10", "내용입니다.9", "내용입니다.8", "내용입니다.7", "내용입니다.6", "내용입니다.5",
+                                        "내용입니다.4", "내용입니다.3"),
+                                hasItem(WORKOUT.getDescription()),
+                                hasItem(INDOOR.getDescription()),
+                                hasItem(WITHIN_TEN_MINUTES.getDescription()),
+                                hasItem(hasItem(startsWith("/images/"))),
+                                contains(1, 1, 1, 1, 2, 1, 1, 1)
+                        )),
+                Arguments.of(ChallengeSearchCondition.builder()
+                                .title("1").category(STUDY.getDescription()).build(),
+                        "popular",
+                        List.of(
+                                contains("제목입니다.1"),
+                                contains("내용입니다.1"),
+                                contains(STUDY.getDescription()),
+                                contains(INDOOR.getDescription()),
+                                contains(WITHIN_TEN_MINUTES.getDescription()),
+                                hasItem(hasItem(startsWith("/images/"))),
+                                contains(2))
+                ));
+    }
 
-            HashtagDto hashtagDto = HashtagDto.builder()
-                    .content(List.of("editTag1", "editTag2"))
-                    .build();
-            String hashtagDtoJson = objectMapper.writeValueAsString(hashtagDto);
-            MockMultipartFile mockHashtagDto = new MockMultipartFile("hashtagDto",
-                    "hashtagDto",
-                    "application/json", hashtagDtoJson.getBytes(UTF_8));
+    @ParameterizedTest
+    @MethodSource("generateConditionData")
+    @DisplayName("챌린지들을 검색 조건으로 찾는 테스트")
+    void searchChallengesByConditionTest(ChallengeSearchCondition condition, String sortProperties,
+                                         List<Matcher<Iterable<? extends String>>> expects) throws Exception {
+        initData();
 
-            Long challenge1Id = challenge1.getId();
+        mockMvc.perform(get("/challenge/condition")
+                        .with(requestPostProcessor)
+                        .param("title", condition.getTitle())
+                        .param("category", condition.getCategory())
+                        .param("size", "20")
+                        .param("page", "0")
+                        .param("sort", sortProperties)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content[*].title", expects.get(0)))
+                .andExpect(jsonPath("$.content[*].content", expects.get(1)))
+                .andExpect(jsonPath("$.content[*].challengeCategory", expects.get(2)))
+                .andExpect(jsonPath("$.content[*].challengeLocation", expects.get(3)))
+                .andExpect(jsonPath("$.content[*].challengeDuration", expects.get(4)))
+                .andExpect(jsonPath("$.content[*].challengeImgUrls", expects.get(5)))
+                .andExpect(jsonPath("$.content[*].howManyUsersAreInThisChallenge", expects.get(6)))
+                .andExpect(jsonPath("$.content[*].challengeOwnerUser.userName", hasItem(
+                        user.getUserName())))
+                .andExpect(jsonPath("$.content[*].challengeOwnerUser.email", hasItem(
+                        user.getEmail())))
+                .andExpect(jsonPath("$.content[*].challengeOwnerUser.userId", hasItem(
+                        user.getId().intValue())));
+    }
 
-            mockMvc.perform(multipart("/challenge/{challengeId}", challenge1Id)
-                            .file(mockRequestUpdateChallenge)
-                            .part(new MockPart("updateChallengeImgFiles", "updateChallengeImgFiles",
-                                    updateChallengeImgFiles.get(0).getBytes()))
-                            .part(new MockPart("updateChallengeImgFiles", "updateChallengeImgFiles",
-                                    updateChallengeImgFiles.get(1).getBytes()))
-                            .file(mockHashtagDto)
-                            .with(requestPostProcessor)
-                            .accept(MediaType.APPLICATION_JSON))
-                    .andExpect(status().isOk())
-                    .andExpect(jsonPath("$.title").value(requestUpdateChallenge.getTitle()))
-                    .andExpect(jsonPath("$.content").value(requestUpdateChallenge.getContent()))
-                    .andExpect(jsonPath("$.challengeCategory").value(requestUpdateChallenge.getChallengeCategory()))
-                    .andExpect(
-                            jsonPath("$.challengeLocation").value(challenge1.getChallengeLocation().getDescription()))
-                    .andExpect(
-                            jsonPath("$.challengeDuration").value(challenge1.getChallengeDuration().getDescription()))
-                    .andExpect(jsonPath("$.created_at").value(challenge1.getFormattedCreatedAt()))
-                    .andExpect(jsonPath("$.updated_at").isNotEmpty())
-                    .andExpect(jsonPath("$.challengeImgUrls[*]", hasItem(startsWith("/images/"))))
-                    .andExpect(jsonPath("$.challengeHashtags[*]", contains("editTag1", "editTag2")))
-                    .andExpect(jsonPath("$.challengeImgUrls", hasSize(2)));
-        }
+    @ParameterizedTest
+    @CsvSource(value = {
+            "10, 2"
+    })
+    @DisplayName("모든 챌린지 조회 페이징 테스트")
+    void searchAllChallengesPagingTest(int totalElements, int numOfPage) throws Exception {
+        initData();
 
-        @Test
-        @DisplayName("챌린지 삭제 테스트")
-        void deleteChallenge() throws Exception {
-            Long challenge1Id = challenge1.getId();
+        mockMvc.perform(get("/challenge")
+                        .with(requestPostProcessor)
+                        .param("size", String.valueOf(numOfPage))
+                        .param("page", "0")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.totalElements").value(totalElements))
+                .andExpect(jsonPath("$.totalPages").value(totalElements / numOfPage));
+    }
 
-            mockMvc.perform(delete("/challenge/{challengeId}", challenge1Id)
-                            .with(requestPostProcessor)
-                            .accept(MediaType.APPLICATION_JSON))
-                    .andExpect(status().isNoContent());
-        }
+    @Test
+    @DisplayName("챌린지 수정 테스트")
+    void updateChallenge() throws Exception {
+        initChallengeData();
+
+        RequestUpdateChallenge requestUpdateChallenge = RequestUpdateChallenge.builder()
+                .title("수정된 제목")
+                .content("수정된 내용")
+                .challengeCategory(WORKOUT.getDescription())
+                .build();
+        List<MultipartFile> updateChallengeImgFiles = updateChallengeImgFiles();
+
+        String json = objectMapper.writeValueAsString(requestUpdateChallenge);
+        MockMultipartFile mockRequestUpdateChallenge = new MockMultipartFile("requestUpdateChallenge",
+                "requestUpdateChallenge",
+                "application/json", json.getBytes(UTF_8));
+
+        HashtagDto hashtagDto = HashtagDto.builder()
+                .content(List.of("editTag1", "editTag2"))
+                .build();
+        String hashtagDtoJson = objectMapper.writeValueAsString(hashtagDto);
+        MockMultipartFile mockHashtagDto = new MockMultipartFile("hashtagDto",
+                "hashtagDto",
+                "application/json", hashtagDtoJson.getBytes(UTF_8));
+
+        Long challenge1Id = challenge1.getId();
+
+        mockMvc.perform(multipart("/challenge/{challengeId}", challenge1Id)
+                        .file(mockRequestUpdateChallenge)
+                        .part(new MockPart("updateChallengeImgFiles", "updateChallengeImgFiles",
+                                updateChallengeImgFiles.get(0).getBytes()))
+                        .part(new MockPart("updateChallengeImgFiles", "updateChallengeImgFiles",
+                                updateChallengeImgFiles.get(1).getBytes()))
+                        .file(mockHashtagDto)
+                        .with(requestPostProcessor)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.title").value(requestUpdateChallenge.getTitle()))
+                .andExpect(jsonPath("$.content").value(requestUpdateChallenge.getContent()))
+                .andExpect(jsonPath("$.challengeCategory").value(requestUpdateChallenge.getChallengeCategory()))
+                .andExpect(
+                        jsonPath("$.challengeLocation").value(challenge1.getChallengeLocation().getDescription()))
+                .andExpect(
+                        jsonPath("$.challengeDuration").value(challenge1.getChallengeDuration().getDescription()))
+                .andExpect(jsonPath("$.created_at").value(challenge1.getFormattedCreatedAt()))
+                .andExpect(jsonPath("$.updated_at").isNotEmpty())
+                .andExpect(jsonPath("$.challengeImgUrls[*]", hasItem(startsWith("/images/"))))
+                .andExpect(jsonPath("$.challengeHashtags[*]", contains("editTag1", "editTag2")))
+                .andExpect(jsonPath("$.challengeImgUrls", hasSize(2)));
+    }
+
+    @Test
+    @DisplayName("챌린지 삭제 테스트")
+    void deleteChallenge() throws Exception {
+        initChallengeData();
+        Long challenge1Id = challenge1.getId();
+
+        mockMvc.perform(delete("/challenge/{challengeId}", challenge1Id)
+                        .with(requestPostProcessor)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNoContent());
     }
 }

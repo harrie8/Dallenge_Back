@@ -48,18 +48,15 @@ import com.example.dailychallenge.vo.challenge.RequestCreateChallenge;
 import com.example.dailychallenge.vo.challenge.RequestUpdateChallenge;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
-import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.mock.web.MockPart;
 import org.springframework.web.multipart.MultipartFile;
 
-@TestInstance(Lifecycle.PER_CLASS)
 public class ChallengeControllerDocTest extends RestDocsTest {
     @Autowired
     private TestDataSetup testDataSetup;
@@ -68,12 +65,26 @@ public class ChallengeControllerDocTest extends RestDocsTest {
     private String token;
     private Challenge challenge1;
 
-    @BeforeAll
-    void beforeAll() {
+    @BeforeEach
+    void beforeEach() {
         user = testDataSetup.saveUser(USERNAME, EMAIL, PASSWORD);
         token = generateToken(user);
+    }
 
+    private void initChallengeData() {
+        challenge1 = testDataSetup.챌린지를_생성한다(
+                "제목입니다.1",
+                "내용입니다.1",
+                STUDY.getDescription(),
+                INDOOR.getDescription(),
+                WITHIN_TEN_MINUTES.getDescription(),
+                user);
+        testDataSetup.챌린지에_참가한다(challenge1, user);
+        testDataSetup.챌린지예_댓글을_단다(challenge1);
+        testDataSetup.챌린지에_해시태그를_단다(challenge1);
+    }
 
+    private void initData() {
         challenge1 = testDataSetup.챌린지를_생성한다(
                 "제목입니다.1",
                 "내용입니다.1",
@@ -210,6 +221,7 @@ public class ChallengeControllerDocTest extends RestDocsTest {
     @Test
     @DisplayName("특정 챌린지 조회 테스트")
     void findChallengeByIdTest() throws Exception {
+        initData();
         Long challenge1Id = challenge1.getId();
 
         mockMvc.perform(get("/challenge/{challengeId}", challenge1Id)
@@ -251,6 +263,8 @@ public class ChallengeControllerDocTest extends RestDocsTest {
     @Test
     @DisplayName("모든 챌린지 조회하고 인기순으로 내림차순 정렬 테스트")
     public void searchAllChallengesSortByPopularTest() throws Exception {
+        initData();
+
         mockMvc.perform(get("/challenge")
                         .header(AUTHORIZATION, token)
                         .param("size", "20")
@@ -309,6 +323,8 @@ public class ChallengeControllerDocTest extends RestDocsTest {
     @Test
     @DisplayName("모든 챌린지 조회하고 생성순으로 오름차순 정렬 테스트")
     public void searchAllChallengesSortByTimeTest() throws Exception {
+        initData();
+
         mockMvc.perform(get("/challenge")
                         .header(AUTHORIZATION, token)
                         .param("size", "20")
@@ -336,6 +352,8 @@ public class ChallengeControllerDocTest extends RestDocsTest {
     @Test
     @DisplayName("챌린지들을 검색 조건으로 조회하고 인기순으로 오름차순 정렬 테스트")
     public void searchChallengesByConditionSortByPopularTest() throws Exception {
+        initData();
+
         mockMvc.perform(get("/challenge/condition")
                         .characterEncoding(UTF_8)
                         .header(AUTHORIZATION, token)
@@ -387,6 +405,8 @@ public class ChallengeControllerDocTest extends RestDocsTest {
     @Test
     @DisplayName("챌린지들을 검색 조건으로 조회하고 생성순으로 내림차순 정렬 테스트")
     public void searchChallengesByConditionSortByTimeTest() throws Exception {
+        initData();
+
         mockMvc.perform(get("/challenge/condition")
                         .header(AUTHORIZATION, token)
                         .param("title", "")
@@ -418,6 +438,8 @@ public class ChallengeControllerDocTest extends RestDocsTest {
     @Test
     @DisplayName("챌린지 수정 테스트")
     void updateChallenge() throws Exception {
+        initChallengeData();
+
         RequestUpdateChallenge requestUpdateChallenge = RequestUpdateChallenge.builder()
                 .title("수정된 제목")
                 .content("수정된 내용")
@@ -500,6 +522,8 @@ public class ChallengeControllerDocTest extends RestDocsTest {
     @Test
     @DisplayName("챌린지 삭제 테스트")
     void deleteChallenge() throws Exception {
+        initChallengeData();
+
         mockMvc.perform(delete("/challenge/{challengeId}", challenge1.getId())
                         .header(AUTHORIZATION, token)
                         .accept(MediaType.APPLICATION_JSON))
