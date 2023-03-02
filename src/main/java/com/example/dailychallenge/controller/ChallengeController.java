@@ -67,7 +67,6 @@ public class ChallengeController {
 
         Challenge challenge = challengeService.saveChallenge(challengeDto, challengeImgFiles, findUser);
         UserChallenge userChallenge = userChallengeService.saveUserChallenge(challenge, findUser);
-        userChallenge.challengeParticipate();
 
         if (hashtagDto != null) {
             List<String> hashtagContents = hashtagDto.getContent();

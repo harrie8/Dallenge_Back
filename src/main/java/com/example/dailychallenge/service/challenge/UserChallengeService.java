@@ -34,7 +34,7 @@ public class UserChallengeService {
                 .build();
         userChallenge.setUser(user);
         userChallenge.setChallenge(challenge);
-
+        userChallenge.challengeParticipate();
         userChallengeRepository.save(userChallenge);
 
         return userChallenge;
