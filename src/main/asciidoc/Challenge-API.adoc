@@ -116,6 +116,18 @@ include::{snippets}/challenge-controller-doc-test/search-challenges-by-condition
 
 ====
 
+[[Challenge-질문으로-챌린지들-조회하기]]
+=== 질문으로 챌린지들 찾기
+
+operation::challenge-controller-doc-test/search-challenges-by-question-test[snippets='http-request,request-fields']
+
+.HTTP Response
+[%collapsible]
+=====
+include::{snippets}/challenge-controller-doc-test/search-challenges-by-question-test/http-response.adoc[]
+=====
+
+
 [[Challenge-챌린지-수정]]
 === 챌린지 수정
 

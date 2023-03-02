@@ -8,16 +8,18 @@ import lombok.Getter;
 
 @Getter
 public enum ChallengeCategory {
-    STUDY("공부"),
-    VOLUNTEER("봉사"),
-    WORKOUT("운동"),
-    HEALTH("건강"),
-    ECONOMY("경제"),
+    STUDY(0, "공부"),
+    VOLUNTEER(1, "봉사"),
+    WORKOUT(2, "운동"),
+    ECONOMY(3, "경제"),
+    HEALTH(4, "건강"),
     ;
 
+    private final int index;
     private final String description;
 
-    ChallengeCategory(String description) {
+    ChallengeCategory(int index, String description) {
+        this.index = index;
         this.description = description;
     }
 
@@ -28,8 +30,18 @@ public enum ChallengeCategory {
                 .orElseThrow(ChallengeCategoryNotFound::new);
     }
 
+    public static ChallengeCategory findByIndex(int index) {
+        return Arrays.stream(values())
+                .filter(challengeCategory -> challengeCategory.isSameIndex(index))
+                .findAny()
+                .orElseThrow(ChallengeCategoryNotFound::new);    }
+
     private boolean isSameDescription(String description) {
         return this.description.equals(description);
+    }
+
+    private boolean isSameIndex(int index) {
+        return this.index == index;
     }
 
     public static List<String> getDescriptions() {

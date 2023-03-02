@@ -3,13 +3,17 @@ package com.example.dailychallenge.service.challenge;
 import com.example.dailychallenge.dto.ChallengeDto;
 import com.example.dailychallenge.dto.ChallengeEditor;
 import com.example.dailychallenge.entity.challenge.Challenge;
+import com.example.dailychallenge.entity.challenge.ChallengeCategory;
+import com.example.dailychallenge.entity.challenge.ChallengeDuration;
 import com.example.dailychallenge.entity.challenge.ChallengeImg;
+import com.example.dailychallenge.entity.challenge.ChallengeLocation;
 import com.example.dailychallenge.entity.users.User;
 import com.example.dailychallenge.exception.AuthorizationException;
 import com.example.dailychallenge.exception.challenge.ChallengeNotFound;
 import com.example.dailychallenge.repository.ChallengeRepository;
 import com.example.dailychallenge.vo.challenge.RequestUpdateChallenge;
 import com.example.dailychallenge.vo.challenge.ResponseChallenge;
+import com.example.dailychallenge.vo.challenge.ResponseRecommendedChallenge;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -49,6 +53,13 @@ public class ChallengeService {
         return challengeRepository.searchChallengeById(challengeId).orElseThrow(ChallengeNotFound::new);
     }
 
+    public List<ResponseRecommendedChallenge> searchByQuestion(ChallengeCategory challengeCategory,
+                                                               ChallengeDuration challengeDuration,
+                                                               ChallengeLocation challengeLocation) {
+
+        return challengeRepository.searchChallengesByQuestion(challengeCategory, challengeDuration, challengeLocation);
+    }
+
     /**
      * 기존 이미지들을 전부 삭제하고 업데이트 이미지들을 저장하는 로직
      */
@@ -82,5 +93,4 @@ public class ChallengeService {
             throw new AuthorizationException();
         }
     }
-
 }

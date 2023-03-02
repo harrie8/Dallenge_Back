@@ -32,6 +32,7 @@ import com.example.dailychallenge.entity.challenge.ChallengeStatus;
 import com.example.dailychallenge.entity.users.User;
 import com.example.dailychallenge.util.ControllerTest;
 import com.example.dailychallenge.util.fixture.TestDataSetup;
+import com.example.dailychallenge.vo.challenge.RequestChallengeQuestion;
 import com.example.dailychallenge.vo.challenge.RequestCreateChallenge;
 import com.example.dailychallenge.vo.challenge.RequestUpdateChallenge;
 import java.util.List;
@@ -353,6 +354,32 @@ class ChallengeControllerTest extends ControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.totalElements").value(totalElements))
                 .andExpect(jsonPath("$.totalPages").value(totalElements / numOfPage));
+    }
+
+    @Test
+    @DisplayName("챌린지들을 질문으로 찾는 테스트")
+    void searchChallengesByQuestionTest() throws Exception {
+        initData();
+        RequestChallengeQuestion requestChallengeQuestion = RequestChallengeQuestion.builder()
+                .challengeLocationIndex(1)
+                .challengeDurationIndex(0)
+                .challengeCategoryIndex(2)
+                .build();
+
+        String json = objectMapper.writeValueAsString(requestChallengeQuestion);
+
+        mockMvc.perform(get("/challenge/question")
+                        .with(requestPostProcessor)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .content(json)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.[*].id").isNotEmpty())
+                .andExpect(jsonPath("$.[*].title", contains(
+                        "제목입니다.3", "제목입니다.4", "제목입니다.5", "제목입니다.6")))
+                .andExpect(jsonPath("$.[*].content", contains(
+                        "내용입니다.3", "내용입니다.4", "내용입니다.5", "내용입니다.6")))
+                .andExpect(jsonPath("$.[*].challengeImgUrls").isNotEmpty());
     }
 
     @Test

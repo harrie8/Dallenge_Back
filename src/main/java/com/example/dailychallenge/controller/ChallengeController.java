@@ -4,6 +4,9 @@ import com.example.dailychallenge.dto.ChallengeDto;
 import com.example.dailychallenge.dto.ChallengeSearchCondition;
 import com.example.dailychallenge.dto.HashtagDto;
 import com.example.dailychallenge.entity.challenge.Challenge;
+import com.example.dailychallenge.entity.challenge.ChallengeCategory;
+import com.example.dailychallenge.entity.challenge.ChallengeDuration;
+import com.example.dailychallenge.entity.challenge.ChallengeLocation;
 import com.example.dailychallenge.entity.challenge.UserChallenge;
 import com.example.dailychallenge.entity.hashtag.ChallengeHashtag;
 import com.example.dailychallenge.entity.hashtag.Hashtag;
@@ -14,11 +17,13 @@ import com.example.dailychallenge.service.challenge.UserChallengeService;
 import com.example.dailychallenge.service.hashtag.ChallengeHashtagService;
 import com.example.dailychallenge.service.hashtag.HashtagService;
 import com.example.dailychallenge.service.users.UserService;
+import com.example.dailychallenge.vo.challenge.RequestChallengeQuestion;
 import com.example.dailychallenge.vo.challenge.RequestCreateChallenge;
 import com.example.dailychallenge.vo.challenge.RequestUpdateChallenge;
 import com.example.dailychallenge.vo.challenge.ResponseChallenge;
 import com.example.dailychallenge.vo.challenge.ResponseChallengeWithParticipatedUsersInfo;
 import com.example.dailychallenge.vo.challenge.ResponseCreateChallenge;
+import com.example.dailychallenge.vo.challenge.ResponseRecommendedChallenge;
 import com.example.dailychallenge.vo.challenge.ResponseUpdateChallenge;
 import com.example.dailychallenge.vo.challenge.ResponseUserChallenge;
 import java.util.List;
@@ -38,6 +43,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -111,6 +117,24 @@ public class ChallengeController {
         Page<ResponseChallenge> responseChallenges = userChallengeService.searchByCondition(condition, pageable);
 
         return ResponseEntity.status(HttpStatus.OK).body(responseChallenges);
+    }
+
+    @GetMapping("/challenge/question")
+    public ResponseEntity<List<ResponseRecommendedChallenge>> searchChallengesByQuestion(
+            @AuthenticationPrincipal org.springframework.security.core.userdetails.User user,
+            @RequestBody RequestChallengeQuestion requestChallengeQuestion) {
+
+        ChallengeCategory challengeCategory = ChallengeCategory.findByIndex(
+                requestChallengeQuestion.getChallengeCategoryIndex());
+        ChallengeDuration challengeDuration = ChallengeDuration.findByIndex(
+                requestChallengeQuestion.getChallengeDurationIndex());
+        ChallengeLocation challengeLocation = ChallengeLocation.findByIndex(
+                requestChallengeQuestion.getChallengeLocationIndex());
+
+        List<ResponseRecommendedChallenge> recommendedChallenges = challengeService.searchByQuestion(
+                challengeCategory, challengeDuration, challengeLocation);
+
+        return ResponseEntity.status(HttpStatus.OK).body(recommendedChallenges);
     }
 
     @PostMapping("/challenge/{challengeId}")
