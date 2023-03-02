@@ -209,6 +209,27 @@ public class UserChallengeControllerDocTest extends RestDocsTest {
     }
 
     @Test
+    @DisplayName("챌린지 중지 완료 테스트")
+    void pauseChallengeTest() throws Exception {
+
+        mockMvc.perform(post("/challenge/{challengeId}/pause", challenge1.getId())
+                        .header(AUTHORIZATION, generateToken(savedUser.getEmail(), userService))
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value(200))
+                .andExpect(jsonPath("$.message").value("챌린지 중지 완료!"))
+                .andDo(restDocs.document(
+                        pathParameters(
+                                parameterWithName("challengeId").description("내가 달성한 챌린지 ID")
+                        ),
+                        responseFields(
+                                fieldWithPath("code").description("HTTP STATUS"),
+                                fieldWithPath("message").description("메시지")
+                        )
+                ));
+    }
+
+    @Test
     @DisplayName("오늘 수행(성공)한 챌린지 조회 테스트")
     void getTodayUserChallengeTest() throws Exception {
         UserChallenge userChallenge = userChallengeService.succeedInChallenge(savedUser.getId(), challenge1.getId());

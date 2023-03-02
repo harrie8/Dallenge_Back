@@ -450,7 +450,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div class="listingblock">
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">POST /challenge/16/participate HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhQGEuY29tIiwiaWF0IjoxNjc3MDU3ODYxLCJleHAiOjE2NzcwNzU4NjF9.Tj8nDZy0rWlBsowDnXKb7dLc7ESHRIyGNkAGSKcihIM
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhQGEuY29tIiwiaWF0IjoxNjc3NzU4MDgwLCJleHAiOjE2Nzc3NzYwODB9.3rnPejlWsuP5Lo9Gx3l3DdhcHSRqOFLyyszE-hI9iVI
 Accept: application/json
 Host: localhost:8080</code></pre>
 </div>
@@ -500,13 +500,125 @@ Content-Length: 63
 </div>
 </div>
 <div class="sect2">
+<h3 id="UserChallenge-챌린지-나가기">챌린지 나가기</h3>
+<div class="sect3">
+<h4 id="UserChallenge-챌린지-나가기_http_request">HTTP request</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight nowrap"><code class="language-http" data-lang="http">DELETE /challenge/26/leave HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhQGEuY29tIiwiaWF0IjoxNjc3NzU4MDgxLCJleHAiOjE2Nzc3NzYwODF9.js53ok_KePRTr-2YJrPrJNVOoECAYQxZB6HdC8mH2_0
+Accept: application/json
+Host: localhost:8080</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="UserChallenge-챌린지-나가기_path_parameters">Path parameters</h4>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Path</th>
+<th class="tableblock halign-left valign-top">필수여부</th>
+<th class="tableblock halign-left valign-top">설명</th>
+<th class="tableblock halign-left valign-top">Validation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>challengeId</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">true</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">나가고 싶은 챌린지 ID</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect3">
+<h4 id="UserChallenge-챌린지-나가기_http_response">HTTP response</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight nowrap"><code class="language-http" data-lang="http">HTTP/1.1 200 OK
+Content-Type: application/json;charset=UTF-8
+Content-Length: 66
+
+{
+  "code" : 200,
+  "message" : "챌린지 나가기 완료!"
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="UserChallenge-챌린지-중지">챌린지 중지</h3>
+<div class="sect3">
+<h4 id="UserChallenge-챌린지-중지_http_request">HTTP request</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight nowrap"><code class="language-http" data-lang="http">POST /challenge/36/pause HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0MTIzNEB0ZXN0LmNvbSIsImlhdCI6MTY3Nzc1ODA4MywiZXhwIjoxNjc3Nzc2MDgzfQ.DresCTVtwp3VPcK9CBgaBrCQopj1cUP1p0TOadtFV6c
+Accept: application/json
+Host: localhost:8080</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="UserChallenge-챌린지-중지_path_parameters">Path parameters</h4>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Path</th>
+<th class="tableblock halign-left valign-top">필수여부</th>
+<th class="tableblock halign-left valign-top">설명</th>
+<th class="tableblock halign-left valign-top">Validation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>challengeId</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">true</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">내가 달성한 챌린지 ID</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect3">
+<h4 id="UserChallenge-챌린지-중지_http_response">HTTP response</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight nowrap"><code class="language-http" data-lang="http">HTTP/1.1 200 OK
+Content-Type: application/json;charset=UTF-8
+Content-Length: 63
+
+{
+  "code" : 200,
+  "message" : "챌린지 중지 완료!"
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
 <h3 id="UserChallenge-챌린지-달성">챌린지 달성</h3>
 <div class="sect3">
 <h4 id="UserChallenge-챌린지-달성_http_request">HTTP request</h4>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight nowrap"><code class="language-http" data-lang="http">POST /challenge/36/success HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0MTIzNEB0ZXN0LmNvbSIsImlhdCI6MTY3NzA1Nzg2MiwiZXhwIjoxNjc3MDc1ODYyfQ.fdmP49kpHiKstr3tCkkl38Z0Y5tSpFcGKzGFQdllB_w
+<pre class="highlight nowrap"><code class="language-http" data-lang="http">POST /challenge/56/success HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0MTIzNEB0ZXN0LmNvbSIsImlhdCI6MTY3Nzc1ODA4NSwiZXhwIjoxNjc3Nzc2MDg1fQ.gWUZfx_gdvloA94pB2loPBCB8bUyPu10GGu-X4rN0D4
 Accept: application/json
 Host: localhost:8080</code></pre>
 </div>
@@ -560,7 +672,7 @@ Content-Length: 63
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2023-02-20 18:35:26 +0900
+Last updated 2023-03-02 20:53:14 +0900
 </div>
 </div>
 </body>

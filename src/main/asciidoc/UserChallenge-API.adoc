@@ -11,6 +11,11 @@ operation::user-challenge-controller-doc-test/participate-in-challenge[snippets=
 
 operation::user-challenge-controller-doc-test/leave-challenge-test[snippets='http-request,path-parameters,http-response']
 
+[[UserChallenge-챌린지-중지]]
+=== 챌린지 중지
+
+operation::user-challenge-controller-doc-test/pause-challenge-test[snippets='http-request,path-parameters,http-response']
+
 [[UserChallenge-챌린지-달성]]
 === 챌린지 달성
 

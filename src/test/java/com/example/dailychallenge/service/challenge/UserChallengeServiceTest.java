@@ -101,6 +101,14 @@ public class UserChallengeServiceTest extends ServiceTest {
         }
 
         @Test
+        @DisplayName("챌린지 중지")
+        void pauseChallenge(){
+            userChallengeService.saveUserChallenge(challenge, savedUser);
+            UserChallenge userChallenge = userChallengeService.pauseChallenge(savedUser.getId(), challenge.getId());
+            assertEquals(userChallenge.getChallengeStatus().getDescription(),"중지");
+        }
+
+        @Test
         @DisplayName("오늘 수행(성공)한 챌린지 조회")
         void getTodayUserChallenge(){
             userChallengeService.saveUserChallenge(challenge, savedUser);
