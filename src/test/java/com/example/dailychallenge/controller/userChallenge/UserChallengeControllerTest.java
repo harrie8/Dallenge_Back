@@ -182,6 +182,17 @@ class UserChallengeControllerTest extends ControllerTest {
     }
 
     @Test
+    @DisplayName("챌린지 중지 완료 테스트")
+    void pauseChallengeTest() throws Exception {
+        mockMvc.perform(post("/challenge/{challengeId}/pause", challenge1.getId())
+                        .with(requestPostProcessor)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value(200))
+                .andExpect(jsonPath("$.message").value("챌린지 중지 완료!"));
+    }
+
+    @Test
     @DisplayName("오늘 수행(성공)한 챌린지 조회 테스트")
     void getTodayUserChallengeTest() throws Exception {
         UserChallenge userChallenge = userChallengeService.succeedInChallenge(savedUser.getId(), challenge1.getId());

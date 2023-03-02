@@ -84,6 +84,22 @@ public class UserChallengeController {
         return ResponseEntity.status(HttpStatus.OK).body(responseMessage);
     }
 
+    @PostMapping("/challenge/{challengeId}/pause")
+    public ResponseEntity<ResponseMessage> pauseChallenge(
+            @AuthenticationPrincipal org.springframework.security.core.userdetails.User user,
+            @PathVariable Long challengeId){
+        String userEmail = user.getUsername();
+        User findUser = userService.findByEmail(userEmail).orElseThrow(UserNotFound::new);
+        userChallengeService.pauseChallenge(findUser.getId(), challengeId);
+
+        ResponseMessage responseMessage = ResponseMessage.builder()
+                .code(200)
+                .message("챌린지 중지 완료!")
+                .build();
+
+        return ResponseEntity.status(HttpStatus.OK).body(responseMessage);
+    }
+
     @GetMapping("/user/done") // 오늘 수행한 챌린지
     public ResponseEntity<List<ResponseChallengeByUserChallenge>> getTodayUserChallenge(
             @AuthenticationPrincipal org.springframework.security.core.userdetails.User user

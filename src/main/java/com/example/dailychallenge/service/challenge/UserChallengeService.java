@@ -51,8 +51,6 @@ public class UserChallengeService {
         return userChallengeRepository.searchUserChallengeByChallengeId(challengeId);
     }
 
-
-
     public UserChallenge findByChallengeIdAndUserId(Long challengeId, Long userId){
         return userChallengeRepository.findByChallengeIdAndUserId(challengeId, userId)
                 .orElseThrow(UserChallengeNotFound::new);
@@ -83,6 +81,12 @@ public class UserChallengeService {
     public UserChallenge succeedInChallenge(Long userId, Long challengeId) {
         UserChallenge userChallenge = findByChallengeIdAndUserId(challengeId, userId);
         userChallenge.challengeSuccess();
+        return userChallenge;
+    }
+
+    public UserChallenge pauseChallenge(Long userId, Long challengeId) {
+        UserChallenge userChallenge = findByChallengeIdAndUserId(challengeId, userId);
+        userChallenge.challengePause();
         return userChallenge;
     }
 
