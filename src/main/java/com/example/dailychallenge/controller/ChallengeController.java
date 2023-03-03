@@ -137,6 +137,15 @@ public class ChallengeController {
         return ResponseEntity.status(HttpStatus.OK).body(recommendedChallenges);
     }
 
+    @GetMapping("/challenge/random")
+    public ResponseEntity<ResponseRecommendedChallenge> searchChallengeByRandom(
+            @AuthenticationPrincipal org.springframework.security.core.userdetails.User user) {
+
+        ResponseRecommendedChallenge recommendedChallenge = challengeService.searchByRandom();
+
+        return ResponseEntity.status(HttpStatus.OK).body(recommendedChallenge);
+    }
+
     @PostMapping("/challenge/{challengeId}")
     public ResponseEntity<ResponseUpdateChallenge> updateChallenge(
             @AuthenticationPrincipal org.springframework.security.core.userdetails.User user,

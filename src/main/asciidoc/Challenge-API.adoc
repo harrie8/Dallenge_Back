@@ -127,6 +127,11 @@ operation::challenge-controller-doc-test/search-challenges-by-question-test[snip
 include::{snippets}/challenge-controller-doc-test/search-challenges-by-question-test/http-response.adoc[]
 =====
 
+[[Challenge-랜덤으로-챌린지-조회하기]]
+=== 랜덤으로 챌린지 찾기
+
+operation::challenge-controller-doc-test/search-challenge-by-random-test[snippets='http-request,http-response']
+
 
 [[Challenge-챌린지-수정]]
 === 챌린지 수정

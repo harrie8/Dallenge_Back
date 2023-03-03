@@ -468,6 +468,18 @@ public class ChallengeControllerDocTest extends RestDocsTest {
     }
 
     @Test
+    @DisplayName("챌린지를 랜덤으로 조회하는 테스트")
+    public void searchChallengeByRandomTest() throws Exception {
+        initData();
+
+        mockMvc.perform(get("/challenge/random")
+                        .header(AUTHORIZATION, token)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andDo(restDocs.document());
+    }
+
+    @Test
     @DisplayName("챌린지 수정 테스트")
     void updateChallenge() throws Exception {
         initChallengeData();

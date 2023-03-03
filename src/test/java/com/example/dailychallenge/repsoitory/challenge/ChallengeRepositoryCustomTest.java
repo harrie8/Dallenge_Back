@@ -20,6 +20,7 @@ import static com.example.dailychallenge.util.fixture.userChallenge.UserChalleng
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.example.dailychallenge.entity.challenge.Challenge;
@@ -42,6 +43,7 @@ import com.example.dailychallenge.util.RepositoryTest;
 import com.example.dailychallenge.util.fixture.TestDataSetup;
 import com.example.dailychallenge.vo.challenge.ResponseChallenge;
 import com.example.dailychallenge.vo.challenge.ResponseRecommendedChallenge;
+import java.util.Collections;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -194,6 +196,19 @@ public class ChallengeRepositoryCustomTest extends RepositoryTest {
             assertThat(results).extracting("challengeImgUrls").containsExactly(
                     List.of(), List.of(), List.of(), List.of()
             );
+        });
+    }
+
+    @Test
+    @DisplayName("랜덤으로 챌린지 조회 테스트")
+    void searchChallengeByRandomTest() {
+        ResponseRecommendedChallenge result = challengeRepository.searchChallengeByRandom();
+
+        assertAll(() -> {
+            assertNotNull(result.getId());
+            assertThat(result.getTitle()).startsWith("제목입니다.");
+            assertThat(result.getContent()).startsWith("내용입니다.");
+            assertEquals(Collections.emptyList(), result.getChallengeImgUrls());
         });
     }
 }

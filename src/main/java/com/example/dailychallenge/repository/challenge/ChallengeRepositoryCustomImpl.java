@@ -12,6 +12,7 @@ import com.example.dailychallenge.vo.challenge.QResponseRecommendedChallenge;
 import com.example.dailychallenge.vo.challenge.ResponseChallenge;
 import com.example.dailychallenge.vo.challenge.ResponseRecommendedChallenge;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.List;
 import java.util.Optional;
@@ -53,6 +54,15 @@ public class ChallengeRepositoryCustomImpl implements
                         challengeLocationEq(challengeLocation))
                 .limit(4)
                 .fetch();
+    }
+
+    @Override
+    public ResponseRecommendedChallenge searchChallengeByRandom() {
+        return queryFactory
+                .select(new QResponseRecommendedChallenge(challenge))
+                .from(challenge)
+                .orderBy(Expressions.numberTemplate(Double.class, "function('rand')").asc())
+                .fetchFirst();
     }
 
     private BooleanExpression challengeIdEq(Long challengeId) {

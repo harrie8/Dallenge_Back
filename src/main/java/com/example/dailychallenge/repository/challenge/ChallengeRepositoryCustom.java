@@ -15,4 +15,6 @@ public interface ChallengeRepositoryCustom {
     List<ResponseRecommendedChallenge> searchChallengesByQuestion(ChallengeCategory challengeCategory,
                                                                   ChallengeDuration challengeDuration,
                                                                   ChallengeLocation challengeLocation);
+
+    ResponseRecommendedChallenge searchChallengeByRandom();
 }

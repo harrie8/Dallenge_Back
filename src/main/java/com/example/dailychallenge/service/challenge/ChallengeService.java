@@ -60,6 +60,10 @@ public class ChallengeService {
         return challengeRepository.searchChallengesByQuestion(challengeCategory, challengeDuration, challengeLocation);
     }
 
+    public ResponseRecommendedChallenge searchByRandom() {
+        return challengeRepository.searchChallengeByRandom();
+    }
+
     /**
      * 기존 이미지들을 전부 삭제하고 업데이트 이미지들을 저장하는 로직
      */

@@ -383,6 +383,21 @@ class ChallengeControllerTest extends ControllerTest {
     }
 
     @Test
+    @DisplayName("챌린지를 랜덤으로 찾는 테스트")
+    void searchChallengeByRandomTest() throws Exception {
+        initData();
+
+        mockMvc.perform(get("/challenge/random")
+                        .with(requestPostProcessor)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").isNotEmpty())
+                .andExpect(jsonPath("$.title", startsWith("제목입니다.")))
+                .andExpect(jsonPath("$.content", startsWith("내용입니다.")))
+                .andExpect(jsonPath("$.challengeImgUrls").isNotEmpty());
+    }
+
+    @Test
     @DisplayName("챌린지 수정 테스트")
     void updateChallenge() throws Exception {
         initChallengeData();
