@@ -1,9 +1,9 @@
 package com.example.dailychallenge.service.comment;
 
-import static com.example.dailychallenge.util.fixture.ChallengeFixture.createChallengeDto;
-import static com.example.dailychallenge.util.fixture.ChallengeImgFixture.createChallengeImgFiles;
-import static com.example.dailychallenge.util.fixture.UserFixture.createOtherUser;
-import static com.example.dailychallenge.util.fixture.UserFixture.createUser;
+import static com.example.dailychallenge.util.fixture.challenge.ChallengeFixture.createChallengeDto;
+import static com.example.dailychallenge.util.fixture.challenge.ChallengeImgFixture.createChallengeImgFiles;
+import static com.example.dailychallenge.util.fixture.user.UserFixture.createOtherUser;
+import static com.example.dailychallenge.util.fixture.user.UserFixture.createUser;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -19,7 +19,6 @@ import com.example.dailychallenge.entity.comment.Comment;
 import com.example.dailychallenge.entity.users.User;
 import com.example.dailychallenge.exception.AuthorizationException;
 import com.example.dailychallenge.exception.comment.CommentCreateNotValid;
-import com.example.dailychallenge.repository.CommentImgRepository;
 import com.example.dailychallenge.repository.CommentRepository;
 import com.example.dailychallenge.service.challenge.ChallengeService;
 import com.example.dailychallenge.service.users.UserService;
@@ -45,8 +44,6 @@ class CommentServiceTest extends ServiceTest {
     private ChallengeService challengeService;
     @Autowired
     private CommentRepository commentRepository;
-    @Autowired
-    private CommentImgRepository commentImgRepository;
     @PersistenceContext
     private EntityManager entityManager;
 
@@ -54,12 +51,12 @@ class CommentServiceTest extends ServiceTest {
     private Challenge challenge;
 
     @BeforeEach
-    void beforeEach() throws Exception {
+    void beforeEach() {
         savedUser = userService.saveUser(createUser(), passwordEncoder);
         challenge = challengeService.saveChallenge(createChallengeDto(), createChallengeImgFiles(), savedUser);
     }
 
-    private static MockMultipartFile createMultipartFiles() {
+    private MockMultipartFile createMultipartFiles() {
         String path = "commentDtoImg";
         String imageName = "commentDtoImg.jpg";
         return new MockMultipartFile(path, imageName,

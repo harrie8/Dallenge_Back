@@ -1,6 +1,6 @@
 package com.example.dailychallenge.service.users;
 
-import static com.example.dailychallenge.util.fixture.UserFixture.createOtherUser;
+import static com.example.dailychallenge.util.fixture.user.UserFixture.createOtherUser;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;

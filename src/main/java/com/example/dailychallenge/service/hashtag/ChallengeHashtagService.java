@@ -1,12 +1,15 @@
 package com.example.dailychallenge.service.hashtag;
 
+import com.example.dailychallenge.dto.HashtagChallengesDto;
 import com.example.dailychallenge.entity.challenge.Challenge;
 import com.example.dailychallenge.entity.hashtag.ChallengeHashtag;
 import com.example.dailychallenge.entity.hashtag.Hashtag;
 import com.example.dailychallenge.repository.ChallengeHashtagRepository;
 import com.example.dailychallenge.service.challenge.ChallengeService;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -74,5 +77,27 @@ public class ChallengeHashtagService {
 
     public List<ChallengeHashtag> findByChallengeId(Long challengeId){
         return challengeHashtagRepository.findAllByChallengeId(challengeId);
+    }
+
+    public List<HashtagChallengesDto> searchByHashtags(List<Hashtag> hashtags) {
+        List<ChallengeHashtag> challengeHashtags = challengeHashtagRepository.searchByHashtags(hashtags);
+
+        Map<Hashtag, List<ChallengeHashtag>> hashtagListMap = challengeHashtags.stream()
+                .collect(Collectors.groupingBy(ChallengeHashtag::getHashtag));
+
+        List<HashtagChallengesDto> hashtagChallengesDtos = new ArrayList<>();
+        for (Hashtag hashtag : hashtagListMap.keySet()) {
+            List<ChallengeHashtag> challengeHashtagList = hashtagListMap.get(hashtag);
+            List<Challenge> challenges = challengeHashtagList.stream()
+                    .map(ChallengeHashtag::getChallenge)
+                    .collect(Collectors.toUnmodifiableList());
+            hashtagChallengesDtos.add(HashtagChallengesDto.builder()
+                    .hashtag(hashtag)
+                    .challenges(challenges)
+                    .build());
+        }
+        Collections.sort(hashtagChallengesDtos);
+
+        return hashtagChallengesDtos;
     }
 }

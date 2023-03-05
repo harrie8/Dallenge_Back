@@ -1,5 +1,6 @@
 package com.example.dailychallenge.entity;
 
+import com.example.dailychallenge.utils.TimeConverter;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import javax.persistence.Column;
@@ -28,5 +29,11 @@ public class BaseEntity {
 
     public String getFormattedUpdatedAt() {
         return updated_at.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss:SSS"));
+    }
+
+    public String getSpecificCreatedAt() {
+        TimeConverter timeConverter = new TimeConverter();
+
+        return timeConverter.makeSpecificCreatedAt(created_at);
     }
 }

@@ -1,12 +1,14 @@
 package com.example.dailychallenge.controller.bookmark;
 
-import static com.example.dailychallenge.util.fixture.ChallengeFixture.createChallengeDto;
-import static com.example.dailychallenge.util.fixture.ChallengeImgFixture.createChallengeImgFiles;
-import static com.example.dailychallenge.util.fixture.UserFixture.createOtherUser;
-import static com.example.dailychallenge.util.fixture.UserFixture.createUser;
+import static com.example.dailychallenge.util.fixture.TokenFixture.EMAIL;
+import static com.example.dailychallenge.util.fixture.TokenFixture.PASSWORD;
+import static com.example.dailychallenge.util.fixture.challenge.ChallengeFixture.createChallengeDto;
+import static com.example.dailychallenge.util.fixture.user.UserFixture.OTHER_EMAIL;
+import static com.example.dailychallenge.util.fixture.user.UserFixture.OTHER_USERNAME;
+import static com.example.dailychallenge.util.fixture.user.UserFixture.USERNAME;
+import static com.example.dailychallenge.util.fixture.user.UserFixture.getRequestPostProcessor;
 import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.hasSize;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -17,9 +19,8 @@ import com.example.dailychallenge.entity.bookmark.Bookmark;
 import com.example.dailychallenge.entity.challenge.Challenge;
 import com.example.dailychallenge.entity.users.User;
 import com.example.dailychallenge.service.bookmark.BookmarkService;
-import com.example.dailychallenge.service.challenge.ChallengeService;
-import com.example.dailychallenge.service.users.UserService;
 import com.example.dailychallenge.util.ControllerTest;
+import com.example.dailychallenge.util.fixture.TestDataSetup;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -34,34 +35,28 @@ class BookmarkControllerTest extends ControllerTest {
     @Autowired
     private BookmarkService bookmarkService;
     @Autowired
-    private UserService userService;
-    @Autowired
-    private ChallengeService challengeService;
+    private TestDataSetup testDataSetup;
 
-    private User savedUser;
+    private User user;
     private Challenge challenge;
     private RequestPostProcessor requestPostProcessor;
 
     @BeforeEach
-    void beforeEach() throws Exception {
-        initData();
-        requestPostProcessor = user(userService.loadUserByUsername(savedUser.getEmail()));
-    }
-
-    private void initData() throws Exception {
-        savedUser = userService.saveUser(createUser(), passwordEncoder);
-        challenge = challengeService.saveChallenge(createChallengeDto(), createChallengeImgFiles(), savedUser);
+    void beforeEach() {
+        user = testDataSetup.saveUser(USERNAME, EMAIL, PASSWORD);
+        challenge = testDataSetup.챌린지를_생성한다(createChallengeDto(), user);
+        testDataSetup.챌린지에_참가한다(challenge, user);
+        requestPostProcessor = getRequestPostProcessor(user);
     }
 
     @Test
     @DisplayName("북마크 생성 테스트")
     public void createBookmarkTest() throws Exception {
-        User otherUser = userService.saveUser(createOtherUser(), passwordEncoder);
-        requestPostProcessor = user(userService.loadUserByUsername(otherUser.getEmail()));
+        User otherUser = testDataSetup.saveUser(OTHER_USERNAME, OTHER_EMAIL, PASSWORD);
 
         Long challengeId = challenge.getId();
         mockMvc.perform(post("/{challengeId}/bookmark/new", challengeId)
-                        .with(requestPostProcessor)
+                        .with(getRequestPostProcessor(otherUser))
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").isNotEmpty())
@@ -74,8 +69,8 @@ class BookmarkControllerTest extends ControllerTest {
     @Test
     @DisplayName("북마크 삭제 테스트")
     public void deleteBookmarkTest() throws Exception {
-        Bookmark savedBookmark = bookmarkService.saveBookmark(savedUser, challenge);
-        Long userId = savedUser.getId();
+        Bookmark savedBookmark = bookmarkService.saveBookmark(user, challenge);
+        Long userId = user.getId();
         Long bookmarkId = savedBookmark.getId();
 
         mockMvc.perform(delete("/user/{userId}/bookmark/{bookmarkId}", userId, bookmarkId)
@@ -87,11 +82,12 @@ class BookmarkControllerTest extends ControllerTest {
     @Test
     @DisplayName("유저의 북마크들 조회 테스트")
     public void searchBookmarksByUserIdTest() throws Exception {
-        User otherUser = userService.saveUser(createOtherUser(), passwordEncoder);
+        User otherUser = testDataSetup.saveUser(OTHER_USERNAME, OTHER_EMAIL, PASSWORD);
+
         List<Long> otherChallengeIds = new ArrayList<>();
         for (int i = 0; i < 5; i++) {
-            Challenge otherChallenge = challengeService.saveChallenge(createChallengeDto(), createChallengeImgFiles(),
-                    savedUser);
+            Challenge otherChallenge = testDataSetup.챌린지를_생성한다(createChallengeDto(), user);
+            testDataSetup.챌린지에_참가한다(otherChallenge, user);
             otherChallengeIds.add(otherChallenge.getId());
 
             Thread.sleep(1);
@@ -101,7 +97,7 @@ class BookmarkControllerTest extends ControllerTest {
         otherChallengeIds.sort(Comparator.reverseOrder());
 
         mockMvc.perform(get("/user/{userId}/bookmark", otherUserId)
-                        .with(user(userService.loadUserByUsername(otherUser.getEmail())))
+                        .with(getRequestPostProcessor(otherUser))
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content", hasSize(5)))

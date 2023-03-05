@@ -2,8 +2,12 @@ package com.example.dailychallenge.controller;
 
 import com.example.dailychallenge.dto.ChallengeDto;
 import com.example.dailychallenge.dto.ChallengeSearchCondition;
+import com.example.dailychallenge.dto.HashtagChallengesDto;
 import com.example.dailychallenge.dto.HashtagDto;
 import com.example.dailychallenge.entity.challenge.Challenge;
+import com.example.dailychallenge.entity.challenge.ChallengeCategory;
+import com.example.dailychallenge.entity.challenge.ChallengeDuration;
+import com.example.dailychallenge.entity.challenge.ChallengeLocation;
 import com.example.dailychallenge.entity.challenge.UserChallenge;
 import com.example.dailychallenge.entity.hashtag.ChallengeHashtag;
 import com.example.dailychallenge.entity.hashtag.Hashtag;
@@ -14,21 +18,23 @@ import com.example.dailychallenge.service.challenge.UserChallengeService;
 import com.example.dailychallenge.service.hashtag.ChallengeHashtagService;
 import com.example.dailychallenge.service.hashtag.HashtagService;
 import com.example.dailychallenge.service.users.UserService;
+import com.example.dailychallenge.vo.challenge.RequestChallengeQuestion;
 import com.example.dailychallenge.vo.challenge.RequestCreateChallenge;
 import com.example.dailychallenge.vo.challenge.RequestUpdateChallenge;
 import com.example.dailychallenge.vo.challenge.ResponseChallenge;
 import com.example.dailychallenge.vo.challenge.ResponseChallengeWithParticipatedUsersInfo;
 import com.example.dailychallenge.vo.challenge.ResponseCreateChallenge;
+import com.example.dailychallenge.vo.challenge.ResponseRecommendedChallenge;
 import com.example.dailychallenge.vo.challenge.ResponseUpdateChallenge;
 import com.example.dailychallenge.vo.challenge.ResponseUserChallenge;
+import com.example.dailychallenge.vo.hashtag.ResponseChallengeHashtag;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
@@ -36,7 +42,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
@@ -64,6 +76,7 @@ public class ChallengeController {
 
         Challenge challenge = challengeService.saveChallenge(challengeDto, challengeImgFiles, findUser);
         UserChallenge userChallenge = userChallengeService.saveUserChallenge(challenge, findUser);
+        userChallenge.challengeParticipate();
 
         if (hashtagDto != null) {
             List<String> hashtagContents = hashtagDto.getContent();
@@ -109,6 +122,50 @@ public class ChallengeController {
         return ResponseEntity.status(HttpStatus.OK).body(responseChallenges);
     }
 
+    @GetMapping("/challenge/question")
+    public ResponseEntity<List<ResponseRecommendedChallenge>> searchChallengesByQuestion(
+            @AuthenticationPrincipal org.springframework.security.core.userdetails.User user,
+            @RequestBody RequestChallengeQuestion requestChallengeQuestion) {
+
+        ChallengeCategory challengeCategory = ChallengeCategory.findByIndex(
+                requestChallengeQuestion.getChallengeCategoryIndex());
+        ChallengeDuration challengeDuration = ChallengeDuration.findByIndex(
+                requestChallengeQuestion.getChallengeDurationIndex());
+        ChallengeLocation challengeLocation = ChallengeLocation.findByIndex(
+                requestChallengeQuestion.getChallengeLocationIndex());
+
+        List<ResponseRecommendedChallenge> recommendedChallenges = challengeService.searchByQuestion(
+                challengeCategory, challengeDuration, challengeLocation);
+
+        return ResponseEntity.status(HttpStatus.OK).body(recommendedChallenges);
+    }
+
+    @GetMapping("/challenge/hashtags")
+    public ResponseEntity<List<ResponseChallengeHashtag>> searchChallengesByHashtags(
+            @AuthenticationPrincipal org.springframework.security.core.userdetails.User user) {
+
+        List<Hashtag> hashtags = hashtagService.searchThreeMostWrittenHashtags();
+        List<HashtagChallengesDto> hashtagChallengesDtos = challengeHashtagService.searchByHashtags(hashtags);
+
+        List<ResponseChallengeHashtag> responseChallengeHashtags = new ArrayList<>();
+        for (HashtagChallengesDto hashtagChallengesDto : hashtagChallengesDtos) {
+            responseChallengeHashtags.add(
+                    ResponseChallengeHashtag.create(
+                            hashtagChallengesDto.getHashtag(), hashtagChallengesDto.getChallenges()));
+        }
+
+        return ResponseEntity.status(HttpStatus.OK).body(responseChallengeHashtags);
+    }
+
+    @GetMapping("/challenge/random")
+    public ResponseEntity<ResponseRecommendedChallenge> searchChallengeByRandom(
+            @AuthenticationPrincipal org.springframework.security.core.userdetails.User user) {
+
+        ResponseRecommendedChallenge recommendedChallenge = challengeService.searchByRandom();
+
+        return ResponseEntity.status(HttpStatus.OK).body(recommendedChallenge);
+    }
+
     @PostMapping("/challenge/{challengeId}")
     public ResponseEntity<ResponseUpdateChallenge> updateChallenge(
             @AuthenticationPrincipal org.springframework.security.core.userdetails.User user,
@@ -149,13 +206,5 @@ public class ChallengeController {
         challengeService.deleteChallenge(challengeId, findUser);
 
         return ResponseEntity.noContent().build();
-    }
-
-    @GetMapping(value = {"/challenge/hashtag","/challenge/hashtag/{page}"})
-    public ResponseEntity<?> searchHashtag(@RequestParam("content") String content,
-                                           @PathVariable("page") Optional<Integer> page){
-        Pageable pageable = PageRequest.of(page.isPresent() ? page.get() : 0,10);
-        Page<ResponseChallenge> challenges = challengeService.searchChallengeByHashtag(content,pageable);
-        return ResponseEntity.status(HttpStatus.OK).body(challenges);
     }
 }

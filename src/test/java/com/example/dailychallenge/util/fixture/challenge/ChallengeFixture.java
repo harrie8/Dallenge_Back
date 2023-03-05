@@ -1,4 +1,4 @@
-package com.example.dailychallenge.util.fixture;
+package com.example.dailychallenge.util.fixture.challenge;
 
 import com.example.dailychallenge.dto.ChallengeDto;
 import com.example.dailychallenge.entity.challenge.Challenge;

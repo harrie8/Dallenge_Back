@@ -9,15 +9,18 @@ import static com.example.dailychallenge.entity.challenge.ChallengeLocation.INDO
 import static com.example.dailychallenge.entity.challenge.ChallengeLocation.OUTDOOR;
 import static com.example.dailychallenge.entity.challenge.ChallengeStatus.PAUSE;
 import static com.example.dailychallenge.entity.challenge.ChallengeStatus.TRYING;
-import static com.example.dailychallenge.util.fixture.ChallengeFixture.createSpecificChallenge;
-import static com.example.dailychallenge.util.fixture.ChallengeHashtagFixture.createSpecificChallengeHashtags;
-import static com.example.dailychallenge.util.fixture.ChallengeImgFixture.createSpecificChallengeImgs;
-import static com.example.dailychallenge.util.fixture.HashtagFixture.createSpecificHashtags;
 import static com.example.dailychallenge.util.fixture.TokenFixture.EMAIL;
-import static com.example.dailychallenge.util.fixture.UserChallengeFixture.createSpecificUserChallenge;
-import static com.example.dailychallenge.util.fixture.UserFixture.createSpecificUser;
+import static com.example.dailychallenge.util.fixture.TokenFixture.PASSWORD;
+import static com.example.dailychallenge.util.fixture.challenge.ChallengeFixture.createSpecificChallenge;
+import static com.example.dailychallenge.util.fixture.challenge.ChallengeImgFixture.createSpecificChallengeImgs;
+import static com.example.dailychallenge.util.fixture.challengeHashtag.ChallengeHashtagFixture.createSpecificChallengeHashtags;
+import static com.example.dailychallenge.util.fixture.hashtag.HashtagFixture.createSpecificHashtags;
+import static com.example.dailychallenge.util.fixture.user.UserFixture.USERNAME;
+import static com.example.dailychallenge.util.fixture.userChallenge.UserChallengeFixture.createSpecificUserChallenge;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.example.dailychallenge.entity.challenge.Challenge;
@@ -36,9 +39,11 @@ import com.example.dailychallenge.repository.ChallengeImgRepository;
 import com.example.dailychallenge.repository.ChallengeRepository;
 import com.example.dailychallenge.repository.HashtagRepository;
 import com.example.dailychallenge.repository.UserChallengeRepository;
-import com.example.dailychallenge.repository.UserRepository;
 import com.example.dailychallenge.util.RepositoryTest;
+import com.example.dailychallenge.util.fixture.TestDataSetup;
 import com.example.dailychallenge.vo.challenge.ResponseChallenge;
+import com.example.dailychallenge.vo.challenge.ResponseRecommendedChallenge;
+import java.util.Collections;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -55,13 +60,13 @@ public class ChallengeRepositoryCustomTest extends RepositoryTest {
     @Autowired
     private ChallengeImgRepository challengeImgRepository;
     @Autowired
-    private UserRepository userRepository;
-    @Autowired
     private ChallengeHashtagRepository challengeHashtagRepository;
     @Autowired
     private HashtagRepository hashtagRepository;
+    @Autowired
+    private TestDataSetup testDataSetup;
 
-    private User savedUser;
+    private User user;
     private Challenge challenge1;
 
     @BeforeEach
@@ -70,22 +75,22 @@ public class ChallengeRepositoryCustomTest extends RepositoryTest {
     }
 
     private void initData() {
-        savedUser = saveUser("홍길동", EMAIL);
+        user = testDataSetup.saveUser(USERNAME, EMAIL, PASSWORD);
 
-        challenge1 = saveChallenge("제목입니다.1", "내용입니다.1", STUDY, INDOOR, WITHIN_TEN_MINUTES, savedUser);
+        challenge1 = saveChallenge("제목입니다.1", "내용입니다.1", STUDY, INDOOR, WITHIN_TEN_MINUTES, user);
         saveChallengeImgs("imgUrl", "imgName", "oriImgName", challenge1, 2);
-        saveChallengeParticipate(TRYING, savedUser, challenge1);
+        saveChallengeParticipate(TRYING, user, challenge1);
         saveChallengeHashtags(List.of("tag1", "tag2", "tag3"), challenge1);
 
-        Challenge challenge2 = saveChallenge("제목입니다.2", "내용입니다.2", ECONOMY, OUTDOOR, OVER_ONE_HOUR, savedUser);
-        saveChallengeParticipate(PAUSE, savedUser, challenge2);
+        Challenge challenge2 = saveChallenge("제목입니다.2", "내용입니다.2", ECONOMY, OUTDOOR, OVER_ONE_HOUR, user);
+        saveChallengeParticipate(PAUSE, user, challenge2);
 
         Challenge challenge6 = null;
 
         for (int i = 3; i <= 10; i++) {
             Challenge challenge = saveChallenge("제목입니다." + i, "내용입니다." + i, WORKOUT, INDOOR,
-                    WITHIN_TEN_MINUTES, savedUser);
-            saveChallengeParticipate(TRYING, savedUser, challenge);
+                    WITHIN_TEN_MINUTES, user);
+            saveChallengeParticipate(TRYING, user, challenge);
 
             if (i == 6) {
                 challenge6 = challenge;
@@ -93,7 +98,7 @@ public class ChallengeRepositoryCustomTest extends RepositoryTest {
         }
 
         for (int i = 1; i <= 8; i++) {
-            User user = saveUser("홍길동" + i, i + "@test.com");
+            User user = testDataSetup.saveUser(USERNAME + i, i + "@test.com", PASSWORD);
             if (i == 1) {
                 saveChallengeParticipate(TRYING, user, challenge1);
             }
@@ -104,13 +109,6 @@ public class ChallengeRepositoryCustomTest extends RepositoryTest {
                 saveChallengeParticipate(TRYING, user, challenge6);
             }
         }
-    }
-
-    private User saveUser(String name, String email) {
-        User user = createSpecificUser(name, email);
-        userRepository.save(user);
-
-        return user;
     }
 
     private Challenge saveChallenge(String title, String content, ChallengeCategory challengeCategory,
@@ -163,9 +161,9 @@ public class ChallengeRepositoryCustomTest extends RepositoryTest {
                 assertEquals(challenge1.getImgUrls(), responseChallenge.getChallengeImgUrls());
                 assertEquals(challenge1.getHashtags(), responseChallenge.getChallengeHashtags());
                 assertEquals(2, responseChallenge.getHowManyUsersAreInThisChallenge());
-                assertEquals(savedUser.getUserName(), responseChallenge.getChallengeOwnerUser().getUserName());
-                assertEquals(savedUser.getEmail(), responseChallenge.getChallengeOwnerUser().getEmail());
-                assertEquals(savedUser.getId(), responseChallenge.getChallengeOwnerUser().getUserId());
+                assertEquals(user.getUserName(), responseChallenge.getChallengeOwnerUser().getUserName());
+                assertEquals(user.getEmail(), responseChallenge.getChallengeOwnerUser().getEmail());
+                assertEquals(user.getId(), responseChallenge.getChallengeOwnerUser().getUserId());
             });
         }
 
@@ -178,5 +176,39 @@ public class ChallengeRepositoryCustomTest extends RepositoryTest {
                             .orElseThrow(ChallengeNotFound::new));
             assertEquals("챌린지를 찾을 수 없습니다.", exception.getMessage());
         }
+    }
+
+    @Test
+    @DisplayName("질문으로 챌린지들 조회 테스트")
+    void searchChallengesByQuestionTest() {
+        ChallengeCategory challengeCategory = WORKOUT;
+        ChallengeDuration challengeDuration = WITHIN_TEN_MINUTES;
+        ChallengeLocation challengeLocation = INDOOR;
+
+        List<ResponseRecommendedChallenge> results = challengeRepository.searchChallengesByQuestion(
+                challengeCategory, challengeDuration, challengeLocation);
+
+        assertAll(() -> {
+            assertThat(results).extracting("title").containsExactlyElementsOf(
+                    List.of("제목입니다.3", "제목입니다.4", "제목입니다.5", "제목입니다.6"));
+            assertThat(results).extracting("content").containsExactlyElementsOf(
+                    List.of("내용입니다.3", "내용입니다.4", "내용입니다.5", "내용입니다.6"));
+            assertThat(results).extracting("challengeImgUrls").containsExactly(
+                    List.of(), List.of(), List.of(), List.of()
+            );
+        });
+    }
+
+    @Test
+    @DisplayName("랜덤으로 챌린지 조회 테스트")
+    void searchChallengeByRandomTest() {
+        ResponseRecommendedChallenge result = challengeRepository.searchChallengeByRandom();
+
+        assertAll(() -> {
+            assertNotNull(result.getId());
+            assertThat(result.getTitle()).startsWith("제목입니다.");
+            assertThat(result.getContent()).startsWith("내용입니다.");
+            assertEquals(Collections.emptyList(), result.getChallengeImgUrls());
+        });
     }
 }

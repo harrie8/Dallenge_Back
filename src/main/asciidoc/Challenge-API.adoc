@@ -116,6 +116,35 @@ include::{snippets}/challenge-controller-doc-test/search-challenges-by-condition
 
 ====
 
+[[Challenge-질문으로-챌린지들-추천하기]]
+=== 질문으로 챌린지들 추천
+
+operation::challenge-controller-doc-test/search-challenges-by-question-test[snippets='http-request,request-fields']
+
+.HTTP Response
+[%collapsible]
+=====
+include::{snippets}/challenge-controller-doc-test/search-challenges-by-question-test/http-response.adoc[]
+=====
+
+[[Challenge-가장-많이-작성된-3개의-해시태그들로-챌린지들-추천하기]]
+=== 가장 많이 작성된 3개의 해시태그들로 챌린지들 추천
+
+operation::challenge-controller-doc-test/search-challenges-by-hashtags-test[snippets='http-request']
+
+.HTTP Response
+[%collapsible]
+=====
+include::{snippets}/challenge-controller-doc-test/search-challenges-by-hashtags-test/http-response.adoc[]
+include::{snippets}/challenge-controller-doc-test/search-challenges-by-hashtags-test/response-fields.adoc[]
+=====
+
+[[Challenge-랜덤으로-챌린지-추천하기]]
+=== 랜덤으로 챌린지 추천
+
+operation::challenge-controller-doc-test/search-challenge-by-random-test[snippets='http-request,http-response']
+
+
 [[Challenge-챌린지-수정]]
 === 챌린지 수정
 

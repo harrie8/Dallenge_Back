@@ -4,7 +4,7 @@ import static com.example.dailychallenge.util.fixture.TokenFixture.AUTHORIZATION
 import static com.example.dailychallenge.util.fixture.TokenFixture.EMAIL;
 import static com.example.dailychallenge.util.fixture.TokenFixture.PASSWORD;
 import static com.example.dailychallenge.util.fixture.TokenFixture.TOKEN_PREFIX;
-import static com.example.dailychallenge.util.fixture.UserFixture.createOtherUser;
+import static com.example.dailychallenge.util.fixture.user.UserFixture.createOtherUser;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
@@ -35,7 +35,6 @@ import com.example.dailychallenge.entity.challenge.ChallengeLocation;
 import com.example.dailychallenge.entity.comment.Comment;
 import com.example.dailychallenge.entity.users.User;
 import com.example.dailychallenge.exception.users.UserNotFound;
-import com.example.dailychallenge.repository.CommentRepository;
 import com.example.dailychallenge.service.challenge.ChallengeService;
 import com.example.dailychallenge.service.comment.CommentService;
 import com.example.dailychallenge.service.users.UserService;
@@ -78,8 +77,6 @@ public class CommentControllerDocTest {
     private UserService userService;
     @Autowired
     private ChallengeService challengeService;
-    @Autowired
-    private CommentRepository commentRepository;
     @Autowired
     private CommentService commentService;
     @Autowired

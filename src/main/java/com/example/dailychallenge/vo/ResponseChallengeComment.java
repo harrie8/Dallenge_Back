@@ -36,7 +36,7 @@ public class ResponseChallengeComment {
         this.id = comment.getId();
         this.content = comment.getContent();
         this.likes = comment.getLikes();
-        this.createdAt = comment.getFormattedCreatedAt();
+        this.createdAt = comment.getSpecificCreatedAt();
         this.commentImgUrls = comment.getImgUrls();
         this.commentOwnerUser = ResponseUser.create(comment.getUsers());
     }

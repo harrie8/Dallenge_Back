@@ -1,8 +1,8 @@
 package com.example.dailychallenge.repsoitory.comment;
 
-import static com.example.dailychallenge.util.fixture.ChallengeFixture.createChallenge;
 import static com.example.dailychallenge.util.fixture.TokenFixture.EMAIL;
 import static com.example.dailychallenge.util.fixture.TokenFixture.PASSWORD;
+import static com.example.dailychallenge.util.fixture.challenge.ChallengeFixture.createChallenge;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 

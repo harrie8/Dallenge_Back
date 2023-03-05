@@ -1,10 +1,18 @@
 package com.example.dailychallenge.controller.challenge;
 
-import static com.example.dailychallenge.util.fixture.ChallengeImgFixture.createChallengeImgFiles;
-import static com.example.dailychallenge.util.fixture.ChallengeImgFixture.updateChallengeImgFiles;
+import static com.example.dailychallenge.entity.challenge.ChallengeCategory.ECONOMY;
+import static com.example.dailychallenge.entity.challenge.ChallengeCategory.STUDY;
+import static com.example.dailychallenge.entity.challenge.ChallengeCategory.WORKOUT;
+import static com.example.dailychallenge.entity.challenge.ChallengeDuration.OVER_ONE_HOUR;
+import static com.example.dailychallenge.entity.challenge.ChallengeDuration.WITHIN_TEN_MINUTES;
+import static com.example.dailychallenge.entity.challenge.ChallengeLocation.INDOOR;
+import static com.example.dailychallenge.entity.challenge.ChallengeLocation.OUTDOOR;
 import static com.example.dailychallenge.util.fixture.TokenFixture.AUTHORIZATION;
-import static com.example.dailychallenge.util.fixture.UserFixture.createSpecificUserDto;
-import static com.example.dailychallenge.util.fixture.UserFixture.createUser;
+import static com.example.dailychallenge.util.fixture.TokenFixture.EMAIL;
+import static com.example.dailychallenge.util.fixture.TokenFixture.PASSWORD;
+import static com.example.dailychallenge.util.fixture.challenge.ChallengeImgFixture.createChallengeImgFiles;
+import static com.example.dailychallenge.util.fixture.challenge.ChallengeImgFixture.updateChallengeImgFiles;
+import static com.example.dailychallenge.util.fixture.user.UserFixture.USERNAME;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.hasItem;
@@ -16,6 +24,7 @@ import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuild
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.multipart;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.relaxedResponseFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestPartFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
@@ -27,24 +36,16 @@ import static org.springframework.restdocs.snippet.Attributes.key;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.example.dailychallenge.dto.ChallengeDto;
 import com.example.dailychallenge.dto.HashtagDto;
 import com.example.dailychallenge.entity.challenge.Challenge;
 import com.example.dailychallenge.entity.challenge.ChallengeCategory;
 import com.example.dailychallenge.entity.challenge.ChallengeDuration;
 import com.example.dailychallenge.entity.challenge.ChallengeLocation;
 import com.example.dailychallenge.entity.challenge.ChallengeStatus;
-import com.example.dailychallenge.entity.comment.Comment;
-import com.example.dailychallenge.entity.hashtag.Hashtag;
 import com.example.dailychallenge.entity.users.User;
-import com.example.dailychallenge.repository.CommentRepository;
-import com.example.dailychallenge.repository.UserRepository;
-import com.example.dailychallenge.service.challenge.ChallengeService;
-import com.example.dailychallenge.service.challenge.UserChallengeService;
-import com.example.dailychallenge.service.hashtag.ChallengeHashtagService;
-import com.example.dailychallenge.service.hashtag.HashtagService;
-import com.example.dailychallenge.service.users.UserService;
 import com.example.dailychallenge.util.RestDocsTest;
+import com.example.dailychallenge.util.fixture.TestDataSetup;
+import com.example.dailychallenge.vo.challenge.RequestChallengeQuestion;
 import com.example.dailychallenge.vo.challenge.RequestCreateChallenge;
 import com.example.dailychallenge.vo.challenge.RequestUpdateChallenge;
 import java.nio.charset.StandardCharsets;
@@ -56,99 +57,78 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.mock.web.MockPart;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 public class ChallengeControllerDocTest extends RestDocsTest {
     @Autowired
-    private UserService userService;
-    @Autowired
-    private ChallengeService challengeService;
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private UserChallengeService userChallengeService;
-    @Autowired
-    private CommentRepository commentRepository;
-    @Autowired
-    private HashtagService hashtagService;
-    @Autowired
-    private ChallengeHashtagService challengeHashtagService;
+    private TestDataSetup testDataSetup;
 
-    private User savedUser;
+    private User user;
+    private String token;
     private Challenge challenge1;
 
     @BeforeEach
-    void beforeEach() throws Exception {
-        initData();
+    void beforeEach() {
+        user = testDataSetup.saveUser(USERNAME, EMAIL, PASSWORD);
+        token = generateToken(user);
     }
 
-    private void initData() throws Exception {
-        savedUser = userService.saveUser(createUser(), passwordEncoder);
+    private void initChallengeData() {
+        challenge1 = testDataSetup.챌린지를_생성한다(
+                "제목입니다.1",
+                "내용입니다.1",
+                STUDY.getDescription(),
+                INDOOR.getDescription(),
+                WITHIN_TEN_MINUTES.getDescription(),
+                user);
+        testDataSetup.챌린지에_참가한다(challenge1, user);
+        testDataSetup.챌린지예_댓글을_단다(challenge1);
+        testDataSetup.챌린지에_해시태그를_단다(challenge1, List.of("tag1", "tag2"));
+    }
 
-        ChallengeDto challengeDto1 = ChallengeDto.builder()
-                .title("제목입니다.1")
-                .content("내용입니다.1")
-                .challengeCategory(ChallengeCategory.STUDY.getDescription())
-                .challengeLocation(ChallengeLocation.INDOOR.getDescription())
-                .challengeDuration(ChallengeDuration.WITHIN_TEN_MINUTES.getDescription())
-                .build();
-        challenge1 = challengeService.saveChallenge(challengeDto1, createChallengeImgFiles(), savedUser);
+    private void initData() {
+        initChallengeData();
 
-        userChallengeService.saveUserChallenge(challenge1, savedUser);
-
-        Comment comment = Comment.builder()
-                .content("content")
-                .build();
-        comment.saveCommentChallenge(challenge1);
-        commentRepository.save(comment);
-
-        List<String> hashtagDto = List.of("tag1", "tag2");
-        List<Hashtag> hashtags = hashtagService.saveHashtag(hashtagDto);
-        challengeHashtagService.saveChallengeHashtag(challenge1, hashtags);
-
-        ChallengeDto challengeDto2 = ChallengeDto.builder()
-                .title("제목입니다.2")
-                .content("내용입니다.2")
-                .challengeCategory(ChallengeCategory.ECONOMY.getDescription())
-                .challengeLocation(ChallengeLocation.OUTDOOR.getDescription())
-                .challengeDuration(ChallengeDuration.OVER_ONE_HOUR.getDescription())
-                .build();
-        Challenge challenge2 = challengeService.saveChallenge(challengeDto2, createChallengeImgFiles(), savedUser);
-
-        userChallengeService.saveUserChallenge(challenge2, savedUser);
+        Challenge challenge2 = testDataSetup.챌린지를_생성한다(
+                "제목입니다.2",
+                "내용입니다.2",
+                ECONOMY.getDescription(),
+                OUTDOOR.getDescription(),
+                OVER_ONE_HOUR.getDescription(),
+                user
+        );
+        testDataSetup.챌린지에_참가한다(challenge2, user);
+        testDataSetup.챌린지에_해시태그를_단다(challenge2, List.of("tag1", "tag2", "tag3"));
 
         Challenge challenge6 = null;
 
         for (int i = 3; i <= 10; i++) {
-            ChallengeDto challengeDto = ChallengeDto.builder()
-                    .title("제목입니다." + i)
-                    .content("내용입니다." + i)
-                    .challengeCategory(ChallengeCategory.WORKOUT.getDescription())
-                    .challengeLocation(ChallengeLocation.INDOOR.getDescription())
-                    .challengeDuration(ChallengeDuration.WITHIN_TEN_MINUTES.getDescription())
-                    .build();
-            Challenge challenge = challengeService.saveChallenge(challengeDto, createChallengeImgFiles(), savedUser);
-
-            userChallengeService.saveUserChallenge(challenge, savedUser);
+            Challenge challenge = testDataSetup.챌린지를_생성한다(
+                    "제목입니다." + i,
+                    "내용입니다." + i,
+                    WORKOUT.getDescription(),
+                    INDOOR.getDescription(),
+                    WITHIN_TEN_MINUTES.getDescription(),
+                    user
+            );
+            testDataSetup.챌린지에_참가한다(challenge, user);
 
             if (i == 6) {
+                testDataSetup.챌린지에_해시태그를_단다(challenge, List.of("tag2", "tag4"));
                 challenge6 = challenge;
             }
         }
 
         for (int i = 1; i <= 8; i++) {
-            User otherUser = userService.saveUser(
-                    createSpecificUserDto("홍길동" + i, i + "@test.com"), passwordEncoder);
+            User otherUser = testDataSetup.saveUser(USERNAME + i, i + "@test.com", PASSWORD);
             if (i == 1) {
-                userChallengeService.saveUserChallenge(challenge1, otherUser);
+                testDataSetup.챌린지에_참가한다(challenge1, otherUser);
             }
             if (2 <= i && i <= 5) {
-                userChallengeService.saveUserChallenge(challenge2, otherUser);
+                testDataSetup.챌린지에_참가한다(challenge2, otherUser);
             }
-
             if (i == 6) {
-                userChallengeService.saveUserChallenge(challenge6, otherUser);
+                testDataSetup.챌린지에_참가한다(challenge6, otherUser);
             }
         }
     }
@@ -189,7 +169,7 @@ public class ChallengeControllerDocTest extends RestDocsTest {
                         .part(new MockPart("challengeImgFiles", "challengeImgFile", challengeImgFiles.get(1).getBytes()))
                         .part(new MockPart("challengeImgFiles", "challengeImgFile", challengeImgFiles.get(2).getBytes()))
                         .file(mockHashtagDto)
-                        .header(AUTHORIZATION, generateToken(savedUser.getEmail(), userService))
+                        .header(AUTHORIZATION, token)
                         .contentType(MediaType.MULTIPART_FORM_DATA)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated())
@@ -201,9 +181,9 @@ public class ChallengeControllerDocTest extends RestDocsTest {
                 .andExpect(jsonPath("$.challengeStatus").value(ChallengeStatus.TRYING.getDescription()))
                 .andExpect(jsonPath("$.challengeImgUrls[*]", hasItem(startsWith("/images/"))))
                 .andExpect(jsonPath("$.challengeHashtags[*]", contains("tag1", "tag2")))
-                .andExpect(jsonPath("$.challengeOwnerUser.userName").value(savedUser.getUserName()))
-                .andExpect(jsonPath("$.challengeOwnerUser.email").value(savedUser.getEmail()))
-                .andExpect(jsonPath("$.challengeOwnerUser.userId").value(savedUser.getId()))
+                .andExpect(jsonPath("$.challengeOwnerUser.userName").value(user.getUserName()))
+                .andExpect(jsonPath("$.challengeOwnerUser.email").value(user.getEmail()))
+                .andExpect(jsonPath("$.challengeOwnerUser.userId").value(user.getId()))
                 .andDo(restDocs.document(
                         requestParts(
                                 partWithName("requestCreateChallenge").description("챌린지 데이터(JSON)")
@@ -236,10 +216,11 @@ public class ChallengeControllerDocTest extends RestDocsTest {
     @Test
     @DisplayName("특정 챌린지 조회 테스트")
     void findChallengeByIdTest() throws Exception {
+        initData();
         Long challenge1Id = challenge1.getId();
 
         mockMvc.perform(get("/challenge/{challengeId}", challenge1Id)
-                        .header(AUTHORIZATION, generateToken(savedUser.getEmail(), userService))
+                        .header(AUTHORIZATION, token)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.responseChallenge.title").value(challenge1.getTitle()))
@@ -254,15 +235,15 @@ public class ChallengeControllerDocTest extends RestDocsTest {
                 .andExpect(
                         jsonPath("$.responseChallenge.challengeImgUrls[*]").value(challenge1.getImgUrls()))
                 .andExpect(jsonPath("$.responseChallenge.howManyUsersAreInThisChallenge").value(2))
-                .andExpect(jsonPath("$.responseChallenge.challengeOwnerUser.userName").value(savedUser.getUserName()))
-                .andExpect(jsonPath("$.responseChallenge.challengeOwnerUser.email").value(savedUser.getEmail()))
-                .andExpect(jsonPath("$.responseChallenge.challengeOwnerUser.userId").value(savedUser.getId()))
+                .andExpect(jsonPath("$.responseChallenge.challengeOwnerUser.userName").value(user.getUserName()))
+                .andExpect(jsonPath("$.responseChallenge.challengeOwnerUser.email").value(user.getEmail()))
+                .andExpect(jsonPath("$.responseChallenge.challengeOwnerUser.userId").value(user.getId()))
                 .andExpect(jsonPath("$.responseUserChallenges[*].challengeStatus",
                         hasItem(ChallengeStatus.TRYING.getDescription())))
                 .andExpect(jsonPath("$.responseUserChallenges[*].participatedUser.userName",
-                        contains(savedUser.getUserName(), "홍길동1")))
+                        contains(user.getUserName(), "홍길동1")))
                 .andExpect(jsonPath("$.responseUserChallenges[*].participatedUser.email",
-                        contains(savedUser.getEmail(), "1@test.com")))
+                        contains(user.getEmail(), "1@test.com")))
                 .andDo(restDocs.document(
                         pathParameters(
                                 parameterWithName("challengeId").description("찾고 싶은 챌린지 ID")
@@ -274,12 +255,13 @@ public class ChallengeControllerDocTest extends RestDocsTest {
                 ));
     }
 
-    @Transactional
     @Test
     @DisplayName("모든 챌린지 조회하고 인기순으로 내림차순 정렬 테스트")
     public void searchAllChallengesSortByPopularTest() throws Exception {
+        initData();
+
         mockMvc.perform(get("/challenge")
-                        .header(AUTHORIZATION, generateToken(savedUser.getEmail(), userService))
+                        .header(AUTHORIZATION, token)
                         .param("size", "20")
                         .param("page", "0")
                         .param("sort", "popular")
@@ -305,11 +287,11 @@ public class ChallengeControllerDocTest extends RestDocsTest {
                 .andExpect(jsonPath("$.content[*].howManyUsersAreInThisChallenge",
                         contains(5, 2, 2, 1, 1, 1, 1, 1, 1, 1)))
                 .andExpect(jsonPath("$.content[*].challengeOwnerUser.userName",
-                        hasItem(savedUser.getUserName())))
+                        hasItem(user.getUserName())))
                 .andExpect(jsonPath("$.content[*].challengeOwnerUser.email",
-                        hasItem(savedUser.getEmail())))
+                        hasItem(user.getEmail())))
                 .andExpect(jsonPath("$.content[*].challengeOwnerUser.userId",
-                        hasItem(savedUser.getId().intValue())))
+                        hasItem(user.getId().intValue())))
                 .andDo(restDocs.document(
                         requestParameters(
                                 parameterWithName("size").description("기본값: 10").optional(),
@@ -336,8 +318,10 @@ public class ChallengeControllerDocTest extends RestDocsTest {
     @Test
     @DisplayName("모든 챌린지 조회하고 생성순으로 오름차순 정렬 테스트")
     public void searchAllChallengesSortByTimeTest() throws Exception {
+        initData();
+
         mockMvc.perform(get("/challenge")
-                        .header(AUTHORIZATION, generateToken(savedUser.getEmail(), userService))
+                        .header(AUTHORIZATION, token)
                         .param("size", "20")
                         .param("page", "0")
                         .param("sort", "time")
@@ -363,9 +347,11 @@ public class ChallengeControllerDocTest extends RestDocsTest {
     @Test
     @DisplayName("챌린지들을 검색 조건으로 조회하고 인기순으로 오름차순 정렬 테스트")
     public void searchChallengesByConditionSortByPopularTest() throws Exception {
+        initData();
+
         mockMvc.perform(get("/challenge/condition")
                         .characterEncoding(UTF_8)
-                        .header(AUTHORIZATION, generateToken(savedUser.getEmail(), userService))
+                        .header(AUTHORIZATION, token)
                         .param("title", "")
                         .param("category", ChallengeCategory.WORKOUT.getDescription())
                         .param("size", "20")
@@ -390,11 +376,11 @@ public class ChallengeControllerDocTest extends RestDocsTest {
                 .andExpect(jsonPath("$.content[*].howManyUsersAreInThisChallenge",
                         contains(2, 1, 1, 1, 1, 1, 1, 1)))
                 .andExpect(jsonPath("$.content[*].challengeOwnerUser.userName",
-                        hasItem(savedUser.getUserName())))
+                        hasItem(user.getUserName())))
                 .andExpect(jsonPath("$.content[*].challengeOwnerUser.email",
-                        hasItem(savedUser.getEmail())))
+                        hasItem(user.getEmail())))
                 .andExpect(jsonPath("$.content[*].challengeOwnerUser.userId",
-                        hasItem(savedUser.getId().intValue())))
+                        hasItem(user.getId().intValue())))
                 .andDo(restDocs.document(
                         requestParameters(
                                 parameterWithName("title").description("찾고 싶은 Challenge 제목").optional(),
@@ -414,8 +400,10 @@ public class ChallengeControllerDocTest extends RestDocsTest {
     @Test
     @DisplayName("챌린지들을 검색 조건으로 조회하고 생성순으로 내림차순 정렬 테스트")
     public void searchChallengesByConditionSortByTimeTest() throws Exception {
+        initData();
+
         mockMvc.perform(get("/challenge/condition")
-                        .header(AUTHORIZATION, generateToken(savedUser.getEmail(), userService))
+                        .header(AUTHORIZATION, token)
                         .param("title", "")
                         .param("category", ChallengeCategory.WORKOUT.getDescription())
                         .param("size", "20")
@@ -443,8 +431,71 @@ public class ChallengeControllerDocTest extends RestDocsTest {
     }
 
     @Test
+    @DisplayName("챌린지들을 질문으로 조회하는 테스트")
+    public void searchChallengesByQuestionTest() throws Exception {
+        initData();
+        RequestChallengeQuestion requestChallengeQuestion = RequestChallengeQuestion.builder()
+                .challengeLocationIndex(1)
+                .challengeDurationIndex(0)
+                .challengeCategoryIndex(2)
+                .build();
+
+        String json = objectMapper.writeValueAsString(requestChallengeQuestion);
+
+        mockMvc.perform(get("/challenge/question")
+                        .header(AUTHORIZATION, token)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .content(json)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andDo(restDocs.document(
+                        requestFields(
+                                fieldWithPath("challengeCategoryIndex").description("챌린지 카테고리 번호")
+                                        .attributes(key("constraints").value("0 ~ 4")),
+                                fieldWithPath("challengeDurationIndex").description("챌린지 기간 번호")
+                                        .attributes(key("constraints").value("0 ~ 3")),
+                                fieldWithPath("challengeLocationIndex").description("챌린지 장소 번호")
+                                        .attributes(key("constraints").value("0 ~ 1"))
+                        )
+                ));
+    }
+
+    @Test
+    @DisplayName("챌린지들을 해시태그들로 조회하는 테스트")
+    public void searchChallengesByHashtagsTest() throws Exception {
+        initData();
+
+        mockMvc.perform(get("/challenge/hashtags")
+                        .header(AUTHORIZATION, token)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andDo(restDocs.document(
+                        relaxedResponseFields(
+                                fieldWithPath("[].hashtagId").description("해시태그 ID"),
+                                fieldWithPath("[].hashtagContent").description("해시태그 내용"),
+                                fieldWithPath("[].hashtagTagCount").description("해시태그 개수"),
+                                fieldWithPath("[].recommendedChallenges").description("해당 해시태그를 가지고 있는 챌린지들")
+                        )
+                ));
+    }
+
+    @Test
+    @DisplayName("챌린지를 랜덤으로 조회하는 테스트")
+    public void searchChallengeByRandomTest() throws Exception {
+        initData();
+
+        mockMvc.perform(get("/challenge/random")
+                        .header(AUTHORIZATION, token)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andDo(restDocs.document());
+    }
+
+    @Test
     @DisplayName("챌린지 수정 테스트")
     void updateChallenge() throws Exception {
+        initChallengeData();
+
         RequestUpdateChallenge requestUpdateChallenge = RequestUpdateChallenge.builder()
                 .title("수정된 제목")
                 .content("수정된 내용")
@@ -474,7 +525,7 @@ public class ChallengeControllerDocTest extends RestDocsTest {
                         .part(new MockPart("updateChallengeImgFiles", "updateChallengeImgFiles",
                                 updateChallengeImgFiles.get(1).getBytes()))
                         .file(mockHashtagDto)
-                        .header(AUTHORIZATION, generateToken(savedUser.getEmail(), userService))
+                        .header(AUTHORIZATION, token)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.title").value(requestUpdateChallenge.getTitle()))
@@ -527,12 +578,13 @@ public class ChallengeControllerDocTest extends RestDocsTest {
     @Test
     @DisplayName("챌린지 삭제 테스트")
     void deleteChallenge() throws Exception {
+        initChallengeData();
+
         mockMvc.perform(delete("/challenge/{challengeId}", challenge1.getId())
-                        .header(AUTHORIZATION, generateToken(savedUser.getEmail(), userService))
+                        .header(AUTHORIZATION, token)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNoContent())
                 .andDo(restDocs.document(
                         pathParameters(parameterWithName("challengeId").description("챌린지 ID"))));
     }
 }
-
