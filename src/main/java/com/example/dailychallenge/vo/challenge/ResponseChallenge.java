@@ -55,4 +55,18 @@ public class ResponseChallenge {
         this.howManyUsersAreInThisChallenge = howManyUsersAreInThisChallenge;
         this.challengeOwnerUser = ResponseUser.create(challenge.getUsers());
     }
+
+    @QueryProjection
+    public ResponseChallenge(Challenge challenge) {
+        this.id = challenge.getId();
+        this.title = challenge.getTitle();
+        this.content = challenge.getContent();
+        this.challengeCategory = challenge.getChallengeCategory().getDescription();
+        this.challengeLocation = challenge.getChallengeLocation().getDescription();
+        this.challengeDuration = challenge.getChallengeDuration().getDescription();
+        this.created_at = challenge.getFormattedCreatedAt();
+        this.challengeImgUrls = challenge.getImgUrls();
+        this.challengeHashtags = challenge.getHashtags();
+        this.challengeOwnerUser = ResponseUser.create(challenge.getUsers());
+    }
 }

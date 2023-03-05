@@ -1,4 +1,4 @@
-package com.example.dailychallenge.controller.bookmark;
+package com.example.dailychallenge.controller.exception.bookmark;
 
 import com.example.dailychallenge.entity.bookmark.Bookmark;
 import com.example.dailychallenge.entity.challenge.Challenge;
