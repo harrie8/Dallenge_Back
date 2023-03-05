@@ -80,4 +80,7 @@ public class HashtagService {
         }
     }
 
+    public List<Hashtag> searchThreeMostWrittenHashtags() {
+        return hashtagRepository.findTop3ByOrderByTagCountDescContentAsc();
+    }
 }

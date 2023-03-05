@@ -76,7 +76,7 @@ class ChallengeControllerTest extends ControllerTest {
                 user);
         testDataSetup.챌린지에_참가한다(challenge1, user);
         testDataSetup.챌린지예_댓글을_단다(challenge1);
-        testDataSetup.챌린지에_해시태그를_단다(challenge1);
+        testDataSetup.챌린지에_해시태그를_단다(challenge1, List.of("tag1", "tag2"));
     }
 
     private void initData() {
@@ -91,6 +91,7 @@ class ChallengeControllerTest extends ControllerTest {
                 user
         );
         testDataSetup.챌린지에_참가한다(challenge2, user);
+        testDataSetup.챌린지에_해시태그를_단다(challenge2, List.of("tag1", "tag2", "tag3"));
 
         Challenge challenge6 = null;
 
@@ -106,6 +107,7 @@ class ChallengeControllerTest extends ControllerTest {
             testDataSetup.챌린지에_참가한다(challenge, user);
 
             if (i == 6) {
+                testDataSetup.챌린지에_해시태그를_단다(challenge, List.of("tag2", "tag4"));
                 challenge6 = challenge;
             }
         }
@@ -380,6 +382,21 @@ class ChallengeControllerTest extends ControllerTest {
                 .andExpect(jsonPath("$.[*].content", contains(
                         "내용입니다.3", "내용입니다.4", "내용입니다.5", "내용입니다.6")))
                 .andExpect(jsonPath("$.[*].challengeImgUrls").isNotEmpty());
+    }
+
+    @Test
+    @DisplayName("챌린지들을 해시태그들로 찾는 테스트")
+    void searchChallengesByHashtagsTest() throws Exception {
+        initData();
+
+        mockMvc.perform(get("/challenge/hashtags")
+                        .with(requestPostProcessor)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.[*].hashtagId").isNotEmpty())
+                .andExpect(jsonPath("$.[*].hashtagContent", hasItems("tag2", "tag1", "tag3")))
+                .andExpect(jsonPath("$.[*].hashtagTagCount", hasItems(3, 2, 1)))
+                .andExpect(jsonPath("$.[*].recommendedChallenges").isNotEmpty());
     }
 
     @Test

@@ -83,20 +83,11 @@ public class ChallengeControllerDocTest extends RestDocsTest {
                 user);
         testDataSetup.챌린지에_참가한다(challenge1, user);
         testDataSetup.챌린지예_댓글을_단다(challenge1);
-        testDataSetup.챌린지에_해시태그를_단다(challenge1);
+        testDataSetup.챌린지에_해시태그를_단다(challenge1, List.of("tag1", "tag2"));
     }
 
     private void initData() {
-        challenge1 = testDataSetup.챌린지를_생성한다(
-                "제목입니다.1",
-                "내용입니다.1",
-                STUDY.getDescription(),
-                INDOOR.getDescription(),
-                WITHIN_TEN_MINUTES.getDescription(),
-                user);
-        testDataSetup.챌린지에_참가한다(challenge1, user);
-        testDataSetup.챌린지예_댓글을_단다(challenge1);
-        testDataSetup.챌린지에_해시태그를_단다(challenge1);
+        initChallengeData();
 
         Challenge challenge2 = testDataSetup.챌린지를_생성한다(
                 "제목입니다.2",
@@ -107,6 +98,7 @@ public class ChallengeControllerDocTest extends RestDocsTest {
                 user
         );
         testDataSetup.챌린지에_참가한다(challenge2, user);
+        testDataSetup.챌린지에_해시태그를_단다(challenge2, List.of("tag1", "tag2", "tag3"));
 
         Challenge challenge6 = null;
 
@@ -122,6 +114,7 @@ public class ChallengeControllerDocTest extends RestDocsTest {
             testDataSetup.챌린지에_참가한다(challenge, user);
 
             if (i == 6) {
+                testDataSetup.챌린지에_해시태그를_단다(challenge, List.of("tag2", "tag4"));
                 challenge6 = challenge;
             }
         }
@@ -463,6 +456,25 @@ public class ChallengeControllerDocTest extends RestDocsTest {
                                         .attributes(key("constraints").value("0 ~ 3")),
                                 fieldWithPath("challengeLocationIndex").description("챌린지 장소 번호")
                                         .attributes(key("constraints").value("0 ~ 1"))
+                        )
+                ));
+    }
+
+    @Test
+    @DisplayName("챌린지들을 해시태그들로 조회하는 테스트")
+    public void searchChallengesByHashtagsTest() throws Exception {
+        initData();
+
+        mockMvc.perform(get("/challenge/hashtags")
+                        .header(AUTHORIZATION, token)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andDo(restDocs.document(
+                        relaxedResponseFields(
+                                fieldWithPath("[].hashtagId").description("해시태그 ID"),
+                                fieldWithPath("[].hashtagContent").description("해시태그 내용"),
+                                fieldWithPath("[].hashtagTagCount").description("해시태그 개수"),
+                                fieldWithPath("[].recommendedChallenges").description("해당 해시태그를 가지고 있는 챌린지들")
                         )
                 ));
     }

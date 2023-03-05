@@ -81,8 +81,7 @@ public class TestDataSetup {
     }
 
     @Transactional
-    public void 챌린지에_해시태그를_단다(Challenge challenge) {
-        List<String> hashtagDto = List.of("tag1", "tag2");
+    public void 챌린지에_해시태그를_단다(Challenge challenge, List<String> hashtagDto) {
         List<Hashtag> hashtags = hashtagService.saveHashtag(hashtagDto);
         challengeHashtagService.saveChallengeHashtag(challenge, hashtags);
     }

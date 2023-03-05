@@ -31,4 +31,13 @@ public class ResponseRecommendedChallenge {
         this.content = challenge.getContent();
         this.challengeImgUrls = challenge.getImgUrls();
     }
+
+    public static ResponseRecommendedChallenge create(Challenge challenge) {
+        return ResponseRecommendedChallenge.builder()
+                .id(challenge.getId())
+                .title(challenge.getTitle())
+                .content(challenge.getContent())
+                .challengeImgUrls(challenge.getImgUrls())
+                .build();
+    }
 }

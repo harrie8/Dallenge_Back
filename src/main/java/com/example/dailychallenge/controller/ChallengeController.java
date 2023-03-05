@@ -2,6 +2,7 @@ package com.example.dailychallenge.controller;
 
 import com.example.dailychallenge.dto.ChallengeDto;
 import com.example.dailychallenge.dto.ChallengeSearchCondition;
+import com.example.dailychallenge.dto.HashtagChallengesDto;
 import com.example.dailychallenge.dto.HashtagDto;
 import com.example.dailychallenge.entity.challenge.Challenge;
 import com.example.dailychallenge.entity.challenge.ChallengeCategory;
@@ -26,6 +27,8 @@ import com.example.dailychallenge.vo.challenge.ResponseCreateChallenge;
 import com.example.dailychallenge.vo.challenge.ResponseRecommendedChallenge;
 import com.example.dailychallenge.vo.challenge.ResponseUpdateChallenge;
 import com.example.dailychallenge.vo.challenge.ResponseUserChallenge;
+import com.example.dailychallenge.vo.hashtag.ResponseChallengeHashtag;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.validation.Valid;
@@ -135,6 +138,23 @@ public class ChallengeController {
                 challengeCategory, challengeDuration, challengeLocation);
 
         return ResponseEntity.status(HttpStatus.OK).body(recommendedChallenges);
+    }
+
+    @GetMapping("/challenge/hashtags")
+    public ResponseEntity<List<ResponseChallengeHashtag>> searchChallengesByHashtags(
+            @AuthenticationPrincipal org.springframework.security.core.userdetails.User user) {
+
+        List<Hashtag> hashtags = hashtagService.searchThreeMostWrittenHashtags();
+        List<HashtagChallengesDto> hashtagChallengesDtos = challengeHashtagService.searchByHashtags(hashtags);
+
+        List<ResponseChallengeHashtag> responseChallengeHashtags = new ArrayList<>();
+        for (HashtagChallengesDto hashtagChallengesDto : hashtagChallengesDtos) {
+            responseChallengeHashtags.add(
+                    ResponseChallengeHashtag.create(
+                            hashtagChallengesDto.getHashtag(), hashtagChallengesDto.getChallenges()));
+        }
+
+        return ResponseEntity.status(HttpStatus.OK).body(responseChallengeHashtags);
     }
 
     @GetMapping("/challenge/random")
