@@ -5,11 +5,11 @@ import java.io.IOException;
 import org.apache.tomcat.util.http.fileupload.FileUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+import org.springframework.boot.test.context.TestComponent;
 
-@Component
+@TestComponent
 public class TestImgCleanup implements InitializingBean {
-    @Value("${userImgLocation}")
+    @Value("${testImgLocation}")
     private String imgLocationPath;
 
     @Override

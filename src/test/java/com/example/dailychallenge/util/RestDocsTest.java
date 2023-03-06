@@ -7,6 +7,7 @@ import static org.springframework.security.test.web.servlet.setup.SecurityMockMv
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
 import com.example.dailychallenge.entity.users.User;
+import com.example.dailychallenge.util.fixture.TestDataSetup;
 import com.example.dailychallenge.util.fixture.TestImgCleanup;
 import com.example.dailychallenge.utils.JwtTokenUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -39,7 +40,7 @@ import org.springframework.web.filter.CharacterEncodingFilter;
 @AutoConfigureMockMvc
 @AutoConfigureRestDocs(uriScheme = "https", uriHost = "api.dailychallenge.com", uriPort = 443)
 @ExtendWith(RestDocumentationExtension.class)
-@Import(value = {RestDocsConfiguration.class})
+@Import(value = {RestDocsConfiguration.class, TestImgCleanup.class, TestDataSetup.class})
 @TestPropertySource(locations = "classpath:application-test.properties")
 public class RestDocsTest {
     @Autowired
