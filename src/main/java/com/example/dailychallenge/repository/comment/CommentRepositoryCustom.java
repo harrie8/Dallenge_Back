@@ -8,4 +8,5 @@ import org.springframework.data.domain.Pageable;
 public interface CommentRepositoryCustom {
     Page<ResponseChallengeComment> searchCommentsByChallengeId(Long challengeId, Pageable pageable);
     Page<ResponseUserComment> searchCommentsByUserId(Long userId, Pageable pageable);
+    Page<ResponseChallengeComment> searchCommentsByUserIdByChallengeId(Long userId, Long challengeId, Pageable pageable);
 }
