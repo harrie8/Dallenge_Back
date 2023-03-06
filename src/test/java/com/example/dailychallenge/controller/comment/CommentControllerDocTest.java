@@ -394,6 +394,73 @@ public class CommentControllerDocTest {
                 ));
     }
 
+    @Test
+    @DisplayName("특정 챌린지의 유저가 작성한 댓글들 조회 테스트")
+    public void searchCommentsByUserIdByChallengeId() throws Exception {
+        Challenge challenge = createChallenge();
+        User savedUser = challenge.getUsers();
+        for (int i = 0; i < 5; i++) {
+            List<MultipartFile> commentDtoImgFiles = new ArrayList<>();
+            commentDtoImgFiles.add(createMultipartFiles());
+            CommentDto commentDto = CommentDto.builder()
+                    .content("댓글 내용" + i)
+                    .build();
+            commentService.saveComment(commentDto, commentDtoImgFiles, savedUser, challenge);
+        }
+        ChallengeDto challengeDto = ChallengeDto.builder()
+                .title("다른 제목입니다.")
+                .content("다른 내용입니다.")
+                .challengeCategory(ChallengeCategory.STUDY.getDescription())
+                .challengeLocation(ChallengeLocation.INDOOR.getDescription())
+                .challengeDuration(ChallengeDuration.WITHIN_TEN_MINUTES.getDescription())
+                .build();
+        MultipartFile challengeImg = createMultipartFiles();
+        List<MultipartFile> challengeImgFiles = List.of(challengeImg);
+        Challenge otherChallenge = challengeService.saveChallenge(challengeDto, challengeImgFiles, savedUser);
+        for (int i = 5; i < 8; i++) {
+            List<MultipartFile> commentDtoImgFiles = new ArrayList<>();
+            commentDtoImgFiles.add(createMultipartFiles());
+            CommentDto commentDto = CommentDto.builder()
+                    .content("다른 댓글 내용" + i)
+                    .build();
+            commentService.saveComment(commentDto, commentDtoImgFiles, savedUser, otherChallenge);
+        }
+        Long challengeId = challenge.getId();
+
+        String token = generateToken();
+        mockMvc.perform(get("/challenge/{challengeId}/comment", challengeId)
+                        .header(AUTHORIZATION, token)
+                        .param("size", "20")
+                        .param("page", "0")
+                        .param("sort", "time")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andDo(print())
+                .andDo(document("search-comments-by-userId-by-challengeId",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(
+                                removeHeaders("Vary", "X-Content-Type-Options", "X-XSS-Protection", "Pragma", "Expires",
+                                        "Cache-Control", "Strict-Transport-Security", "X-Frame-Options"),
+                                prettyPrint()),
+                        pathParameters(
+                                parameterWithName("challengeId").description("챌린지 아이디")
+                        ),
+                        requestParameters(
+                                parameterWithName("size").description("기본값: 10").optional(),
+                                parameterWithName("page").description("기본값: 0, 0번부터 시작합니다.").optional(),
+                                parameterWithName("sort").description("기본값: time-내림차순").optional()
+                        ),
+                        relaxedResponseFields(
+                                fieldWithPath("content[*].id").description("댓글 id"),
+                                fieldWithPath("content[*].content").description("댓글 내용"),
+                                fieldWithPath("content[*].likes").description("댓글 좋아요 갯수"),
+                                fieldWithPath("content[*].createdAt").description("댓글 생성 시간"),
+                                fieldWithPath("content[*].commentImgUrls").description("댓글 이미지들 url"),
+                                fieldWithPath("content[*].commentOwnerUser").description("댓글 소유자 정보")
+                        )
+                ));
+    }
+
     private String generateToken() {
         Authentication auth = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(EMAIL, PASSWORD));

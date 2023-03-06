@@ -112,3 +112,20 @@ operation::search-comments-by-userId[snippets='http-request,path-parameters,requ
 include::{snippets}/search-comments-by-userId/http-response.adoc[]
 include::{snippets}/search-comments-by-userId/response-fields.adoc[]
 ====
+
+[[Comment-특정-챌린지의-유저가-작성한-댓글들-조회]]
+=== 특정 챌린지의 유저가 작성한 댓글들 조회
+
+- 최근 생성된 순서로 조회하려면 sort=time
+- 좋아요 순서로 조회하려면 sort=likes
+- sort 값을 입력하지 않으면 sort=time이 적용됩니다.
+
+operation::search-comments-by-userId-by-challengeId[snippets='http-request,path-parameters,request-parameters']
+
+==== HTTP response
+
+[%collapsible]
+====
+include::{snippets}/search-comments-by-userId-by-challengeId/http-response.adoc[]
+include::{snippets}/search-comments-by-userId-by-challengeId/response-fields.adoc[]
+====

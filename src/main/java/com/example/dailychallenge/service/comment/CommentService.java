@@ -130,6 +130,12 @@ public class CommentService {
         return commentRepository.searchCommentsByUserId(userId, pageable);
     }
 
+    public Page<ResponseChallengeComment> searchCommentsByUserIdByChallengeId(User user, Challenge challenge, Pageable pageable) {
+        Long userId = user.getId();
+        Long challengeId = challenge.getId();
+        return commentRepository.searchCommentsByUserIdByChallengeId(userId, challengeId, pageable);
+    }
+
     public void validateOwner(User user, Comment comment) {
         if (!comment.isOwner(user.getId())) {
             throw new AuthorizationException();

@@ -120,4 +120,19 @@ public class CommentController {
 
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }
+
+    @GetMapping("/challenge/{challengeId}/comment")
+    public ResponseEntity<Page<ResponseChallengeComment>> searchCommentsByUserIdByChallengeId(
+            @AuthenticationPrincipal org.springframework.security.core.userdetails.User user,
+            @PathVariable Long challengeId,
+            @PageableDefault(page = 0, size = 10, sort = "time", direction = Sort.Direction.DESC) Pageable pageable) {
+
+        String userEmail = user.getUsername();
+        User findUser = userService.findByEmail(userEmail).orElseThrow(UserNotFound::new);
+
+        Challenge challenge = challengeService.findById(challengeId);
+        Page<ResponseChallengeComment> result = commentService.searchCommentsByUserIdByChallengeId(findUser, challenge, pageable);
+
+        return ResponseEntity.status(HttpStatus.OK).body(result);
+    }
 }

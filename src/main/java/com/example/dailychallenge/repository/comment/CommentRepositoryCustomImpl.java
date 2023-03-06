@@ -78,6 +78,41 @@ public class CommentRepositoryCustomImpl implements CommentRepositoryCustom {
         return new PageImpl<>(content, pageable, total);
     }
 
+    @Override
+    public Page<ResponseChallengeComment> searchCommentsByUserIdByChallengeId(Long userId, Long challengeId,
+                                                                              Pageable pageable) {
+
+        List<ResponseChallengeComment> content = queryFactory
+                .select(new QResponseChallengeComment(comment))
+                .from(comment)
+                .leftJoin(comment.challenge, challenge)
+                .leftJoin(comment.users, user)
+                .where(
+                        challengeIdEq(challengeId),
+                        userIdEq(userId)
+                )
+//                .groupBy(userChallenge.challenge)
+                .orderBy(commentSort(pageable))
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+        long total = queryFactory
+                .select(comment)
+                .from(comment)
+                .leftJoin(comment.challenge, challenge)
+                .leftJoin(comment.users, user)
+                .where(
+                        challengeIdEq(challengeId),
+                        userIdEq(userId)
+                )
+//                .groupBy(userChallenge.challenge)
+                .fetch()
+                .size();
+
+        return new PageImpl<>(content, pageable, total);
+    }
+
     private BooleanExpression challengeIdEq(Long challengeId) {
         if (challengeId == null) {
             throw new CommonException("challengeId is Null");
