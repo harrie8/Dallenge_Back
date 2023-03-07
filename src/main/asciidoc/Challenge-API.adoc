@@ -119,7 +119,7 @@ include::{snippets}/challenge-controller-doc-test/search-challenges-by-condition
 [[Challenge-질문으로-챌린지들-추천하기]]
 === 질문으로 챌린지들 추천
 
-operation::challenge-controller-doc-test/search-challenges-by-question-test[snippets='http-request,request-fields']
+operation::challenge-controller-doc-test/search-challenges-by-question-test[snippets='http-request,request-parameters']
 
 .HTTP Response
 [%collapsible]

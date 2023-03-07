@@ -24,7 +24,6 @@ import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuild
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.multipart;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.relaxedResponseFields;
-import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestPartFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
@@ -45,7 +44,6 @@ import com.example.dailychallenge.entity.challenge.ChallengeStatus;
 import com.example.dailychallenge.entity.users.User;
 import com.example.dailychallenge.util.RestDocsTest;
 import com.example.dailychallenge.util.fixture.TestDataSetup;
-import com.example.dailychallenge.vo.challenge.RequestChallengeQuestion;
 import com.example.dailychallenge.vo.challenge.RequestCreateChallenge;
 import com.example.dailychallenge.vo.challenge.RequestUpdateChallenge;
 import java.nio.charset.StandardCharsets;
@@ -434,27 +432,21 @@ public class ChallengeControllerDocTest extends RestDocsTest {
     @DisplayName("챌린지들을 질문으로 조회하는 테스트")
     public void searchChallengesByQuestionTest() throws Exception {
         initData();
-        RequestChallengeQuestion requestChallengeQuestion = RequestChallengeQuestion.builder()
-                .challengeLocationIndex(1)
-                .challengeDurationIndex(0)
-                .challengeCategoryIndex(2)
-                .build();
-
-        String json = objectMapper.writeValueAsString(requestChallengeQuestion);
 
         mockMvc.perform(get("/challenge/question")
                         .header(AUTHORIZATION, token)
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .content(json)
+                        .param("challengeLocationIndex", "1")
+                        .param("challengeDurationIndex", "0")
+                        .param("challengeCategoryIndex", "2")
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andDo(restDocs.document(
-                        requestFields(
-                                fieldWithPath("challengeCategoryIndex").description("챌린지 카테고리 번호")
+                        requestParameters(
+                                parameterWithName("challengeCategoryIndex").description("챌린지 카테고리 번호")
                                         .attributes(key("constraints").value("0 ~ 4")),
-                                fieldWithPath("challengeDurationIndex").description("챌린지 기간 번호")
+                                parameterWithName("challengeDurationIndex").description("챌린지 기간 번호")
                                         .attributes(key("constraints").value("0 ~ 3")),
-                                fieldWithPath("challengeLocationIndex").description("챌린지 장소 번호")
+                                parameterWithName("challengeLocationIndex").description("챌린지 장소 번호").optional()
                                         .attributes(key("constraints").value("0 ~ 1"))
                         )
                 ));
