@@ -90,6 +90,7 @@ public class ChallengeHashtagService {
             List<ChallengeHashtag> challengeHashtagList = hashtagListMap.get(hashtag);
             List<Challenge> challenges = challengeHashtagList.stream()
                     .map(ChallengeHashtag::getChallenge)
+                    .limit(3)
                     .collect(Collectors.toUnmodifiableList());
             hashtagChallengesDtos.add(HashtagChallengesDto.builder()
                     .hashtag(hashtag)
