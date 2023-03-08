@@ -98,6 +98,7 @@ public class UserChallengeService {
             if (userChallenge.getChallengeStatus().equals(ChallengeStatus.SUCCESS)) {
                 res.add(
                         ResponseChallengeByUserChallenge.builder()
+                                .userId(userId)
                                 .challengeId(userChallenge.getChallenge().getId())
                                 .challengeTitle(userChallenge.getChallenge().getTitle())
                                 .challengeContent(userChallenge.getChallenge().getContent())

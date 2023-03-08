@@ -15,7 +15,11 @@ import com.example.dailychallenge.vo.ResponseChallengeByUserChallenge;
 import com.example.dailychallenge.vo.ResponseLoginUser;
 import com.example.dailychallenge.vo.ResponseUser;
 import com.example.dailychallenge.vo.ResponseUserInfo;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -152,13 +156,24 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(userChallenge);
     }
 
-    @GetMapping("/user/participate")
+    @GetMapping("/user/participate") // 내가 작성한 챌린지 + 내가 참여한 챌린지 조회
     public ResponseEntity<List<ResponseChallengeByUserChallenge>> getParticipateChallenge(
             @AuthenticationPrincipal org.springframework.security.core.userdetails.User user){
 
         User getUser = userService.findByEmail(user.getUsername()).orElseThrow(UserNotFound::new);
-        List<ResponseChallengeByUserChallenge> res = userService.getParticipateChallenge(getUser.getId());
-        return ResponseEntity.status(HttpStatus.OK).body(res);
+        List<ResponseChallengeByUserChallenge> participateChallenges = userService.getParticipateChallenge(getUser.getId());
+
+        List<ResponseChallengeByUserChallenge> challengesCreatedByMe = userService.getChallengeByUser(getUser.getId());
+
+        List<ResponseChallengeByUserChallenge> concat = new ArrayList<>();
+        concat.addAll(participateChallenges);
+        concat.addAll(challengesCreatedByMe);
+
+        Set<ResponseChallengeByUserChallenge> set = new HashSet<>(concat);
+        List<ResponseChallengeByUserChallenge> result = new ArrayList<>(set);
+        result.sort(Comparator.comparing(ResponseChallengeByUserChallenge::getCreatedAt));
+
+        return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 
     /**
