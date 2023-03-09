@@ -7,8 +7,10 @@ import static com.example.dailychallenge.entity.users.QUser.user;
 import com.example.dailychallenge.exception.CommonException;
 import com.example.dailychallenge.repository.challenge.OrderByNull;
 import com.example.dailychallenge.vo.QResponseChallengeComment;
+import com.example.dailychallenge.vo.QResponseChallengeCommentImg;
 import com.example.dailychallenge.vo.QResponseUserComment;
 import com.example.dailychallenge.vo.ResponseChallengeComment;
+import com.example.dailychallenge.vo.ResponseChallengeCommentImg;
 import com.example.dailychallenge.vo.ResponseUserComment;
 import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
@@ -79,11 +81,11 @@ public class CommentRepositoryCustomImpl implements CommentRepositoryCustom {
     }
 
     @Override
-    public Page<ResponseChallengeComment> searchCommentsByUserIdByChallengeId(Long userId, Long challengeId,
-                                                                              Pageable pageable) {
+    public Page<ResponseChallengeCommentImg> searchCommentsByUserIdByChallengeId(Long userId, Long challengeId,
+                                                                                 Pageable pageable) {
 
-        List<ResponseChallengeComment> content = queryFactory
-                .select(new QResponseChallengeComment(comment))
+        List<ResponseChallengeCommentImg> content = queryFactory
+                .select(new QResponseChallengeCommentImg(comment))
                 .from(comment)
                 .leftJoin(comment.challenge, challenge)
                 .leftJoin(comment.users, user)

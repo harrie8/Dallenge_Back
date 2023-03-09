@@ -395,7 +395,7 @@ public class CommentControllerDocTest {
     }
 
     @Test
-    @DisplayName("특정 챌린지의 유저가 작성한 댓글들 조회 테스트")
+    @DisplayName("특정 챌린지의 유저가 작성한 댓글들 이미지 조회 테스트")
     public void searchCommentsByUserIdByChallengeId() throws Exception {
         Challenge challenge = createChallenge();
         User savedUser = challenge.getUsers();
@@ -452,11 +452,7 @@ public class CommentControllerDocTest {
                         ),
                         relaxedResponseFields(
                                 fieldWithPath("content[*].id").description("댓글 id"),
-                                fieldWithPath("content[*].content").description("댓글 내용"),
-                                fieldWithPath("content[*].likes").description("댓글 좋아요 갯수"),
-                                fieldWithPath("content[*].createdAt").description("댓글 생성 시간"),
-                                fieldWithPath("content[*].commentImgUrls").description("댓글 이미지들 url"),
-                                fieldWithPath("content[*].commentOwnerUser").description("댓글 소유자 정보")
+                                fieldWithPath("content[*].commentImgUrls").description("댓글 이미지들 url")
                         )
                 ));
     }

@@ -16,6 +16,7 @@ import com.example.dailychallenge.repository.CommentRepository;
 import com.example.dailychallenge.repository.UserRepository;
 import com.example.dailychallenge.util.RepositoryTest;
 import com.example.dailychallenge.vo.ResponseChallengeComment;
+import com.example.dailychallenge.vo.ResponseChallengeCommentImg;
 import com.example.dailychallenge.vo.ResponseUserComment;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -200,25 +201,18 @@ class CommentRepositoryCustomImplTest extends RepositoryTest {
         }
         PageRequest pageRequest = PageRequest.of(0, 10, Sort.by("likes").descending());
 
-        Page<ResponseChallengeComment> results = commentRepository.searchCommentsByUserIdByChallengeId(
+        Page<ResponseChallengeCommentImg> results = commentRepository.searchCommentsByUserIdByChallengeId(
                 savedUser.getId(), challenge.getId(), pageRequest);
 
         assertAll(() -> {
             assertThat(results).extracting("id").isNotEmpty();
-            assertThat(results).extracting("content")
-                    .containsExactly("댓글 내용5", "댓글 내용6", "댓글 내용7", "댓글 내용8", "댓글 내용9");
-            assertThat(results).extracting("likes").containsOnly(0);
-            assertThat(results).extracting("createdAt").isNotEmpty();
             assertThat(results).extracting("commentImgUrls")
-                    .containsExactly(List.of("images/test.png5"), List.of("images/test.png6"),
-                            List.of("images/test.png7"), List.of("images/test.png8"),
+                    .containsExactly(
+                            List.of("images/test.png5"),
+                            List.of("images/test.png6"),
+                            List.of("images/test.png7"),
+                            List.of("images/test.png8"),
                             List.of("images/test.png9"));
-            assertThat(results).extracting("commentOwnerUser").extracting("userName")
-                    .containsOnly(savedUser.getUserName());
-            assertThat(results).extracting("commentOwnerUser").extracting("email")
-                    .containsOnly(savedUser.getEmail());
-            assertThat(results).extracting("commentOwnerUser").extracting("userId")
-                    .containsOnly(savedUser.getId());
         });
     }
 }
