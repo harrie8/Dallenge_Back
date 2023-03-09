@@ -7,10 +7,13 @@ import com.example.dailychallenge.vo.challenge.ResponseChallenge;
 import com.example.dailychallenge.vo.challenge.ResponseRecommendedChallenge;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface ChallengeRepositoryCustom {
 
     Optional<ResponseChallenge> searchChallengeById(Long challengeId);
+    Page<ResponseChallenge> searchChallengeByHashtag(String content, Pageable pageable);
 
     List<ResponseRecommendedChallenge> searchChallengesByQuestion(ChallengeCategory challengeCategory,
                                                                   ChallengeDuration challengeDuration,

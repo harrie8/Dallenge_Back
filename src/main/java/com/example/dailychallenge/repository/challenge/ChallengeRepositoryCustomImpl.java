@@ -6,17 +6,22 @@ import static com.example.dailychallenge.entity.challenge.QUserChallenge.userCha
 import com.example.dailychallenge.entity.challenge.ChallengeCategory;
 import com.example.dailychallenge.entity.challenge.ChallengeDuration;
 import com.example.dailychallenge.entity.challenge.ChallengeLocation;
+import com.example.dailychallenge.entity.hashtag.QChallengeHashtag;
 import com.example.dailychallenge.exception.CommonException;
 import com.example.dailychallenge.vo.challenge.QResponseChallenge;
 import com.example.dailychallenge.vo.challenge.QResponseRecommendedChallenge;
 import com.example.dailychallenge.vo.challenge.ResponseChallenge;
 import com.example.dailychallenge.vo.challenge.ResponseRecommendedChallenge;
+import com.querydsl.core.QueryResults;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.List;
 import java.util.Optional;
 import javax.persistence.EntityManager;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 
 public class ChallengeRepositoryCustomImpl implements
         ChallengeRepositoryCustom {
@@ -38,6 +43,19 @@ public class ChallengeRepositoryCustomImpl implements
                 .groupBy(userChallenge.challenge)
                 .fetchOne();
         return Optional.ofNullable(responseChallenge);
+    }
+
+    @Override
+    public Page<ResponseChallenge> searchChallengeByHashtag(String content, Pageable pageable) {
+        QueryResults<ResponseChallenge> results = queryFactory
+                .select(new QResponseChallenge(challenge))
+                .from(QChallengeHashtag.challengeHashtag)
+                .where(QChallengeHashtag.challengeHashtag.hashtag.content.eq(content))
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetchResults();
+        List<ResponseChallenge> responseChallenges = results.getResults();
+        return new PageImpl<>(responseChallenges,pageable,results.getTotal());
     }
 
     @Override

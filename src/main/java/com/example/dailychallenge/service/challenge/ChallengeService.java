@@ -16,6 +16,8 @@ import com.example.dailychallenge.vo.challenge.ResponseChallenge;
 import com.example.dailychallenge.vo.challenge.ResponseRecommendedChallenge;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -96,5 +98,10 @@ public class ChallengeService {
         if (!challenge.isOwner(user.getId())) {
             throw new AuthorizationException();
         }
+    }
+
+    @Transactional(readOnly = true)
+    public Page<ResponseChallenge> searchChallengeByHashtag(String content, Pageable pageable){
+        return challengeRepository.searchChallengeByHashtag(content, pageable);
     }
 }
