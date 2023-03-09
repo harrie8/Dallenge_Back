@@ -161,9 +161,11 @@ class UserChallengeControllerTest extends ControllerTest {
                         .with(requestPostProcessor)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].userId").value(user.getId()))
                 .andExpect(jsonPath("$[0].challengeId").value(challenge1.getId()))
                 .andExpect(jsonPath("$[0].challengeTitle").value(challenge1.getTitle()))
                 .andExpect(jsonPath("$[0].challengeContent").value(challenge1.getContent()))
-                .andExpect(jsonPath("$[0].challengeStatus").value(userChallenge.getChallengeStatus().toString()));
+                .andExpect(jsonPath("$[0].challengeStatus").value(userChallenge.getChallengeStatus().toString()))
+                .andExpect(jsonPath("$[0].createdAt").isNotEmpty());
     }
 }

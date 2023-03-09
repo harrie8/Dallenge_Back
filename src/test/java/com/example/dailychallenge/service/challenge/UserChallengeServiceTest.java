@@ -7,6 +7,7 @@ import static com.example.dailychallenge.util.fixture.user.UserFixture.OTHER_EMA
 import static com.example.dailychallenge.util.fixture.user.UserFixture.OTHER_USERNAME;
 import static com.example.dailychallenge.util.fixture.user.UserFixture.USERNAME;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -118,10 +119,12 @@ public class UserChallengeServiceTest extends ServiceTest {
             userChallengeService.succeedInChallenge(user.getId(), challenge.getId());
 
             List<ResponseChallengeByUserChallenge> userChallenges = userChallengeService.getTodayUserChallenge(user.getId());
+            assertEquals(userChallenges.get(0).getUserId(),user.getId());
             assertEquals(userChallenges.get(0).getChallengeId(),challenge.getId());
             assertEquals(userChallenges.get(0).getChallengeTitle(),challenge.getTitle());
             assertEquals(userChallenges.get(0).getChallengeContent(),challenge.getContent());
             assertEquals(userChallenges.get(0).getChallengeStatus().getDescription(),"성공");
+            assertNotNull(userChallenges.get(0).getCreatedAt());
         }
 
     }

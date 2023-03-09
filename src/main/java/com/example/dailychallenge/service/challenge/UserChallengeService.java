@@ -103,6 +103,7 @@ public class UserChallengeService {
                                 .challengeTitle(userChallenge.getChallenge().getTitle())
                                 .challengeContent(userChallenge.getChallenge().getContent())
                                 .challengeStatus(userChallenge.getChallengeStatus())
+                                .createdAt(userChallenge.getCreated_at())
                                 .build()
                 );
             }
