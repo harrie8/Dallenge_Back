@@ -29,12 +29,14 @@ import com.example.dailychallenge.vo.challenge.ResponseUserChallenge;
 import com.example.dailychallenge.vo.hashtag.ResponseChallengeHashtag;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.validator.constraints.Range;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
@@ -78,7 +80,6 @@ public class ChallengeController {
 
         Challenge challenge = challengeService.saveChallenge(challengeDto, challengeImgFiles, findUser);
         UserChallenge userChallenge = userChallengeService.saveUserChallenge(challenge, findUser);
-        userChallenge.challengeParticipate();
 
         if (hashtagDto != null) {
             List<String> hashtagContents = hashtagDto.getContent();
@@ -207,5 +208,13 @@ public class ChallengeController {
         challengeService.deleteChallenge(challengeId, findUser);
 
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping(value = {"/challenge/hashtag","/challenge/hashtag/{page}"})
+    public ResponseEntity<?> searchHashtag(@RequestParam("content") String content,
+                                           @PathVariable("page") Optional<Integer> page){
+        Pageable pageable = PageRequest.of(page.isPresent() ? page.get() : 0,10);
+        Page<ResponseChallenge> challenges = challengeService.searchChallengeByHashtag(content,pageable);
+        return ResponseEntity.status(HttpStatus.OK).body(challenges);
     }
 }

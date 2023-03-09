@@ -114,7 +114,7 @@ include::{snippets}/search-comments-by-userId/response-fields.adoc[]
 ====
 
 [[Comment-특정-챌린지의-유저가-작성한-댓글들-조회]]
-=== 특정 챌린지의 유저가 작성한 댓글들 조회
+=== 특정 챌린지의 유저가 작성한 댓글들 이미지 조회
 
 - 최근 생성된 순서로 조회하려면 sort=time
 - 좋아요 순서로 조회하려면 sort=likes

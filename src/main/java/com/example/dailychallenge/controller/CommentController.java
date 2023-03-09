@@ -9,6 +9,7 @@ import com.example.dailychallenge.service.challenge.ChallengeService;
 import com.example.dailychallenge.service.comment.CommentService;
 import com.example.dailychallenge.service.users.UserService;
 import com.example.dailychallenge.vo.ResponseChallengeComment;
+import com.example.dailychallenge.vo.ResponseChallengeCommentImg;
 import com.example.dailychallenge.vo.ResponseComment;
 import com.example.dailychallenge.vo.ResponseUserComment;
 import java.util.HashMap;
@@ -122,7 +123,7 @@ public class CommentController {
     }
 
     @GetMapping("/challenge/{challengeId}/comment")
-    public ResponseEntity<Page<ResponseChallengeComment>> searchCommentsByUserIdByChallengeId(
+    public ResponseEntity<Page<ResponseChallengeCommentImg>> searchCommentsByUserIdByChallengeId(
             @AuthenticationPrincipal org.springframework.security.core.userdetails.User user,
             @PathVariable Long challengeId,
             @PageableDefault(page = 0, size = 10, sort = "time", direction = Sort.Direction.DESC) Pageable pageable) {
@@ -131,7 +132,7 @@ public class CommentController {
         User findUser = userService.findByEmail(userEmail).orElseThrow(UserNotFound::new);
 
         Challenge challenge = challengeService.findById(challengeId);
-        Page<ResponseChallengeComment> result = commentService.searchCommentsByUserIdByChallengeId(findUser, challenge, pageable);
+        Page<ResponseChallengeCommentImg> result = commentService.searchCommentsByUserIdByChallengeId(findUser, challenge, pageable);
 
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }

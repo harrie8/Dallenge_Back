@@ -277,7 +277,7 @@ class CommentControllerTest extends ControllerTest {
     }
 
     @Test
-    @DisplayName("특정 챌린지의 유저가 작성한 댓글들 조회 테스트")
+    @DisplayName("특정 챌린지의 유저가 작성한 댓글들 이미지 조회 테스트")
     public void searchCommentsByUserIdByChallengeId() throws Exception {
         Challenge challenge = createChallenge();
         User savedUser = challenge.getUsers();
@@ -315,17 +315,7 @@ class CommentControllerTest extends ControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content", hasSize(5)))
                 .andExpect(jsonPath("$.content[*].id").isNotEmpty())
-                .andExpect(jsonPath("$.content[*].content",
-                        contains("댓글 내용4", "댓글 내용3", "댓글 내용2", "댓글 내용1", "댓글 내용0")))
-                .andExpect(jsonPath("$.content[*].likes", hasItems(0)))
-                .andExpect(jsonPath("$.content[*].createdAt", hasItem("오늘")))
                 .andExpect(jsonPath("$.content[*].commentImgUrls",
-                        hasItems(hasItem(startsWith("/images/")))))
-                .andExpect(jsonPath("$.content[*].commentOwnerUser.userName",
-                        hasItems(savedUser.getUserName())))
-                .andExpect(jsonPath("$.content[*].commentOwnerUser.email",
-                        hasItems(savedUser.getEmail())))
-                .andExpect(jsonPath("$.content[*].commentOwnerUser.userId",
-                        hasItems(savedUser.getId().intValue())));
+                        hasItems(hasItem(startsWith("/images/")))));
     }
 }

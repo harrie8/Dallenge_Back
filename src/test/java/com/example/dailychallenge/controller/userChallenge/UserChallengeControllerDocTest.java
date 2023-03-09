@@ -209,10 +209,12 @@ public class UserChallengeControllerDocTest extends RestDocsTest {
                 .andExpect(jsonPath("$[0].challengeStatus").value(userChallenge.getChallengeStatus().toString()))
                 .andDo(restDocs.document(
                         responseFields(
+                                fieldWithPath("[].userId").description("유저 ID"),
                                 fieldWithPath("[].challengeId").description("성공한 챌린지 ID"),
                                 fieldWithPath("[].challengeTitle").description("성공한 챌린지 제목"),
                                 fieldWithPath("[].challengeContent").description("성공한 챌린지 내용"),
-                                fieldWithPath("[].challengeStatus").description("성공한 챌린지 상태")
+                                fieldWithPath("[].challengeStatus").description("성공한 챌린지 상태"),
+                                fieldWithPath("[].createdAt").description("챌린지 생성 시간")
                         )
                 ));
     }
