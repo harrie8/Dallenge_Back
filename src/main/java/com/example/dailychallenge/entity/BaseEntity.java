@@ -36,4 +36,8 @@ public class BaseEntity {
 
         return timeConverter.makeSpecificCreatedAt(created_at);
     }
+
+    public String getMonthDayFormatCreatedAt() {
+        return created_at.format(DateTimeFormatter.ofPattern("MM/dd"));
+    }
 }

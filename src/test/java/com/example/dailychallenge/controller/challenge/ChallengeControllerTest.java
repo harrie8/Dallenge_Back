@@ -74,7 +74,7 @@ class ChallengeControllerTest extends ControllerTest {
                 WITHIN_TEN_MINUTES.getDescription(),
                 user);
         testDataSetup.챌린지에_참가한다(challenge1, user);
-        testDataSetup.챌린지예_댓글을_단다(challenge1);
+        testDataSetup.챌린지예_댓글을_단다(challenge1, user);
         testDataSetup.챌린지에_해시태그를_단다(challenge1, List.of("tag1", "tag2"));
     }
 

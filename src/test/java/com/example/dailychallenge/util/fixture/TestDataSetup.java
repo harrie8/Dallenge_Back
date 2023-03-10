@@ -4,6 +4,7 @@ import static com.example.dailychallenge.util.fixture.challenge.ChallengeImgFixt
 
 import com.example.dailychallenge.dto.ChallengeDto;
 import com.example.dailychallenge.entity.challenge.Challenge;
+import com.example.dailychallenge.entity.challenge.UserChallenge;
 import com.example.dailychallenge.entity.comment.Comment;
 import com.example.dailychallenge.entity.hashtag.Hashtag;
 import com.example.dailychallenge.entity.users.User;
@@ -67,22 +68,30 @@ public class TestDataSetup {
     }
 
     @Transactional
-    public void 챌린지에_참가한다(Challenge challenge, User user) {
-        userChallengeService.saveUserChallenge(challenge, user);
+    public UserChallenge 챌린지에_참가한다(Challenge challenge, User user) {
+        return userChallengeService.saveUserChallenge(challenge, user);
     }
 
     @Transactional
-    public void 챌린지예_댓글을_단다(Challenge challenge) {
+    public Comment 챌린지예_댓글을_단다(Challenge challenge, User user) {
         Comment comment = Comment.builder()
                 .content("content")
                 .build();
         comment.saveCommentChallenge(challenge);
-        commentRepository.save(comment);
+        comment.saveCommentUser(user);
+        return commentRepository.save(comment);
     }
 
     @Transactional
     public void 챌린지에_해시태그를_단다(Challenge challenge, List<String> hashtagDto) {
         List<Hashtag> hashtags = hashtagService.saveHashtag(hashtagDto);
         challengeHashtagService.saveChallengeHashtag(challenge, hashtags);
+    }
+
+    @Transactional
+    public void 챌린지를_달성한다(UserChallenge userChallenge) {
+        User user = userChallenge.getUsers();
+        Challenge challenge = userChallenge.getChallenge();
+        userChallengeService.succeedInChallenge(user.getId(), challenge.getId());
     }
 }

@@ -1,5 +1,6 @@
 package com.example.dailychallenge.service.users;
 
+import static com.example.dailychallenge.util.fixture.challenge.ChallengeFixture.createChallengeDto;
 import static com.example.dailychallenge.util.fixture.user.UserFixture.createOtherUser;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -9,13 +10,20 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.example.dailychallenge.dto.UserDto;
+import com.example.dailychallenge.entity.challenge.Challenge;
+import com.example.dailychallenge.entity.challenge.UserChallenge;
+import com.example.dailychallenge.entity.comment.Comment;
 import com.example.dailychallenge.entity.users.User;
 import com.example.dailychallenge.exception.AuthorizationException;
 import com.example.dailychallenge.exception.users.UserDuplicateNotCheck;
 import com.example.dailychallenge.exception.users.UserNotFound;
 import com.example.dailychallenge.repository.UserImgRepository;
 import com.example.dailychallenge.repository.UserRepository;
+import com.example.dailychallenge.util.fixture.TestDataSetup;
 import com.example.dailychallenge.vo.RequestUpdateUser;
+import com.example.dailychallenge.vo.ResponseChallengeByUserChallenge;
+import java.util.ArrayList;
+import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -23,6 +31,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.TestPropertySource;
@@ -33,6 +42,7 @@ import org.springframework.web.multipart.MultipartFile;
 @Transactional
 @AutoConfigureMockMvc
 @TestPropertySource(locations = "classpath:application-test.properties")
+@Import({TestDataSetup.class})
 class UserServiceTest {
 
     @Autowired
@@ -43,10 +53,13 @@ class UserServiceTest {
     private UserImgRepository userImgRepository;
 
     @Autowired
-    PasswordEncoder passwordEncoder;
+    private PasswordEncoder passwordEncoder;
 
     @Value("${userImgLocation}")
     private String userImgLocation;
+
+    @Autowired
+    private TestDataSetup testDataSetup;
 
 
     public UserDto createUser(){
@@ -183,5 +196,38 @@ class UserServiceTest {
                     .isInstanceOf(AuthorizationException.class)
                     .hasMessage("권한이 없습니다.");
         }
+    }
+
+    @Test
+    @DisplayName("유저가 작성한 챌린지들 조회 테스트")
+    void getChallengeByUserTest() {
+        User user = userService.saveUser(createUser(), passwordEncoder);
+        List<Challenge> challenges = new ArrayList<>();
+        List<UserChallenge> userChallenges = new ArrayList<>();
+        List<Comment> comments = new ArrayList<>();
+        for (int i = 0; i < 5; i++) {
+            Challenge challenge = testDataSetup.챌린지를_생성한다(createChallengeDto(), user);
+            UserChallenge userChallenge = testDataSetup.챌린지에_참가한다(challenge, user);
+            Comment comment = testDataSetup.챌린지예_댓글을_단다(challenge, user);
+
+            challenges.add(challenge);
+            userChallenges.add(userChallenge);
+            comments.add(comment);
+        }
+        Long userId = user.getId();
+
+        List<ResponseChallengeByUserChallenge> result = userService.getChallengeByUser(userId);
+
+        assertEquals(userId, result.get(0).getUserId());
+        assertEquals(challenges.get(0).getId(), result.get(0).getChallengeId());
+        assertEquals(challenges.get(0).getTitle(), result.get(0).getChallengeTitle());
+        assertEquals(challenges.get(0).getContent(), result.get(0).getChallengeContent());
+        assertEquals(userChallenges.get(0).getChallengeStatus(), result.get(0).getChallengeStatus());
+        assertEquals(challenges.get(0).getCreated_at(), result.get(0).getCreatedAt());
+        assertEquals(challenges.get(0).getCreated_at(), result.get(0).getCreatedAt());
+        assertEquals(comments.get(0).getId(), result.get(0).getComments().get(0).getCommentId());
+        assertEquals(comments.get(0).getContent(), result.get(0).getComments().get(0).getCommentContent());
+        assertEquals(comments.get(0).getImgUrls(), result.get(0).getComments().get(0).getCommentImgs());
+        assertEquals(comments.get(0).getMonthDayFormatCreatedAt(), result.get(0).getComments().get(0).getCommentCreatedAt());
     }
 }

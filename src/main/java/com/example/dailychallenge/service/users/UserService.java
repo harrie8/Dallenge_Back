@@ -156,6 +156,7 @@ public class UserService implements UserDetailsService {
                                 .challengeContent(userChallenge.getChallenge().getContent())
                                 .challengeStatus(userChallenge.getChallengeStatus())
                                 .createdAt(userChallenge.getChallenge().getCreated_at())
+                                .comments(userChallenge.getChallenge().getComments())
                                 .build()
                 );
             }

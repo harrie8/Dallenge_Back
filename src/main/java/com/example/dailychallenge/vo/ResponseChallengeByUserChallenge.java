@@ -1,7 +1,9 @@
 package com.example.dailychallenge.vo;
 
 import com.example.dailychallenge.entity.challenge.ChallengeStatus;
+import com.example.dailychallenge.entity.comment.Comment;
 import java.time.LocalDateTime;
+import java.util.List;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import lombok.Builder;
@@ -18,11 +20,12 @@ public class ResponseChallengeByUserChallenge {
     @Enumerated(value = EnumType.STRING)
     private ChallengeStatus challengeStatus;
     private LocalDateTime createdAt;
+    private List<ResponseCommentInfo> comments;
 
     @Builder
     public ResponseChallengeByUserChallenge(Long userId, Long challengeId, String challengeTitle,
                                             String challengeContent, ChallengeStatus challengeStatus,
-                                            LocalDateTime createdAt) {
+                                            LocalDateTime createdAt, List<Comment> comments) {
 
         this.userId = userId;
         this.challengeId = challengeId;
@@ -30,5 +33,6 @@ public class ResponseChallengeByUserChallenge {
         this.challengeContent = challengeContent;
         this.challengeStatus = challengeStatus;
         this.createdAt = createdAt;
+        this.comments = ResponseCommentInfo.convert(comments);
     }
 }

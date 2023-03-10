@@ -53,11 +53,19 @@ public class Comment extends BaseEntity {
     }
 
     public void saveCommentUser(User user) {
+        if (user.getComments().contains(this)) {
+            user.getComments().remove(this);
+        }
         this.users = user;
+        user.getComments().add(this);
     }
 
     public void saveCommentChallenge(Challenge challenge) {
+        if (challenge.getComments().contains(this)) {
+            challenge.getComments().remove(this);
+        }
         this.challenge = challenge;
+        challenge.getComments().add(this);
     }
 
     public void addCommentImg(CommentImg commentImg) {
