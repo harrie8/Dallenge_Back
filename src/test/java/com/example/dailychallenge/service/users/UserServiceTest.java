@@ -224,10 +224,46 @@ class UserServiceTest {
         assertEquals(challenges.get(0).getContent(), result.get(0).getChallengeContent());
         assertEquals(userChallenges.get(0).getChallengeStatus(), result.get(0).getChallengeStatus());
         assertEquals(challenges.get(0).getCreated_at(), result.get(0).getCreatedAt());
-        assertEquals(challenges.get(0).getCreated_at(), result.get(0).getCreatedAt());
         assertEquals(comments.get(0).getId(), result.get(0).getComments().get(0).getCommentId());
         assertEquals(comments.get(0).getContent(), result.get(0).getComments().get(0).getCommentContent());
         assertEquals(comments.get(0).getImgUrls(), result.get(0).getComments().get(0).getCommentImgs());
-        assertEquals(comments.get(0).getMonthDayFormatCreatedAt(), result.get(0).getComments().get(0).getCommentCreatedAt());
+        assertEquals(comments.get(0).getMonthDayFormatCreatedAt(),
+                result.get(0).getComments().get(0).getCommentCreatedAt());
+    }
+
+    @Test
+    @DisplayName("유저가 참여한 챌린지들 조회 테스트")
+    void getParticipateChallengeTest() {
+        User user = userService.saveUser(createUser(), passwordEncoder);
+        User otherUser = userService.saveUser(createOtherUser(), passwordEncoder);
+
+        List<Challenge> challenges = new ArrayList<>();
+        List<UserChallenge> userChallenges = new ArrayList<>();
+        List<Comment> comments = new ArrayList<>();
+        for (int i = 0; i < 5; i++) {
+            Challenge otherUserChallenge = testDataSetup.챌린지를_생성한다(createChallengeDto(), otherUser);
+            testDataSetup.챌린지에_참가한다(otherUserChallenge, otherUser);
+            UserChallenge userChallenge = testDataSetup.챌린지에_참가한다(otherUserChallenge, user);
+            Comment comment = testDataSetup.챌린지예_댓글을_단다(otherUserChallenge, user);
+
+            challenges.add(otherUserChallenge);
+            userChallenges.add(userChallenge);
+            comments.add(comment);
+        }
+        Long userId = user.getId();
+
+        List<ResponseChallengeByUserChallenge> result = userService.getParticipateChallenge(userId);
+
+        assertEquals(userId, result.get(0).getUserId());
+        assertEquals(challenges.get(0).getId(), result.get(0).getChallengeId());
+        assertEquals(challenges.get(0).getTitle(), result.get(0).getChallengeTitle());
+        assertEquals(challenges.get(0).getContent(), result.get(0).getChallengeContent());
+        assertEquals(userChallenges.get(0).getChallengeStatus(), result.get(0).getChallengeStatus());
+        assertEquals(userChallenges.get(0).getCreated_at(), result.get(0).getCreatedAt());
+        assertEquals(comments.get(0).getId(), result.get(0).getComments().get(0).getCommentId());
+        assertEquals(comments.get(0).getContent(), result.get(0).getComments().get(0).getCommentContent());
+        assertEquals(comments.get(0).getImgUrls(), result.get(0).getComments().get(0).getCommentImgs());
+        assertEquals(comments.get(0).getMonthDayFormatCreatedAt(),
+                result.get(0).getComments().get(0).getCommentCreatedAt());
     }
 }
