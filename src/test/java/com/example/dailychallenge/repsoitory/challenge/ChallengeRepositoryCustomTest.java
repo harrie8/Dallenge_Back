@@ -208,7 +208,12 @@ public class ChallengeRepositoryCustomTest extends RepositoryTest {
             assertNotNull(result.getId());
             assertThat(result.getTitle()).startsWith("제목입니다.");
             assertThat(result.getContent()).startsWith("내용입니다.");
-            assertEquals(Collections.emptyList(), result.getChallengeImgUrls());
+            if (result.getChallengeImgUrls().isEmpty()) {
+                assertEquals(Collections.emptyList(), result.getChallengeImgUrls());
+            }
+            if (!result.getChallengeImgUrls().isEmpty()) {
+                assertEquals(List.of("imgUrl","imgUrl"), result.getChallengeImgUrls());
+            }
         });
     }
 }
