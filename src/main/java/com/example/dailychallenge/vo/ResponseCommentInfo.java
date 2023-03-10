@@ -27,14 +27,23 @@ public class ResponseCommentInfo {
     public static List<ResponseCommentInfo> convert(List<Comment> comments) {
         List<ResponseCommentInfo> result = new ArrayList<>();
         for (Comment comment : comments) {
+            String commentContent = makeCommentContent(comment);
             ResponseCommentInfo responseCommentInfo = ResponseCommentInfo.builder()
                     .commentId(comment.getId())
-                    .commentContent(comment.getContent())
+                    .commentContent(commentContent)
                     .commentImgs(comment.getImgUrls())
                     .commentCreatedAt(comment.getMonthDayFormatCreatedAt())
                     .build();
             result.add(responseCommentInfo);
         }
         return result;
+    }
+
+    private static String makeCommentContent(Comment comment) {
+        String commentContent = comment.getContent();
+        if (commentContent == null) {
+            commentContent = "";
+        }
+        return commentContent;
     }
 }

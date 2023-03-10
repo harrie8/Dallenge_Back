@@ -4,12 +4,16 @@ import static com.example.dailychallenge.util.fixture.TokenFixture.AUTHORIZATION
 import static com.example.dailychallenge.util.fixture.TokenFixture.EMAIL;
 import static com.example.dailychallenge.util.fixture.TokenFixture.PASSWORD;
 import static com.example.dailychallenge.util.fixture.TokenFixture.TOKEN_PREFIX;
+import static com.example.dailychallenge.util.fixture.user.UserFixture.USERNAME;
+import static com.example.dailychallenge.util.fixture.user.UserFixture.getRequestPostProcessor;
+import static org.hamcrest.Matchers.contains;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.example.dailychallenge.dto.ChallengeDto;
@@ -19,14 +23,16 @@ import com.example.dailychallenge.entity.challenge.ChallengeCategory;
 import com.example.dailychallenge.entity.challenge.ChallengeDuration;
 import com.example.dailychallenge.entity.challenge.ChallengeLocation;
 import com.example.dailychallenge.entity.challenge.UserChallenge;
+import com.example.dailychallenge.entity.comment.Comment;
+import com.example.dailychallenge.entity.comment.CommentImg;
 import com.example.dailychallenge.entity.users.User;
 import com.example.dailychallenge.exception.users.UserDuplicateCheck;
 import com.example.dailychallenge.exception.users.UserDuplicateNotCheck;
 import com.example.dailychallenge.exception.users.UserPasswordCheck;
-import com.example.dailychallenge.repository.UserRepository;
 import com.example.dailychallenge.service.challenge.ChallengeService;
 import com.example.dailychallenge.service.challenge.UserChallengeService;
 import com.example.dailychallenge.service.users.UserService;
+import com.example.dailychallenge.util.fixture.TestDataSetup;
 import com.example.dailychallenge.utils.JwtTokenUtil;
 import com.example.dailychallenge.vo.RequestUpdateUser;
 import com.example.dailychallenge.vo.RequestUser;
@@ -40,6 +46,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -56,11 +63,10 @@ import org.springframework.web.multipart.MultipartFile;
 @Transactional
 @AutoConfigureMockMvc
 @TestPropertySource(locations = "classpath:application-test.properties")
+@Import({TestDataSetup.class})
 class UserControllerTest {
     @Autowired
-    UserRepository userRepository;
-    @Autowired
-    PasswordEncoder passwordEncoder;
+    private PasswordEncoder passwordEncoder;
     @Autowired
     private UserService userService;
     @Autowired
@@ -75,6 +81,9 @@ class UserControllerTest {
     private AuthenticationManager authenticationManager;
     @Autowired
     private JwtTokenUtil jwtTokenUtil;
+
+    @Autowired
+    private TestDataSetup testDataSetup;
 
     public UserDto createUser() {
         UserDto userDto = new UserDto();
@@ -308,16 +317,29 @@ class UserControllerTest {
     public void getParticipateChallenge() throws Exception {
         Challenge challenge = createChallenge2();
 
-        User savedUser = userService.saveUser(createUser(), passwordEncoder);
+        User savedUser = testDataSetup.saveUser(USERNAME, EMAIL, PASSWORD);
 
-        UserChallenge savedUserChallenge = userChallengeService.saveUserChallenge(challenge, savedUser);
-        userChallengeService.challengeParticipate(savedUserChallenge);
+        UserChallenge userChallenge = testDataSetup.챌린지에_참가한다(challenge, savedUser);
+        Comment comment = testDataSetup.챌린지예_댓글을_단다(challenge, savedUser, "content");
+        CommentImg commentImg1 = testDataSetup.댓글에_이미지를_추가한다(comment);
+        CommentImg commentImg2 = testDataSetup.댓글에_이미지를_추가한다(comment);
+        testDataSetup.챌린지예_댓글을_단다(challenge, savedUser, null);
 
-        String token = generateToken();
         mockMvc.perform(get("/user/participate")
-                        .header(AUTHORIZATION, token)
+                        .with(getRequestPostProcessor(savedUser))
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].userId").value(savedUser.getId()))
+                .andExpect(jsonPath("$[0].challengeId").value(challenge.getId()))
+                .andExpect(jsonPath("$[0].challengeTitle").value(challenge.getTitle()))
+                .andExpect(jsonPath("$[0].challengeContent").value(challenge.getContent()))
+                .andExpect(jsonPath("$[0].challengeStatus").value(userChallenge.getChallengeStatus().toString()))
+                .andExpect(jsonPath("$[0].createdAt").isNotEmpty())
+                .andExpect(jsonPath("$[0].comments.[0].commentId").isNotEmpty())
+                .andExpect(jsonPath("$[0].comments.[0].commentContent").value(comment.getContent()))
+                .andExpect(jsonPath("$[0].comments.[0].commentImgs",
+                        contains(commentImg1.getImgUrl(), commentImg2.getImgUrl())))
+                .andExpect(jsonPath("$[0].comments.[0].commentCreatedAt").value(comment.getMonthDayFormatCreatedAt()))
                 .andDo(print());
     }
 

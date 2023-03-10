@@ -6,8 +6,10 @@ import com.example.dailychallenge.dto.ChallengeDto;
 import com.example.dailychallenge.entity.challenge.Challenge;
 import com.example.dailychallenge.entity.challenge.UserChallenge;
 import com.example.dailychallenge.entity.comment.Comment;
+import com.example.dailychallenge.entity.comment.CommentImg;
 import com.example.dailychallenge.entity.hashtag.Hashtag;
 import com.example.dailychallenge.entity.users.User;
+import com.example.dailychallenge.repository.CommentImgRepository;
 import com.example.dailychallenge.repository.CommentRepository;
 import com.example.dailychallenge.repository.UserRepository;
 import com.example.dailychallenge.service.challenge.ChallengeService;
@@ -30,6 +32,8 @@ public class TestDataSetup {
     private UserChallengeService userChallengeService;
     @Autowired
     private CommentRepository commentRepository;
+    @Autowired
+    private CommentImgRepository commentImgRepository;
     @Autowired
     private HashtagService hashtagService;
     @Autowired
@@ -80,6 +84,29 @@ public class TestDataSetup {
         comment.saveCommentChallenge(challenge);
         comment.saveCommentUser(user);
         return commentRepository.save(comment);
+    }
+
+    @Transactional
+    public Comment 챌린지예_댓글을_단다(Challenge challenge, User user, String content) {
+        Comment comment = Comment.builder()
+                .content(content)
+                .build();
+        comment.saveCommentChallenge(challenge);
+        comment.saveCommentUser(user);
+        return commentRepository.save(comment);
+    }
+
+    @Transactional
+    public CommentImg 댓글에_이미지를_추가한다(Comment comment) {
+        CommentImg commentImg = CommentImg.builder()
+                .imgName("imgName")
+                .oriImgName("oriImgName")
+                .imgUrl("images/abcdefg.jpg")
+                .build();
+        commentImg.saveComment(comment);
+        comment.addCommentImg(commentImg);
+
+        return commentImgRepository.save(commentImg);
     }
 
     @Transactional

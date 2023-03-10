@@ -1,5 +1,10 @@
 package com.example.dailychallenge.controller.users;
 
+import static com.example.dailychallenge.util.fixture.TokenFixture.AUTHORIZATION;
+import static com.example.dailychallenge.util.fixture.TokenFixture.EMAIL;
+import static com.example.dailychallenge.util.fixture.TokenFixture.PASSWORD;
+import static com.example.dailychallenge.util.fixture.TokenFixture.TOKEN_PREFIX;
+import static com.example.dailychallenge.util.fixture.user.UserFixture.USERNAME;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
@@ -30,12 +35,13 @@ import com.example.dailychallenge.entity.challenge.ChallengeCategory;
 import com.example.dailychallenge.entity.challenge.ChallengeDuration;
 import com.example.dailychallenge.entity.challenge.ChallengeLocation;
 import com.example.dailychallenge.entity.challenge.UserChallenge;
+import com.example.dailychallenge.entity.comment.Comment;
 import com.example.dailychallenge.entity.users.User;
 import com.example.dailychallenge.exception.users.UserNotFound;
-import com.example.dailychallenge.repository.UserRepository;
 import com.example.dailychallenge.service.challenge.ChallengeService;
 import com.example.dailychallenge.service.challenge.UserChallengeService;
 import com.example.dailychallenge.service.users.UserService;
+import com.example.dailychallenge.util.fixture.TestDataSetup;
 import com.example.dailychallenge.utils.JwtTokenUtil;
 import com.example.dailychallenge.vo.RequestLogin;
 import com.example.dailychallenge.vo.RequestUpdateUser;
@@ -50,6 +56,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.restdocs.RestDocumentationExtension;
@@ -71,13 +78,8 @@ import org.springframework.web.multipart.MultipartFile;
 @AutoConfigureRestDocs(uriScheme = "https", uriHost = "api.dailychallenge.com", uriPort = 443)
 @ExtendWith(RestDocumentationExtension.class)
 @TestPropertySource(locations = "classpath:application-test.properties")
+@Import({TestDataSetup.class})
 public class UserControllerDocTest {
-    private final static String TOKEN_PREFIX = "Bearer ";
-    private final static String AUTHORIZATION = "Authorization";
-    private final static String EMAIL = "test1234@test.com";
-    private final static String PASSWORD = "1234";
-    @Autowired
-    UserRepository userRepository;
     @Autowired
     private UserService userService;
     @Autowired
@@ -95,6 +97,9 @@ public class UserControllerDocTest {
     @Autowired
     private JwtTokenUtil jwtTokenUtil;
 
+    @Autowired
+    private TestDataSetup testDataSetup;
+
     public UserDto createUser() {
         UserDto userDto = new UserDto();
         userDto.setEmail("test1234@test.com");
@@ -104,7 +109,7 @@ public class UserControllerDocTest {
         return userDto;
     }
 
-    MockMultipartFile createMultipartFiles() throws Exception {
+    MockMultipartFile createMultipartFiles() {
         String path = "userImgFile";
         String imageName = "editImage.jpg";
         MockMultipartFile multipartFile = new MockMultipartFile(path, imageName,
@@ -112,7 +117,7 @@ public class UserControllerDocTest {
         return multipartFile;
     }
 
-    public Challenge createChallenge() throws Exception {
+    public Challenge createChallenge() {
         User savedUser = userService.saveUser(createUser(), passwordEncoder);
         ChallengeDto challengeDto = ChallengeDto.builder()
                 .title("제목입니다.")
@@ -125,7 +130,8 @@ public class UserControllerDocTest {
         List<MultipartFile> challengeImgFiles = List.of(challengeImg);
         return challengeService.saveChallenge(challengeDto, challengeImgFiles, savedUser);
     }
-    public Challenge createChallenge2() throws Exception {
+
+    public Challenge createChallenge2() {
         UserDto userDto = new UserDto();
         userDto.setEmail("test12345@test.com");
         userDto.setUserName("홍길동");
@@ -255,8 +261,10 @@ public class UserControllerDocTest {
                                 parameterWithName("userId").description("회원 ID")
                         ),
                         requestParts(
-                                partWithName("requestUpdateUser").description("회원 정보 수정 데이터(JSON)").attributes(key("type").value("JSON")),
-                                partWithName("userImgFile").description("회원 프로필 이미지(FILE)").optional().attributes(key("type").value(".jpg"))
+                                partWithName("requestUpdateUser").description("회원 정보 수정 데이터(JSON)")
+                                        .attributes(key("type").value("JSON")),
+                                partWithName("userImgFile").description("회원 프로필 이미지(FILE)").optional()
+                                        .attributes(key("type").value(".jpg"))
                         ),
                         requestPartFields("requestUpdateUser",
                                 fieldWithPath("userName").description("회원 이름"),
@@ -318,7 +326,7 @@ public class UserControllerDocTest {
     public void checkUserPassword() throws Exception {
         User user = userService.saveUser(createUser(), passwordEncoder);
         mockMvc.perform(RestDocumentationRequestBuilders
-                        .post("/user/{userId}/check?password=1234",user.getId())
+                        .post("/user/{userId}/check?password=1234", user.getId())
                         .contentType(APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -343,7 +351,7 @@ public class UserControllerDocTest {
     public void changeUserPassword() throws Exception {
         User user = userService.saveUser(createUser(), passwordEncoder);
         mockMvc.perform(RestDocumentationRequestBuilders
-                        .post("/user/{userId}/change?oldPassword=1234&newPassword=12345",user.getId())
+                        .post("/user/{userId}/change?oldPassword=1234&newPassword=12345", user.getId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -417,26 +425,24 @@ public class UserControllerDocTest {
     }
 
     @Test
-    @DisplayName("내가 참가한 챌린지 조회 테스트")
+    @DisplayName("내가 참여한 챌린지 조회 테스트")
     public void getParticipateChallenge() throws Exception {
         Challenge challenge = createChallenge2();
 
-        User savedUser = userService.saveUser(createUser(), passwordEncoder);
+        User savedUser = testDataSetup.saveUser(USERNAME, EMAIL, PASSWORD);
 
-        UserChallenge savedUserChallenge = userChallengeService.saveUserChallenge(challenge, savedUser);
-        userChallengeService.challengeParticipate(savedUserChallenge);
+        testDataSetup.챌린지에_참가한다(challenge, savedUser);
+        Comment comment = testDataSetup.챌린지예_댓글을_단다(challenge, savedUser, "content");
+        testDataSetup.댓글에_이미지를_추가한다(comment);
+        testDataSetup.댓글에_이미지를_추가한다(comment);
+        testDataSetup.챌린지예_댓글을_단다(challenge, savedUser, null);
 
-        String token = generateToken();
         mockMvc.perform(RestDocumentationRequestBuilders
                         .get("/user/participate")
-                        .header(AUTHORIZATION, token)
+                        .header(AUTHORIZATION, generateToken())
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andDo(print())
-                .andExpect(jsonPath("$[0].challengeId").value(challenge.getId()))
-                .andExpect(jsonPath("$[0].challengeTitle").value(challenge.getTitle()))
-                .andExpect(jsonPath("$[0].challengeContent").value(challenge.getContent()))
-                .andExpect(jsonPath("$[0].challengeStatus").value(savedUserChallenge.getChallengeStatus().toString()))
                 .andDo(document("user-participate-challenge",
                         preprocessRequest(prettyPrint()),
                         preprocessResponse(
