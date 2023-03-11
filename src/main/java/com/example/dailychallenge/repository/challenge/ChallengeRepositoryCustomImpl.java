@@ -58,7 +58,6 @@ public class ChallengeRepositoryCustomImpl implements
         return new PageImpl<>(responseChallenges,pageable,results.getTotal());
     }
 
-
     private BooleanExpression challengeIdEq(Long challengeId) {
         if (challengeId == null) {
             throw new CommonException("challengeId is Null");
