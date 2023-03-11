@@ -518,7 +518,7 @@ Content-Length: 79
 {
   "userName" : "GilDong",
   "email" : "test@test.com",
-  "userId" : 117
+  "userId" : 119
 }</code></pre>
 </div>
 </div>
@@ -590,8 +590,8 @@ Content-Type: application/json
 Content-Length: 215
 
 {
-  "userId" : 116,
-  "token" : "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0MTIzNEB0ZXN0LmNvbSIsImlhdCI6MTY3Nzc1ODA5MiwiZXhwIjoxNjc3Nzc2MDkyfQ.YsZYtSUF6SHTAt5H5EiSUM0IzPn1X29J1T1KApnsv9Y",
+  "userId" : 118,
+  "token" : "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0MTIzNEB0ZXN0LmNvbSIsImlhdCI6MTY3ODU0NjUxMywiZXhwIjoxNjc4NTY0NTEzfQ.njcZkT0jgzLXv0qfl1pxnO1eK3H9gV0E-NQTQuDWjSw",
   "userName" : "홍길동"
 }</code></pre>
 </div>
@@ -603,9 +603,9 @@ Content-Length: 215
 <h4 id="_http_request">HTTP request</h4>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight nowrap"><code class="language-http" data-lang="http">POST /user/120 HTTP/1.1
+<pre class="highlight nowrap"><code class="language-http" data-lang="http">POST /user/122 HTTP/1.1
 Content-Type: multipart/form-data;charset=UTF-8; boundary=6o2knFse3p53ty9dmcQvWAIx1zInP11uCfbm
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0MTIzNEB0ZXN0LmNvbSIsImlhdCI6MTY3Nzc1ODA5MywiZXhwIjoxNjc3Nzc2MDkzfQ.3SZIYsAeMgbQ86I5_wzpxJ82rwKbHJteXWYL-M_2eyU
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0MTIzNEB0ZXN0LmNvbSIsImlhdCI6MTY3ODU0NjUxNiwiZXhwIjoxNjc4NTY0NTE2fQ.xFgsc4KPuuEFSGBOy3pTI4s1Zdye_tU_OMiJ2vCY-eQ
 Accept: application/json
 Host: api.dailychallenge.com
 
@@ -716,9 +716,9 @@ Content-Type: image/jpg
 <h4 id="User-회원-삭제_http_request">HTTP request</h4>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight nowrap"><code class="language-http" data-lang="http">DELETE /user/124 HTTP/1.1
+<pre class="highlight nowrap"><code class="language-http" data-lang="http">DELETE /user/126 HTTP/1.1
 Content-Type: application/json;charset=UTF-8
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0MTIzNEB0ZXN0LmNvbSIsImlhdCI6MTY3Nzc1ODA5NCwiZXhwIjoxNjc3Nzc2MDk0fQ.ha8RGFwAmpXhYTVg6HRsknh4k0a2vww_wvUTXnM3LSs
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0MTIzNEB0ZXN0LmNvbSIsImlhdCI6MTY3ODU0NjUxOCwiZXhwIjoxNjc4NTY0NTE4fQ.fgAFj_Eo0g_WlxrQPWKbFDTmdCFjivkVKIXAAbo6CLM
 Accept: application/json
 Host: api.dailychallenge.com</code></pre>
 </div>
@@ -812,7 +812,7 @@ Content-Length: 36
 <h3 id="User-회원-비밀번호-검증">회원 비밀번호 검증</h3>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight nowrap"><code class="language-http" data-lang="http">POST /user/126/check?password=1234 HTTP/1.1
+<pre class="highlight nowrap"><code class="language-http" data-lang="http">POST /user/128/check?password=1234 HTTP/1.1
 Content-Type: application/json;charset=UTF-8
 Accept: application/json
 Host: api.dailychallenge.com</code></pre>
@@ -860,7 +860,7 @@ Content-Length: 45
 <h3 id="User-회원-비밀번호-변경">회원 비밀번호 변경</h3>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight nowrap"><code class="language-http" data-lang="http">POST /user/121/change?oldPassword=1234&amp;newPassword=12345 HTTP/1.1
+<pre class="highlight nowrap"><code class="language-http" data-lang="http">POST /user/123/change?oldPassword=1234&amp;newPassword=12345 HTTP/1.1
 Content-Type: application/json;charset=UTF-8
 Accept: application/json
 Host: api.dailychallenge.com</code></pre>
@@ -937,8 +937,8 @@ Content-Length: 38
 <h3 id="User-회원-정보-조회">회원 정보 조회</h3>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight nowrap"><code class="language-http" data-lang="http">GET /user/125 HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0MTIzNEB0ZXN0LmNvbSIsImlhdCI6MTY3Nzc1ODA5NCwiZXhwIjoxNjc3Nzc2MDk0fQ.ha8RGFwAmpXhYTVg6HRsknh4k0a2vww_wvUTXnM3LSs
+<pre class="highlight nowrap"><code class="language-http" data-lang="http">GET /user/127 HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0MTIzNEB0ZXN0LmNvbSIsImlhdCI6MTY3ODU0NjUxOCwiZXhwIjoxNjc4NTY0NTE4fQ.fgAFj_Eo0g_WlxrQPWKbFDTmdCFjivkVKIXAAbo6CLM
 Accept: application/json
 Host: api.dailychallenge.com</code></pre>
 </div>
@@ -983,7 +983,7 @@ Content-Length: 186
   "email" : "test1234@test.com",
   "userName" : "홍길동",
   "info" : "회원 정보를 입력해주세요.",
-  "imageUrl" : "/images/1f664761-ee13-4700-840d-13b56ca25250.png"
+  "imageUrl" : "/images/1a746dfa-d474-40fa-858c-fbd60c9c6337.png"
 }</code></pre>
 </div>
 </div>
@@ -994,7 +994,7 @@ Content-Length: 186
 <div class="listingblock">
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">GET /user/challenge HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0MTIzNEB0ZXN0LmNvbSIsImlhdCI6MTY3Nzc1ODA5MywiZXhwIjoxNjc3Nzc2MDkzfQ.3SZIYsAeMgbQ86I5_wzpxJ82rwKbHJteXWYL-M_2eyU
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0MTIzNEB0ZXN0LmNvbSIsImlhdCI6MTY3ODU0NjUxNywiZXhwIjoxNjc4NTY0NTE3fQ.hs6in50SoGs3jfV8cVj5cxjN13QisuzSAG0YP0Bik6M
 Accept: application/json
 Host: api.dailychallenge.com</code></pre>
 </div>
@@ -1003,13 +1003,15 @@ Host: api.dailychallenge.com</code></pre>
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">HTTP/1.1 200 OK
 Content-Type: application/json
-Content-Length: 150
+Content-Length: 217
 
 [ {
-  "challengeId" : 117,
+  "userId" : 124,
+  "challengeId" : 121,
   "challengeTitle" : "제목입니다.",
   "challengeContent" : "내용입니다.",
-  "challengeStatus" : "TRYING"
+  "challengeStatus" : "TRYING",
+  "createdAt" : "2023-03-11T23:55:17.2863179"
 } ]</code></pre>
 </div>
 </div>
@@ -1019,7 +1021,7 @@ Content-Length: 150
 <div class="listingblock">
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">GET /user/participate HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0MTIzNEB0ZXN0LmNvbSIsImlhdCI6MTY3Nzc1ODA5MywiZXhwIjoxNjc3Nzc2MDkzfQ.3SZIYsAeMgbQ86I5_wzpxJ82rwKbHJteXWYL-M_2eyU
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0MTIzNEB0ZXN0LmNvbSIsImlhdCI6MTY3ODU0NjUxNSwiZXhwIjoxNjc4NTY0NTE1fQ.p1rOc53TT9QO4zLoMWGzi9DlhW3hTdO1j5AKwz4wO2o
 Accept: application/json
 Host: api.dailychallenge.com</code></pre>
 </div>
@@ -1028,43 +1030,47 @@ Host: api.dailychallenge.com</code></pre>
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">HTTP/1.1 200 OK
 Content-Type: application/json
-Content-Length: 150
+Content-Length: 217
 
 [ {
-  "challengeId" : 116,
+  "userId" : 121,
+  "challengeId" : 120,
   "challengeTitle" : "제목입니다.",
   "challengeContent" : "내용입니다.",
-  "challengeStatus" : "TRYING"
+  "challengeStatus" : "TRYING",
+  "createdAt" : "2023-03-11T23:55:14.9995992"
 } ]</code></pre>
 </div>
 </div>
 </div>
 <div class="sect2">
-<h3 id="UserChallenge-성공한-챌린지-조회">내가 성공한 챌린지 조회</h3>
+<h3 id="UserChallenge-오늘-수행한-챌린지-조회">내가 오늘 수행한 챌린지 조회</h3>
 <div class="sect3">
-<h4 id="UserChallenge-성공한-챌린지-조회_http_request">HTTP request</h4>
+<h4 id="UserChallenge-오늘-수행한-챌린지-조회_http_request">HTTP request</h4>
 <div class="listingblock">
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">GET /user/done HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0MTIzNEB0ZXN0LmNvbSIsImlhdCI6MTY3Nzc1ODA4NCwiZXhwIjoxNjc3Nzc2MDg0fQ.ki06rEsTQqbRYlQjzAa68E_mEEvaD6HPTynuIaHJs_U
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0MTIzNEB0ZXN0LmNvbSIsImlhdCI6MTY3ODU0NjQ5NSwiZXhwIjoxNjc4NTY0NDk1fQ.vgsZN9vVuuT02RfHJ0tXfzhIBb5YMsY3grqU_EN5J6E
 Accept: application/json
 Host: localhost:8080</code></pre>
 </div>
 </div>
 </div>
 <div class="sect3">
-<h4 id="UserChallenge-성공한-챌린지-조회_http_response">HTTP response</h4>
+<h4 id="UserChallenge-오늘-수행한-챌린지-조회_http_response">HTTP response</h4>
 <div class="listingblock">
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">HTTP/1.1 200 OK
 Content-Type: application/json;charset=UTF-8
-Content-Length: 152
+Content-Length: 218
 
 [ {
-  "challengeId" : 46,
+  "userId" : 48,
+  "challengeId" : 50,
   "challengeTitle" : "제목입니다.1",
   "challengeContent" : "내용입니다.1",
-  "challengeStatus" : "SUCCESS"
+  "challengeStatus" : "SUCCESS",
+  "createdAt" : "2023-03-11T23:54:55.0230272"
 } ]</code></pre>
 </div>
 </div>
@@ -1075,7 +1081,7 @@ Content-Length: 152
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2023-02-18 21:46:41 +0900
+Last updated 2023-03-11 23:50:45 +0900
 </div>
 </div>
 </body>
