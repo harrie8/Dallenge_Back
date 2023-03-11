@@ -209,10 +209,9 @@ public class ChallengeController {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping(value = {"/challenge/hashtag","/challenge/hashtag/{page}"})
+    @GetMapping("/challenge/hashtag")
     public ResponseEntity<?> searchHashtag(@RequestParam("content") String content,
-                                           @PathVariable("page") Optional<Integer> page){
-        Pageable pageable = PageRequest.of(page.isPresent() ? page.get() : 0,10);
+                                           @PageableDefault(page = 0, size = 10, sort = "popular", direction = Sort.Direction.DESC) Pageable pageable){
         Page<ResponseChallenge> challenges = challengeService.searchChallengeByHashtag(content,pageable);
         return ResponseEntity.status(HttpStatus.OK).body(challenges);
     }
