@@ -370,6 +370,8 @@ public class ChallengeControllerDocTest extends RestDocsTest {
                                 WITHIN_TEN_MINUTES.getDescription())))
                 .andExpect(jsonPath("$.content[*].challengeImgUrls",
                         hasItems(hasItem(startsWith("/images/")))))
+                .andExpect(jsonPath("$.content[*].howManyUsersAreInThisChallenge",
+                        contains(2, 5, 2)))
                 .andExpect(jsonPath("$.content[*].challengeOwnerUser.userName",
                         hasItem(user.getUserName())))
                 .andExpect(jsonPath("$.content[*].challengeOwnerUser.email",
