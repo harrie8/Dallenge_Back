@@ -8,13 +8,15 @@ import lombok.Getter;
 
 @Getter
 public enum ChallengeLocation {
-    INDOOR("실내"),
-    OUTDOOR("실외"),
+    OUTDOOR(0, "실외"),
+    INDOOR(1, "실내"),
     ;
 
+    private final int index;
     private final String description;
 
-    ChallengeLocation(String description) {
+    ChallengeLocation(int index, String description) {
+        this.index = index;
         this.description = description;
     }
 
@@ -25,8 +27,19 @@ public enum ChallengeLocation {
                 .orElseThrow(ChallengeLocationNotFound::new);
     }
 
+    public static ChallengeLocation findByIndex(int index) {
+        return Arrays.stream(values())
+                .filter(challengeLocation -> challengeLocation.isSameIndex(index))
+                .findAny()
+                .orElseThrow(ChallengeLocationNotFound::new);
+    }
+
     private boolean isSameDescription(String description) {
         return this.description.equals(description);
+    }
+
+    private boolean isSameIndex(int index) {
+        return this.index == index;
     }
 
     public static List<String> getDescriptions() {

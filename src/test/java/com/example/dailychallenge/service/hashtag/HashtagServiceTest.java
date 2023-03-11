@@ -1,7 +1,7 @@
 package com.example.dailychallenge.service.hashtag;
 
-import static com.example.dailychallenge.util.fixture.ChallengeFixture.createChallengeDto;
-import static com.example.dailychallenge.util.fixture.UserFixture.createUser;
+import static com.example.dailychallenge.util.fixture.challenge.ChallengeFixture.createChallengeDto;
+import static com.example.dailychallenge.util.fixture.user.UserFixture.createUser;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -13,6 +13,7 @@ import com.example.dailychallenge.service.users.UserService;
 import com.example.dailychallenge.util.ServiceTest;
 import java.util.List;
 import java.util.stream.Collectors;
+import javax.persistence.EntityManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -26,12 +27,14 @@ class HashtagServiceTest extends ServiceTest {
     private UserService userService;
     @Autowired
     private ChallengeService challengeService;
+    @Autowired
+    EntityManager entityManager;
 
     private User savedUser;
     private Challenge challenge;
 
     @BeforeEach
-    void beforeEach() throws Exception {
+    void beforeEach() {
         savedUser = userService.saveUser(createUser(), passwordEncoder);
         challenge = challengeService.saveChallenge(createChallengeDto(), null, savedUser);
     }
@@ -63,5 +66,18 @@ class HashtagServiceTest extends ServiceTest {
                 .map(Hashtag::getTagCount)
                 .allMatch(count -> count == 1);
         assertTrue(isUpdateHashtagsCountOne);
+    }
+
+    @Test
+    @DisplayName("가장 많이 작성된 3개의 해시태그들을 찾는 테스트")
+    void searchAllTest() {
+        List<String> hashtagDto = List.of("tag1", "tag1", "tag2", "tag2", "tag2", "tag3", "tag4");
+        hashtagService.saveHashtag(hashtagDto);
+
+        List<Hashtag> results = hashtagService.searchThreeMostWrittenHashtags();
+
+        assertEquals("tag2", results.get(0).getContent());
+        assertEquals("tag1", results.get(1).getContent());
+        assertEquals("tag3", results.get(2).getContent());
     }
 }

@@ -11,6 +11,7 @@ import com.example.dailychallenge.exception.comment.CommentCreateNotValid;
 import com.example.dailychallenge.exception.comment.CommentNotFound;
 import com.example.dailychallenge.repository.CommentRepository;
 import com.example.dailychallenge.vo.ResponseChallengeComment;
+import com.example.dailychallenge.vo.ResponseChallengeCommentImg;
 import com.example.dailychallenge.vo.ResponseUserComment;
 import java.util.ArrayList;
 import java.util.List;
@@ -128,6 +129,12 @@ public class CommentService {
     public Page<ResponseUserComment> searchCommentsByUserId(Long userId, Pageable pageable) {
 
         return commentRepository.searchCommentsByUserId(userId, pageable);
+    }
+
+    public Page<ResponseChallengeCommentImg> searchCommentsByUserIdByChallengeId(User user, Challenge challenge, Pageable pageable) {
+        Long userId = user.getId();
+        Long challengeId = challenge.getId();
+        return commentRepository.searchCommentsByUserIdByChallengeId(userId, challengeId, pageable);
     }
 
     public void validateOwner(User user, Comment comment) {

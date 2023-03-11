@@ -6,9 +6,13 @@ import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.docu
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
-import com.example.dailychallenge.service.users.UserService;
+import com.example.dailychallenge.entity.users.User;
+import com.example.dailychallenge.util.fixture.TestDataSetup;
+import com.example.dailychallenge.util.fixture.TestImgCleanup;
 import com.example.dailychallenge.utils.JwtTokenUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.ArrayList;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,9 +40,11 @@ import org.springframework.web.filter.CharacterEncodingFilter;
 @AutoConfigureMockMvc
 @AutoConfigureRestDocs(uriScheme = "https", uriHost = "api.dailychallenge.com", uriPort = 443)
 @ExtendWith(RestDocumentationExtension.class)
-@Import(value = {RestDocsConfiguration.class})
+@Import(value = {RestDocsConfiguration.class, TestImgCleanup.class, TestDataSetup.class})
 @TestPropertySource(locations = "classpath:application-test.properties")
 public class RestDocsTest {
+    @Autowired
+    protected TestImgCleanup testImgCleanup;
     @Autowired
     protected PasswordEncoder passwordEncoder;
     @Autowired
@@ -65,11 +71,20 @@ public class RestDocsTest {
                 .build();
     }
 
-    public String generateToken(String loginUserEmail, UserService userService) {
+    @AfterEach
+    void afterEach() {
+        testImgCleanup.afterPropertiesSet();
+    }
+
+    protected String generateToken(User user) {
         Authentication auth = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(loginUserEmail, PASSWORD));
+                new UsernamePasswordAuthenticationToken(user.getEmail(), PASSWORD));
         if (auth.isAuthenticated()) {
-            UserDetails userDetails = userService.loadUserByUsername(loginUserEmail);
+            UserDetails userDetails = new org.springframework.security.core.userdetails.User(
+                    user.getEmail(), user.getPassword(),
+                    true, true, true, true,
+                    new ArrayList<>()
+            );
             return TOKEN_PREFIX + jwtTokenUtil.generateToken(userDetails);
         }
 

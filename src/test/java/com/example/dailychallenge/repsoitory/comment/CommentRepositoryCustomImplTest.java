@@ -1,20 +1,24 @@
 package com.example.dailychallenge.repsoitory.comment;
 
-import static com.example.dailychallenge.util.fixture.ChallengeFixture.createChallenge;
 import static com.example.dailychallenge.util.fixture.TokenFixture.EMAIL;
 import static com.example.dailychallenge.util.fixture.TokenFixture.PASSWORD;
+import static com.example.dailychallenge.util.fixture.challenge.ChallengeFixture.createChallenge;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import com.example.dailychallenge.entity.challenge.Challenge;
 import com.example.dailychallenge.entity.comment.Comment;
+import com.example.dailychallenge.entity.comment.CommentImg;
 import com.example.dailychallenge.entity.users.User;
 import com.example.dailychallenge.repository.ChallengeRepository;
+import com.example.dailychallenge.repository.CommentImgRepository;
 import com.example.dailychallenge.repository.CommentRepository;
 import com.example.dailychallenge.repository.UserRepository;
 import com.example.dailychallenge.util.RepositoryTest;
 import com.example.dailychallenge.vo.ResponseChallengeComment;
+import com.example.dailychallenge.vo.ResponseChallengeCommentImg;
 import com.example.dailychallenge.vo.ResponseUserComment;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -31,6 +35,8 @@ class CommentRepositoryCustomImplTest extends RepositoryTest {
     private ChallengeRepository challengeRepository;
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private CommentImgRepository commentImgRepository;
 
     private User savedUser;
     private Challenge challenge;
@@ -153,6 +159,60 @@ class CommentRepositoryCustomImplTest extends RepositoryTest {
             assertThat(results).extracting("challengeId").containsOnly(challenge.getId(), otherChallenge.getId());
             assertThat(results).extracting("challengeTitle")
                     .containsOnly(challenge.getTitle(), otherChallenge.getTitle());
+        });
+    }
+
+    @Test
+    @DisplayName("챌린지에 있는 내가 작성한 댓글들을 조회하는 테스트")
+    void searchCommentsByUserIdByChallengeIdTest() {
+        User otherUser = User.builder()
+                .userName("김철수")
+                .email("a@a.com")
+                .password(PASSWORD)
+                .build();
+        userRepository.save(otherUser);
+
+        for (int i = 0; i < 5; i++) {
+            Comment comment = Comment.builder()
+                    .content("댓글 내용" + i)
+                    .build();
+            comment.saveCommentChallenge(challenge);
+            comment.saveCommentUser(otherUser);
+            commentRepository.save(comment);
+        }
+        for (int i = 5; i < 10; i++) {
+            Comment comment = Comment.builder()
+                    .content("댓글 내용" + i)
+                    .build();
+            comment.saveCommentChallenge(challenge);
+            comment.saveCommentUser(savedUser);
+
+            CommentImg commentImg = CommentImg.builder()
+                    .imgName("commentImgFile" + i)
+                    .oriImgName("commentOriImgFile" + i)
+                    .imgUrl("images/test.png" + i)
+                    .build();
+            commentImg.saveComment(comment);
+            commentImgRepository.save(commentImg);
+
+            comment.addCommentImg(commentImg);
+
+            commentRepository.save(comment);
+        }
+        PageRequest pageRequest = PageRequest.of(0, 10, Sort.by("likes").descending());
+
+        Page<ResponseChallengeCommentImg> results = commentRepository.searchCommentsByUserIdByChallengeId(
+                savedUser.getId(), challenge.getId(), pageRequest);
+
+        assertAll(() -> {
+            assertThat(results).extracting("id").isNotEmpty();
+            assertThat(results).extracting("commentImgUrls")
+                    .containsExactly(
+                            List.of("images/test.png5"),
+                            List.of("images/test.png6"),
+                            List.of("images/test.png7"),
+                            List.of("images/test.png8"),
+                            List.of("images/test.png9"));
         });
     }
 }

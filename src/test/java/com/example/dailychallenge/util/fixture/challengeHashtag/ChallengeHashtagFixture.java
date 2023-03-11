@@ -1,4 +1,4 @@
-package com.example.dailychallenge.util.fixture;
+package com.example.dailychallenge.util.fixture.challengeHashtag;
 
 import com.example.dailychallenge.entity.challenge.Challenge;
 import com.example.dailychallenge.entity.hashtag.ChallengeHashtag;

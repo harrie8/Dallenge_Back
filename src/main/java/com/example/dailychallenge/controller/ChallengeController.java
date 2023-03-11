@@ -2,8 +2,12 @@ package com.example.dailychallenge.controller;
 
 import com.example.dailychallenge.dto.ChallengeDto;
 import com.example.dailychallenge.dto.ChallengeSearchCondition;
+import com.example.dailychallenge.dto.HashtagChallengesDto;
 import com.example.dailychallenge.dto.HashtagDto;
 import com.example.dailychallenge.entity.challenge.Challenge;
+import com.example.dailychallenge.entity.challenge.ChallengeCategory;
+import com.example.dailychallenge.entity.challenge.ChallengeDuration;
+import com.example.dailychallenge.entity.challenge.ChallengeLocation;
 import com.example.dailychallenge.entity.challenge.UserChallenge;
 import com.example.dailychallenge.entity.hashtag.ChallengeHashtag;
 import com.example.dailychallenge.entity.hashtag.Hashtag;
@@ -19,13 +23,17 @@ import com.example.dailychallenge.vo.challenge.RequestUpdateChallenge;
 import com.example.dailychallenge.vo.challenge.ResponseChallenge;
 import com.example.dailychallenge.vo.challenge.ResponseChallengeWithParticipatedUsersInfo;
 import com.example.dailychallenge.vo.challenge.ResponseCreateChallenge;
+import com.example.dailychallenge.vo.challenge.ResponseRecommendedChallenge;
 import com.example.dailychallenge.vo.challenge.ResponseUpdateChallenge;
 import com.example.dailychallenge.vo.challenge.ResponseUserChallenge;
+import com.example.dailychallenge.vo.hashtag.ResponseChallengeHashtag;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.validator.constraints.Range;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -36,11 +44,19 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequiredArgsConstructor
+@Validated
 public class ChallengeController {
 
     private final ChallengeService challengeService;
@@ -107,6 +123,49 @@ public class ChallengeController {
         Page<ResponseChallenge> responseChallenges = userChallengeService.searchByCondition(condition, pageable);
 
         return ResponseEntity.status(HttpStatus.OK).body(responseChallenges);
+    }
+
+    @GetMapping("/challenge/question")
+    public ResponseEntity<List<ResponseRecommendedChallenge>> searchChallengesByQuestion(
+            @AuthenticationPrincipal org.springframework.security.core.userdetails.User user,
+            @RequestParam @Range(min = 0, max = 1) Integer challengeLocationIndex,
+            @RequestParam @Range(min = 0, max = 3) Integer challengeDurationIndex,
+            @RequestParam @Range(min = 0, max = 4) Integer challengeCategoryIndex) {
+
+        ChallengeCategory challengeCategory = ChallengeCategory.findByIndex(challengeCategoryIndex);
+        ChallengeDuration challengeDuration = ChallengeDuration.findByIndex(challengeDurationIndex);
+        ChallengeLocation challengeLocation = ChallengeLocation.findByIndex(challengeLocationIndex);
+
+        List<ResponseRecommendedChallenge> recommendedChallenges = challengeService.searchByQuestion(
+                challengeCategory, challengeDuration, challengeLocation);
+
+        return ResponseEntity.status(HttpStatus.OK).body(recommendedChallenges);
+    }
+
+    @GetMapping("/challenge/hashtags")
+    public ResponseEntity<List<ResponseChallengeHashtag>> searchChallengesByHashtags(
+            @AuthenticationPrincipal org.springframework.security.core.userdetails.User user) {
+
+        List<Hashtag> hashtags = hashtagService.searchThreeMostWrittenHashtags();
+        List<HashtagChallengesDto> hashtagChallengesDtos = challengeHashtagService.searchByHashtags(hashtags);
+
+        List<ResponseChallengeHashtag> responseChallengeHashtags = new ArrayList<>();
+        for (HashtagChallengesDto hashtagChallengesDto : hashtagChallengesDtos) {
+            responseChallengeHashtags.add(
+                    ResponseChallengeHashtag.create(
+                            hashtagChallengesDto.getHashtag(), hashtagChallengesDto.getChallenges()));
+        }
+
+        return ResponseEntity.status(HttpStatus.OK).body(responseChallengeHashtags);
+    }
+
+    @GetMapping("/challenge/random")
+    public ResponseEntity<ResponseRecommendedChallenge> searchChallengeByRandom(
+            @AuthenticationPrincipal org.springframework.security.core.userdetails.User user) {
+
+        ResponseRecommendedChallenge recommendedChallenge = challengeService.searchByRandom();
+
+        return ResponseEntity.status(HttpStatus.OK).body(recommendedChallenge);
     }
 
     @PostMapping("/challenge/{challengeId}")

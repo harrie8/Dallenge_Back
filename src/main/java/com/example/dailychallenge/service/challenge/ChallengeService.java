@@ -3,18 +3,20 @@ package com.example.dailychallenge.service.challenge;
 import com.example.dailychallenge.dto.ChallengeDto;
 import com.example.dailychallenge.dto.ChallengeEditor;
 import com.example.dailychallenge.entity.challenge.Challenge;
+import com.example.dailychallenge.entity.challenge.ChallengeCategory;
+import com.example.dailychallenge.entity.challenge.ChallengeDuration;
 import com.example.dailychallenge.entity.challenge.ChallengeImg;
-import com.example.dailychallenge.entity.hashtag.Hashtag;
+import com.example.dailychallenge.entity.challenge.ChallengeLocation;
 import com.example.dailychallenge.entity.users.User;
 import com.example.dailychallenge.exception.AuthorizationException;
 import com.example.dailychallenge.exception.challenge.ChallengeNotFound;
 import com.example.dailychallenge.repository.ChallengeRepository;
 import com.example.dailychallenge.vo.challenge.RequestUpdateChallenge;
 import com.example.dailychallenge.vo.challenge.ResponseChallenge;
+import com.example.dailychallenge.vo.challenge.ResponseRecommendedChallenge;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -51,6 +53,17 @@ public class ChallengeService {
 
     public ResponseChallenge searchById(Long challengeId) {
         return challengeRepository.searchChallengeById(challengeId).orElseThrow(ChallengeNotFound::new);
+    }
+
+    public List<ResponseRecommendedChallenge> searchByQuestion(ChallengeCategory challengeCategory,
+                                                               ChallengeDuration challengeDuration,
+                                                               ChallengeLocation challengeLocation) {
+
+        return challengeRepository.searchChallengesByQuestion(challengeCategory, challengeDuration, challengeLocation);
+    }
+
+    public ResponseRecommendedChallenge searchByRandom() {
+        return challengeRepository.searchChallengeByRandom();
     }
 
     /**
@@ -91,5 +104,4 @@ public class ChallengeService {
     public Page<ResponseChallenge> searchChallengeByHashtag(String content, Pageable pageable){
         return challengeRepository.searchChallengeByHashtag(content, pageable);
     }
-
 }

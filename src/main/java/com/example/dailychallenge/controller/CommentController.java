@@ -9,6 +9,7 @@ import com.example.dailychallenge.service.challenge.ChallengeService;
 import com.example.dailychallenge.service.comment.CommentService;
 import com.example.dailychallenge.service.users.UserService;
 import com.example.dailychallenge.vo.ResponseChallengeComment;
+import com.example.dailychallenge.vo.ResponseChallengeCommentImg;
 import com.example.dailychallenge.vo.ResponseComment;
 import com.example.dailychallenge.vo.ResponseUserComment;
 import java.util.HashMap;
@@ -52,7 +53,7 @@ public class CommentController {
         ResponseComment responseComment = ResponseComment.builder()
                 .id(comment.getId())
                 .content(comment.getContent())
-                .createdAt(comment.getCreated_at())
+                .createdAt(comment.getSpecificCreatedAt())
                 .userId(comment.getUsers().getId())
                 .build();
 
@@ -117,6 +118,21 @@ public class CommentController {
         userService.validateUser(loginUserEmail, userId);
 
         Page<ResponseUserComment> result = commentService.searchCommentsByUserId(userId, pageable);
+
+        return ResponseEntity.status(HttpStatus.OK).body(result);
+    }
+
+    @GetMapping("/challenge/{challengeId}/comment")
+    public ResponseEntity<Page<ResponseChallengeCommentImg>> searchCommentsByUserIdByChallengeId(
+            @AuthenticationPrincipal org.springframework.security.core.userdetails.User user,
+            @PathVariable Long challengeId,
+            @PageableDefault(page = 0, size = 10, sort = "time", direction = Sort.Direction.DESC) Pageable pageable) {
+
+        String userEmail = user.getUsername();
+        User findUser = userService.findByEmail(userEmail).orElseThrow(UserNotFound::new);
+
+        Challenge challenge = challengeService.findById(challengeId);
+        Page<ResponseChallengeCommentImg> result = commentService.searchCommentsByUserIdByChallengeId(findUser, challenge, pageable);
 
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }

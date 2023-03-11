@@ -7,8 +7,10 @@ import static com.example.dailychallenge.entity.users.QUser.user;
 import com.example.dailychallenge.exception.CommonException;
 import com.example.dailychallenge.repository.challenge.OrderByNull;
 import com.example.dailychallenge.vo.QResponseChallengeComment;
+import com.example.dailychallenge.vo.QResponseChallengeCommentImg;
 import com.example.dailychallenge.vo.QResponseUserComment;
 import com.example.dailychallenge.vo.ResponseChallengeComment;
+import com.example.dailychallenge.vo.ResponseChallengeCommentImg;
 import com.example.dailychallenge.vo.ResponseUserComment;
 import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
@@ -72,6 +74,41 @@ public class CommentRepositoryCustomImpl implements CommentRepositoryCustom {
                 .from(comment)
                 .leftJoin(comment.users, user)
                 .where(userIdEq(userId))
+                .fetch()
+                .size();
+
+        return new PageImpl<>(content, pageable, total);
+    }
+
+    @Override
+    public Page<ResponseChallengeCommentImg> searchCommentsByUserIdByChallengeId(Long userId, Long challengeId,
+                                                                                 Pageable pageable) {
+
+        List<ResponseChallengeCommentImg> content = queryFactory
+                .select(new QResponseChallengeCommentImg(comment))
+                .from(comment)
+                .leftJoin(comment.challenge, challenge)
+                .leftJoin(comment.users, user)
+                .where(
+                        challengeIdEq(challengeId),
+                        userIdEq(userId)
+                )
+//                .groupBy(userChallenge.challenge)
+                .orderBy(commentSort(pageable))
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+        long total = queryFactory
+                .select(comment)
+                .from(comment)
+                .leftJoin(comment.challenge, challenge)
+                .leftJoin(comment.users, user)
+                .where(
+                        challengeIdEq(challengeId),
+                        userIdEq(userId)
+                )
+//                .groupBy(userChallenge.challenge)
                 .fetch()
                 .size();
 

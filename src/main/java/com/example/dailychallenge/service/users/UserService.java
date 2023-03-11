@@ -50,7 +50,7 @@ public class UserService implements UserDetailsService {
         }
     }
 
-    public User saveUser(UserDto userDto, PasswordEncoder passwordEncoder) throws Exception {
+    public User saveUser(UserDto userDto, PasswordEncoder passwordEncoder) {
 
         validateDuplicateUser(userDto.getEmail());
 
@@ -147,13 +147,15 @@ public class UserService implements UserDetailsService {
         List<ResponseChallengeByUserChallenge> userChallengeList = new ArrayList<>();
 
         for (UserChallenge userChallenge : userChallenges) {
-            if(userChallenge.getChallenge().getUsers().getId()==userId) {
+            if(userChallenge.getChallenge().getUsers().getId().equals(userId)) {
                 userChallengeList.add(
                         ResponseChallengeByUserChallenge.builder()
+                                .userId(userChallenge.getChallenge().getUsers().getId())
                                 .challengeId(userChallenge.getChallenge().getId())
                                 .challengeTitle(userChallenge.getChallenge().getTitle())
                                 .challengeContent(userChallenge.getChallenge().getContent())
                                 .challengeStatus(userChallenge.getChallengeStatus())
+                                .createdAt(userChallenge.getChallenge().getCreated_at())
                                 .build()
                 );
             }
@@ -169,10 +171,12 @@ public class UserService implements UserDetailsService {
             if (userChallenge.isParticipated()) {
                 res.add(
                         ResponseChallengeByUserChallenge.builder()
+                                .userId(userChallenge.getUsers().getId())
                                 .challengeId(userChallenge.getChallenge().getId())
                                 .challengeTitle(userChallenge.getChallenge().getTitle())
                                 .challengeContent(userChallenge.getChallenge().getContent())
                                 .challengeStatus(userChallenge.getChallengeStatus())
+                                .createdAt(userChallenge.getCreated_at())
                                 .build()
                 );
             }

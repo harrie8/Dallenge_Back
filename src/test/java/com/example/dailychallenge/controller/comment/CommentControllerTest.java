@@ -2,7 +2,8 @@ package com.example.dailychallenge.controller.comment;
 
 import static com.example.dailychallenge.util.fixture.TokenFixture.EMAIL;
 import static com.example.dailychallenge.util.fixture.TokenFixture.PASSWORD;
-import static com.example.dailychallenge.util.fixture.UserFixture.createOtherUser;
+import static com.example.dailychallenge.util.fixture.user.UserFixture.createOtherUser;
+import static com.example.dailychallenge.util.fixture.user.UserFixture.getRequestPostProcessor;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.hasItem;
@@ -212,7 +213,7 @@ class CommentControllerTest extends ControllerTest {
                 .andExpect(jsonPath("$.content[*].id").isNotEmpty())
                 .andExpect(jsonPath("$.content[*].content", hasItems(startsWith("댓글 내용"))))
                 .andExpect(jsonPath("$.content[*].likes", hasItems(0)))
-                .andExpect(jsonPath("$.content[*].createdAt").isNotEmpty())
+                .andExpect(jsonPath("$.content[*].createdAt", hasItem("오늘")))
                 .andExpect(jsonPath("$.content[*].commentImgUrls",
                         hasItems(hasItem(startsWith("/images/")))))
                 .andExpect(jsonPath("$.content[*].commentOwnerUser.userName",
@@ -266,12 +267,55 @@ class CommentControllerTest extends ControllerTest {
                         contains("다른 댓글 내용7", "다른 댓글 내용6", "다른 댓글 내용5", "댓글 내용4",
                                 "댓글 내용3", "댓글 내용2", "댓글 내용1", "댓글 내용0")))
                 .andExpect(jsonPath("$.content[*].likes", hasItems(0)))
-                .andExpect(jsonPath("$.content[*].createdAt").isNotEmpty())
+                .andExpect(jsonPath("$.content[*].createdAt", hasItem("오늘")))
                 .andExpect(jsonPath("$.content[*].commentImgUrls",
                         hasItems(hasItem(startsWith("/images/")))))
                 .andExpect(jsonPath("$.content[*].challengeId",
                         hasItems(challenge.getId().intValue(), otherChallenge.getId().intValue())))
                 .andExpect(jsonPath("$.content[*].challengeTitle",
                         hasItems(challenge.getTitle(), otherChallenge.getTitle())));
+    }
+
+    @Test
+    @DisplayName("특정 챌린지의 유저가 작성한 댓글들 이미지 조회 테스트")
+    public void searchCommentsByUserIdByChallengeId() throws Exception {
+        Challenge challenge = createChallenge();
+        User savedUser = challenge.getUsers();
+        for (int i = 0; i < 5; i++) {
+            List<MultipartFile> commentDtoImgFiles = new ArrayList<>();
+            commentDtoImgFiles.add(createMultipartFiles());
+            CommentDto commentDto = CommentDto.builder()
+                    .content("댓글 내용" + i)
+                    .build();
+            commentService.saveComment(commentDto, commentDtoImgFiles, savedUser, challenge);
+        }
+        ChallengeDto challengeDto = ChallengeDto.builder()
+                .title("다른 제목입니다.")
+                .content("다른 내용입니다.")
+                .challengeCategory(ChallengeCategory.STUDY.getDescription())
+                .challengeLocation(ChallengeLocation.INDOOR.getDescription())
+                .challengeDuration(ChallengeDuration.WITHIN_TEN_MINUTES.getDescription())
+                .build();
+        MultipartFile challengeImg = createMultipartFiles();
+        List<MultipartFile> challengeImgFiles = List.of(challengeImg);
+        Challenge otherChallenge = challengeService.saveChallenge(challengeDto, challengeImgFiles, savedUser);
+        for (int i = 5; i < 8; i++) {
+            List<MultipartFile> commentDtoImgFiles = new ArrayList<>();
+            commentDtoImgFiles.add(createMultipartFiles());
+            CommentDto commentDto = CommentDto.builder()
+                    .content("다른 댓글 내용" + i)
+                    .build();
+            commentService.saveComment(commentDto, commentDtoImgFiles, savedUser, otherChallenge);
+        }
+        Long challengeId = challenge.getId();
+
+        mockMvc.perform(get("/challenge/{challengeId}/comment", challengeId)
+                        .with(getRequestPostProcessor(savedUser))
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content", hasSize(5)))
+                .andExpect(jsonPath("$.content[*].id").isNotEmpty())
+                .andExpect(jsonPath("$.content[*].commentImgUrls",
+                        hasItems(hasItem(startsWith("/images/")))));
     }
 }

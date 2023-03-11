@@ -2,10 +2,18 @@ package com.example.dailychallenge.entity.comment;
 
 
 import com.example.dailychallenge.entity.BaseEntity;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import javax.persistence.*;
 
 @Entity
 @Table(name = "comment_img")
@@ -24,6 +32,13 @@ public class CommentImg extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "comment_id")
     private Comment comment;
+
+    @Builder
+    public CommentImg(String imgName, String oriImgName, String imgUrl) {
+        this.imgName = imgName;
+        this.oriImgName = oriImgName;
+        this.imgUrl = imgUrl;
+    }
 
     public void updateCommentImg(String oriImgName, String imgName, String imgUrl) {
         this.oriImgName = oriImgName;

@@ -1,4 +1,4 @@
-package com.example.dailychallenge.util.fixture;
+package com.example.dailychallenge.util.fixture.user;
 
 import java.util.ArrayList;
 import java.util.List;

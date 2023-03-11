@@ -3,25 +3,25 @@ package com.example.dailychallenge.repository.challenge;
 import static com.example.dailychallenge.entity.challenge.QChallenge.challenge;
 import static com.example.dailychallenge.entity.challenge.QUserChallenge.userChallenge;
 
-import com.example.dailychallenge.entity.challenge.Challenge;
-import com.example.dailychallenge.entity.challenge.QChallenge;
-import com.example.dailychallenge.entity.challenge.QUserChallenge;
-import com.example.dailychallenge.entity.hashtag.Hashtag;
+import com.example.dailychallenge.entity.challenge.ChallengeCategory;
+import com.example.dailychallenge.entity.challenge.ChallengeDuration;
+import com.example.dailychallenge.entity.challenge.ChallengeLocation;
 import com.example.dailychallenge.entity.hashtag.QChallengeHashtag;
-import com.example.dailychallenge.entity.hashtag.QHashtag;
 import com.example.dailychallenge.exception.CommonException;
 import com.example.dailychallenge.vo.challenge.QResponseChallenge;
+import com.example.dailychallenge.vo.challenge.QResponseRecommendedChallenge;
 import com.example.dailychallenge.vo.challenge.ResponseChallenge;
+import com.example.dailychallenge.vo.challenge.ResponseRecommendedChallenge;
 import com.querydsl.core.QueryResults;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
-
 import java.util.List;
 import java.util.Optional;
 import javax.persistence.EntityManager;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 
 public class ChallengeRepositoryCustomImpl implements
         ChallengeRepositoryCustom {
@@ -58,10 +58,56 @@ public class ChallengeRepositoryCustomImpl implements
         return new PageImpl<>(responseChallenges,pageable,results.getTotal());
     }
 
+    @Override
+    public List<ResponseRecommendedChallenge> searchChallengesByQuestion(ChallengeCategory challengeCategory,
+                                                                         ChallengeDuration challengeDuration,
+                                                                         ChallengeLocation challengeLocation) {
+
+        return queryFactory
+                .select(new QResponseRecommendedChallenge(challenge))
+                .from(challenge)
+                .where(
+                        challengeCategoryEq(challengeCategory),
+                        challengeDurationEq(challengeDuration),
+                        challengeLocationEq(challengeLocation))
+                .limit(4)
+                .fetch();
+    }
+
+    @Override
+    public ResponseRecommendedChallenge searchChallengeByRandom() {
+        return queryFactory
+                .select(new QResponseRecommendedChallenge(challenge))
+                .from(challenge)
+                .orderBy(Expressions.numberTemplate(Double.class, "function('rand')").asc())
+                .fetchFirst();
+    }
+
     private BooleanExpression challengeIdEq(Long challengeId) {
         if (challengeId == null) {
             throw new CommonException("challengeId is Null");
         }
         return userChallenge.challenge.id.eq(challengeId);
+    }
+
+    private BooleanExpression challengeCategoryEq(ChallengeCategory challengeCategory) {
+        if (challengeCategory == null) {
+            throw new CommonException("challengeCategory is Null");
+        }
+        return challenge.challengeCategory.eq(challengeCategory);
+    }
+
+    private BooleanExpression challengeDurationEq(ChallengeDuration challengeDuration) {
+        if (challengeDuration == null) {
+            throw new CommonException("challengeDuration is Null");
+        }
+        return challenge.challengeDuration.eq(challengeDuration);
+    }
+
+    private BooleanExpression challengeLocationEq(ChallengeLocation challengeLocation) {
+        if (challengeLocation == null) {
+            throw new CommonException("challengeLocation is Null");
+        }
+        return challenge.challengeLocation.eq(challengeLocation);
     }
 }

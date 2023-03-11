@@ -1,4 +1,4 @@
-package com.example.dailychallenge.util.fixture;
+package com.example.dailychallenge.util.fixture.hashtag;
 
 import com.example.dailychallenge.entity.hashtag.Hashtag;
 import java.util.ArrayList;

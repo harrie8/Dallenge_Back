@@ -3,11 +3,15 @@ package com.example.dailychallenge.util;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
+import com.example.dailychallenge.util.fixture.TestDataSetup;
+import com.example.dailychallenge.util.fixture.TestImgCleanup;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
@@ -20,9 +24,12 @@ import org.springframework.web.filter.CharacterEncodingFilter;
 @Transactional
 @AutoConfigureMockMvc
 @TestPropertySource(locations = "classpath:application-test.properties")
+@Import({TestImgCleanup.class, TestDataSetup.class})
 public class ControllerTest {
     @Autowired
     protected PasswordEncoder passwordEncoder;
+    @Autowired
+    protected TestImgCleanup testImgCleanup;
 
     @Autowired
     protected ObjectMapper objectMapper;
@@ -36,5 +43,10 @@ public class ControllerTest {
                 .alwaysDo(print()) // andDo(print()) 코드 포함 -> 3번 문제 해결
                 .addFilters(new CharacterEncodingFilter("UTF-8", true)) // 한글 깨짐 방지
                 .build();
+    }
+
+    @AfterEach
+    void afterEach() {
+        testImgCleanup.afterPropertiesSet();
     }
 }

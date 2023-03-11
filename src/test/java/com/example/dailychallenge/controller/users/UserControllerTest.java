@@ -1,5 +1,9 @@
 package com.example.dailychallenge.controller.users;
 
+import static com.example.dailychallenge.util.fixture.TokenFixture.AUTHORIZATION;
+import static com.example.dailychallenge.util.fixture.TokenFixture.EMAIL;
+import static com.example.dailychallenge.util.fixture.TokenFixture.PASSWORD;
+import static com.example.dailychallenge.util.fixture.TokenFixture.TOKEN_PREFIX;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -10,7 +14,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.example.dailychallenge.dto.ChallengeDto;
 import com.example.dailychallenge.dto.UserDto;
-import com.example.dailychallenge.entity.challenge.*;
+import com.example.dailychallenge.entity.challenge.Challenge;
+import com.example.dailychallenge.entity.challenge.ChallengeCategory;
+import com.example.dailychallenge.entity.challenge.ChallengeDuration;
+import com.example.dailychallenge.entity.challenge.ChallengeLocation;
+import com.example.dailychallenge.entity.challenge.UserChallenge;
 import com.example.dailychallenge.entity.users.User;
 import com.example.dailychallenge.exception.users.UserDuplicateCheck;
 import com.example.dailychallenge.exception.users.UserDuplicateNotCheck;
@@ -49,11 +57,6 @@ import org.springframework.web.multipart.MultipartFile;
 @AutoConfigureMockMvc
 @TestPropertySource(locations = "classpath:application-test.properties")
 class UserControllerTest {
-    private final static String TOKEN_PREFIX = "Bearer ";
-    private final static String AUTHORIZATION = "Authorization";
-    private final static String EMAIL = "test1234@test.com";
-    private final static String PASSWORD = "1234";
-
     @Autowired
     UserRepository userRepository;
     @Autowired
@@ -82,7 +85,7 @@ class UserControllerTest {
         return userDto;
     }
 
-    MockMultipartFile createMultipartFiles() throws Exception {
+    MockMultipartFile createMultipartFiles() {
         String path = "userImgFile";
         String imageName = "editImage.jpg";
         MockMultipartFile multipartFile = new MockMultipartFile(path, imageName,
@@ -103,7 +106,7 @@ class UserControllerTest {
         List<MultipartFile> challengeImgFiles = List.of(challengeImg);
         return challengeService.saveChallenge(challengeDto, challengeImgFiles, savedUser);
     }
-    public Challenge createChallenge2() throws Exception {
+    public Challenge createChallenge2() {
         UserDto userDto = new UserDto();
         userDto.setEmail("test12345@test.com");
         userDto.setUserName("홍길동");
