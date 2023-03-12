@@ -33,6 +33,8 @@ public class ResponseChallengeByUserChallenge {
         this.challengeContent = challengeContent;
         this.challengeStatus = challengeStatus;
         this.createdAt = createdAt;
-        this.comments = ResponseCommentInfo.convert(comments);
+        if (comments != null) {
+            this.comments = ResponseCommentInfo.convert(comments);
+        }
     }
 }

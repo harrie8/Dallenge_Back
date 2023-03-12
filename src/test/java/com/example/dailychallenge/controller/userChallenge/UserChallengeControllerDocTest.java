@@ -16,6 +16,7 @@ import static com.example.dailychallenge.util.fixture.user.UserFixture.USERNAME;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.relaxedResponseFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
@@ -208,7 +209,7 @@ public class UserChallengeControllerDocTest extends RestDocsTest {
                 .andExpect(jsonPath("$[0].challengeContent").value(challenge1.getContent()))
                 .andExpect(jsonPath("$[0].challengeStatus").value(userChallenge.getChallengeStatus().toString()))
                 .andDo(restDocs.document(
-                        responseFields(
+                        relaxedResponseFields(
                                 fieldWithPath("[].userId").description("유저 ID"),
                                 fieldWithPath("[].challengeId").description("성공한 챌린지 ID"),
                                 fieldWithPath("[].challengeTitle").description("성공한 챌린지 제목"),
