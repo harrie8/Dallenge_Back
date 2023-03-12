@@ -253,6 +253,7 @@ class UserControllerTest {
     public void checkUserPassword() throws Exception {
         User user = userService.saveUser(createUser(), passwordEncoder);
         mockMvc.perform(post("/user/{userId}/check",user.getId())
+                        .header(AUTHORIZATION, generateToken())
                         .contentType(MediaType.APPLICATION_JSON)
                         .param("password","1234")
                         .accept(MediaType.APPLICATION_JSON))
@@ -266,6 +267,7 @@ class UserControllerTest {
         User user = userService.saveUser(createUser(), passwordEncoder);
 
         mockMvc.perform(post("/user/{userId}/check",user.getId())
+                        .header(AUTHORIZATION, generateToken())
                         .contentType(MediaType.APPLICATION_JSON)
                         .param("password","12345")
                         .accept(MediaType.APPLICATION_JSON))
@@ -280,6 +282,7 @@ class UserControllerTest {
     public void changeUserPassword() throws Exception {
         User user = userService.saveUser(createUser(), passwordEncoder);
         mockMvc.perform(post("/user/{userId}/change",user.getId())
+                        .header(AUTHORIZATION, generateToken())
                         .contentType(MediaType.APPLICATION_JSON)
                         .param("oldPassword","1234")
                         .param("newPassword","12345")

@@ -327,6 +327,7 @@ public class UserControllerDocTest {
         User user = userService.saveUser(createUser(), passwordEncoder);
         mockMvc.perform(RestDocumentationRequestBuilders
                         .post("/user/{userId}/check?password=1234", user.getId())
+                        .header(AUTHORIZATION, generateToken())
                         .contentType(APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -352,6 +353,7 @@ public class UserControllerDocTest {
         User user = userService.saveUser(createUser(), passwordEncoder);
         mockMvc.perform(RestDocumentationRequestBuilders
                         .post("/user/{userId}/change?oldPassword=1234&newPassword=12345", user.getId())
+                        .header(AUTHORIZATION, generateToken())
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
