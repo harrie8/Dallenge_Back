@@ -78,7 +78,6 @@ public class UserChallenge extends BaseEntity {
         this.challengeStatus = ChallengeStatus.PAUSE;
     }
 
-    @Scheduled(cron = "0 0 0 * * *")
     public void resetChallengeStatus(){
         this.challengeStatus = ChallengeStatus.TRYING;
     }
