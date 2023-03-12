@@ -30,8 +30,8 @@ public class Badge extends BaseEntity {
     @Column(nullable = false)
     private String name;
 
-//    @OneToMany(mappedBy = "badge", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-//    private List<UserBadge> userBadges = new ArrayList<>();
+    @OneToMany(mappedBy = "badge", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<UserBadge> userBadges = new ArrayList<>();
 
     @Builder
     public Badge(String name) {
