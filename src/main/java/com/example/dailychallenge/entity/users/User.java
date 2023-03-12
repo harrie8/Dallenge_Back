@@ -2,6 +2,8 @@ package com.example.dailychallenge.entity.users;
 
 import com.example.dailychallenge.dto.UserEditor;
 import com.example.dailychallenge.entity.BaseEntity;
+import com.example.dailychallenge.entity.badge.UserBadge;
+import com.example.dailychallenge.entity.badge.UserBadgeEvaluation;
 import com.example.dailychallenge.entity.challenge.Challenge;
 import com.example.dailychallenge.entity.challenge.UserChallenge;
 import com.example.dailychallenge.entity.comment.Comment;
@@ -47,6 +49,12 @@ public class User extends BaseEntity {
     @OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
     private List<Comment> comments = new ArrayList<>();
 
+    @OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
+    private List<UserBadge> userBadges = new ArrayList<>();
+
+    @OneToOne(mappedBy = "users", cascade = CascadeType.ALL)
+    private UserBadgeEvaluation userBadgeEvaluation;
+
     @Builder
     public User(String userName, String email, String password, String registrationId) {
         this.userName = userName;
@@ -58,6 +66,10 @@ public class User extends BaseEntity {
 
     public void saveDefaultImg(UserImg userImg) {
         this.userImg = userImg;
+    }
+
+    public void saveUserBadgeEvaluation(UserBadgeEvaluation userBadgeEvaluation) {
+        this.userBadgeEvaluation = userBadgeEvaluation;
     }
 
     public UserEditor.UserEditorBuilder toEditor() {
