@@ -93,9 +93,9 @@ public class UserChallengeRepositoryCustomTest extends RepositoryTest {
         Challenge challenge6 = null;
 
         for (int i = 3; i <= 10; i++) {
+            Thread.sleep(1);
             Challenge challenge = saveChallenge("제목입니다." + i, "내용입니다." + i, WORKOUT, INDOOR,
                     WITHIN_TEN_MINUTES, savedUser);
-            Thread.sleep(1);
             saveChallengeParticipate(TRYING, savedUser, challenge);
 
             if (i == 6) {
