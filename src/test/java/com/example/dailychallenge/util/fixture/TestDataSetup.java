@@ -3,6 +3,7 @@ package com.example.dailychallenge.util.fixture;
 import static com.example.dailychallenge.util.fixture.challenge.ChallengeImgFixture.createChallengeImgFiles;
 
 import com.example.dailychallenge.dto.ChallengeDto;
+import com.example.dailychallenge.entity.badge.UserBadgeEvaluation;
 import com.example.dailychallenge.entity.challenge.Challenge;
 import com.example.dailychallenge.entity.challenge.UserChallenge;
 import com.example.dailychallenge.entity.comment.Comment;
@@ -12,6 +13,8 @@ import com.example.dailychallenge.entity.users.User;
 import com.example.dailychallenge.repository.CommentImgRepository;
 import com.example.dailychallenge.repository.CommentRepository;
 import com.example.dailychallenge.repository.UserRepository;
+import com.example.dailychallenge.repository.badge.UserBadgeEvaluationRepository;
+import com.example.dailychallenge.service.badge.UserBadgeEvaluationService;
 import com.example.dailychallenge.service.challenge.ChallengeService;
 import com.example.dailychallenge.service.challenge.UserChallengeService;
 import com.example.dailychallenge.service.hashtag.ChallengeHashtagService;
@@ -38,6 +41,10 @@ public class TestDataSetup {
     private HashtagService hashtagService;
     @Autowired
     private ChallengeHashtagService challengeHashtagService;
+    @Autowired
+    private UserBadgeEvaluationRepository userBadgeEvaluationRepository;
+    @Autowired
+    private UserBadgeEvaluationService userBadgeEvaluationService;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -120,5 +127,22 @@ public class TestDataSetup {
         User user = userChallenge.getUsers();
         Challenge challenge = userChallenge.getChallenge();
         userChallengeService.succeedInChallenge(user.getId(), challenge.getId());
+    }
+
+    @Transactional
+    public UserBadgeEvaluation saveUserBadgeEvaluation(User user) {
+        return userBadgeEvaluationRepository.save(UserBadgeEvaluation.builder()
+                .users(user)
+                .build());
+    }
+
+    @Transactional
+    public void 챌린지_달성_뱃지를_만들_수_있으면_만든다(User user) {
+        userBadgeEvaluationService.createAchievementBadgeIfFollowStandard(user);
+    }
+
+    @Transactional
+    public void 챌린지_생성_뱃지를_만들_수_있으면_만든다(User user) {
+        userBadgeEvaluationService.createChallengeCreateBadgeIfFollowStandard(user);
     }
 }

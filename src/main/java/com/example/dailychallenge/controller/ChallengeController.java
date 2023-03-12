@@ -13,6 +13,7 @@ import com.example.dailychallenge.entity.hashtag.ChallengeHashtag;
 import com.example.dailychallenge.entity.hashtag.Hashtag;
 import com.example.dailychallenge.entity.users.User;
 import com.example.dailychallenge.exception.users.UserNotFound;
+import com.example.dailychallenge.service.badge.UserBadgeEvaluationService;
 import com.example.dailychallenge.service.challenge.ChallengeService;
 import com.example.dailychallenge.service.challenge.UserChallengeService;
 import com.example.dailychallenge.service.hashtag.ChallengeHashtagService;
@@ -62,6 +63,7 @@ public class ChallengeController {
     private final HashtagService hashtagService;
     private final ChallengeHashtagService challengeHashtagService;
     private final UserService userService;
+    private final UserBadgeEvaluationService userBadgeEvaluationService;
 
 
     @PostMapping(value = "/challenge/new", consumes = {MediaType.APPLICATION_JSON_VALUE,
@@ -85,7 +87,10 @@ public class ChallengeController {
             challengeHashtagService.saveChallengeHashtag(challenge, hashtags);
         }
 
-        ResponseCreateChallenge responseCreateChallenge = ResponseCreateChallenge.create(challenge, userChallenge);
+        String createBadgeName = userBadgeEvaluationService.createChallengeCreateBadgeIfFollowStandard(findUser);
+
+        ResponseCreateChallenge responseCreateChallenge = ResponseCreateChallenge.create(challenge, userChallenge,
+                createBadgeName);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(responseCreateChallenge);
     }

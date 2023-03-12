@@ -135,6 +135,8 @@ public class ChallengeControllerDocTest extends RestDocsTest {
     @DisplayName("챌린지 생성")
 //    @WithAuthUser
     void createChallengeTest() throws Exception {
+        testDataSetup.saveUserBadgeEvaluation(user);
+
         RequestCreateChallenge requestCreateChallenge = RequestCreateChallenge.builder()
                 .title("제목입니다.")
                 .content("내용입니다.")
@@ -171,17 +173,6 @@ public class ChallengeControllerDocTest extends RestDocsTest {
                         .contentType(MediaType.MULTIPART_FORM_DATA)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.title").value(requestCreateChallenge.getTitle()))
-                .andExpect(jsonPath("$.content").value(requestCreateChallenge.getContent()))
-                .andExpect(jsonPath("$.challengeCategory").value(requestCreateChallenge.getChallengeCategory()))
-                .andExpect(jsonPath("$.challengeLocation").value(requestCreateChallenge.getChallengeLocation()))
-                .andExpect(jsonPath("$.challengeDuration").value(requestCreateChallenge.getChallengeDuration()))
-                .andExpect(jsonPath("$.challengeStatus").value(ChallengeStatus.TRYING.getDescription()))
-                .andExpect(jsonPath("$.challengeImgUrls[*]", hasItem(startsWith("/images/"))))
-                .andExpect(jsonPath("$.challengeHashtags[*]", contains("tag1", "tag2")))
-                .andExpect(jsonPath("$.challengeOwnerUser.userName").value(user.getUserName()))
-                .andExpect(jsonPath("$.challengeOwnerUser.email").value(user.getEmail()))
-                .andExpect(jsonPath("$.challengeOwnerUser.userId").value(user.getId()))
                 .andDo(restDocs.document(
                         requestParts(
                                 partWithName("requestCreateChallenge").description("챌린지 데이터(JSON)")
@@ -207,6 +198,91 @@ public class ChallengeControllerDocTest extends RestDocsTest {
                         requestPartFields("hashtagDto",
                                 fieldWithPath("content").description("해시태그 내용")
                                         .attributes(key("format").value("\"\", \" \"은 허용하지 않습니다."))
+                        )
+                ));
+    }
+
+    @Test
+    @DisplayName("챌린지 10개 생성 뱃지 테스트")
+    void createChallengeCreateBadgeTest() throws Exception {
+        testDataSetup.saveUserBadgeEvaluation(user);
+
+        for (int i = 1; i <= 9; i++) {
+            Challenge challenge = testDataSetup.챌린지를_생성한다(
+                    "제목입니다." + i,
+                    "내용입니다." + i,
+                    STUDY.getDescription(),
+                    INDOOR.getDescription(),
+                    WITHIN_TEN_MINUTES.getDescription(),
+                    user);
+            testDataSetup.챌린지에_참가한다(challenge, user);
+            testDataSetup.챌린지_생성_뱃지를_만들_수_있으면_만든다(user);
+        }
+
+        RequestCreateChallenge requestCreateChallenge = RequestCreateChallenge.builder()
+                .title("제목입니다.")
+                .content("내용입니다.")
+                .challengeCategory("공부")
+                .challengeLocation("실내")
+                .challengeDuration("10분 이내")
+                .build();
+        List<MultipartFile> challengeImgFiles = createChallengeImgFiles();
+
+        String json = objectMapper.writeValueAsString(requestCreateChallenge);
+        MockMultipartFile mockRequestCreateChallenge = new MockMultipartFile("requestCreateChallenge",
+                "requestCreateChallenge",
+                "application/json", json.getBytes(
+                StandardCharsets.UTF_8));
+
+        HashtagDto hashtagDto = HashtagDto.builder()
+                .content(List.of("tag1", "tag2"))
+                .build();
+        String hashtagDtoJson = objectMapper.writeValueAsString(hashtagDto);
+        MockMultipartFile mockHashtagDto = new MockMultipartFile("hashtagDto",
+                "hashtagDto",
+                "application/json", hashtagDtoJson.getBytes(UTF_8));
+
+        String challengeCategoryDescriptions = String.join(", ", ChallengeCategory.getDescriptions());
+        String challengeLocationDescriptions = String.join(", ", ChallengeLocation.getDescriptions());
+        String challengeDurationDescriptions = String.join(", ", ChallengeDuration.getDescriptions());
+        mockMvc.perform(multipart("/challenge/new")
+                        .file(mockRequestCreateChallenge)
+                        .part(new MockPart("challengeImgFiles", "challengeImgFile", challengeImgFiles.get(0).getBytes()))
+                        .part(new MockPart("challengeImgFiles", "challengeImgFile", challengeImgFiles.get(1).getBytes()))
+                        .part(new MockPart("challengeImgFiles", "challengeImgFile", challengeImgFiles.get(2).getBytes()))
+                        .file(mockHashtagDto)
+                        .header(AUTHORIZATION, token)
+                        .contentType(MediaType.MULTIPART_FORM_DATA)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isCreated())
+                .andDo(restDocs.document(
+                        requestParts(
+                                partWithName("requestCreateChallenge").description("챌린지 데이터(JSON)")
+                                        .attributes(key("type").value("JSON")),
+                                partWithName("challengeImgFiles").description("챌린지 이미지 파일들(FILE)").optional()
+                                        .attributes(key("type").value(".jpg")),
+                                partWithName("hashtagDto").description("해시태그 데이터(JSON)").optional()
+                                        .attributes(key("type").value("JSON"))
+                        ),
+                        requestPartFields("requestCreateChallenge",
+                                fieldWithPath("title").description("제목"),
+                                fieldWithPath("content").description("내용"),
+                                fieldWithPath("challengeCategory").description("카테고리")
+                                        .attributes(key("format").value(
+                                                challengeCategoryDescriptions)),
+                                fieldWithPath("challengeLocation").description("장소")
+                                        .attributes(key("format").value(
+                                                challengeLocationDescriptions)),
+                                fieldWithPath("challengeDuration").description("기간")
+                                        .attributes(key("format").value(
+                                                challengeDurationDescriptions))
+                        ),
+                        requestPartFields("hashtagDto",
+                                fieldWithPath("content").description("해시태그 내용")
+                                        .attributes(key("format").value("\"\", \" \"은 허용하지 않습니다."))
+                        ),
+                        relaxedResponseFields(
+                                fieldWithPath("createBadgeName").description("생성된 뱃지 이름 - 생성된 뱃지가 없으면 빈 값(\"\")을 반환합니다.")
                         )
                 ));
     }

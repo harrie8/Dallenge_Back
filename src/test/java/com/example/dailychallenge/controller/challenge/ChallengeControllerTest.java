@@ -129,6 +129,8 @@ class ChallengeControllerTest extends ControllerTest {
     @DisplayName("챌린지 생성 테스트")
 //    @WithAuthUser
     void createChallengeTest() throws Exception {
+        testDataSetup.saveUserBadgeEvaluation(user);
+
         RequestCreateChallenge requestCreateChallenge = RequestCreateChallenge.builder()
                 .title("제목입니다.")
                 .content("내용입니다.")
@@ -171,7 +173,71 @@ class ChallengeControllerTest extends ControllerTest {
                 .andExpect(jsonPath("$.challengeHashtags[*]", contains("tag1", "tag2")))
                 .andExpect(jsonPath("$.challengeOwnerUser.userName").value(user.getUserName()))
                 .andExpect(jsonPath("$.challengeOwnerUser.email").value(user.getEmail()))
-                .andExpect(jsonPath("$.challengeOwnerUser.userId").value(user.getId()));
+                .andExpect(jsonPath("$.challengeOwnerUser.userId").value(user.getId()))
+                .andExpect(jsonPath("$.createBadgeName").value(""));
+    }
+
+    @Test
+    @DisplayName("챌린지 10개 생성 뱃지 테스트")
+    void createChallengeCreateBadgeTest() throws Exception {
+        testDataSetup.saveUserBadgeEvaluation(user);
+
+        for (int i = 1; i <= 9; i++) {
+            Challenge challenge = testDataSetup.챌린지를_생성한다(
+                    "제목입니다." + i,
+                    "내용입니다." + i,
+                    STUDY.getDescription(),
+                    INDOOR.getDescription(),
+                    WITHIN_TEN_MINUTES.getDescription(),
+                    user);
+            testDataSetup.챌린지에_참가한다(challenge, user);
+            testDataSetup.챌린지_생성_뱃지를_만들_수_있으면_만든다(user);
+        }
+
+        RequestCreateChallenge requestCreateChallenge = RequestCreateChallenge.builder()
+                .title("제목입니다.")
+                .content("내용입니다.")
+                .challengeCategory("공부")
+                .challengeLocation("실내")
+                .challengeDuration("10분 이내")
+                .build();
+        List<MultipartFile> challengeImgFiles = createChallengeImgFiles();
+
+        String json = objectMapper.writeValueAsString(requestCreateChallenge);
+        MockMultipartFile mockRequestCreateChallenge = new MockMultipartFile("requestCreateChallenge",
+                "requestCreateChallenge",
+                "application/json", json.getBytes(UTF_8));
+
+        HashtagDto hashtagDto = HashtagDto.builder()
+                .content(List.of("tag1", "tag2"))
+                .build();
+        String hashtagDtoJson = objectMapper.writeValueAsString(hashtagDto);
+        MockMultipartFile mockHashtagDto = new MockMultipartFile("hashtagDto",
+                "hashtagDto",
+                "application/json", hashtagDtoJson.getBytes(UTF_8));
+
+        mockMvc.perform(multipart("/challenge/new")
+                        .file(mockRequestCreateChallenge)
+                        .part(new MockPart("challengeImgFiles", "challengeImgFile", challengeImgFiles.get(0).getBytes()))
+                        .part(new MockPart("challengeImgFiles", "challengeImgFile", challengeImgFiles.get(1).getBytes()))
+                        .part(new MockPart("challengeImgFiles", "challengeImgFile", challengeImgFiles.get(2).getBytes()))
+                        .file(mockHashtagDto)
+                        .with(requestPostProcessor) // 토큰 인증 처리, 입력한 정보로 인증된 사용자 생성
+                        .contentType(MediaType.MULTIPART_FORM_DATA)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.title").value(requestCreateChallenge.getTitle()))
+                .andExpect(jsonPath("$.content").value(requestCreateChallenge.getContent()))
+                .andExpect(jsonPath("$.challengeCategory").value(requestCreateChallenge.getChallengeCategory()))
+                .andExpect(jsonPath("$.challengeLocation").value(requestCreateChallenge.getChallengeLocation()))
+                .andExpect(jsonPath("$.challengeDuration").value(requestCreateChallenge.getChallengeDuration()))
+                .andExpect(jsonPath("$.challengeStatus").value(ChallengeStatus.TRYING.getDescription()))
+                .andExpect(jsonPath("$.challengeImgUrls[*]", hasItem(startsWith("/images/"))))
+                .andExpect(jsonPath("$.challengeHashtags[*]", contains("tag1", "tag2")))
+                .andExpect(jsonPath("$.challengeOwnerUser.userName").value(user.getUserName()))
+                .andExpect(jsonPath("$.challengeOwnerUser.email").value(user.getEmail()))
+                .andExpect(jsonPath("$.challengeOwnerUser.userId").value(user.getId()))
+                .andExpect(jsonPath("$.createBadgeName").value("챌린지 10개 생성"));
     }
 
     @Test
