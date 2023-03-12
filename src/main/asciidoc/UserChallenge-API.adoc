@@ -1,4 +1,4 @@
-[[Challenge-API]]
+[[UserChallenge-API]]
 == 챌린지 참가 API
 
 [[UserChallenge-챌린지-참가]]

@@ -13,6 +13,7 @@ public enum ChallengeCreateBadgeType implements BadgeType{
     CREATED_30(300),
     ;
 
+    private final static String CREATE = "생성";
     private final int number;
 
     ChallengeCreateBadgeType(int number) {
@@ -32,6 +33,10 @@ public enum ChallengeCreateBadgeType implements BadgeType{
 
     @Override
     public String getName() {
-        return String.format("챌린지 %d개 생성", this.number);
+        return String.format("챌린지 %d개 " + CREATE, this.number);
+    }
+
+    public static boolean isSameType(String badgeName) {
+        return badgeName.contains(CREATE);
     }
 }
