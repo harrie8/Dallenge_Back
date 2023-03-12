@@ -217,7 +217,6 @@ class ChallengeControllerTest extends ControllerTest {
         initData();
 
         mockMvc.perform(get("/challenge")
-                        .with(requestPostProcessor)
                         .param("size", "20")
                         .param("page", "0")
                         .accept(MediaType.APPLICATION_JSON))
@@ -257,7 +256,6 @@ class ChallengeControllerTest extends ControllerTest {
         initData();
 
         mockMvc.perform(get("/challenge/hashtag")
-                        .with(requestPostProcessor)
                         .param("size", "10")
                         .param("page", "0")
                         .param("content", "tag2")
@@ -351,7 +349,6 @@ class ChallengeControllerTest extends ControllerTest {
         initData();
 
         mockMvc.perform(get("/challenge/condition")
-                        .with(requestPostProcessor)
                         .param("title", condition.getTitle())
                         .param("category", condition.getCategory())
                         .param("size", "20")
@@ -383,7 +380,6 @@ class ChallengeControllerTest extends ControllerTest {
         initData();
 
         mockMvc.perform(get("/challenge")
-                        .with(requestPostProcessor)
                         .param("size", String.valueOf(numOfPage))
                         .param("page", "0")
                         .accept(MediaType.APPLICATION_JSON))
@@ -398,7 +394,6 @@ class ChallengeControllerTest extends ControllerTest {
         initData();
 
         mockMvc.perform(get("/challenge/question")
-                        .with(requestPostProcessor)
                         .param("challengeLocationIndex", "1")
                         .param("challengeDurationIndex", "0")
                         .param("challengeCategoryIndex", "2")
@@ -418,7 +413,6 @@ class ChallengeControllerTest extends ControllerTest {
         initData();
 
         mockMvc.perform(get("/challenge/hashtags")
-                        .with(requestPostProcessor)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.[*].hashtagId").isNotEmpty())
@@ -433,7 +427,6 @@ class ChallengeControllerTest extends ControllerTest {
         initData();
 
         mockMvc.perform(get("/challenge/random")
-                        .with(requestPostProcessor)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").isNotEmpty())

@@ -29,14 +29,12 @@ import com.example.dailychallenge.vo.challenge.ResponseUserChallenge;
 import com.example.dailychallenge.vo.hashtag.ResponseChallengeHashtag;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.validator.constraints.Range;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
@@ -127,7 +125,6 @@ public class ChallengeController {
 
     @GetMapping("/challenge/question")
     public ResponseEntity<List<ResponseRecommendedChallenge>> searchChallengesByQuestion(
-            @AuthenticationPrincipal org.springframework.security.core.userdetails.User user,
             @RequestParam @Range(min = 0, max = 1) Integer challengeLocationIndex,
             @RequestParam @Range(min = 0, max = 3) Integer challengeDurationIndex,
             @RequestParam @Range(min = 0, max = 4) Integer challengeCategoryIndex) {
@@ -143,8 +140,7 @@ public class ChallengeController {
     }
 
     @GetMapping("/challenge/hashtags")
-    public ResponseEntity<List<ResponseChallengeHashtag>> searchChallengesByHashtags(
-            @AuthenticationPrincipal org.springframework.security.core.userdetails.User user) {
+    public ResponseEntity<List<ResponseChallengeHashtag>> searchChallengesByHashtags() {
 
         List<Hashtag> hashtags = hashtagService.searchThreeMostWrittenHashtags();
         List<HashtagChallengesDto> hashtagChallengesDtos = challengeHashtagService.searchByHashtags(hashtags);
@@ -160,8 +156,7 @@ public class ChallengeController {
     }
 
     @GetMapping("/challenge/random")
-    public ResponseEntity<ResponseRecommendedChallenge> searchChallengeByRandom(
-            @AuthenticationPrincipal org.springframework.security.core.userdetails.User user) {
+    public ResponseEntity<ResponseRecommendedChallenge> searchChallengeByRandom() {
 
         ResponseRecommendedChallenge recommendedChallenge = challengeService.searchByRandom();
 

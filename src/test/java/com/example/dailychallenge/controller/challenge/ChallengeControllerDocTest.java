@@ -55,7 +55,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.mock.web.MockPart;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.web.multipart.MultipartFile;
 
 public class ChallengeControllerDocTest extends RestDocsTest {
@@ -260,7 +259,6 @@ public class ChallengeControllerDocTest extends RestDocsTest {
         initData();
 
         mockMvc.perform(get("/challenge")
-                        .header(AUTHORIZATION, token)
                         .param("size", "20")
                         .param("page", "0")
                         .param("sort", "popular")
@@ -320,7 +318,6 @@ public class ChallengeControllerDocTest extends RestDocsTest {
         initData();
 
         mockMvc.perform(get("/challenge")
-                        .header(AUTHORIZATION, token)
                         .param("size", "20")
                         .param("page", "0")
                         .param("sort", "time")
@@ -349,7 +346,6 @@ public class ChallengeControllerDocTest extends RestDocsTest {
         initData();
 
         mockMvc.perform(get("/challenge/hashtag")
-                        .header(AUTHORIZATION, token)
                         .param("size", "10")
                         .param("page", "0")
                         .param("content", "tag2")
@@ -400,7 +396,6 @@ public class ChallengeControllerDocTest extends RestDocsTest {
 
         mockMvc.perform(get("/challenge/condition")
                         .characterEncoding(UTF_8)
-                        .header(AUTHORIZATION, token)
                         .param("title", "")
                         .param("category", ChallengeCategory.WORKOUT.getDescription())
                         .param("size", "20")
@@ -452,7 +447,6 @@ public class ChallengeControllerDocTest extends RestDocsTest {
         initData();
 
         mockMvc.perform(get("/challenge/condition")
-                        .header(AUTHORIZATION, token)
                         .param("title", "")
                         .param("category", ChallengeCategory.WORKOUT.getDescription())
                         .param("size", "20")
@@ -485,7 +479,6 @@ public class ChallengeControllerDocTest extends RestDocsTest {
         initData();
 
         mockMvc.perform(get("/challenge/question")
-                        .header(AUTHORIZATION, token)
                         .param("challengeLocationIndex", "1")
                         .param("challengeDurationIndex", "0")
                         .param("challengeCategoryIndex", "2")
@@ -509,7 +502,6 @@ public class ChallengeControllerDocTest extends RestDocsTest {
         initData();
 
         mockMvc.perform(get("/challenge/hashtags")
-                        .header(AUTHORIZATION, token)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andDo(restDocs.document(
@@ -528,7 +520,6 @@ public class ChallengeControllerDocTest extends RestDocsTest {
         initData();
 
         mockMvc.perform(get("/challenge/random")
-                        .header(AUTHORIZATION, token)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andDo(restDocs.document());
