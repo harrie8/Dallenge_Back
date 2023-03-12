@@ -6,6 +6,7 @@ import com.example.dailychallenge.entity.badge.type.AchievementBadgeType;
 import com.example.dailychallenge.entity.badge.type.BadgeType;
 import com.example.dailychallenge.entity.badge.type.ChallengeCreateBadgeType;
 import com.example.dailychallenge.entity.users.User;
+import com.example.dailychallenge.repository.badge.UserBadgeEvaluationRepository;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -14,8 +15,16 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 public class UserBadgeEvaluationService {
+    private final UserBadgeEvaluationRepository userBadgeEvaluationRepository;
     private final BadgeService badgeService;
     private final UserBadgeService userBadgeService;
+
+    @Transactional
+    public UserBadgeEvaluation createUserBadgeEvaluation(User user) {
+        return userBadgeEvaluationRepository.save(UserBadgeEvaluation.builder()
+                .users(user)
+                .build());
+    }
 
     @Transactional
     public Optional<Badge> createAchievementBadgeIfFollowStandard(User user) {

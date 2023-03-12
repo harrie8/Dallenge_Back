@@ -6,6 +6,7 @@ import com.example.dailychallenge.exception.users.UserDuplicateCheck;
 import com.example.dailychallenge.exception.users.UserLoginFailure;
 import com.example.dailychallenge.exception.users.UserNotFound;
 import com.example.dailychallenge.exception.users.UserPasswordCheck;
+import com.example.dailychallenge.service.badge.UserBadgeEvaluationService;
 import com.example.dailychallenge.service.users.UserService;
 import com.example.dailychallenge.utils.JwtTokenUtil;
 import com.example.dailychallenge.vo.RequestLogin;
@@ -50,6 +51,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class UserController {
 
     private final UserService userService;
+    private final UserBadgeEvaluationService userBadgeEvaluationService;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final JwtTokenUtil jwtTokenUtil;
@@ -62,6 +64,8 @@ public class UserController {
         User savedUser = userService.saveUser(userDto, passwordEncoder);
         ResponseUser responseUser = mapper.map(userDto, ResponseUser.class);
         responseUser.setUserId(savedUser.getId());
+
+        userBadgeEvaluationService.createUserBadgeEvaluation(savedUser);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(responseUser);
     }
