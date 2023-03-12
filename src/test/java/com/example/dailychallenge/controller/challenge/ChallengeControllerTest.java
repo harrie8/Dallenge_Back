@@ -251,6 +251,41 @@ class ChallengeControllerTest extends ControllerTest {
                         hasItem(user.getId().intValue())));
     }
 
+    @Test
+    @DisplayName("해시태그로 검색한 챌린지 조회 테스트")
+    void searchChallengesByHashtagTest() throws Exception {
+        initData();
+
+        mockMvc.perform(get("/challenge/hashtag")
+                        .with(requestPostProcessor)
+                        .param("size", "10")
+                        .param("page", "0")
+                        .param("content", "tag2")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content[*].title", contains(
+                        "제목입니다.1", "제목입니다.2", "제목입니다.6")))
+                .andExpect(jsonPath("$.content[*].content", contains(
+                        "내용입니다.1", "내용입니다.2", "내용입니다.6")))
+                .andExpect(jsonPath("$.content[*].challengeCategory",
+                        hasItems(ECONOMY.getDescription(), STUDY.getDescription(),
+                                WORKOUT.getDescription())))
+                .andExpect(jsonPath("$.content[*].challengeLocation",
+                        hasItems(OUTDOOR.getDescription(),
+                                INDOOR.getDescription())))
+                .andExpect(jsonPath("$.content[*].challengeDuration",
+                        hasItems(OVER_ONE_HOUR.getDescription(),
+                                WITHIN_TEN_MINUTES.getDescription())))
+                .andExpect(jsonPath("$.content[*].challengeImgUrls",
+                        hasItems(hasItem(startsWith("/images/")))))
+                .andExpect(jsonPath("$.content[*].challengeOwnerUser.userName",
+                        hasItem(user.getUserName())))
+                .andExpect(jsonPath("$.content[*].challengeOwnerUser.email",
+                        hasItem(user.getEmail())))
+                .andExpect(jsonPath("$.content[*].challengeOwnerUser.userId",
+                        hasItem(user.getId().intValue())));
+    }
+
     static Stream<Arguments> generateConditionData() {
         return Stream.of(
                 Arguments.of(ChallengeSearchCondition.builder()

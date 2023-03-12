@@ -116,6 +116,25 @@ include::{snippets}/challenge-controller-doc-test/search-challenges-by-condition
 
 ====
 
+[[Challenge-해시태그로-챌린지들-검색]]
+=== 해시태그로 챌린지들 검색
+
+==== time 정렬
+====
+
+- time은 오름차순 정렬합니다.
+
+operation::challenge-controller-doc-test/search-challenges-by-hashtag-test[snippets='http-request,request-parameters']
+
+.HTTP Response
+[%collapsible]
+=====
+include::{snippets}/challenge-controller-doc-test/search-challenges-by-hashtag-test/http-response.adoc[]
+include::{snippets}/challenge-controller-doc-test/search-challenges-by-hashtag-test/response-fields.adoc[]
+=====
+
+====
+
 [[Challenge-질문으로-챌린지들-추천하기]]
 === 질문으로 챌린지들 추천
 

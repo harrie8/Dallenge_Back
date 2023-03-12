@@ -67,6 +67,7 @@ public class ResponseChallenge {
         this.created_at = challenge.getFormattedCreatedAt();
         this.challengeImgUrls = challenge.getImgUrls();
         this.challengeHashtags = challenge.getHashtags();
+        this.howManyUsersAreInThisChallenge = Long.valueOf(challenge.getUserChallenges().size());
         this.challengeOwnerUser = ResponseUser.create(challenge.getUsers());
     }
 }
