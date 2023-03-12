@@ -4,12 +4,15 @@ import com.example.dailychallenge.entity.challenge.Challenge;
 import com.example.dailychallenge.entity.challenge.UserChallenge;
 import com.example.dailychallenge.entity.users.User;
 import com.example.dailychallenge.exception.users.UserNotFound;
+import com.example.dailychallenge.service.badge.UserBadgeEvaluationService;
 import com.example.dailychallenge.service.challenge.ChallengeService;
 import com.example.dailychallenge.service.challenge.UserChallengeService;
 import com.example.dailychallenge.service.users.UserService;
 import com.example.dailychallenge.vo.ResponseChallengeByUserChallenge;
 import com.example.dailychallenge.vo.ResponseMessage;
+import com.example.dailychallenge.vo.badge.ResponseCreateBadgeMessage;
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,6 +30,7 @@ public class UserChallengeController {
     private final ChallengeService challengeService;
     private final UserChallengeService userChallengeService;
     private final UserService userService;
+    private final UserBadgeEvaluationService userBadgeEvaluationService;
 
     @PostMapping("/challenge/{challengeId}/participate")
     public ResponseEntity<ResponseMessage> participateInChallenge(
@@ -69,12 +73,17 @@ public class UserChallengeController {
 
 
     @PostMapping("/challenge/{challengeId}/success")
-    public ResponseEntity<ResponseMessage> succeedInChallenge(
+    public ResponseEntity<Object> succeedInChallenge(
             @AuthenticationPrincipal org.springframework.security.core.userdetails.User user,
             @PathVariable Long challengeId){
         String userEmail = user.getUsername();
         User findUser = userService.findByEmail(userEmail).orElseThrow(UserNotFound::new);
         userChallengeService.succeedInChallenge(findUser.getId(), challengeId);
+
+        Optional<ResponseCreateBadgeMessage> responseCreateBadgeMessage = isBadgeCreated(findUser);
+        if (responseCreateBadgeMessage.isPresent()) {
+            return ResponseEntity.status(HttpStatus.OK).body(responseCreateBadgeMessage);
+        }
 
         ResponseMessage responseMessage = ResponseMessage.builder()
                 .code(200)
@@ -82,6 +91,20 @@ public class UserChallengeController {
                 .build();
 
         return ResponseEntity.status(HttpStatus.OK).body(responseMessage);
+    }
+
+    private Optional<ResponseCreateBadgeMessage> isBadgeCreated(User user) {
+        String createBadgeName = userBadgeEvaluationService.createAchievementBadgeIfFollowStandard(user);
+        ResponseCreateBadgeMessage responseCreateBadgeMessage = ResponseCreateBadgeMessage.builder()
+                .code(200)
+                .message("챌린지 달성 완료!")
+                .createBadgeName(createBadgeName)
+                .build();
+
+        if (!createBadgeName.equals("")) {
+            return Optional.of(responseCreateBadgeMessage);
+        }
+        return Optional.empty();
     }
 
     @PostMapping("/challenge/{challengeId}/pause")

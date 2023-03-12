@@ -155,6 +155,7 @@ public class UserChallengeControllerDocTest extends RestDocsTest {
     @Test
     @DisplayName("챌린지 달성 완료 테스트")
     void succeedInChallengeTest() throws Exception {
+        testDataSetup.saveUserBadgeEvaluation(user);
 
         mockMvc.perform(post("/challenge/{challengeId}/success", challenge1.getId())
                         .header(AUTHORIZATION, token)
@@ -169,6 +170,50 @@ public class UserChallengeControllerDocTest extends RestDocsTest {
                         responseFields(
                                 fieldWithPath("code").description("HTTP STATUS"),
                                 fieldWithPath("message").description("메시지")
+                        )
+                ));
+    }
+
+    @Test
+    @DisplayName("챌린지 10개 달성 완료 테스트")
+    void createAchievementBadgeTest() throws Exception {
+        testDataSetup.saveUserBadgeEvaluation(user);
+        for (int i = 1; i <= 9; i++) {
+            Challenge challenge = testDataSetup.챌린지를_생성한다(
+                    "제목입니다." + i,
+                    "내용입니다." + i,
+                    STUDY.getDescription(),
+                    INDOOR.getDescription(),
+                    WITHIN_TEN_MINUTES.getDescription(),
+                    user);
+            UserChallenge userChallenge = testDataSetup.챌린지에_참가한다(challenge, user);
+            testDataSetup.챌린지를_달성한다(userChallenge);
+            testDataSetup.챌린지_달성_뱃지를_만들_수_있으면_만든다(user);
+        }
+        Challenge challenge = testDataSetup.챌린지를_생성한다(
+                "제목입니다." + 10,
+                "내용입니다." + 10,
+                STUDY.getDescription(),
+                INDOOR.getDescription(),
+                WITHIN_TEN_MINUTES.getDescription(),
+                user);
+        testDataSetup.챌린지에_참가한다(challenge, user);
+
+        mockMvc.perform(post("/challenge/{challengeId}/success", challenge1.getId())
+                        .header(AUTHORIZATION, token)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value(200))
+                .andExpect(jsonPath("$.message").value("챌린지 달성 완료!"))
+                .andExpect(jsonPath("$.createBadgeName").value("챌린지 10개 달성"))
+                .andDo(restDocs.document(
+                        pathParameters(
+                                parameterWithName("challengeId").description("내가 달성한 챌린지 ID")
+                        ),
+                        responseFields(
+                                fieldWithPath("code").description("HTTP STATUS"),
+                                fieldWithPath("message").description("메시지"),
+                                fieldWithPath("createBadgeName").description("챌린지 N개 달성 뱃지 이름")
                         )
                 ));
     }

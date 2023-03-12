@@ -13,3 +13,13 @@
 - HTTP Request는 챌린지 생성과 같습니다.
 
 operation::challenge-controller-doc-test/create-challenge-create-badge-test[snippets='http-response,response-fields']
+
+
+[[Badge-챌린지-N개-달성-뱃지]]
+=== 챌린지 N개 달성 뱃지(성취)
+
+- 챌린지 달성 API 요청을 했을 때 뱃지 생성 조건이 맞는 경우 뱃지를 생성합니다.
+
+- HTTP Request는 챌린지 달성과 같습니다.
+
+operation::user-challenge-controller-doc-test/create-achievement-badge-test[snippets='http-request,http-response,response-fields']
