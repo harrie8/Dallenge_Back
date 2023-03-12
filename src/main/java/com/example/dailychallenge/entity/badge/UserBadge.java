@@ -35,8 +35,8 @@ public class UserBadge extends BaseEntity {
 
     @Builder
     public UserBadge(User users, Badge badge) {
-        this.users = users;
-        this.badge = badge;
+        setUser(users);
+        setBadge(badge);
     }
 
     public void setUser(User users) {

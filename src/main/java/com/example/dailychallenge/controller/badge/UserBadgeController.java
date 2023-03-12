@@ -35,21 +35,4 @@ public class UserBadgeController {
 
         return ResponseEntity.status(HttpStatus.OK).body(responseUserBadges);
     }
-
-//    @DeleteMapping("/challenge/{challengeId}")
-//    public ResponseEntity<Void> deleteChallenge(
-//            @AuthenticationPrincipal org.springframework.security.core.userdetails.User user,
-//            @PathVariable Long challengeId) {
-//        String userEmail = user.getUsername();
-//        User findUser = userService.findByEmail(userEmail).orElseThrow(UserNotFound::new);
-//
-//        List<ChallengeHashtag> challengeHashtags = challengeHashtagService.findByChallengeId(challengeId);
-//        List<Hashtag> savedTag = challengeHashtags.stream()
-//                .map(ChallengeHashtag::getHashtag).collect(Collectors.toList());
-//
-//        hashtagService.deleteHashtag(savedTag);
-//        challengeService.deleteChallenge(challengeId, findUser);
-//
-//        return ResponseEntity.noContent().build();
-//    }
 }
