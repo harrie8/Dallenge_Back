@@ -16,6 +16,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -109,5 +110,14 @@ public class UserChallengeService {
             }
         }
         return res;
+    }
+
+//    @Scheduled(cron = "0 * * * * *")
+    @Scheduled(cron = "0 0 0 * * *")
+    public void resetChallengeStatus(){
+        List<UserChallenge> userChallenges = userChallengeRepository.findAll();
+        for (UserChallenge userChallenge : userChallenges) {
+            userChallenge.resetChallengeStatus();
+        }
     }
 }
