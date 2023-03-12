@@ -60,10 +60,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.
                 authorizeRequests()
                 .antMatchers("/user/{userId:[\\d+]}/**", "/user/challenge", "/user/participate", "/user/done",
-                        "/challenge/new","/challenge/{challengeId:[\\d+]}/**", "/{challengeId:[\\d+]}/**").authenticated()
+                        "/challenge/new", "/challenge/{challengeId:[\\d+]}/**",
+                        "/{challengeId:[\\d+]}/comment/new", "/{challengeId:[\\d+]}/comment/{\\d+}").authenticated()
 //                .antMatchers("/user/login","/user/new","/**.html","/images/**","/","/token/**","/login/**","/oauth2/**","/api/user").permitAll()
                 .anyRequest().permitAll()
-            .and()
+                .and()
                 .oauth2Login()
                 .defaultSuccessUrl("/api/user")
                 .userInfoEndpoint()
