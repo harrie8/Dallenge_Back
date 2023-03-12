@@ -6,14 +6,14 @@ import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-public class ResponseCreateBadgeMessage {
+public class ResponseAchievementBadgeMessage {
 
     private Integer code;
     private String message;
     private String createBadgeName;
 
     @Builder
-    public ResponseCreateBadgeMessage(Integer code, String message, String createBadgeName) {
+    public ResponseAchievementBadgeMessage(Integer code, String message, String createBadgeName) {
         this.code = code;
         this.message = message;
         this.createBadgeName = createBadgeName;

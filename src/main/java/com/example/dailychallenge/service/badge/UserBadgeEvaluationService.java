@@ -14,12 +14,11 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 public class UserBadgeEvaluationService {
-    private final static String EMPTY_NAME = "";
     private final BadgeService badgeService;
     private final UserBadgeService userBadgeService;
 
     @Transactional
-    public String createAchievementBadgeIfFollowStandard(User user) {
+    public Optional<Badge> createAchievementBadgeIfFollowStandard(User user) {
         UserBadgeEvaluation userBadgeEvaluation = user.getUserBadgeEvaluation();
 
         userBadgeEvaluation.addNumberOfAchievement();
@@ -29,13 +28,13 @@ public class UserBadgeEvaluationService {
                 .findByNumber(numberOfAchievement);
         if (optionalAchievementBadgeType.isPresent()) {
             Badge badge = createBadge(user, optionalAchievementBadgeType.get());
-            return badge.getName();
+            return Optional.of(badge);
         }
-        return EMPTY_NAME;
+        return Optional.empty();
     }
 
     @Transactional
-    public String createChallengeCreateBadgeIfFollowStandard(User user) {
+    public Optional<Badge> createChallengeCreateBadgeIfFollowStandard(User user) {
         UserBadgeEvaluation userBadgeEvaluation = user.getUserBadgeEvaluation();
 
         userBadgeEvaluation.addNumberOfChallengeCreate();
@@ -45,9 +44,9 @@ public class UserBadgeEvaluationService {
                 .findByNumber(numberOfChallengeCreate);
         if (optionalChallengeCreateBadgeType.isPresent()) {
             Badge badge = createBadge(user, optionalChallengeCreateBadgeType.get());
-            return badge.getName();
+            return Optional.of(badge);
         }
-        return EMPTY_NAME;
+        return Optional.empty();
     }
 
     private Badge createBadge(User user, BadgeType badgeType) {

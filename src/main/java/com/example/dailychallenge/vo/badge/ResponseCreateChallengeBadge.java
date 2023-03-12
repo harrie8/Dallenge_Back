@@ -1,4 +1,4 @@
-package com.example.dailychallenge.vo.challenge;
+package com.example.dailychallenge.vo.badge;
 
 import com.example.dailychallenge.entity.challenge.Challenge;
 import com.example.dailychallenge.entity.challenge.UserChallenge;
@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-public class ResponseCreateChallenge {
+public class ResponseCreateChallengeBadge {
 
     private Long id;
     private String title;
@@ -22,12 +22,13 @@ public class ResponseCreateChallenge {
     private List<String> challengeImgUrls;
     private List<String> challengeHashtags;
     private ResponseUser challengeOwnerUser;
+    private String createBadgeName;
 
     @Builder
-    public ResponseCreateChallenge(Long id, String title, String content, String challengeCategory,
-                                   String challengeLocation, String challengeDuration, String challengeStatus,
-                                   List<String> challengeImgUrls, List<String> challengeHashtags,
-                                   ResponseUser responseUser) {
+    public ResponseCreateChallengeBadge(Long id, String title, String content, String challengeCategory,
+                                        String challengeLocation, String challengeDuration, String challengeStatus,
+                                        List<String> challengeImgUrls, List<String> challengeHashtags,
+                                        ResponseUser responseUser, String createBadgeName) {
 
         this.id = id;
         this.title = title;
@@ -39,12 +40,14 @@ public class ResponseCreateChallenge {
         this.challengeImgUrls = challengeImgUrls;
         this.challengeHashtags = challengeHashtags;
         this.challengeOwnerUser = responseUser;
+        this.createBadgeName = createBadgeName;
     }
 
-    public static ResponseCreateChallenge create(Challenge challenge, UserChallenge userChallenge) {
+    public static ResponseCreateChallengeBadge create(Challenge challenge, UserChallenge userChallenge,
+                                                      String createBadgeName) {
         ResponseUser responseUser = ResponseUser.create(challenge.getUsers());
 
-        return ResponseCreateChallenge.builder()
+        return ResponseCreateChallengeBadge.builder()
                 .id(challenge.getId())
                 .title(challenge.getTitle())
                 .content(challenge.getContent())
@@ -55,6 +58,7 @@ public class ResponseCreateChallenge {
                 .challengeImgUrls(challenge.getImgUrls())
                 .challengeHashtags(challenge.getHashtags())
                 .responseUser(responseUser)
+                .createBadgeName(createBadgeName)
                 .build();
     }
 }
