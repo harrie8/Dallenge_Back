@@ -78,6 +78,21 @@ class UserBadgeEvaluationServiceTest extends ServiceTest {
 
             assertTrue(badgeRepository.findAll().isEmpty());
         }
+
+        @Test
+        @DisplayName("삭제 테스트")
+        void deleteTest() {
+            챌린지를_생성하고_참여하고_달성한다();
+            userBadgeEvaluationService.createAchievementBadgeIfFollowStandard(user);
+
+            userBadgeEvaluationService.deleteAchievementBadgeIfFollowStandard(user);
+
+            // User의 userBadge에 cascade가 걸려 있어서 삭제 되지 않았었음
+            UserBadgeEvaluation userBadgeEvaluation = user.getUserBadgeEvaluation();
+            assertEquals(9, userBadgeEvaluation.getNumberOfAchievement());
+            assertEquals(0, badgeRepository.findAll().size());
+            assertEquals(0, userBadgeRepository.findAll().size());
+        }
     }
 
     @Nested
