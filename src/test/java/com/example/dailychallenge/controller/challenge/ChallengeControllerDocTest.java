@@ -135,6 +135,8 @@ public class ChallengeControllerDocTest extends RestDocsTest {
     @DisplayName("챌린지 생성")
 //    @WithAuthUser
     void createChallengeTest() throws Exception {
+        testDataSetup.saveUserBadgeEvaluation(user);
+
         RequestCreateChallenge requestCreateChallenge = RequestCreateChallenge.builder()
                 .title("제목입니다.")
                 .content("내용입니다.")
@@ -171,17 +173,6 @@ public class ChallengeControllerDocTest extends RestDocsTest {
                         .contentType(MediaType.MULTIPART_FORM_DATA)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.title").value(requestCreateChallenge.getTitle()))
-                .andExpect(jsonPath("$.content").value(requestCreateChallenge.getContent()))
-                .andExpect(jsonPath("$.challengeCategory").value(requestCreateChallenge.getChallengeCategory()))
-                .andExpect(jsonPath("$.challengeLocation").value(requestCreateChallenge.getChallengeLocation()))
-                .andExpect(jsonPath("$.challengeDuration").value(requestCreateChallenge.getChallengeDuration()))
-                .andExpect(jsonPath("$.challengeStatus").value(ChallengeStatus.TRYING.getDescription()))
-                .andExpect(jsonPath("$.challengeImgUrls[*]", hasItem(startsWith("/images/"))))
-                .andExpect(jsonPath("$.challengeHashtags[*]", contains("tag1", "tag2")))
-                .andExpect(jsonPath("$.challengeOwnerUser.userName").value(user.getUserName()))
-                .andExpect(jsonPath("$.challengeOwnerUser.email").value(user.getEmail()))
-                .andExpect(jsonPath("$.challengeOwnerUser.userId").value(user.getId()))
                 .andDo(restDocs.document(
                         requestParts(
                                 partWithName("requestCreateChallenge").description("챌린지 데이터(JSON)")

@@ -13,6 +13,7 @@ public enum AchievementBadgeType implements BadgeType{
     ACHIEVED_50(50),
     ;
 
+    private static final String ACHIEVEMENT = "달성";
     private final int number;
 
     AchievementBadgeType(int number) {
@@ -32,6 +33,10 @@ public enum AchievementBadgeType implements BadgeType{
 
     @Override
     public String getName() {
-        return String.format("챌린지 %d개 달성", this.number);
+        return String.format("챌린지 %d개 " + ACHIEVEMENT, this.number);
+    }
+
+    public static boolean isSameType(String badgeName) {
+        return badgeName.contains(ACHIEVEMENT);
     }
 }

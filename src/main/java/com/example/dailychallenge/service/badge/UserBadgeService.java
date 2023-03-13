@@ -4,6 +4,7 @@ import com.example.dailychallenge.entity.badge.Badge;
 import com.example.dailychallenge.entity.badge.UserBadge;
 import com.example.dailychallenge.entity.users.User;
 import com.example.dailychallenge.repository.badge.UserBadgeRepository;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,8 +25,7 @@ public class UserBadgeService {
         return userBadgeRepository.save(userBadge);
     }
 
-    @Transactional
-    public void removeUserBadge(UserBadge userBadge) {
-        userBadgeRepository.delete(userBadge);
+    public List<UserBadge> findAllByUserId(Long userId) {
+        return userBadgeRepository.findAllByUsersId(userId);
     }
 }

@@ -4,6 +4,7 @@ import com.example.dailychallenge.dto.ChallengeDto;
 import com.example.dailychallenge.dto.ChallengeSearchCondition;
 import com.example.dailychallenge.dto.HashtagChallengesDto;
 import com.example.dailychallenge.dto.HashtagDto;
+import com.example.dailychallenge.entity.badge.Badge;
 import com.example.dailychallenge.entity.challenge.Challenge;
 import com.example.dailychallenge.entity.challenge.ChallengeCategory;
 import com.example.dailychallenge.entity.challenge.ChallengeDuration;
@@ -13,11 +14,13 @@ import com.example.dailychallenge.entity.hashtag.ChallengeHashtag;
 import com.example.dailychallenge.entity.hashtag.Hashtag;
 import com.example.dailychallenge.entity.users.User;
 import com.example.dailychallenge.exception.users.UserNotFound;
+import com.example.dailychallenge.service.badge.UserBadgeEvaluationService;
 import com.example.dailychallenge.service.challenge.ChallengeService;
 import com.example.dailychallenge.service.challenge.UserChallengeService;
 import com.example.dailychallenge.service.hashtag.ChallengeHashtagService;
 import com.example.dailychallenge.service.hashtag.HashtagService;
 import com.example.dailychallenge.service.users.UserService;
+import com.example.dailychallenge.vo.badge.ResponseCreateChallengeBadge;
 import com.example.dailychallenge.vo.challenge.RequestCreateChallenge;
 import com.example.dailychallenge.vo.challenge.RequestUpdateChallenge;
 import com.example.dailychallenge.vo.challenge.ResponseChallenge;
@@ -29,6 +32,7 @@ import com.example.dailychallenge.vo.challenge.ResponseUserChallenge;
 import com.example.dailychallenge.vo.hashtag.ResponseChallengeHashtag;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -62,11 +66,12 @@ public class ChallengeController {
     private final HashtagService hashtagService;
     private final ChallengeHashtagService challengeHashtagService;
     private final UserService userService;
+    private final UserBadgeEvaluationService userBadgeEvaluationService;
 
 
     @PostMapping(value = "/challenge/new", consumes = {MediaType.APPLICATION_JSON_VALUE,
             MediaType.MULTIPART_FORM_DATA_VALUE})
-    public ResponseEntity<ResponseCreateChallenge> createChallenge(
+    public ResponseEntity<Object> createChallenge(
             @AuthenticationPrincipal org.springframework.security.core.userdetails.User user,
             @RequestPart @Valid RequestCreateChallenge requestCreateChallenge,
             @RequestPart(required = false) List<MultipartFile> challengeImgFiles,
@@ -85,9 +90,28 @@ public class ChallengeController {
             challengeHashtagService.saveChallengeHashtag(challenge, hashtags);
         }
 
+        Optional<ResponseCreateChallengeBadge> responseCreateChallengeBadge = isBadgeCreated(findUser, challenge,
+                userChallenge);
+        if (responseCreateChallengeBadge.isPresent()) {
+            return ResponseEntity.status(HttpStatus.CREATED).body(responseCreateChallengeBadge);
+        }
+
         ResponseCreateChallenge responseCreateChallenge = ResponseCreateChallenge.create(challenge, userChallenge);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(responseCreateChallenge);
+    }
+
+    private Optional<ResponseCreateChallengeBadge> isBadgeCreated(User user, Challenge challenge,
+                                                                  UserChallenge userChallenge) {
+
+        Optional<Badge> optionalBadge = userBadgeEvaluationService.createChallengeCreateBadgeIfFollowStandard(user);
+        if (optionalBadge.isPresent()) {
+            String createBadgeName = optionalBadge.get().getName();
+            ResponseCreateChallengeBadge responseCreateChallengeBadge = ResponseCreateChallengeBadge.create(challenge,
+                    userChallenge, createBadgeName);
+            return Optional.of(responseCreateChallengeBadge);
+        }
+        return Optional.empty();
     }
 
     @GetMapping("/challenge/{challengeId}")

@@ -3,6 +3,8 @@ package com.example.dailychallenge.controller.exception;
 import com.example.dailychallenge.exception.AuthorizationException;
 import com.example.dailychallenge.exception.CommonException;
 import com.example.dailychallenge.exception.FileNotUpload;
+import com.example.dailychallenge.exception.badge.BadgeNotFound;
+import com.example.dailychallenge.exception.badge.BadgeTypeNotFound;
 import com.example.dailychallenge.exception.bookmark.BookmarkDuplicate;
 import com.example.dailychallenge.exception.bookmark.BookmarkNotFound;
 import com.example.dailychallenge.exception.challenge.ChallengeCategoryNotFound;
@@ -234,6 +236,28 @@ public class GlobalExceptionHandler {
         final ResponseError responseError = ResponseError.builder()
                 .code(hashtagDtoBlank.getStatusCode())
                 .message(hashtagDtoBlank.getMessage())
+                .build();
+
+        return ResponseEntity.status(responseError.getCode()).body(responseError);
+    }
+
+    @ExceptionHandler(BadgeTypeNotFound.class)
+    protected ResponseEntity<ResponseError> handlerBadgeTypeNotFound(
+            BadgeTypeNotFound badgeTypeNotFound) {
+        final ResponseError responseError = ResponseError.builder()
+                .code(badgeTypeNotFound.getStatusCode())
+                .message(badgeTypeNotFound.getMessage())
+                .build();
+
+        return ResponseEntity.status(responseError.getCode()).body(responseError);
+    }
+
+    @ExceptionHandler(BadgeNotFound.class)
+    protected ResponseEntity<ResponseError> handlerBadgeNotFound(
+            BadgeNotFound badgeNotFound) {
+        final ResponseError responseError = ResponseError.builder()
+                .code(badgeNotFound.getStatusCode())
+                .message(badgeNotFound.getMessage())
                 .build();
 
         return ResponseEntity.status(responseError.getCode()).body(responseError);

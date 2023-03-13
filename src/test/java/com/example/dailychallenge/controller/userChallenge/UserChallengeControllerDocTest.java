@@ -155,6 +155,7 @@ public class UserChallengeControllerDocTest extends RestDocsTest {
     @Test
     @DisplayName("챌린지 달성 완료 테스트")
     void succeedInChallengeTest() throws Exception {
+        testDataSetup.saveUserBadgeEvaluation(user);
 
         mockMvc.perform(post("/challenge/{challengeId}/success", challenge1.getId())
                         .header(AUTHORIZATION, token)

@@ -129,6 +129,8 @@ class ChallengeControllerTest extends ControllerTest {
     @DisplayName("챌린지 생성 테스트")
 //    @WithAuthUser
     void createChallengeTest() throws Exception {
+        testDataSetup.saveUserBadgeEvaluation(user);
+
         RequestCreateChallenge requestCreateChallenge = RequestCreateChallenge.builder()
                 .title("제목입니다.")
                 .content("내용입니다.")

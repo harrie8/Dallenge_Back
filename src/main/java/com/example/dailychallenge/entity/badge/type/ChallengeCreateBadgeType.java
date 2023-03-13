@@ -4,7 +4,7 @@ import java.util.Arrays;
 import java.util.Optional;
 
 // 챌린지 N개 생성
-public enum ChallengeCreatetBadgeType implements BadgeType{
+public enum ChallengeCreateBadgeType implements BadgeType{
 
     CREATED_10(10),
     CREATED_15(15),
@@ -13,13 +13,14 @@ public enum ChallengeCreatetBadgeType implements BadgeType{
     CREATED_30(300),
     ;
 
+    private final static String CREATE = "생성";
     private final int number;
 
-    ChallengeCreatetBadgeType(int number) {
+    ChallengeCreateBadgeType(int number) {
         this.number = number;
     }
 
-    public static Optional<ChallengeCreatetBadgeType> findByNumber(int number) {
+    public static Optional<ChallengeCreateBadgeType> findByNumber(int number) {
         return Arrays.stream(values())
                 .filter(badgeType -> badgeType.isSameNumber(number))
                 .findAny();
@@ -32,6 +33,10 @@ public enum ChallengeCreatetBadgeType implements BadgeType{
 
     @Override
     public String getName() {
-        return String.format("챌린지 %d개 생성", this.number);
+        return String.format("챌린지 %d개 " + CREATE, this.number);
+    }
+
+    public static boolean isSameType(String badgeName) {
+        return badgeName.contains(CREATE);
     }
 }

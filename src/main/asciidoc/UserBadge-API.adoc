@@ -1,0 +1,7 @@
+[[UserBadge-API]]
+== 뱃지 API
+
+[[UserBadge-모든-뱃지들-조회]]
+=== 유저의 모든 뱃지들을 조회
+
+operation::user-badge-controller-doc-test/find-all-user-badges-test[snippets='http-request,http-response,response-fields']

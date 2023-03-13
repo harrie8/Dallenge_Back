@@ -4,8 +4,11 @@ import com.example.dailychallenge.entity.badge.Badge;
 import com.example.dailychallenge.entity.badge.UserBadgeEvaluation;
 import com.example.dailychallenge.entity.badge.type.AchievementBadgeType;
 import com.example.dailychallenge.entity.badge.type.BadgeType;
-import com.example.dailychallenge.entity.badge.type.ChallengeCreatetBadgeType;
+import com.example.dailychallenge.entity.badge.type.ChallengeCreateBadgeType;
 import com.example.dailychallenge.entity.users.User;
+import com.example.dailychallenge.exception.badge.BadgeTypeNotFound;
+import com.example.dailychallenge.repository.badge.UserBadgeEvaluationRepository;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,36 +16,82 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 public class UserBadgeEvaluationService {
+    private final UserBadgeEvaluationRepository userBadgeEvaluationRepository;
     private final BadgeService badgeService;
     private final UserBadgeService userBadgeService;
 
     @Transactional
-    public void createAchievementBadgeIfFollowStandard(User user) {
+    public UserBadgeEvaluation createUserBadgeEvaluation(User user) {
+        return userBadgeEvaluationRepository.save(UserBadgeEvaluation.builder()
+                .users(user)
+                .build());
+    }
+
+    @Transactional
+    public Optional<Badge> createAchievementBadgeIfFollowStandard(User user) {
         UserBadgeEvaluation userBadgeEvaluation = user.getUserBadgeEvaluation();
 
         userBadgeEvaluation.addNumberOfAchievement();
         Integer numberOfAchievement = userBadgeEvaluation.getNumberOfAchievement();
 
-        AchievementBadgeType
-                .findByNumber(numberOfAchievement)
-                .ifPresent(achievementBadgeType -> createBadge(user, achievementBadgeType));
+        Optional<AchievementBadgeType> optionalAchievementBadgeType = AchievementBadgeType
+                .findByNumber(numberOfAchievement);
+        if (optionalAchievementBadgeType.isPresent()) {
+            Badge badge = createBadge(user, optionalAchievementBadgeType.get());
+            return Optional.of(badge);
+        }
+        return Optional.empty();
     }
 
     @Transactional
-    public void createChallengeCreateBadgeIfFollowStandard(User user) {
+    public Optional<Badge> createChallengeCreateBadgeIfFollowStandard(User user) {
         UserBadgeEvaluation userBadgeEvaluation = user.getUserBadgeEvaluation();
 
         userBadgeEvaluation.addNumberOfChallengeCreate();
         Integer numberOfChallengeCreate = userBadgeEvaluation.getNumberOfChallengeCreate();
 
-        ChallengeCreatetBadgeType
-                .findByNumber(numberOfChallengeCreate)
-                .ifPresent(challengeCreatetBadgeType -> createBadge(user, challengeCreatetBadgeType));
+        Optional<ChallengeCreateBadgeType> optionalChallengeCreateBadgeType = ChallengeCreateBadgeType
+                .findByNumber(numberOfChallengeCreate);
+        if (optionalChallengeCreateBadgeType.isPresent()) {
+            Badge badge = createBadge(user, optionalChallengeCreateBadgeType.get());
+            return Optional.of(badge);
+        }
+        return Optional.empty();
     }
 
-    private void createBadge(User user, BadgeType badgeType) {
+    @Transactional
+    public void deleteAchievementBadgeIfFollowStandard(User user) {
+        UserBadgeEvaluation userBadgeEvaluation = user.getUserBadgeEvaluation();
+        Integer numberOfAchievement = userBadgeEvaluation.getNumberOfAchievement();
+        AchievementBadgeType achievementBadgeType = AchievementBadgeType
+                .findByNumber(numberOfAchievement).orElseThrow(BadgeTypeNotFound::new);
+
+        String badgeName = achievementBadgeType.getName();
+        Badge badge = badgeService.findByName(badgeName);
+
+        userBadgeEvaluation.subtractNumberOfAchievement();
+        badgeService.removeBadge(badge);
+    }
+
+    @Transactional
+    public void deleteChallengeCreateBadgeIfFollowStandard(User user) {
+        UserBadgeEvaluation userBadgeEvaluation = user.getUserBadgeEvaluation();
+        Integer numberOfChallengeCreate = userBadgeEvaluation.getNumberOfChallengeCreate();
+        ChallengeCreateBadgeType challengeCreateBadgeType = ChallengeCreateBadgeType
+                .findByNumber(numberOfChallengeCreate).orElseThrow(BadgeTypeNotFound::new);
+
+        String badgeName = challengeCreateBadgeType.getName();
+        Badge badge = badgeService.findByName(badgeName);
+
+        userBadgeEvaluation.subtractNumberOfChallengeCreate();
+        badgeService.removeBadge(badge);
+    }
+
+    private Badge createBadge(User user, BadgeType badgeType) {
         String badgeName = badgeType.getName();
         Badge badge = badgeService.createBadge(badgeName);
         userBadgeService.createUserBadge(user, badge);
+
+        return badge;
     }
 }

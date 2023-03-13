@@ -49,7 +49,7 @@ public class User extends BaseEntity {
     @OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
     private List<Comment> comments = new ArrayList<>();
 
-    @OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "users", fetch = FetchType.LAZY)
     private List<UserBadge> userBadges = new ArrayList<>();
 
     @OneToOne(mappedBy = "users", cascade = CascadeType.ALL)

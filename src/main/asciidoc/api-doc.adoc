@@ -21,3 +21,6 @@ include::UserChallenge-API.adoc[]
 
 include::Bookmark-API.adoc[]
 
+include::Badge-API.adoc[]
+
+include::UserBadge-API.adoc[]
