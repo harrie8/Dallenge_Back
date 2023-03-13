@@ -13,6 +13,7 @@ import com.example.dailychallenge.entity.challenge.UserChallenge;
 import com.example.dailychallenge.entity.users.User;
 import com.example.dailychallenge.repository.badge.BadgeRepository;
 import com.example.dailychallenge.repository.badge.UserBadgeEvaluationRepository;
+import com.example.dailychallenge.repository.badge.UserBadgeRepository;
 import com.example.dailychallenge.util.ServiceTest;
 import com.example.dailychallenge.util.fixture.TestDataSetup;
 import org.junit.jupiter.api.BeforeEach;
@@ -26,6 +27,8 @@ class UserBadgeEvaluationServiceTest extends ServiceTest {
     private TestDataSetup testDataSetup;
     @Autowired
     private BadgeRepository badgeRepository;
+    @Autowired
+    private UserBadgeRepository userBadgeRepository;
     @Autowired
     private UserBadgeEvaluationService userBadgeEvaluationService;
     @Autowired
@@ -104,6 +107,22 @@ class UserBadgeEvaluationServiceTest extends ServiceTest {
             userBadgeEvaluationService.createChallengeCreateBadgeIfFollowStandard(user);
 
             assertTrue(badgeRepository.findAll().isEmpty());
+        }
+
+        @Test
+        @DisplayName("삭제 테스트")
+        void deleteTest() {
+            Challenge challenge = testDataSetup.챌린지를_생성한다(createChallengeDto(), user);
+            testDataSetup.챌린지에_참가한다(challenge, user);
+            userBadgeEvaluationService.createChallengeCreateBadgeIfFollowStandard(user);
+
+            userBadgeEvaluationService.deleteChallengeCreateBadgeIfFollowStandard(user);
+
+            // User의 userBadge에 cascade가 걸려 있어서 삭제 되지 않았었음
+            UserBadgeEvaluation userBadgeEvaluation = user.getUserBadgeEvaluation();
+            assertEquals(9, userBadgeEvaluation.getNumberOfChallengeCreate());
+            assertEquals(0, badgeRepository.findAll().size());
+            assertEquals(0, userBadgeRepository.findAll().size());
         }
     }
 

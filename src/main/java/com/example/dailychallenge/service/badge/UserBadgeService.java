@@ -28,9 +28,4 @@ public class UserBadgeService {
     public List<UserBadge> findAllByUserId(Long userId) {
         return userBadgeRepository.findAllByUsersId(userId);
     }
-
-    @Transactional
-    public void removeUserBadge(UserBadge userBadge) {
-        userBadgeRepository.delete(userBadge);
-    }
 }

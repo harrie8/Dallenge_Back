@@ -6,6 +6,7 @@ import com.example.dailychallenge.entity.badge.type.AchievementBadgeType;
 import com.example.dailychallenge.entity.badge.type.BadgeType;
 import com.example.dailychallenge.entity.badge.type.ChallengeCreateBadgeType;
 import com.example.dailychallenge.entity.users.User;
+import com.example.dailychallenge.exception.badge.BadgeTypeNotFound;
 import com.example.dailychallenge.repository.badge.UserBadgeEvaluationRepository;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -56,6 +57,34 @@ public class UserBadgeEvaluationService {
             return Optional.of(badge);
         }
         return Optional.empty();
+    }
+
+    @Transactional
+    public void deleteAchievementBadgeIfFollowStandard(User user) {
+        UserBadgeEvaluation userBadgeEvaluation = user.getUserBadgeEvaluation();
+        Integer numberOfAchievement = userBadgeEvaluation.getNumberOfAchievement();
+        AchievementBadgeType achievementBadgeType = AchievementBadgeType
+                .findByNumber(numberOfAchievement).orElseThrow(BadgeTypeNotFound::new);
+
+        String badgeName = achievementBadgeType.getName();
+        Badge badge = badgeService.findByName(badgeName);
+
+        userBadgeEvaluation.subtractNumberOfAchievement();
+        badgeService.removeBadge(badge);
+    }
+
+    @Transactional
+    public void deleteChallengeCreateBadgeIfFollowStandard(User user) {
+        UserBadgeEvaluation userBadgeEvaluation = user.getUserBadgeEvaluation();
+        Integer numberOfChallengeCreate = userBadgeEvaluation.getNumberOfChallengeCreate();
+        ChallengeCreateBadgeType challengeCreateBadgeType = ChallengeCreateBadgeType
+                .findByNumber(numberOfChallengeCreate).orElseThrow(BadgeTypeNotFound::new);
+
+        String badgeName = challengeCreateBadgeType.getName();
+        Badge badge = badgeService.findByName(badgeName);
+
+        userBadgeEvaluation.subtractNumberOfChallengeCreate();
+        badgeService.removeBadge(badge);
     }
 
     private Badge createBadge(User user, BadgeType badgeType) {

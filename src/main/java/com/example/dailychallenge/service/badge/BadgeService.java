@@ -1,6 +1,7 @@
 package com.example.dailychallenge.service.badge;
 
 import com.example.dailychallenge.entity.badge.Badge;
+import com.example.dailychallenge.exception.badge.BadgeNotFound;
 import com.example.dailychallenge.repository.badge.BadgeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -18,6 +19,10 @@ public class BadgeService {
                 .build();
 
         return badgeRepository.save(badge);
+    }
+
+    public Badge findByName(String badgeName) {
+        return badgeRepository.findByName(badgeName).orElseThrow(BadgeNotFound::new);
     }
 
     @Transactional

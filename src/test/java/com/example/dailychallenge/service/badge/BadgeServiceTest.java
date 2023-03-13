@@ -27,8 +27,6 @@ class BadgeServiceTest extends ServiceTest {
     @Autowired
     private TestDataSetup testDataSetup;
     @Autowired
-    private UserBadgeService userBadgeService;
-    @Autowired
     private UserBadgeRepository userBadgeRepository;
 
     private User user;

@@ -30,7 +30,7 @@ public class UserBadge extends BaseEntity {
     private User users;
 
     @ManyToOne
-    @JoinColumn(name = "challenge_id")
+    @JoinColumn(name = "badge_id")
     private Badge badge;
 
     @Builder
