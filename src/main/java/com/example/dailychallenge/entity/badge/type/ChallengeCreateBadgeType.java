@@ -8,9 +8,9 @@ public enum ChallengeCreateBadgeType implements BadgeType{
 
     CREATED_10(10),
     CREATED_15(15),
-    CREATED_20(200),
+    CREATED_20(20),
     CREATED_25(25),
-    CREATED_30(300),
+    CREATED_30(30),
     ;
 
     private final static String CREATE = "생성";

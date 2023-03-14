@@ -66,7 +66,7 @@ class UserBadgeControllerTest extends ControllerTest {
                         .with(requestPostProcessor) // 토큰 인증 처리, 입력한 정보로 인증된 사용자 생성
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.challengeCreateBadgeNames[*]", contains("챌린지 10개 생성", "챌린지 15개 생성")))
+                .andExpect(jsonPath("$.challengeCreateBadgeNames[*]", contains("챌린지 10개 생성", "챌린지 15개 생성", "챌린지 20개 생성")))
                 .andExpect(jsonPath("$.achievementBadgeNames[*]", contains("챌린지 10개 달성", "챌린지 20개 달성")));
     }
 }
