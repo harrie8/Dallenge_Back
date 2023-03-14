@@ -84,7 +84,7 @@ public class TestDataSetup {
     }
 
     @Transactional
-    public Comment 챌린지예_댓글을_단다(Challenge challenge, User user) {
+    public Comment 챌린지에_댓글을_단다(Challenge challenge, User user) {
         Comment comment = Comment.builder()
                 .content("content")
                 .build();
@@ -94,7 +94,7 @@ public class TestDataSetup {
     }
 
     @Transactional
-    public Comment 챌린지예_댓글을_단다(Challenge challenge, User user, String content) {
+    public Comment 챌린지에_댓글을_단다(Challenge challenge, User user, String content) {
         Comment comment = Comment.builder()
                 .content(content)
                 .build();

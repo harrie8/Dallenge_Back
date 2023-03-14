@@ -323,10 +323,10 @@ class UserControllerTest {
         User savedUser = testDataSetup.saveUser(USERNAME, EMAIL, PASSWORD);
 
         UserChallenge userChallenge = testDataSetup.챌린지에_참가한다(challenge, savedUser);
-        Comment comment = testDataSetup.챌린지예_댓글을_단다(challenge, savedUser, "content");
+        Comment comment = testDataSetup.챌린지에_댓글을_단다(challenge, savedUser, "content");
         CommentImg commentImg1 = testDataSetup.댓글에_이미지를_추가한다(comment);
         CommentImg commentImg2 = testDataSetup.댓글에_이미지를_추가한다(comment);
-        testDataSetup.챌린지예_댓글을_단다(challenge, savedUser, null);
+        testDataSetup.챌린지에_댓글을_단다(challenge, savedUser, null);
 
         mockMvc.perform(get("/user/participate")
                         .with(getRequestPostProcessor(savedUser))

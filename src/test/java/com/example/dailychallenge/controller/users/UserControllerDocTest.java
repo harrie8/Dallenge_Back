@@ -434,10 +434,10 @@ public class UserControllerDocTest {
         User savedUser = testDataSetup.saveUser(USERNAME, EMAIL, PASSWORD);
 
         testDataSetup.챌린지에_참가한다(challenge, savedUser);
-        Comment comment = testDataSetup.챌린지예_댓글을_단다(challenge, savedUser, "content");
+        Comment comment = testDataSetup.챌린지에_댓글을_단다(challenge, savedUser, "content");
         testDataSetup.댓글에_이미지를_추가한다(comment);
         testDataSetup.댓글에_이미지를_추가한다(comment);
-        testDataSetup.챌린지예_댓글을_단다(challenge, savedUser, null);
+        testDataSetup.챌린지에_댓글을_단다(challenge, savedUser, null);
 
         mockMvc.perform(RestDocumentationRequestBuilders
                         .get("/user/participate")
