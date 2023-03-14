@@ -5,6 +5,7 @@ import com.example.dailychallenge.entity.badge.UserBadgeEvaluation;
 import com.example.dailychallenge.entity.badge.type.AchievementBadgeType;
 import com.example.dailychallenge.entity.badge.type.BadgeType;
 import com.example.dailychallenge.entity.badge.type.ChallengeCreateBadgeType;
+import com.example.dailychallenge.entity.badge.type.CommentWriteBadgeType;
 import com.example.dailychallenge.entity.users.User;
 import com.example.dailychallenge.exception.badge.BadgeTypeNotFound;
 import com.example.dailychallenge.repository.badge.UserBadgeEvaluationRepository;
@@ -54,6 +55,22 @@ public class UserBadgeEvaluationService {
                 .findByNumber(numberOfChallengeCreate);
         if (optionalChallengeCreateBadgeType.isPresent()) {
             Badge badge = createBadge(user, optionalChallengeCreateBadgeType.get());
+            return Optional.of(badge);
+        }
+        return Optional.empty();
+    }
+
+    @Transactional
+    public Optional<Badge> createCommentWriteBadgeIfFollowStandard(User user) {
+        UserBadgeEvaluation userBadgeEvaluation = user.getUserBadgeEvaluation();
+
+        userBadgeEvaluation.addNumberOfCommentWrite();
+        Integer numberOfCommentWrite = userBadgeEvaluation.getNumberOfCommentWrite();
+
+        Optional<CommentWriteBadgeType> optionalCommentWriteBadgeType = CommentWriteBadgeType
+                .findByNumber(numberOfCommentWrite);
+        if (optionalCommentWriteBadgeType.isPresent()) {
+            Badge badge = createBadge(user, optionalCommentWriteBadgeType.get());
             return Optional.of(badge);
         }
         return Optional.empty();

@@ -3,6 +3,8 @@ package com.example.dailychallenge.service.badge;
 import static com.example.dailychallenge.util.fixture.TokenFixture.EMAIL;
 import static com.example.dailychallenge.util.fixture.TokenFixture.PASSWORD;
 import static com.example.dailychallenge.util.fixture.challenge.ChallengeFixture.createChallengeDto;
+import static com.example.dailychallenge.util.fixture.user.UserFixture.OTHER_EMAIL;
+import static com.example.dailychallenge.util.fixture.user.UserFixture.OTHER_USERNAME;
 import static com.example.dailychallenge.util.fixture.user.UserFixture.USERNAME;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -12,7 +14,6 @@ import com.example.dailychallenge.entity.challenge.Challenge;
 import com.example.dailychallenge.entity.challenge.UserChallenge;
 import com.example.dailychallenge.entity.users.User;
 import com.example.dailychallenge.repository.badge.BadgeRepository;
-import com.example.dailychallenge.repository.badge.UserBadgeEvaluationRepository;
 import com.example.dailychallenge.repository.badge.UserBadgeRepository;
 import com.example.dailychallenge.util.ServiceTest;
 import com.example.dailychallenge.util.fixture.TestDataSetup;
@@ -31,18 +32,13 @@ class UserBadgeEvaluationServiceTest extends ServiceTest {
     private UserBadgeRepository userBadgeRepository;
     @Autowired
     private UserBadgeEvaluationService userBadgeEvaluationService;
-    @Autowired
-    private UserBadgeEvaluationRepository userBadgeEvaluationRepository;
 
     private User user;
 
     @BeforeEach
     void beforeEach() {
         user = testDataSetup.saveUser(USERNAME, EMAIL, PASSWORD);
-        UserBadgeEvaluation userBadgeEvaluation = UserBadgeEvaluation.builder()
-                .users(user)
-                .build();
-        userBadgeEvaluationRepository.save(userBadgeEvaluation);
+        UserBadgeEvaluation userBadgeEvaluation = testDataSetup.saveUserBadgeEvaluation(user);
 
         for (int i = 0; i < 9; i++) {
             챌린지를_생성하고_참여하고_달성한다();
@@ -138,6 +134,52 @@ class UserBadgeEvaluationServiceTest extends ServiceTest {
             assertEquals(9, userBadgeEvaluation.getNumberOfChallengeCreate());
             assertEquals(0, badgeRepository.findAll().size());
             assertEquals(0, userBadgeRepository.findAll().size());
+        }
+    }
+
+    @Nested
+    @DisplayName("후기 N개 작성 뱃지")
+    class CommentWriteBadge {
+        @Test
+        @DisplayName("생성 테스트")
+        void canCreateTest() {
+            UserBadgeEvaluation userBadgeEvaluation = user.getUserBadgeEvaluation();
+            User otherUser = testDataSetup.saveUser(OTHER_USERNAME, OTHER_EMAIL, PASSWORD);
+            for (int i = 0; i < 9; i++) {
+                Challenge challenge = testDataSetup.챌린지를_생성한다(createChallengeDto(), otherUser);
+                testDataSetup.챌린지에_참가한다(challenge, otherUser);
+                testDataSetup.챌린지에_참가한다(challenge, user);
+
+                testDataSetup.챌린지에_댓글을_단다(challenge, user, "content" + i);
+                userBadgeEvaluation.addNumberOfCommentWrite();
+            }
+            Challenge challenge = testDataSetup.챌린지를_생성한다(createChallengeDto(), otherUser);
+            testDataSetup.챌린지에_댓글을_단다(challenge, user, "content" + 9);
+
+            userBadgeEvaluationService.createCommentWriteBadgeIfFollowStandard(user);
+
+            assertEquals("후기 10개 작성", badgeRepository.findAll().get(0).getName());
+        }
+
+        @Test
+        @DisplayName("생성하지 못하는 테스트")
+        void canNotCreateTest() {
+            UserBadgeEvaluation userBadgeEvaluation = user.getUserBadgeEvaluation();
+            User otherUser = testDataSetup.saveUser(OTHER_USERNAME, OTHER_EMAIL, PASSWORD);
+            for (int i = 0; i < 2; i++) {
+                Challenge challenge = testDataSetup.챌린지를_생성한다(createChallengeDto(), otherUser);
+                testDataSetup.챌린지에_참가한다(challenge, otherUser);
+                testDataSetup.챌린지에_참가한다(challenge, user);
+
+                testDataSetup.챌린지에_댓글을_단다(challenge, user, "content" + i);
+                userBadgeEvaluation.addNumberOfCommentWrite();
+            }
+            Challenge challenge = testDataSetup.챌린지를_생성한다(createChallengeDto(), otherUser);
+            testDataSetup.챌린지에_댓글을_단다(challenge, user, "content" + 3);
+
+            userBadgeEvaluationService.createCommentWriteBadgeIfFollowStandard(user);
+
+            assertTrue(badgeRepository.findAll().isEmpty());
         }
     }
 
