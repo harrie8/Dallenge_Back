@@ -23,3 +23,15 @@ operation::badge-controller-doc-test/create-challenge-create-badge-test[snippets
 - HTTP Request는 챌린지 달성과 같습니다.
 
 operation::badge-controller-doc-test/create-achievement-badge-test[snippets='http-request,http-response,response-fields']
+
+
+[[Badge-후기-N개-작성-뱃지]]
+=== 후기 N개 작성 뱃지(성취)
+
+- 댓글 생성 API 요청을 했을 때 뱃지 생성 조건이 맞는 경우 뱃지를 생성합니다.
+
+- 뱃지를 생성한 경우 댓글 생성 API 응답값에 createBadgeName으로 생성된 뱃지의 이름이 반환됩니다.
+
+- HTTP Request는 챌린지 달성과 같습니다.
+
+operation::badge-controller-doc-test/create-comment-write-badge-test[snippets='http-request,http-response,response-fields']

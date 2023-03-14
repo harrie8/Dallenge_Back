@@ -145,4 +145,9 @@ public class TestDataSetup {
     public void 챌린지_생성_뱃지를_만들_수_있으면_만든다(User user) {
         userBadgeEvaluationService.createChallengeCreateBadgeIfFollowStandard(user);
     }
+
+    @Transactional
+    public void 후기_작성_뱃지를_만들_수_있으면_만든다(User user) {
+        userBadgeEvaluationService.createCommentWriteBadgeIfFollowStandard(user);
+    }
 }

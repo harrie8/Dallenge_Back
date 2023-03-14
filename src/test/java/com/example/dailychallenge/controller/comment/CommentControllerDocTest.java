@@ -38,6 +38,7 @@ import com.example.dailychallenge.exception.users.UserNotFound;
 import com.example.dailychallenge.service.challenge.ChallengeService;
 import com.example.dailychallenge.service.comment.CommentService;
 import com.example.dailychallenge.service.users.UserService;
+import com.example.dailychallenge.util.fixture.TestDataSetup;
 import com.example.dailychallenge.utils.JwtTokenUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.ArrayList;
@@ -49,6 +50,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.mock.web.MockPart;
@@ -70,6 +72,7 @@ import org.springframework.web.multipart.MultipartFile;
 @AutoConfigureRestDocs(uriScheme = "https", uriHost = "api.dailychallenge.com", uriPort = 443)
 @ExtendWith(RestDocumentationExtension.class)
 @TestPropertySource(locations = "classpath:application-test.properties")
+@Import({TestDataSetup.class})
 public class CommentControllerDocTest {
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -87,6 +90,8 @@ public class CommentControllerDocTest {
     protected AuthenticationManager authenticationManager;
     @Autowired
     protected JwtTokenUtil jwtTokenUtil;
+    @Autowired
+    private TestDataSetup testDataSetup;
 
     private MockMultipartFile createMultipartFiles() {
         String path = "commentDtoImg";
@@ -134,6 +139,7 @@ public class CommentControllerDocTest {
     public void createCommentTest() throws Exception {
         Challenge challenge = createChallenge();
         User user = challenge.getUsers();
+        testDataSetup.saveUserBadgeEvaluation(user);
         CommentDto commentDto = CommentDto.builder()
                 .content("댓글 내용")
                 .build();

@@ -1,10 +1,12 @@
 package com.example.dailychallenge.controller;
 
 import com.example.dailychallenge.dto.CommentDto;
+import com.example.dailychallenge.entity.badge.Badge;
 import com.example.dailychallenge.entity.challenge.Challenge;
 import com.example.dailychallenge.entity.comment.Comment;
 import com.example.dailychallenge.entity.users.User;
 import com.example.dailychallenge.exception.users.UserNotFound;
+import com.example.dailychallenge.service.badge.UserBadgeEvaluationService;
 import com.example.dailychallenge.service.challenge.ChallengeService;
 import com.example.dailychallenge.service.comment.CommentService;
 import com.example.dailychallenge.service.users.UserService;
@@ -12,8 +14,10 @@ import com.example.dailychallenge.vo.ResponseChallengeComment;
 import com.example.dailychallenge.vo.ResponseChallengeCommentImg;
 import com.example.dailychallenge.vo.ResponseComment;
 import com.example.dailychallenge.vo.ResponseUserComment;
+import com.example.dailychallenge.vo.badge.ResponseCommentWriteBadge;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -38,9 +42,10 @@ public class CommentController {
     private final CommentService commentService;
     private final UserService userService;
     private final ChallengeService challengeService;
+    private final UserBadgeEvaluationService userBadgeEvaluationService;
 
     @PostMapping(value = "/{challengeId}/comment/new")
-    public ResponseEntity<ResponseComment> createComment(
+    public ResponseEntity<Object> createComment(
             @AuthenticationPrincipal org.springframework.security.core.userdetails.User user,
             @PathVariable("challengeId") Long challengeId,
             @RequestPart(required = false) @Valid CommentDto commentDto,
@@ -50,6 +55,11 @@ public class CommentController {
         Challenge challenge = challengeService.findById(challengeId);
         Comment comment = commentService.saveComment(commentDto, commentImgFiles, findUser, challenge);
 
+        Optional<ResponseCommentWriteBadge> optionalResponseCommentWriteBadge = isBadgeCreated(findUser, comment);
+        if (optionalResponseCommentWriteBadge.isPresent()) {
+            return ResponseEntity.status(HttpStatus.CREATED).body(optionalResponseCommentWriteBadge);
+        }
+
         ResponseComment responseComment = ResponseComment.builder()
                 .id(comment.getId())
                 .content(comment.getContent())
@@ -58,6 +68,23 @@ public class CommentController {
                 .build();
 
         return ResponseEntity.status(HttpStatus.CREATED).body(responseComment);
+    }
+
+    private Optional<ResponseCommentWriteBadge> isBadgeCreated(User user, Comment comment) {
+
+        Optional<Badge> optionalBadge = userBadgeEvaluationService.createCommentWriteBadgeIfFollowStandard(user);
+        if (optionalBadge.isPresent()) {
+            String createBadgeName = optionalBadge.get().getName();
+            ResponseCommentWriteBadge responseCommentWriteBadge = ResponseCommentWriteBadge.builder()
+                    .id(comment.getId())
+                    .content(comment.getContent())
+                    .createdAt(comment.getSpecificCreatedAt())
+                    .userId(comment.getUsers().getId())
+                    .createBadgeName(createBadgeName)
+                    .build();
+            return Optional.of(responseCommentWriteBadge);
+        }
+        return Optional.empty();
     }
 
     @PostMapping("/{challengeId}/comment/{commentId}")
