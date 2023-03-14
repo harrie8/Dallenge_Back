@@ -59,7 +59,15 @@ public class ChallengeService {
                                                                ChallengeDuration challengeDuration,
                                                                ChallengeLocation challengeLocation) {
 
-        return challengeRepository.searchChallengesByQuestion(challengeCategory, challengeDuration, challengeLocation);
+        List<ResponseRecommendedChallenge> responseRecommendedChallenges = challengeRepository.searchChallengesByQuestion(
+                challengeCategory, challengeDuration, challengeLocation);
+
+        if (responseRecommendedChallenges.isEmpty()) {
+            ResponseRecommendedChallenge byRandom = searchByRandom();
+            responseRecommendedChallenges.add(byRandom);
+        }
+
+        return responseRecommendedChallenges;
     }
 
     public ResponseRecommendedChallenge searchByRandom() {

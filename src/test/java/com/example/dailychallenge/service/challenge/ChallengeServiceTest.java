@@ -1,17 +1,34 @@
 package com.example.dailychallenge.service.challenge;
 
+import static com.example.dailychallenge.entity.challenge.ChallengeCategory.ECONOMY;
+import static com.example.dailychallenge.entity.challenge.ChallengeCategory.HEALTH;
+import static com.example.dailychallenge.entity.challenge.ChallengeCategory.STUDY;
+import static com.example.dailychallenge.entity.challenge.ChallengeCategory.WORKOUT;
+import static com.example.dailychallenge.entity.challenge.ChallengeDuration.OVER_ONE_HOUR;
+import static com.example.dailychallenge.entity.challenge.ChallengeDuration.WITHIN_TEN_MINUTES;
+import static com.example.dailychallenge.entity.challenge.ChallengeDuration.WITHIN_THIRTY_MINUTES_TO_ONE_HOUR;
+import static com.example.dailychallenge.entity.challenge.ChallengeLocation.INDOOR;
+import static com.example.dailychallenge.entity.challenge.ChallengeLocation.OUTDOOR;
+import static com.example.dailychallenge.entity.challenge.ChallengeStatus.PAUSE;
+import static com.example.dailychallenge.entity.challenge.ChallengeStatus.TRYING;
 import static com.example.dailychallenge.util.fixture.TokenFixture.EMAIL;
 import static com.example.dailychallenge.util.fixture.TokenFixture.PASSWORD;
 import static com.example.dailychallenge.util.fixture.challenge.ChallengeFixture.createChallengeDto;
+import static com.example.dailychallenge.util.fixture.challenge.ChallengeFixture.createSpecificChallenge;
 import static com.example.dailychallenge.util.fixture.challenge.ChallengeImgFixture.createChallengeImgFiles;
+import static com.example.dailychallenge.util.fixture.challenge.ChallengeImgFixture.createSpecificChallengeImgs;
 import static com.example.dailychallenge.util.fixture.challenge.ChallengeImgFixture.updateChallengeImgFiles;
+import static com.example.dailychallenge.util.fixture.challengeHashtag.ChallengeHashtagFixture.createSpecificChallengeHashtags;
+import static com.example.dailychallenge.util.fixture.hashtag.HashtagFixture.createSpecificHashtags;
 import static com.example.dailychallenge.util.fixture.user.UserFixture.OTHER_EMAIL;
 import static com.example.dailychallenge.util.fixture.user.UserFixture.OTHER_USERNAME;
 import static com.example.dailychallenge.util.fixture.user.UserFixture.USERNAME;
+import static com.example.dailychallenge.util.fixture.userChallenge.UserChallengeFixture.createSpecificUserChallenge;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -19,6 +36,7 @@ import com.example.dailychallenge.dto.ChallengeDto;
 import com.example.dailychallenge.entity.challenge.Challenge;
 import com.example.dailychallenge.entity.challenge.ChallengeCategory;
 import com.example.dailychallenge.entity.challenge.ChallengeDuration;
+import com.example.dailychallenge.entity.challenge.ChallengeImg;
 import com.example.dailychallenge.entity.challenge.ChallengeLocation;
 import com.example.dailychallenge.entity.challenge.ChallengeStatus;
 import com.example.dailychallenge.entity.challenge.UserChallenge;
@@ -39,6 +57,8 @@ import com.example.dailychallenge.util.ServiceTest;
 import com.example.dailychallenge.util.fixture.TestDataSetup;
 import com.example.dailychallenge.vo.challenge.RequestUpdateChallenge;
 import com.example.dailychallenge.vo.challenge.ResponseChallenge;
+import com.example.dailychallenge.vo.challenge.ResponseRecommendedChallenge;
+import java.util.Collections;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -71,6 +91,7 @@ public class ChallengeServiceTest extends ServiceTest {
 
     private User user;
     private ChallengeDto challengeDto;
+    private Challenge challenge1;
 
     @BeforeEach
     void beforeEach() {
@@ -390,5 +411,98 @@ public class ChallengeServiceTest extends ServiceTest {
                 assertTrue(challengeHashtagRepository.findById(savedChallengeHashtag.getId()).isEmpty());
             });
         }
+    }
+
+    private void initData() {
+        user = testDataSetup.saveUser(USERNAME, EMAIL, PASSWORD);
+
+        challenge1 = saveChallenge("제목입니다.1", "내용입니다.1", STUDY, INDOOR, WITHIN_TEN_MINUTES, user);
+        saveChallengeImgs("imgUrl", "imgName", "oriImgName", challenge1, 2);
+        saveChallengeParticipate(TRYING, user, challenge1);
+        saveChallengeHashtags(List.of("tag1", "tag2", "tag3"), challenge1);
+
+        Challenge challenge2 = saveChallenge("제목입니다.2", "내용입니다.2", ECONOMY, OUTDOOR, OVER_ONE_HOUR, user);
+        saveChallengeParticipate(PAUSE, user, challenge2);
+
+        Challenge challenge6 = null;
+
+        for (int i = 3; i <= 10; i++) {
+            Challenge challenge = saveChallenge("제목입니다." + i, "내용입니다." + i, WORKOUT, INDOOR,
+                    WITHIN_TEN_MINUTES, user);
+            saveChallengeParticipate(TRYING, user, challenge);
+
+            if (i == 6) {
+                challenge6 = challenge;
+            }
+        }
+
+        for (int i = 1; i <= 8; i++) {
+            User user = testDataSetup.saveUser(USERNAME + i, i + "@test.com", PASSWORD);
+            if (i == 1) {
+                saveChallengeParticipate(TRYING, user, challenge1);
+            }
+            if (2 <= i && i <= 5) {
+                saveChallengeParticipate(PAUSE, user, challenge2);
+            }
+            if (i == 6) {
+                saveChallengeParticipate(TRYING, user, challenge6);
+            }
+        }
+    }
+
+    private Challenge saveChallenge(String title, String content, ChallengeCategory challengeCategory,
+                                    ChallengeLocation challengeLocation, ChallengeDuration challengeDuration, User user) {
+
+        Challenge challenge = createSpecificChallenge(title, content, challengeCategory, challengeLocation,
+                challengeDuration, user);
+        challengeRepository.save(challenge);
+
+        return challenge;
+    }
+
+    private void saveChallengeImgs(String imgUrl, String imgName, String oriImgName, Challenge challenge,
+                                   int repeatCount) {
+        List<ChallengeImg> specificChallengeImgs = createSpecificChallengeImgs(imgUrl, imgName, oriImgName, challenge,
+                repeatCount);
+        challengeImgRepository.saveAll(specificChallengeImgs);
+    }
+
+    private void saveChallengeParticipate(ChallengeStatus challengeStatus, User user, Challenge challenge) {
+        UserChallenge userChallenge = createSpecificUserChallenge(challengeStatus, user, challenge);
+        userChallengeRepository.save(userChallenge);
+    }
+
+    private void saveChallengeHashtags(List<String> hashtagDto, Challenge challenge) {
+        List<Hashtag> hashtags = createSpecificHashtags(hashtagDto);
+        hashtagRepository.saveAll(hashtags);
+
+        List<ChallengeHashtag> challengeHashtags = createSpecificChallengeHashtags(hashtags, challenge);
+        challengeHashtagRepository.saveAll(challengeHashtags);
+    }
+
+    @Test
+    @DisplayName("질문으로 챌린지들을 조회할 수 없는 경우 랜덤 챌린지를 뽑는 테스트")
+    void searchChallengesByQuestionWithNotMatchTest() {
+        initData();
+
+        ChallengeCategory challengeCategory = HEALTH;
+        ChallengeDuration challengeDuration = WITHIN_THIRTY_MINUTES_TO_ONE_HOUR;
+        ChallengeLocation challengeLocation = OUTDOOR;
+
+        List<ResponseRecommendedChallenge> results = challengeService.searchByQuestion(
+                challengeCategory, challengeDuration, challengeLocation);
+
+        assertAll(() -> {
+            assertEquals(1, results.size());
+            assertNotNull(results.get(0).getId());
+            assertThat(results.get(0).getTitle()).startsWith("제목입니다.");
+            assertThat(results.get(0).getContent()).startsWith("내용입니다.");
+            if (results.get(0).getChallengeImgUrls().isEmpty()) {
+                assertEquals(Collections.emptyList(), results.get(0).getChallengeImgUrls());
+            }
+            if (!results.get(0).getChallengeImgUrls().isEmpty()) {
+                assertEquals(List.of("imgUrl","imgUrl"), results.get(0).getChallengeImgUrls());
+            }
+        });
     }
 }

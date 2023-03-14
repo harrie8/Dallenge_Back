@@ -410,6 +410,23 @@ class ChallengeControllerTest extends ControllerTest {
     }
 
     @Test
+    @DisplayName("챌린지들을 질문으로 찾을 수 없는 경우 랜덤 챌린지를 반환하는 테스트")
+    void searchChallengesByQuestionWithNotMatchTest() throws Exception {
+        initData();
+
+        mockMvc.perform(get("/challenge/question")
+                        .param("challengeLocationIndex", "1")
+                        .param("challengeDurationIndex", "3")
+                        .param("challengeCategoryIndex", "4")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.[*].id").isNotEmpty())
+                .andExpect(jsonPath("$.[*].title", hasSize(1)))
+                .andExpect(jsonPath("$.[*].content", hasSize(1)))
+                .andExpect(jsonPath("$.[*].challengeImgUrls").isNotEmpty());
+    }
+
+    @Test
     @DisplayName("챌린지들을 해시태그들로 찾는 테스트")
     void searchChallengesByHashtagsTest() throws Exception {
         initData();

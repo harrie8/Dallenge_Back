@@ -146,6 +146,12 @@ operation::challenge-controller-doc-test/search-challenges-by-question-test[snip
 include::{snippets}/challenge-controller-doc-test/search-challenges-by-question-test/http-response.adoc[]
 =====
 
+[[Challenge-질문으로-챌린지들-추천하기2]]
+=== 질문으로 챌린지들 추천 - 질문과 일치하는 챌린지가 없는 경우 랜덤 챌린지 하나 추천
+
+operation::challenge-controller-doc-test/search-challenges-by-question-with-not-match-test[snippets='http-request,http-response']
+
+
 [[Challenge-가장-많이-작성된-3개의-해시태그들로-챌린지들-추천하기]]
 === 가장 많이 작성된 3개의 해시태그들로 챌린지들 추천
 
