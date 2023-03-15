@@ -6,6 +6,8 @@ import static com.example.dailychallenge.entity.challenge.ChallengeLocation.INDO
 import static com.example.dailychallenge.util.fixture.TokenFixture.EMAIL;
 import static com.example.dailychallenge.util.fixture.TokenFixture.PASSWORD;
 import static com.example.dailychallenge.util.fixture.challenge.ChallengeImgFixture.createChallengeImgFiles;
+import static com.example.dailychallenge.util.fixture.user.UserFixture.OTHER_EMAIL;
+import static com.example.dailychallenge.util.fixture.user.UserFixture.OTHER_USERNAME;
 import static com.example.dailychallenge.util.fixture.user.UserFixture.USERNAME;
 import static com.example.dailychallenge.util.fixture.user.UserFixture.getRequestPostProcessor;
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -17,6 +19,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.example.dailychallenge.dto.CommentDto;
 import com.example.dailychallenge.dto.HashtagDto;
 import com.example.dailychallenge.entity.challenge.Challenge;
 import com.example.dailychallenge.entity.challenge.ChallengeStatus;
@@ -46,14 +49,14 @@ class BadgeControllerTest extends ControllerTest {
     @BeforeEach
     void beforeEach() {
         user = testDataSetup.saveUser(USERNAME, EMAIL, PASSWORD);
+        testDataSetup.saveUserBadgeEvaluation(user);
+        testDataSetup.saveBadgesAndUserBadges(user);
         requestPostProcessor = getRequestPostProcessor(user);
     }
 
     @Test
     @DisplayName("챌린지 10개 생성 뱃지 테스트")
     void createChallengeCreateBadgeTest() throws Exception {
-        testDataSetup.saveUserBadgeEvaluation(user);
-
         for (int i = 1; i <= 9; i++) {
             Challenge challenge = testDataSetup.챌린지를_생성한다(
                     "제목입니다." + i,
@@ -115,7 +118,6 @@ class BadgeControllerTest extends ControllerTest {
     @Test
     @DisplayName("챌린지 10개 달성 뱃지 테스트")
     void createAchievementBadgeTest() throws Exception {
-        testDataSetup.saveUserBadgeEvaluation(user);
         for (int i = 1; i <= 9; i++) {
             Challenge challenge = testDataSetup.챌린지를_생성한다(
                     "제목입니다." + i,
@@ -144,5 +146,63 @@ class BadgeControllerTest extends ControllerTest {
                 .andExpect(jsonPath("$.code").value(200))
                 .andExpect(jsonPath("$.message").value("챌린지 달성 완료!"))
                 .andExpect(jsonPath("$.createBadgeName").value("챌린지 10개 달성"));
+    }
+
+    private MockMultipartFile createMultipartFiles() {
+        String path = "commentDtoImg";
+        String imageName = "commentDtoImg.jpg";
+        return new MockMultipartFile(path, imageName,
+                "image/jpg", new byte[]{1, 2, 3, 4});
+    }
+
+    @Test
+    @DisplayName("후기 10개 작성 뱃지 테스트")
+    void createCommentWriteBadgeTest() throws Exception {
+        User otherUser = testDataSetup.saveUser(OTHER_USERNAME, OTHER_EMAIL, PASSWORD);
+        for (int i = 1; i <= 9; i++) {
+            Challenge challenge = testDataSetup.챌린지를_생성한다(
+                    "제목입니다." + i,
+                    "내용입니다." + i,
+                    STUDY.getDescription(),
+                    INDOOR.getDescription(),
+                    WITHIN_TEN_MINUTES.getDescription(),
+                    user);
+            testDataSetup.챌린지에_참가한다(challenge, otherUser);
+            testDataSetup.챌린지에_참가한다(challenge, user);
+            testDataSetup.챌린지에_댓글을_단다(challenge, user, "content" + i);
+
+            testDataSetup.후기_작성_뱃지를_만들_수_있으면_만든다(user);
+        }
+        Challenge challenge = testDataSetup.챌린지를_생성한다(
+                "제목입니다." + 10,
+                "내용입니다." + 10,
+                STUDY.getDescription(),
+                INDOOR.getDescription(),
+                WITHIN_TEN_MINUTES.getDescription(),
+                user);
+        testDataSetup.챌린지에_참가한다(challenge, otherUser);
+        testDataSetup.챌린지에_참가한다(challenge, user);
+        CommentDto commentDto = CommentDto.builder()
+                .content("댓글 내용")
+                .build();
+        String json = objectMapper.writeValueAsString(commentDto);
+        MockMultipartFile mockCommentDto = new MockMultipartFile("commentDto",
+                "commentDto",
+                "application/json", json.getBytes(UTF_8));
+
+        Long challengeId = challenge.getId();
+        mockMvc.perform(multipart("/{challengeId}/comment/new", challengeId)
+                        .file(mockCommentDto)
+                        .part(new MockPart("commentImgFiles", "commentImgFiles", createMultipartFiles().getBytes()))
+                        .part(new MockPart("commentImgFiles", "commentImgFiles", createMultipartFiles().getBytes()))
+                        .with(requestPostProcessor)
+                        .contentType(MediaType.MULTIPART_FORM_DATA)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id").isNotEmpty())
+                .andExpect(jsonPath("$.content").value("댓글 내용"))
+                .andExpect(jsonPath("$.createdAt").isNotEmpty())
+                .andExpect(jsonPath("$.userId").value(user.getId()))
+                .andExpect(jsonPath("$.createBadgeName").value("후기 10개 작성"));
     }
 }

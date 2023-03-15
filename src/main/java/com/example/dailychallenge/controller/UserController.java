@@ -1,12 +1,18 @@
 package com.example.dailychallenge.controller;
 
 import com.example.dailychallenge.dto.UserDto;
+import com.example.dailychallenge.entity.badge.Badge;
+import com.example.dailychallenge.entity.badge.type.AchievementBadgeType;
+import com.example.dailychallenge.entity.badge.type.ChallengeCreateBadgeType;
+import com.example.dailychallenge.entity.badge.type.CommentWriteBadgeType;
 import com.example.dailychallenge.entity.users.User;
 import com.example.dailychallenge.exception.users.UserDuplicateCheck;
 import com.example.dailychallenge.exception.users.UserLoginFailure;
 import com.example.dailychallenge.exception.users.UserNotFound;
 import com.example.dailychallenge.exception.users.UserPasswordCheck;
+import com.example.dailychallenge.service.badge.BadgeService;
 import com.example.dailychallenge.service.badge.UserBadgeEvaluationService;
+import com.example.dailychallenge.service.badge.UserBadgeService;
 import com.example.dailychallenge.service.users.UserService;
 import com.example.dailychallenge.utils.JwtTokenUtil;
 import com.example.dailychallenge.vo.RequestLogin;
@@ -52,6 +58,8 @@ public class UserController {
 
     private final UserService userService;
     private final UserBadgeEvaluationService userBadgeEvaluationService;
+    private final BadgeService badgeService;
+    private final UserBadgeService userBadgeService;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final JwtTokenUtil jwtTokenUtil;
@@ -67,7 +75,30 @@ public class UserController {
 
         userBadgeEvaluationService.createUserBadgeEvaluation(savedUser);
 
+        saveUserBadges(savedUser);
+
         return ResponseEntity.status(HttpStatus.CREATED).body(responseUser);
+    }
+
+    private void saveUserBadges(User savedUser) {
+       List<Badge> badges = badgeService.findAll();
+        if (badges.isEmpty()) {
+            saveBadges(savedUser);
+            return;
+        }
+        userBadgeService.createUserBadges(savedUser, badges);
+    }
+
+    private void saveBadges(User savedUser) {
+        List<String> challengeCreateBadgeNames = ChallengeCreateBadgeType.getNames();
+        List<String> achievementBadgeNames = AchievementBadgeType.getNames();
+        List<String> commentWriteBadgeNames = CommentWriteBadgeType.getNames();
+        List<Badge> challengeCreateBadges = badgeService.createBadges(challengeCreateBadgeNames);
+        List<Badge> achievementBadges = badgeService.createBadges(achievementBadgeNames);
+        List<Badge> commentWriteBadges = badgeService.createBadges(commentWriteBadgeNames);
+        userBadgeService.createUserBadges(savedUser, challengeCreateBadges);
+        userBadgeService.createUserBadges(savedUser, achievementBadges);
+        userBadgeService.createUserBadges(savedUser, commentWriteBadges);
     }
 
     @PostMapping("/user/login")

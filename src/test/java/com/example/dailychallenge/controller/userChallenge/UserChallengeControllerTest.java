@@ -134,6 +134,7 @@ class UserChallengeControllerTest extends ControllerTest {
     @DisplayName("챌린지 달성 완료 테스트")
     void succeedInChallengeTest() throws Exception {
         testDataSetup.saveUserBadgeEvaluation(user);
+        testDataSetup.saveBadgesAndUserBadges(user);
 
         mockMvc.perform(post("/challenge/{challengeId}/success", challenge1.getId())
                         .with(requestPostProcessor)

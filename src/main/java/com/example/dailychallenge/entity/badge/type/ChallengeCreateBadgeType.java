@@ -1,16 +1,18 @@
 package com.example.dailychallenge.entity.badge.type;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 // 챌린지 N개 생성
 public enum ChallengeCreateBadgeType implements BadgeType{
 
     CREATED_10(10),
     CREATED_15(15),
-    CREATED_20(200),
+    CREATED_20(20),
     CREATED_25(25),
-    CREATED_30(300),
+    CREATED_30(30),
     ;
 
     private final static String CREATE = "생성";
@@ -34,6 +36,12 @@ public enum ChallengeCreateBadgeType implements BadgeType{
     @Override
     public String getName() {
         return String.format("챌린지 %d개 " + CREATE, this.number);
+    }
+
+    public static List<String> getNames() {
+        return Arrays.stream(values())
+                .map(ChallengeCreateBadgeType::getName)
+                .collect(Collectors.toUnmodifiableList());
     }
 
     public static boolean isSameType(String badgeName) {

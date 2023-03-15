@@ -25,6 +25,9 @@ public class UserBadge extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column
+    private Boolean status;
+
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User users;
@@ -34,7 +37,8 @@ public class UserBadge extends BaseEntity {
     private Badge badge;
 
     @Builder
-    public UserBadge(User users, Badge badge) {
+    public UserBadge(Boolean status, User users, Badge badge) {
+        this.status = status;
         setUser(users);
         setBadge(badge);
     }
@@ -53,5 +57,9 @@ public class UserBadge extends BaseEntity {
         }
         this.badge = badge;
         badge.getUserBadges().add(this);
+    }
+
+    public void setStatusToTrue() {
+        this.status = true;
     }
 }

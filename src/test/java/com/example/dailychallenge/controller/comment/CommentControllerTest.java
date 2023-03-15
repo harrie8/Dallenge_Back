@@ -32,6 +32,7 @@ import com.example.dailychallenge.service.challenge.ChallengeService;
 import com.example.dailychallenge.service.comment.CommentService;
 import com.example.dailychallenge.service.users.UserService;
 import com.example.dailychallenge.util.ControllerTest;
+import com.example.dailychallenge.util.fixture.TestDataSetup;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
@@ -50,6 +51,8 @@ class CommentControllerTest extends ControllerTest {
     private ChallengeService challengeService;
     @Autowired
     private CommentService commentService;
+    @Autowired
+    private TestDataSetup testDataSetup;
 
     private MockMultipartFile createMultipartFiles() {
         String path = "commentDtoImg";
@@ -98,6 +101,9 @@ class CommentControllerTest extends ControllerTest {
         @Test
         public void success() throws Exception {
             Challenge challenge = createChallenge();
+            User user = challenge.getUsers();
+            testDataSetup.saveUserBadgeEvaluation(user);
+            testDataSetup.saveBadgesAndUserBadges(user);
             CommentDto commentDto = CommentDto.builder()
                     .content("댓글 내용")
                     .build();

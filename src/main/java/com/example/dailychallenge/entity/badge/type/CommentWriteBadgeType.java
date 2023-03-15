@@ -5,24 +5,24 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-// 챌린지 N개 달성
-public enum AchievementBadgeType implements BadgeType{
+// 후기 N개 작성
+public enum CommentWriteBadgeType implements BadgeType{
 
-    ACHIEVED_10(10),
-    ACHIEVED_20(20),
-    ACHIEVED_30(30),
-    ACHIEVED_40(40),
-    ACHIEVED_50(50),
+    WROTE_10(10),
+    WROTE_15(15),
+    WROTE_20(20),
+    WROTE_25(25),
+    WROTE_30(30),
     ;
 
-    private static final String ACHIEVEMENT = "달성";
+    private final static String CREATE = "작성";
     private final int number;
 
-    AchievementBadgeType(int number) {
+    CommentWriteBadgeType(int number) {
         this.number = number;
     }
 
-    public static Optional<AchievementBadgeType> findByNumber(int number) {
+    public static Optional<CommentWriteBadgeType> findByNumber(int number) {
         return Arrays.stream(values())
                 .filter(badgeType -> badgeType.isSameNumber(number))
                 .findAny();
@@ -35,17 +35,16 @@ public enum AchievementBadgeType implements BadgeType{
 
     @Override
     public String getName() {
-        return String.format("챌린지 %d개 " + ACHIEVEMENT, this.number);
+        return String.format("후기 %d개 " + CREATE, this.number);
     }
 
     public static List<String> getNames() {
         return Arrays.stream(values())
-                .map(AchievementBadgeType::getName)
+                .map(CommentWriteBadgeType::getName)
                 .collect(Collectors.toUnmodifiableList());
     }
 
-
     public static boolean isSameType(String badgeName) {
-        return badgeName.contains(ACHIEVEMENT);
+        return badgeName.contains(CREATE);
     }
 }

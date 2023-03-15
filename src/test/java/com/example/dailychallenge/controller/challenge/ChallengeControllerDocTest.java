@@ -80,7 +80,7 @@ public class ChallengeControllerDocTest extends RestDocsTest {
                 WITHIN_TEN_MINUTES.getDescription(),
                 user);
         testDataSetup.챌린지에_참가한다(challenge1, user);
-        testDataSetup.챌린지예_댓글을_단다(challenge1, user);
+        testDataSetup.챌린지에_댓글을_단다(challenge1, user);
         testDataSetup.챌린지에_해시태그를_단다(challenge1, List.of("tag1", "tag2"));
     }
 
@@ -136,6 +136,7 @@ public class ChallengeControllerDocTest extends RestDocsTest {
 //    @WithAuthUser
     void createChallengeTest() throws Exception {
         testDataSetup.saveUserBadgeEvaluation(user);
+        testDataSetup.saveBadgesAndUserBadges(user);
 
         RequestCreateChallenge requestCreateChallenge = RequestCreateChallenge.builder()
                 .title("제목입니다.")
@@ -477,12 +478,29 @@ public class ChallengeControllerDocTest extends RestDocsTest {
                 .andExpect(status().isOk())
                 .andDo(restDocs.document(
                         requestParameters(
-                                parameterWithName("challengeCategoryIndex").description("챌린지 카테고리 번호")
-                                        .attributes(key("constraints").value("0 ~ 4")),
-                                parameterWithName("challengeDurationIndex").description("챌린지 기간 번호")
-                                        .attributes(key("constraints").value("0 ~ 3")),
-                                parameterWithName("challengeLocationIndex").description("챌린지 장소 번호").optional()
-                                        .attributes(key("constraints").value("0 ~ 1"))
+                                parameterWithName("challengeCategoryIndex").description("챌린지 카테고리 번호"),
+                                parameterWithName("challengeDurationIndex").description("챌린지 기간 번호"),
+                                parameterWithName("challengeLocationIndex").description("챌린지 장소 번호")
+                        )
+                ));
+    }
+
+    @Test
+    @DisplayName("챌린지들을 질문으로 찾을 수 없는 경우 랜덤 챌린지를 반환하는 테스트")
+    public void searchChallengesByQuestionWithNotMatchTest() throws Exception {
+        initData();
+
+        mockMvc.perform(get("/challenge/question")
+                        .param("challengeLocationIndex", "1")
+                        .param("challengeDurationIndex", "3")
+                        .param("challengeCategoryIndex", "4")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andDo(restDocs.document(
+                        requestParameters(
+                                parameterWithName("challengeCategoryIndex").description("챌린지 카테고리 번호"),
+                                parameterWithName("challengeDurationIndex").description("챌린지 기간 번호"),
+                                parameterWithName("challengeLocationIndex").description("챌린지 장소 번호")
                         )
                 ));
     }

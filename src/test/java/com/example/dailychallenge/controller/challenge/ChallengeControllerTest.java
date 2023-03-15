@@ -74,7 +74,7 @@ class ChallengeControllerTest extends ControllerTest {
                 WITHIN_TEN_MINUTES.getDescription(),
                 user);
         testDataSetup.챌린지에_참가한다(challenge1, user);
-        testDataSetup.챌린지예_댓글을_단다(challenge1, user);
+        testDataSetup.챌린지에_댓글을_단다(challenge1, user);
         testDataSetup.챌린지에_해시태그를_단다(challenge1, List.of("tag1", "tag2"));
     }
 
@@ -130,6 +130,7 @@ class ChallengeControllerTest extends ControllerTest {
 //    @WithAuthUser
     void createChallengeTest() throws Exception {
         testDataSetup.saveUserBadgeEvaluation(user);
+        testDataSetup.saveBadgesAndUserBadges(user);
 
         RequestCreateChallenge requestCreateChallenge = RequestCreateChallenge.builder()
                 .title("제목입니다.")
@@ -406,6 +407,23 @@ class ChallengeControllerTest extends ControllerTest {
                         "제목입니다.3", "제목입니다.4", "제목입니다.5", "제목입니다.6")))
                 .andExpect(jsonPath("$.[*].content", contains(
                         "내용입니다.3", "내용입니다.4", "내용입니다.5", "내용입니다.6")))
+                .andExpect(jsonPath("$.[*].challengeImgUrls").isNotEmpty());
+    }
+
+    @Test
+    @DisplayName("챌린지들을 질문으로 찾을 수 없는 경우 랜덤 챌린지를 반환하는 테스트")
+    void searchChallengesByQuestionWithNotMatchTest() throws Exception {
+        initData();
+
+        mockMvc.perform(get("/challenge/question")
+                        .param("challengeLocationIndex", "1")
+                        .param("challengeDurationIndex", "3")
+                        .param("challengeCategoryIndex", "4")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.[*].id").isNotEmpty())
+                .andExpect(jsonPath("$.[*].title", hasSize(1)))
+                .andExpect(jsonPath("$.[*].content", hasSize(1)))
                 .andExpect(jsonPath("$.[*].challengeImgUrls").isNotEmpty());
     }
 

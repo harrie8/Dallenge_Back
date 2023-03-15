@@ -7,6 +7,7 @@ import static com.example.dailychallenge.util.fixture.TokenFixture.TOKEN_PREFIX;
 import static com.example.dailychallenge.util.fixture.user.UserFixture.USERNAME;
 import static com.example.dailychallenge.util.fixture.user.UserFixture.getRequestPostProcessor;
 import static org.hamcrest.Matchers.contains;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -29,6 +30,8 @@ import com.example.dailychallenge.entity.users.User;
 import com.example.dailychallenge.exception.users.UserDuplicateCheck;
 import com.example.dailychallenge.exception.users.UserDuplicateNotCheck;
 import com.example.dailychallenge.exception.users.UserPasswordCheck;
+import com.example.dailychallenge.repository.badge.BadgeRepository;
+import com.example.dailychallenge.repository.badge.UserBadgeRepository;
 import com.example.dailychallenge.service.challenge.ChallengeService;
 import com.example.dailychallenge.service.challenge.UserChallengeService;
 import com.example.dailychallenge.service.users.UserService;
@@ -73,6 +76,10 @@ class UserControllerTest {
     private ChallengeService challengeService;
     @Autowired
     private UserChallengeService userChallengeService;
+    @Autowired
+    private BadgeRepository badgeRepository;
+    @Autowired
+    private UserBadgeRepository userBadgeRepository;
     @Autowired
     private MockMvc mockMvc;
     @Autowired
@@ -323,10 +330,10 @@ class UserControllerTest {
         User savedUser = testDataSetup.saveUser(USERNAME, EMAIL, PASSWORD);
 
         UserChallenge userChallenge = testDataSetup.챌린지에_참가한다(challenge, savedUser);
-        Comment comment = testDataSetup.챌린지예_댓글을_단다(challenge, savedUser, "content");
+        Comment comment = testDataSetup.챌린지에_댓글을_단다(challenge, savedUser, "content");
         CommentImg commentImg1 = testDataSetup.댓글에_이미지를_추가한다(comment);
         CommentImg commentImg2 = testDataSetup.댓글에_이미지를_추가한다(comment);
-        testDataSetup.챌린지예_댓글을_단다(challenge, savedUser, null);
+        testDataSetup.챌린지에_댓글을_단다(challenge, savedUser, null);
 
         mockMvc.perform(get("/user/participate")
                         .with(getRequestPostProcessor(savedUser))
@@ -344,6 +351,26 @@ class UserControllerTest {
                         contains(commentImg1.getImgUrl(), commentImg2.getImgUrl())))
                 .andExpect(jsonPath("$[0].comments.[0].commentCreatedAt").value(comment.getMonthDayFormatCreatedAt()))
                 .andDo(print());
+    }
+
+    @Test
+    @DisplayName("회원가입하면 뱃지 생성되는지 테스트")
+    void createBadgesWhenNewUserTest() throws Exception {
+        RequestUser requestUser = RequestUser.builder()
+                .userName("GilDong")
+                .email("test@test.com")
+                .password("1234")
+                .build();
+
+        mockMvc.perform(post("/user/new")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(requestUser))
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isCreated())
+                .andDo(print());
+
+        assertEquals(15, badgeRepository.findAll().size());
+        assertTrue(userBadgeRepository.findAll().stream().allMatch(userBadge -> userBadge.getStatus().equals(false)));
     }
 
     private String generateToken() {

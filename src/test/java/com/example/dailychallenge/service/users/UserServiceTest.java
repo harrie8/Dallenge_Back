@@ -208,7 +208,7 @@ class UserServiceTest {
         for (int i = 0; i < 5; i++) {
             Challenge challenge = testDataSetup.챌린지를_생성한다(createChallengeDto(), user);
             UserChallenge userChallenge = testDataSetup.챌린지에_참가한다(challenge, user);
-            Comment comment = testDataSetup.챌린지예_댓글을_단다(challenge, user);
+            Comment comment = testDataSetup.챌린지에_댓글을_단다(challenge, user);
 
             challenges.add(challenge);
             userChallenges.add(userChallenge);
@@ -244,7 +244,7 @@ class UserServiceTest {
             Challenge otherUserChallenge = testDataSetup.챌린지를_생성한다(createChallengeDto(), otherUser);
             testDataSetup.챌린지에_참가한다(otherUserChallenge, otherUser);
             UserChallenge userChallenge = testDataSetup.챌린지에_참가한다(otherUserChallenge, user);
-            Comment comment = testDataSetup.챌린지예_댓글을_단다(otherUserChallenge, user);
+            Comment comment = testDataSetup.챌린지에_댓글을_단다(otherUserChallenge, user);
 
             challenges.add(otherUserChallenge);
             userChallenges.add(userChallenge);

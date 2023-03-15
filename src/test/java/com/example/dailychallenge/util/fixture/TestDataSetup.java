@@ -3,7 +3,11 @@ package com.example.dailychallenge.util.fixture;
 import static com.example.dailychallenge.util.fixture.challenge.ChallengeImgFixture.createChallengeImgFiles;
 
 import com.example.dailychallenge.dto.ChallengeDto;
+import com.example.dailychallenge.entity.badge.Badge;
 import com.example.dailychallenge.entity.badge.UserBadgeEvaluation;
+import com.example.dailychallenge.entity.badge.type.AchievementBadgeType;
+import com.example.dailychallenge.entity.badge.type.ChallengeCreateBadgeType;
+import com.example.dailychallenge.entity.badge.type.CommentWriteBadgeType;
 import com.example.dailychallenge.entity.challenge.Challenge;
 import com.example.dailychallenge.entity.challenge.UserChallenge;
 import com.example.dailychallenge.entity.comment.Comment;
@@ -14,7 +18,9 @@ import com.example.dailychallenge.repository.CommentImgRepository;
 import com.example.dailychallenge.repository.CommentRepository;
 import com.example.dailychallenge.repository.UserRepository;
 import com.example.dailychallenge.repository.badge.UserBadgeEvaluationRepository;
+import com.example.dailychallenge.service.badge.BadgeService;
 import com.example.dailychallenge.service.badge.UserBadgeEvaluationService;
+import com.example.dailychallenge.service.badge.UserBadgeService;
 import com.example.dailychallenge.service.challenge.ChallengeService;
 import com.example.dailychallenge.service.challenge.UserChallengeService;
 import com.example.dailychallenge.service.hashtag.ChallengeHashtagService;
@@ -45,6 +51,10 @@ public class TestDataSetup {
     private UserBadgeEvaluationRepository userBadgeEvaluationRepository;
     @Autowired
     private UserBadgeEvaluationService userBadgeEvaluationService;
+    @Autowired
+    private BadgeService badgeService;
+    @Autowired
+    private UserBadgeService userBadgeService;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -84,7 +94,7 @@ public class TestDataSetup {
     }
 
     @Transactional
-    public Comment 챌린지예_댓글을_단다(Challenge challenge, User user) {
+    public Comment 챌린지에_댓글을_단다(Challenge challenge, User user) {
         Comment comment = Comment.builder()
                 .content("content")
                 .build();
@@ -94,7 +104,7 @@ public class TestDataSetup {
     }
 
     @Transactional
-    public Comment 챌린지예_댓글을_단다(Challenge challenge, User user, String content) {
+    public Comment 챌린지에_댓글을_단다(Challenge challenge, User user, String content) {
         Comment comment = Comment.builder()
                 .content(content)
                 .build();
@@ -144,5 +154,23 @@ public class TestDataSetup {
     @Transactional
     public void 챌린지_생성_뱃지를_만들_수_있으면_만든다(User user) {
         userBadgeEvaluationService.createChallengeCreateBadgeIfFollowStandard(user);
+    }
+
+    @Transactional
+    public void 후기_작성_뱃지를_만들_수_있으면_만든다(User user) {
+        userBadgeEvaluationService.createCommentWriteBadgeIfFollowStandard(user);
+    }
+
+    @Transactional
+    public void saveBadgesAndUserBadges(User user) {
+        List<String> challengeCreateBadgeNames = ChallengeCreateBadgeType.getNames();
+        List<String> achievementBadgeNames = AchievementBadgeType.getNames();
+        List<String> commentWriteBadgeNames = CommentWriteBadgeType.getNames();
+        List<Badge> challengeCreateBadges = badgeService.createBadges(challengeCreateBadgeNames);
+        List<Badge> achievementBadges = badgeService.createBadges(achievementBadgeNames);
+        List<Badge> commentWriteBadges = badgeService.createBadges(commentWriteBadgeNames);
+        userBadgeService.createUserBadges(user, challengeCreateBadges);
+        userBadgeService.createUserBadges(user, achievementBadges);
+        userBadgeService.createUserBadges(user, commentWriteBadges);
     }
 }

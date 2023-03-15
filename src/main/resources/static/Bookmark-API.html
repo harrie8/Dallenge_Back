@@ -449,8 +449,8 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <h4 id="Bookmark-북마크-생성_http_request">HTTP request</h4>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight nowrap"><code class="language-http" data-lang="http">POST /67/bookmark/new HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhQGEuY29tIiwiaWF0IjoxNjc4NjI3MjcyLCJleHAiOjE2Nzg2NDUyNzJ9.a6gm_ozJtVHSeXYZU86--V7U3aw9VpgTOIkkoWTCwlg
+<pre class="highlight nowrap"><code class="language-http" data-lang="http">POST /37/bookmark/new HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhQGEuY29tIiwiaWF0IjoxNjc4ODg2MTQ4LCJleHAiOjE2Nzg5MDQxNDh9.jyOrG9EZ-tmYgzbHHMpdmuOGzCX7gloBmncjywKJ6kY
 Accept: application/json
 Host: localhost:8080</code></pre>
 </div>
@@ -494,9 +494,9 @@ Content-Length: 133
 {
   "id" : 6,
   "title" : "제목입니다.",
-  "createdAt" : "2023-03-12 22:21:12:221",
+  "createdAt" : "2023-03-15 22:15:48:110",
   "userId" : 8,
-  "challengeId" : 67
+  "challengeId" : 37
 }</code></pre>
 </div>
 </div>
@@ -509,7 +509,7 @@ Content-Length: 133
 <div class="listingblock">
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">DELETE /user/9/bookmark/7 HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0MTIzNEB0ZXN0LmNvbSIsImlhdCI6MTY3ODYyNzI3MiwiZXhwIjoxNjc4NjQ1MjcyfQ.OtgaO7ttVwe5LHHlRz1GfEvojK9IvSEUKbC-vPTBv8U
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0MTIzNEB0ZXN0LmNvbSIsImlhdCI6MTY3ODg4NjE0OCwiZXhwIjoxNjc4OTA0MTQ4fQ.DF0xclUMgk0PbuGMtWLhOnE9aW8Vu7YiMpwETLeAsZU
 Accept: application/json
 Host: localhost:8080</code></pre>
 </div>
@@ -564,7 +564,7 @@ Host: localhost:8080</code></pre>
 <div class="listingblock">
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">GET /user/6/bookmark HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhQGEuY29tIiwiaWF0IjoxNjc4NjI3MjcxLCJleHAiOjE2Nzg2NDUyNzF9.BkJH19HmX8LTMA5UsTYaEcb_2ThlJ1U87KkZ7BrWqwk
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhQGEuY29tIiwiaWF0IjoxNjc4ODg2MTQ3LCJleHAiOjE2Nzg5MDQxNDd9.kLbDStvrQY-8yIZQg9nj7oKx5s67eEuapVZZ7YH1_YM
 Accept: application/json
 Host: localhost:8080</code></pre>
 </div>
@@ -616,33 +616,33 @@ Content-Length: 1237
   "content" : [ {
     "id" : 5,
     "title" : "제목입니다.",
-    "createdAt" : "2023-03-12 22:21:11:789",
+    "createdAt" : "2023-03-15 22:15:47:604",
     "userId" : 6,
-    "challengeId" : 66
+    "challengeId" : 36
   }, {
     "id" : 4,
     "title" : "제목입니다.",
-    "createdAt" : "2023-03-12 22:21:11:781",
+    "createdAt" : "2023-03-15 22:15:47:592",
     "userId" : 6,
-    "challengeId" : 65
+    "challengeId" : 35
   }, {
     "id" : 3,
     "title" : "제목입니다.",
-    "createdAt" : "2023-03-12 22:21:11:772",
+    "createdAt" : "2023-03-15 22:15:47:582",
     "userId" : 6,
-    "challengeId" : 64
+    "challengeId" : 34
   }, {
     "id" : 2,
     "title" : "제목입니다.",
-    "createdAt" : "2023-03-12 22:21:11:765",
+    "createdAt" : "2023-03-15 22:15:47:571",
     "userId" : 6,
-    "challengeId" : 63
+    "challengeId" : 33
   }, {
     "id" : 1,
     "title" : "제목입니다.",
-    "createdAt" : "2023-03-12 22:21:11:756",
+    "createdAt" : "2023-03-15 22:15:47:555",
     "userId" : 6,
-    "challengeId" : 62
+    "challengeId" : 32
   } ],
   "pageable" : {
     "sort" : {
@@ -666,8 +666,8 @@ Content-Length: 1237
     "sorted" : true,
     "unsorted" : false
   },
-  "first" : true,
   "numberOfElements" : 5,
+  "first" : true,
   "empty" : false
 }</code></pre>
 </div>

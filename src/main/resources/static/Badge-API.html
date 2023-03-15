@@ -464,7 +464,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">POST /challenge/new HTTP/1.1
 Content-Type: multipart/form-data;charset=UTF-8; boundary=6o2knFse3p53ty9dmcQvWAIx1zInP11uCfbm
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0MTIzNEB0ZXN0LmNvbSIsImlhdCI6MTY3ODYyNzI2NywiZXhwIjoxNjc4NjQ1MjY3fQ.mk94xFm_Ayq7vUvHZBzleMHDfUwV_ukUF7nmEUKPkvQ
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0MTIzNEB0ZXN0LmNvbSIsImlhdCI6MTY3ODg4NjE0MiwiZXhwIjoxNjc4OTA0MTQyfQ.SQQ5XXN6EXlbtv_L3AGtm7UoWgofY3PQlo5Yygv1VzI
 Accept: application/json
 Host: localhost:8080
 
@@ -512,7 +512,7 @@ Content-Disposition: form-data; name=challengeImgFiles; filename=challengeImgFil
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">HTTP/1.1 201 Created
 Content-Type: application/json;charset=UTF-8
-Content-Length: 669
+Content-Length: 668
 
 {
   "id" : 30,
@@ -522,12 +522,12 @@ Content-Length: 669
   "challengeLocation" : "실내",
   "challengeDuration" : "10분 이내",
   "challengeStatus" : "도전중",
-  "challengeImgUrls" : [ "/images/614a0654-57fd-4028-9480-1a26b9711291.challengeImgFile", "/images/b8053d0a-7127-4c8d-9f04-eeae3ec794b9.challengeImgFile", "/images/6e87bc6f-9587-40b8-873b-54c397093825.challengeImgFile" ],
+  "challengeImgUrls" : [ "/images/cdf0d0c5-80b9-449d-b82b-62d6e105be38.challengeImgFile", "/images/fc0d65b7-88a0-47b3-b5e7-c14c25fa148b.challengeImgFile", "/images/1c0d2084-4da5-4dcf-931b-6f53d2de9573.challengeImgFile" ],
   "challengeHashtags" : [ "tag1", "tag2" ],
   "challengeOwnerUser" : {
     "userName" : "홍길동",
     "email" : "test1234@test.com",
-    "userId" : 10
+    "userId" : 4
   },
   "createBadgeName" : "챌린지 10개 생성"
 }</code></pre>
@@ -581,8 +581,8 @@ Content-Length: 669
 <h4 id="Badge-챌린지-N개-달성-뱃지_http_request">HTTP request</h4>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight nowrap"><code class="language-http" data-lang="http">POST /challenge/1/success HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0MTIzNEB0ZXN0LmNvbSIsImlhdCI6MTY3ODYyNzI2NSwiZXhwIjoxNjc4NjQ1MjY1fQ.CNCG-vh5VpxqAInQUefwSS0k1U7rXGZtGKgqOvTIkG8
+<pre class="highlight nowrap"><code class="language-http" data-lang="http">POST /challenge/20/success HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0MTIzNEB0ZXN0LmNvbSIsImlhdCI6MTY3ODg4NjE0MSwiZXhwIjoxNjc4OTA0MTQxfQ.xjtMwc8qNEEeQjQMCNysadd5eW83Qiwf01WlWDyg5wA
 Accept: application/json
 Host: localhost:8080</code></pre>
 </div>
@@ -644,12 +644,132 @@ Content-Length: 112
 </table>
 </div>
 </div>
+<div class="sect2">
+<h3 id="Badge-후기-N개-작성-뱃지">후기 N개 작성 뱃지(성취)</h3>
+<div class="ulist">
+<ul>
+<li>
+<p>댓글 생성 API 요청을 했을 때 뱃지 생성 조건이 맞는 경우 뱃지를 생성합니다.</p>
+</li>
+<li>
+<p>뱃지를 생성한 경우 댓글 생성 API 응답값에 createBadgeName으로 생성된 뱃지의 이름이 반환됩니다.</p>
+</li>
+<li>
+<p>HTTP Request는 챌린지 달성과 같습니다.</p>
+</li>
+</ul>
+</div>
+<div class="sect3">
+<h4 id="Badge-후기-N개-작성-뱃지_http_request">HTTP request</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight nowrap"><code class="language-http" data-lang="http">POST /10/comment/new HTTP/1.1
+Content-Type: multipart/form-data;charset=UTF-8; boundary=6o2knFse3p53ty9dmcQvWAIx1zInP11uCfbm
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0MTIzNEB0ZXN0LmNvbSIsImlhdCI6MTY3ODg4NjE0MCwiZXhwIjoxNjc4OTA0MTQwfQ.lSP_Gr6PR6f_Hx9_sIjcM94hINIjiRdkiJmcPcF9eVM
+Accept: application/json
+Host: localhost:8080
+
+--6o2knFse3p53ty9dmcQvWAIx1zInP11uCfbm
+Content-Disposition: form-data; name=commentImgFiles; filename=commentImgFiles
+
+
+--6o2knFse3p53ty9dmcQvWAIx1zInP11uCfbm
+Content-Disposition: form-data; name=commentImgFiles; filename=commentImgFiles
+
+
+--6o2knFse3p53ty9dmcQvWAIx1zInP11uCfbm
+Content-Disposition: form-data; name=commentDto; filename=commentDto
+Content-Type: application/json
+
+{"content":"댓글 내용"}
+--6o2knFse3p53ty9dmcQvWAIx1zInP11uCfbm
+Content-Disposition: form-data; name=commentImgFiles; filename=commentImgFiles
+
+
+--6o2knFse3p53ty9dmcQvWAIx1zInP11uCfbm
+Content-Disposition: form-data; name=commentImgFiles; filename=commentImgFiles
+
+
+--6o2knFse3p53ty9dmcQvWAIx1zInP11uCfbm--</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="Badge-후기-N개-작성-뱃지_http_response">HTTP response</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight nowrap"><code class="language-http" data-lang="http">HTTP/1.1 201 Created
+Content-Type: application/json;charset=UTF-8
+Content-Length: 139
+
+{
+  "id" : 10,
+  "content" : "댓글 내용",
+  "createdAt" : "오늘",
+  "userId" : 1,
+  "createBadgeName" : "후기 10개 작성"
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="Badge-후기-N개-작성-뱃지_response_fields">Response fields</h4>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">필드명</th>
+<th class="tableblock halign-left valign-top">타입</th>
+<th class="tableblock halign-left valign-top">필수값</th>
+<th class="tableblock halign-left valign-top">설명</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>id</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Number</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">true</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">댓글 ID</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>content</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">true</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">댓글 내용</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>createdAt</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">true</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">댓글 작성 시간</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>userId</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Number</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">true</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">댓글 작성 유저 ID</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>createBadgeName</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">true</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">후기 N개 작성 뱃지 이름</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2023-03-12 20:19:46 +0900
+Last updated 2023-03-15 01:15:54 +0900
 </div>
 </div>
 </body>

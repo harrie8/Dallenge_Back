@@ -28,6 +28,8 @@ public class UserBadgeEvaluation extends BaseEntity {
     private Integer numberOfAchievement;
     @Column(nullable = false)
     private Integer numberOfChallengeCreate;
+    @Column(nullable = false)
+    private Integer numberOfCommentWrite;
 
     @OneToOne
     @JoinColumn(name = "user_id")
@@ -38,6 +40,7 @@ public class UserBadgeEvaluation extends BaseEntity {
         setUser(users);
         numberOfAchievement = 0;
         numberOfChallengeCreate = 0;
+        numberOfCommentWrite = 0;
     }
 
     public void setUser(User users) {
@@ -50,6 +53,10 @@ public class UserBadgeEvaluation extends BaseEntity {
     }
     public void addNumberOfChallengeCreate() {
         this.numberOfChallengeCreate++;
+    }
+
+    public void addNumberOfCommentWrite() {
+        this.numberOfCommentWrite++;
     }
 
     public void subtractNumberOfAchievement() {
