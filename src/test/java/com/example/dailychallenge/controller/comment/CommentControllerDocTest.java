@@ -140,6 +140,7 @@ public class CommentControllerDocTest {
         Challenge challenge = createChallenge();
         User user = challenge.getUsers();
         testDataSetup.saveUserBadgeEvaluation(user);
+        testDataSetup.saveBadgesAndUserBadges(user);
         CommentDto commentDto = CommentDto.builder()
                 .content("댓글 내용")
                 .build();

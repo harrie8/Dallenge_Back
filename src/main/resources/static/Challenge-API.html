@@ -457,7 +457,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">POST /challenge/new HTTP/1.1
 Content-Type: multipart/form-data;charset=UTF-8; boundary=6o2knFse3p53ty9dmcQvWAIx1zInP11uCfbm
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0MTIzNEB0ZXN0LmNvbSIsImlhdCI6MTY3ODgxMDc1OSwiZXhwIjoxNjc4ODI4NzU5fQ.vDNkJN4n-JlgDOzLUuQsLN4K5KX4Zo8wa4HmTyDOvtQ
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0MTIzNEB0ZXN0LmNvbSIsImlhdCI6MTY3ODg4NjE1OCwiZXhwIjoxNjc4OTA0MTU4fQ.p6BiB1UWE5JM-SJ3ZNGbvoL1WHGQIWDHsQ6MNpGTpnc
 Accept: application/json
 Host: localhost:8080
 
@@ -649,19 +649,19 @@ Content-Type: application/json;charset=UTF-8
 Content-Length: 621
 
 {
-  "id" : 169,
+  "id" : 129,
   "title" : "제목입니다.",
   "content" : "내용입니다.",
   "challengeCategory" : "공부",
   "challengeLocation" : "실내",
   "challengeDuration" : "10분 이내",
   "challengeStatus" : "도전중",
-  "challengeImgUrls" : [ "/images/4ef5b817-aa56-481f-8551-24f79c58269b.challengeImgFile", "/images/237e59aa-013b-4599-bad6-d608a1177c04.challengeImgFile", "/images/2d965276-6c5e-45e0-96fe-44bd25c333ab.challengeImgFile" ],
+  "challengeImgUrls" : [ "/images/f2cc1004-9f6f-4656-b310-0626bd0b2910.challengeImgFile", "/images/a6bfc9b9-3349-470b-8cab-fcbae16042cf.challengeImgFile", "/images/ab8c96b1-0c3f-4ef2-90dc-d6c39dd326d0.challengeImgFile" ],
   "challengeHashtags" : [ "tag1", "tag2" ],
   "challengeOwnerUser" : {
     "userName" : "홍길동",
     "email" : "test1234@test.com",
-    "userId" : 91
+    "userId" : 89
   }
 }</code></pre>
 </div>
@@ -674,8 +674,8 @@ Content-Length: 621
 <h4 id="Challenge-특정-챌린지-조회_http_request">HTTP request</h4>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight nowrap"><code class="language-http" data-lang="http">GET /challenge/139 HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0MTIzNEB0ZXN0LmNvbSIsImlhdCI6MTY3ODgxMDc1NiwiZXhwIjoxNjc4ODI4NzU2fQ.8jbmPUI0T7SrkcJtuIOcIIh_Yw06da215ZI9L-A2NHo
+<pre class="highlight nowrap"><code class="language-http" data-lang="http">GET /challenge/99 HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0MTIzNEB0ZXN0LmNvbSIsImlhdCI6MTY3ODg4NjE1NSwiZXhwIjoxNjc4OTA0MTU1fQ.X_pB65dOBV8XqrYJbgaV44aiMrgtE9YlXOWG18yP6mc
 Accept: application/json
 Host: localhost:8080</code></pre>
 </div>
@@ -714,24 +714,24 @@ Host: localhost:8080</code></pre>
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">HTTP/1.1 200 OK
 Content-Type: application/json;charset=UTF-8
-Content-Length: 1070
+Content-Length: 1069
 
 {
   "responseChallenge" : {
-    "id" : 139,
+    "id" : 99,
     "title" : "제목입니다.1",
     "content" : "내용입니다.1",
     "challengeCategory" : "공부",
     "challengeLocation" : "실내",
     "challengeDuration" : "10분 이내",
-    "created_at" : "2023-03-15 01:19:16:984",
-    "challengeImgUrls" : [ "/images/d56791e8-6d22-4b80-b0ac-18f7db08fdf1.jpg", "/images/cab72f6a-00e5-4f8c-a54c-cabed1f59d2c.jpg", "/images/661f4d1b-53dc-469c-a27b-49293dddcbda.jpg" ],
+    "created_at" : "2023-03-15 22:15:55:106",
+    "challengeImgUrls" : [ "/images/1823806f-4b0c-41e0-9ac4-6311db0b69d4.jpg", "/images/946bca59-f74e-42f3-851e-06619a0d8d66.jpg", "/images/31c88a50-5a82-404e-96b7-f610d8a6bdbf.jpg" ],
     "challengeHashtags" : [ "tag1", "tag2" ],
     "howManyUsersAreInThisChallenge" : 2,
     "challengeOwnerUser" : {
       "userName" : "홍길동",
       "email" : "test1234@test.com",
-      "userId" : 64
+      "userId" : 62
     }
   },
   "responseUserChallenges" : [ {
@@ -739,14 +739,14 @@ Content-Length: 1070
     "participatedUser" : {
       "userName" : "홍길동",
       "email" : "test1234@test.com",
-      "userId" : 64
+      "userId" : 62
     }
   }, {
     "challengeStatus" : "도전중",
     "participatedUser" : {
       "userName" : "홍길동1",
       "email" : "1@test.com",
-      "userId" : 65
+      "userId" : 63
     }
   } ]
 }</code></pre>
@@ -855,164 +855,164 @@ Content-Length: 7091
 
 {
   "content" : [ {
-    "id" : 160,
+    "id" : 120,
     "title" : "제목입니다.2",
     "content" : "내용입니다.2",
     "challengeCategory" : "경제",
     "challengeLocation" : "실외",
     "challengeDuration" : "1시간 이상",
-    "created_at" : "2023-03-15 01:19:18:634",
-    "challengeImgUrls" : [ "/images/854875e2-c4e8-4729-915b-9558a2cba932.jpg", "/images/dcdd6345-bc81-4b95-abdb-ddb16475fb69.jpg", "/images/7e8076b7-efc8-43d7-b6a7-6bfa686b32fb.jpg" ],
+    "created_at" : "2023-03-15 22:15:57:599",
+    "challengeImgUrls" : [ "/images/9e1ff2b8-bb6c-42f3-9b1e-471539c0bc4c.jpg", "/images/576b4867-4140-44ef-bf03-33444d80f29a.jpg", "/images/17c79ec8-6502-4583-9cab-e77e3601a86f.jpg" ],
     "challengeHashtags" : [ "tag1", "tag2", "tag3" ],
     "howManyUsersAreInThisChallenge" : 5,
     "challengeOwnerUser" : {
       "userName" : "홍길동",
       "email" : "test1234@test.com",
-      "userId" : 82
+      "userId" : 80
     }
   }, {
-    "id" : 159,
+    "id" : 119,
     "title" : "제목입니다.1",
     "content" : "내용입니다.1",
     "challengeCategory" : "공부",
     "challengeLocation" : "실내",
     "challengeDuration" : "10분 이내",
-    "created_at" : "2023-03-15 01:19:18:625",
-    "challengeImgUrls" : [ "/images/5f44e778-6a77-4d1c-873a-00312806dd33.jpg", "/images/296cfe5a-e536-466e-b98a-425de2b27a40.jpg", "/images/a8678806-955f-45c9-a6bb-54a5772c18f7.jpg" ],
+    "created_at" : "2023-03-15 22:15:57:588",
+    "challengeImgUrls" : [ "/images/a4e91c1b-aae7-43aa-b03f-2135889f9939.jpg", "/images/eefd4d39-5006-45ce-980b-e29faec72e03.jpg", "/images/ae1b3686-b84e-4e79-937a-dab5f662c69f.jpg" ],
     "challengeHashtags" : [ "tag1", "tag2" ],
     "howManyUsersAreInThisChallenge" : 2,
     "challengeOwnerUser" : {
       "userName" : "홍길동",
       "email" : "test1234@test.com",
-      "userId" : 82
+      "userId" : 80
     }
   }, {
-    "id" : 164,
+    "id" : 124,
     "title" : "제목입니다.6",
     "content" : "내용입니다.6",
     "challengeCategory" : "운동",
     "challengeLocation" : "실내",
     "challengeDuration" : "10분 이내",
-    "created_at" : "2023-03-15 01:19:18:657",
-    "challengeImgUrls" : [ "/images/fd8ead52-dbda-4bdc-9877-515db9ed651f.jpg", "/images/8d817395-53c9-4c34-8735-79445c7e1f06.jpg", "/images/c2fe9cbb-3e04-45f7-90e2-6031a0be65e6.jpg" ],
+    "created_at" : "2023-03-15 22:15:57:630",
+    "challengeImgUrls" : [ "/images/fe471ff8-0c5f-4cd0-a2ab-e6041bf3dea3.jpg", "/images/f06d78cd-a4d1-4ca8-86ae-54e4b1fb72bd.jpg", "/images/50871dac-2ebf-42a5-b653-056860cac862.jpg" ],
     "challengeHashtags" : [ "tag2", "tag4" ],
     "howManyUsersAreInThisChallenge" : 2,
     "challengeOwnerUser" : {
       "userName" : "홍길동",
       "email" : "test1234@test.com",
-      "userId" : 82
+      "userId" : 80
     }
   }, {
-    "id" : 161,
+    "id" : 121,
     "title" : "제목입니다.3",
     "content" : "내용입니다.3",
     "challengeCategory" : "운동",
     "challengeLocation" : "실내",
     "challengeDuration" : "10분 이내",
-    "created_at" : "2023-03-15 01:19:18:643",
-    "challengeImgUrls" : [ "/images/3e174299-b945-4933-83d6-cdf85005d77a.jpg", "/images/7afb66e0-d57c-4d74-989c-e670a10a0e2c.jpg", "/images/32a89238-1864-474d-97a4-fe02e8c5ddc7.jpg" ],
+    "created_at" : "2023-03-15 22:15:57:612",
+    "challengeImgUrls" : [ "/images/43dfaa5d-da7f-4ebb-92fd-9849eb03047c.jpg", "/images/7dec1c68-f65a-426d-a0a8-651e4e91ed1d.jpg", "/images/cc220f8c-578d-439e-b709-854ed6fc2f96.jpg" ],
     "challengeHashtags" : [ ],
     "howManyUsersAreInThisChallenge" : 1,
     "challengeOwnerUser" : {
       "userName" : "홍길동",
       "email" : "test1234@test.com",
-      "userId" : 82
+      "userId" : 80
     }
   }, {
-    "id" : 162,
+    "id" : 122,
     "title" : "제목입니다.4",
     "content" : "내용입니다.4",
     "challengeCategory" : "운동",
     "challengeLocation" : "실내",
     "challengeDuration" : "10분 이내",
-    "created_at" : "2023-03-15 01:19:18:648",
-    "challengeImgUrls" : [ "/images/ccb7fee9-e2a7-4fcd-8dc7-6b37c8ec5242.jpg", "/images/91b8171d-a56f-4967-8ab9-198bbaf19655.jpg", "/images/7e31ee83-5d27-4ff1-9c35-e3a2b61a425c.jpg" ],
+    "created_at" : "2023-03-15 22:15:57:618",
+    "challengeImgUrls" : [ "/images/16ec53d1-4368-4681-af2b-10e28393a8bf.jpg", "/images/b5f55814-41d3-4b7c-8e7e-5d0e7ac469ff.jpg", "/images/f47512b3-b9ce-4bb9-aded-19a78d0867ad.jpg" ],
     "challengeHashtags" : [ ],
     "howManyUsersAreInThisChallenge" : 1,
     "challengeOwnerUser" : {
       "userName" : "홍길동",
       "email" : "test1234@test.com",
-      "userId" : 82
+      "userId" : 80
     }
   }, {
-    "id" : 163,
+    "id" : 123,
     "title" : "제목입니다.5",
     "content" : "내용입니다.5",
     "challengeCategory" : "운동",
     "challengeLocation" : "실내",
     "challengeDuration" : "10분 이내",
-    "created_at" : "2023-03-15 01:19:18:652",
-    "challengeImgUrls" : [ "/images/8a833bac-a68c-46f9-963f-1a21ea054883.jpg", "/images/a5c729f3-a896-47d7-9480-5e827c642f41.jpg", "/images/c6dc4c36-6df1-4ec4-a44c-594c2b81e243.jpg" ],
+    "created_at" : "2023-03-15 22:15:57:624",
+    "challengeImgUrls" : [ "/images/ed312034-372d-4ebd-96f2-ae28aef78077.jpg", "/images/76f92511-827f-404b-8b13-02a7bfb61faa.jpg", "/images/fabb0fda-2a84-4077-8af8-d253c303d9b6.jpg" ],
     "challengeHashtags" : [ ],
     "howManyUsersAreInThisChallenge" : 1,
     "challengeOwnerUser" : {
       "userName" : "홍길동",
       "email" : "test1234@test.com",
-      "userId" : 82
+      "userId" : 80
     }
   }, {
-    "id" : 165,
+    "id" : 125,
     "title" : "제목입니다.7",
     "content" : "내용입니다.7",
     "challengeCategory" : "운동",
     "challengeLocation" : "실내",
     "challengeDuration" : "10분 이내",
-    "created_at" : "2023-03-15 01:19:18:665",
-    "challengeImgUrls" : [ "/images/f038579e-c649-4068-982d-92e7ad017194.jpg", "/images/2a0d8461-6321-4864-b78a-c26186b8bb59.jpg", "/images/4bbe1023-ab8d-4d4d-90f2-2b6b18de9dce.jpg" ],
+    "created_at" : "2023-03-15 22:15:57:641",
+    "challengeImgUrls" : [ "/images/a685ebaa-13ac-4137-8244-15d9f65df1d8.jpg", "/images/a4c16188-d4b7-4e48-b8e1-a54914c64602.jpg", "/images/6ad853b2-adb7-4b45-9cd6-8e20c4abc266.jpg" ],
     "challengeHashtags" : [ ],
     "howManyUsersAreInThisChallenge" : 1,
     "challengeOwnerUser" : {
       "userName" : "홍길동",
       "email" : "test1234@test.com",
-      "userId" : 82
+      "userId" : 80
     }
   }, {
-    "id" : 166,
+    "id" : 126,
     "title" : "제목입니다.8",
     "content" : "내용입니다.8",
     "challengeCategory" : "운동",
     "challengeLocation" : "실내",
     "challengeDuration" : "10분 이내",
-    "created_at" : "2023-03-15 01:19:18:670",
-    "challengeImgUrls" : [ "/images/b09168c4-fb79-4319-89e6-eaf12ab2a9f8.jpg", "/images/355ffc0a-e6ce-4cb4-b329-57f49a07226e.jpg", "/images/1bd340f3-c1be-45ee-8b1b-4f68c44930d3.jpg" ],
+    "created_at" : "2023-03-15 22:15:57:647",
+    "challengeImgUrls" : [ "/images/43b1d7f3-5f62-4dae-a356-ade781b027ea.jpg", "/images/a948eace-5a18-4cea-a850-09c513fb04d8.jpg", "/images/9a36213c-b979-4ca5-9805-55c47a142d17.jpg" ],
     "challengeHashtags" : [ ],
     "howManyUsersAreInThisChallenge" : 1,
     "challengeOwnerUser" : {
       "userName" : "홍길동",
       "email" : "test1234@test.com",
-      "userId" : 82
+      "userId" : 80
     }
   }, {
-    "id" : 167,
+    "id" : 127,
     "title" : "제목입니다.9",
     "content" : "내용입니다.9",
     "challengeCategory" : "운동",
     "challengeLocation" : "실내",
     "challengeDuration" : "10분 이내",
-    "created_at" : "2023-03-15 01:19:18:675",
-    "challengeImgUrls" : [ "/images/7136e9d5-cf61-4e8f-b5e3-e22911ae084b.jpg", "/images/ee32215b-946c-4680-a472-c68bfd1372a0.jpg", "/images/2f74d603-e8fa-404a-9191-602f216c6732.jpg" ],
+    "created_at" : "2023-03-15 22:15:57:653",
+    "challengeImgUrls" : [ "/images/e1266803-298e-4c2a-92d6-75a51b1ea124.jpg", "/images/a8dd7fa2-bfdd-4dfc-8922-6c6e8d47e13f.jpg", "/images/6c9475fb-a2e5-4823-b53e-244363dcb129.jpg" ],
     "challengeHashtags" : [ ],
     "howManyUsersAreInThisChallenge" : 1,
     "challengeOwnerUser" : {
       "userName" : "홍길동",
       "email" : "test1234@test.com",
-      "userId" : 82
+      "userId" : 80
     }
   }, {
-    "id" : 168,
+    "id" : 128,
     "title" : "제목입니다.10",
     "content" : "내용입니다.10",
     "challengeCategory" : "운동",
     "challengeLocation" : "실내",
     "challengeDuration" : "10분 이내",
-    "created_at" : "2023-03-15 01:19:18:680",
-    "challengeImgUrls" : [ "/images/384ee64d-2660-4fcb-a878-45e5930d7321.jpg", "/images/98f1914b-1655-4d5f-b6cc-59f0408d2163.jpg", "/images/cfa521e3-4558-46f1-8063-30cb0e312f28.jpg" ],
+    "created_at" : "2023-03-15 22:15:57:660",
+    "challengeImgUrls" : [ "/images/6482af70-cb79-4ad0-b8a6-73bb6e8eefba.jpg", "/images/3a173df6-611e-490c-9b5a-5ba957e164e3.jpg", "/images/693cf9c2-c667-4010-abcd-7cd6b125f128.jpg" ],
     "challengeHashtags" : [ ],
     "howManyUsersAreInThisChallenge" : 1,
     "challengeOwnerUser" : {
       "userName" : "홍길동",
       "email" : "test1234@test.com",
-      "userId" : 82
+      "userId" : 80
     }
   } ],
   "pageable" : {
@@ -1027,9 +1027,9 @@ Content-Length: 7091
     "paged" : true,
     "unpaged" : false
   },
-  "totalElements" : 10,
-  "last" : true,
   "totalPages" : 1,
+  "last" : true,
+  "totalElements" : 10,
   "size" : 20,
   "number" : 0,
   "sort" : {
@@ -1037,8 +1037,8 @@ Content-Length: 7091
     "sorted" : true,
     "unsorted" : false
   },
-  "first" : true,
   "numberOfElements" : 10,
+  "first" : true,
   "empty" : false
 }</code></pre>
 </div>
@@ -1144,164 +1144,164 @@ Content-Length: 7091
 
 {
   "content" : [ {
-    "id" : 158,
+    "id" : 118,
     "title" : "제목입니다.10",
     "content" : "내용입니다.10",
     "challengeCategory" : "운동",
     "challengeLocation" : "실내",
     "challengeDuration" : "10분 이내",
-    "created_at" : "2023-03-15 01:19:17:879",
-    "challengeImgUrls" : [ "/images/31ae4a54-1bd3-49e7-9416-d8cc26d446e1.jpg", "/images/21596489-024d-43e1-b5c2-0e9610908398.jpg", "/images/c3d81abc-0ac5-48b9-a2aa-80a093bef2d4.jpg" ],
+    "created_at" : "2023-03-15 22:15:56:737",
+    "challengeImgUrls" : [ "/images/72b55c14-fe68-4ab5-8de4-b08124951f2f.jpg", "/images/4e3aedb5-1cc3-473f-a8a4-aa65eb7e6313.jpg", "/images/e4476f3f-96ba-410f-af16-b05cecb100bd.jpg" ],
     "challengeHashtags" : [ ],
     "howManyUsersAreInThisChallenge" : 1,
     "challengeOwnerUser" : {
       "userName" : "홍길동",
       "email" : "test1234@test.com",
-      "userId" : 73
+      "userId" : 71
     }
   }, {
-    "id" : 157,
+    "id" : 117,
     "title" : "제목입니다.9",
     "content" : "내용입니다.9",
     "challengeCategory" : "운동",
     "challengeLocation" : "실내",
     "challengeDuration" : "10분 이내",
-    "created_at" : "2023-03-15 01:19:17:874",
-    "challengeImgUrls" : [ "/images/9b37a957-14e4-4231-9176-5d52b08f7f45.jpg", "/images/62c72941-30e4-41a2-9864-bc393d8ae060.jpg", "/images/a1a71e53-57fd-4e18-b325-56fb92275024.jpg" ],
+    "created_at" : "2023-03-15 22:15:56:730",
+    "challengeImgUrls" : [ "/images/f7de3cfe-6f34-44d7-9cdd-6d8bd45e12d3.jpg", "/images/535033c2-b44f-4fd8-a681-20888bd8efb7.jpg", "/images/f896a224-d40c-4976-be80-c68fa364afc5.jpg" ],
     "challengeHashtags" : [ ],
     "howManyUsersAreInThisChallenge" : 1,
     "challengeOwnerUser" : {
       "userName" : "홍길동",
       "email" : "test1234@test.com",
-      "userId" : 73
+      "userId" : 71
     }
   }, {
-    "id" : 156,
+    "id" : 116,
     "title" : "제목입니다.8",
     "content" : "내용입니다.8",
     "challengeCategory" : "운동",
     "challengeLocation" : "실내",
     "challengeDuration" : "10분 이내",
-    "created_at" : "2023-03-15 01:19:17:868",
-    "challengeImgUrls" : [ "/images/4f9059fc-6169-4615-b511-744cbab485fc.jpg", "/images/ba6aded4-3e9d-4c2b-88d8-bf2207b29400.jpg", "/images/a1f9f8cf-07e2-4c12-990f-34dc50bab3e0.jpg" ],
+    "created_at" : "2023-03-15 22:15:56:723",
+    "challengeImgUrls" : [ "/images/71addbf8-738b-43fe-a3c9-8c41f7b20a8b.jpg", "/images/abad230e-53ff-4583-8835-0eee737815ce.jpg", "/images/3f2f81e9-3b6c-40e8-9e0c-b6513f2551ce.jpg" ],
     "challengeHashtags" : [ ],
     "howManyUsersAreInThisChallenge" : 1,
     "challengeOwnerUser" : {
       "userName" : "홍길동",
       "email" : "test1234@test.com",
-      "userId" : 73
+      "userId" : 71
     }
   }, {
-    "id" : 155,
+    "id" : 115,
     "title" : "제목입니다.7",
     "content" : "내용입니다.7",
     "challengeCategory" : "운동",
     "challengeLocation" : "실내",
     "challengeDuration" : "10분 이내",
-    "created_at" : "2023-03-15 01:19:17:862",
-    "challengeImgUrls" : [ "/images/aedd635d-93f6-44db-b64e-1e43c4e3f6a6.jpg", "/images/904555ad-5060-49fc-aa11-c077fd7fe3d3.jpg", "/images/15c875bf-a38b-4104-8420-d881eb783541.jpg" ],
+    "created_at" : "2023-03-15 22:15:56:717",
+    "challengeImgUrls" : [ "/images/b93d1c93-9e12-4a87-9d60-199024ca8549.jpg", "/images/67871ce3-54ad-4fe5-8eee-850e8a3522b2.jpg", "/images/8b67d504-cdc3-4621-ade4-31d41047e5d7.jpg" ],
     "challengeHashtags" : [ ],
     "howManyUsersAreInThisChallenge" : 1,
     "challengeOwnerUser" : {
       "userName" : "홍길동",
       "email" : "test1234@test.com",
-      "userId" : 73
+      "userId" : 71
     }
   }, {
-    "id" : 154,
+    "id" : 114,
     "title" : "제목입니다.6",
     "content" : "내용입니다.6",
     "challengeCategory" : "운동",
     "challengeLocation" : "실내",
     "challengeDuration" : "10분 이내",
-    "created_at" : "2023-03-15 01:19:17:852",
-    "challengeImgUrls" : [ "/images/9f4b5fe2-92d1-44a0-b013-39fc57e4bf81.jpg", "/images/a2aac011-8e78-4d49-bc6a-8b7abccae243.jpg", "/images/492a5802-4b50-42d8-8b10-4f6ffe017289.jpg" ],
+    "created_at" : "2023-03-15 22:15:56:708",
+    "challengeImgUrls" : [ "/images/af5d8d98-e332-4b1f-a6f2-7bcae58371cb.jpg", "/images/3b7465bd-5d33-46e6-ba35-bc547201a45d.jpg", "/images/a5e4188f-8e29-4162-a699-2b69b33f2a7f.jpg" ],
     "challengeHashtags" : [ "tag2", "tag4" ],
     "howManyUsersAreInThisChallenge" : 2,
     "challengeOwnerUser" : {
       "userName" : "홍길동",
       "email" : "test1234@test.com",
-      "userId" : 73
+      "userId" : 71
     }
   }, {
-    "id" : 153,
+    "id" : 113,
     "title" : "제목입니다.5",
     "content" : "내용입니다.5",
     "challengeCategory" : "운동",
     "challengeLocation" : "실내",
     "challengeDuration" : "10분 이내",
-    "created_at" : "2023-03-15 01:19:17:846",
-    "challengeImgUrls" : [ "/images/5ad66b3b-1648-4505-8a8d-68da6dc56bf1.jpg", "/images/34c3d3fa-1719-4d1d-a5cd-31e95165bc77.jpg", "/images/895d857c-ac84-4073-958e-2a553a81bb2c.jpg" ],
+    "created_at" : "2023-03-15 22:15:56:702",
+    "challengeImgUrls" : [ "/images/7638ed1f-d344-40b3-b3aa-dd3defabe421.jpg", "/images/04152ee7-675c-4c7a-910a-147bf78a4c37.jpg", "/images/38ce2b87-021a-4d6a-8f21-fc5f8f0eb682.jpg" ],
     "challengeHashtags" : [ ],
     "howManyUsersAreInThisChallenge" : 1,
     "challengeOwnerUser" : {
       "userName" : "홍길동",
       "email" : "test1234@test.com",
-      "userId" : 73
+      "userId" : 71
     }
   }, {
-    "id" : 152,
+    "id" : 112,
     "title" : "제목입니다.4",
     "content" : "내용입니다.4",
     "challengeCategory" : "운동",
     "challengeLocation" : "실내",
     "challengeDuration" : "10분 이내",
-    "created_at" : "2023-03-15 01:19:17:840",
-    "challengeImgUrls" : [ "/images/48ef3db7-9bcf-4bb5-a46e-61758499b6a7.jpg", "/images/e7f9c8d7-be79-43a8-b7dd-28ae622b9fe6.jpg", "/images/01939e3d-63d3-4a9f-a46b-f15a3875f1bb.jpg" ],
+    "created_at" : "2023-03-15 22:15:56:696",
+    "challengeImgUrls" : [ "/images/c255f6a5-a20f-44c6-9f01-e93d83b2e53c.jpg", "/images/c22ca503-4803-42fe-a6e5-19b5231bf38f.jpg", "/images/4ae8445b-4f6a-4ac5-8ab8-49a17c8cc94f.jpg" ],
     "challengeHashtags" : [ ],
     "howManyUsersAreInThisChallenge" : 1,
     "challengeOwnerUser" : {
       "userName" : "홍길동",
       "email" : "test1234@test.com",
-      "userId" : 73
+      "userId" : 71
     }
   }, {
-    "id" : 151,
+    "id" : 111,
     "title" : "제목입니다.3",
     "content" : "내용입니다.3",
     "challengeCategory" : "운동",
     "challengeLocation" : "실내",
     "challengeDuration" : "10분 이내",
-    "created_at" : "2023-03-15 01:19:17:834",
-    "challengeImgUrls" : [ "/images/57fed410-ba85-490a-a998-6c97fc802648.jpg", "/images/072e8ca7-40c9-4422-9af9-e72c68d7bdbc.jpg", "/images/5f3722db-65fb-456a-96a8-820e03891f5d.jpg" ],
+    "created_at" : "2023-03-15 22:15:56:690",
+    "challengeImgUrls" : [ "/images/f10af085-103e-4a5f-a55b-2d1d43c9992c.jpg", "/images/fb8ec02d-ac8c-493c-a2c3-b71199591430.jpg", "/images/7c8134ee-2e58-4c07-b0a7-d525ef61387a.jpg" ],
     "challengeHashtags" : [ ],
     "howManyUsersAreInThisChallenge" : 1,
     "challengeOwnerUser" : {
       "userName" : "홍길동",
       "email" : "test1234@test.com",
-      "userId" : 73
+      "userId" : 71
     }
   }, {
-    "id" : 150,
+    "id" : 110,
     "title" : "제목입니다.2",
     "content" : "내용입니다.2",
     "challengeCategory" : "경제",
     "challengeLocation" : "실외",
     "challengeDuration" : "1시간 이상",
-    "created_at" : "2023-03-15 01:19:17:824",
-    "challengeImgUrls" : [ "/images/eac43a87-7f08-4852-bc71-32ab12617d02.jpg", "/images/0d50cb26-dfba-480f-85b4-063bcee98dcc.jpg", "/images/01bf2580-366a-46a7-a1dc-7a18ae6e75f8.jpg" ],
+    "created_at" : "2023-03-15 22:15:56:677",
+    "challengeImgUrls" : [ "/images/0fa31d3f-4931-4aad-a322-4d6fbd6d5019.jpg", "/images/6f451e72-1049-4946-8d68-cf1ad8b86452.jpg", "/images/9245e76f-df6c-4b09-b54e-c42f1df88eaf.jpg" ],
     "challengeHashtags" : [ "tag1", "tag2", "tag3" ],
     "howManyUsersAreInThisChallenge" : 5,
     "challengeOwnerUser" : {
       "userName" : "홍길동",
       "email" : "test1234@test.com",
-      "userId" : 73
+      "userId" : 71
     }
   }, {
-    "id" : 149,
+    "id" : 109,
     "title" : "제목입니다.1",
     "content" : "내용입니다.1",
     "challengeCategory" : "공부",
     "challengeLocation" : "실내",
     "challengeDuration" : "10분 이내",
-    "created_at" : "2023-03-15 01:19:17:814",
-    "challengeImgUrls" : [ "/images/be6fb7a0-e833-49cd-aac7-82cf7ba887b1.jpg", "/images/65c30059-2866-425c-aac6-1acc3113c6a3.jpg", "/images/0a87d85f-4f14-4f9d-9f7c-09416384a83a.jpg" ],
+    "created_at" : "2023-03-15 22:15:56:659",
+    "challengeImgUrls" : [ "/images/9bb69eb5-5878-45ba-92bf-5ea9316f9faa.jpg", "/images/3fbbeca3-60b1-4a69-a58d-f6f1f00b5fa7.jpg", "/images/325368a8-11c5-4c46-906a-10d136757774.jpg" ],
     "challengeHashtags" : [ "tag1", "tag2" ],
     "howManyUsersAreInThisChallenge" : 2,
     "challengeOwnerUser" : {
       "userName" : "홍길동",
       "email" : "test1234@test.com",
-      "userId" : 73
+      "userId" : 71
     }
   } ],
   "pageable" : {
@@ -1316,9 +1316,9 @@ Content-Length: 7091
     "paged" : true,
     "unpaged" : false
   },
-  "totalElements" : 10,
-  "last" : true,
   "totalPages" : 1,
+  "last" : true,
+  "totalElements" : 10,
   "size" : 20,
   "number" : 0,
   "sort" : {
@@ -1326,8 +1326,8 @@ Content-Length: 7091
     "sorted" : true,
     "unsorted" : false
   },
-  "first" : true,
   "numberOfElements" : 10,
+  "first" : true,
   "empty" : false
 }</code></pre>
 </div>
@@ -1446,136 +1446,136 @@ Host: localhost:8080</code></pre>
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">HTTP/1.1 200 OK
 Content-Type: application/json;charset=UTF-8
-Content-Length: 5743
+Content-Length: 5735
 
 {
   "content" : [ {
-    "id" : 134,
+    "id" : 94,
     "title" : "제목입니다.6",
     "content" : "내용입니다.6",
     "challengeCategory" : "운동",
     "challengeLocation" : "실내",
     "challengeDuration" : "10분 이내",
-    "created_at" : "2023-03-15 01:19:16:078",
-    "challengeImgUrls" : [ "/images/915db298-9d68-4560-bf7a-7d7bdc5f6014.jpg", "/images/0a0b2fdc-1990-433c-9545-317f1aa7d301.jpg", "/images/fbe504ad-ecb0-48be-a3a0-ba0546f660fb.jpg" ],
+    "created_at" : "2023-03-15 22:15:53:869",
+    "challengeImgUrls" : [ "/images/cbc6c599-d685-4907-ab9b-d08f4398d462.jpg", "/images/dfc60fe2-b8a3-4647-a701-901b22d76084.jpg", "/images/6905805f-c477-46a4-91ee-55b2a0a9f58a.jpg" ],
     "challengeHashtags" : [ "tag2", "tag4" ],
     "howManyUsersAreInThisChallenge" : 2,
     "challengeOwnerUser" : {
       "userName" : "홍길동",
       "email" : "test1234@test.com",
-      "userId" : 55
+      "userId" : 53
     }
   }, {
-    "id" : 131,
+    "id" : 91,
     "title" : "제목입니다.3",
     "content" : "내용입니다.3",
     "challengeCategory" : "운동",
     "challengeLocation" : "실내",
     "challengeDuration" : "10분 이내",
-    "created_at" : "2023-03-15 01:19:16:060",
-    "challengeImgUrls" : [ "/images/1338cd77-4393-4314-b433-24816c2cbde0.jpg", "/images/efb7f5e1-a5be-48ea-89ac-308dfc46009f.jpg", "/images/27c6192b-ffb4-4e07-86d8-c8f61617d2fd.jpg" ],
+    "created_at" : "2023-03-15 22:15:53:818",
+    "challengeImgUrls" : [ "/images/c36a0249-31e3-4964-95c7-9ecfa0773750.jpg", "/images/65ecaada-c175-4aa5-a379-474ed662b259.jpg", "/images/d8bf78b4-95dc-4bfa-a4ff-e89747f9cf5c.jpg" ],
     "challengeHashtags" : [ ],
     "howManyUsersAreInThisChallenge" : 1,
     "challengeOwnerUser" : {
       "userName" : "홍길동",
       "email" : "test1234@test.com",
-      "userId" : 55
+      "userId" : 53
     }
   }, {
-    "id" : 132,
+    "id" : 92,
     "title" : "제목입니다.4",
     "content" : "내용입니다.4",
     "challengeCategory" : "운동",
     "challengeLocation" : "실내",
     "challengeDuration" : "10분 이내",
-    "created_at" : "2023-03-15 01:19:16:066",
-    "challengeImgUrls" : [ "/images/15ace684-7d1d-4abc-af79-0ceabbc3e76f.jpg", "/images/21df8daa-d27a-478a-87e6-2c1eb6329c5f.jpg", "/images/624219a9-5c92-479e-96c9-faf6bd47588f.jpg" ],
+    "created_at" : "2023-03-15 22:15:53:834",
+    "challengeImgUrls" : [ "/images/f55df4d1-9b52-44e3-b1ed-cc5c43ed5e98.jpg", "/images/10778e31-19a7-43b0-b73e-57d779d40c55.jpg", "/images/efd35ce4-32fd-4722-9d41-4da36e68849c.jpg" ],
     "challengeHashtags" : [ ],
     "howManyUsersAreInThisChallenge" : 1,
     "challengeOwnerUser" : {
       "userName" : "홍길동",
       "email" : "test1234@test.com",
-      "userId" : 55
+      "userId" : 53
     }
   }, {
-    "id" : 133,
+    "id" : 93,
     "title" : "제목입니다.5",
     "content" : "내용입니다.5",
     "challengeCategory" : "운동",
     "challengeLocation" : "실내",
     "challengeDuration" : "10분 이내",
-    "created_at" : "2023-03-15 01:19:16:072",
-    "challengeImgUrls" : [ "/images/64fc0a12-fd90-493f-8674-5b9c17411cac.jpg", "/images/3597d3e4-00bc-4558-81e2-28793060c8c2.jpg", "/images/b67e52e0-ec23-47fa-8abf-8c18de649b22.jpg" ],
+    "created_at" : "2023-03-15 22:15:53:845",
+    "challengeImgUrls" : [ "/images/05017c90-202f-41ea-afca-2a3a6556885b.jpg", "/images/b626c539-cce2-4f4b-91c1-d90161c6f3cf.jpg", "/images/72a4a3f4-c835-42b3-b25d-b07088eeea43.jpg" ],
     "challengeHashtags" : [ ],
     "howManyUsersAreInThisChallenge" : 1,
     "challengeOwnerUser" : {
       "userName" : "홍길동",
       "email" : "test1234@test.com",
-      "userId" : 55
+      "userId" : 53
     }
   }, {
-    "id" : 135,
+    "id" : 95,
     "title" : "제목입니다.7",
     "content" : "내용입니다.7",
     "challengeCategory" : "운동",
     "challengeLocation" : "실내",
     "challengeDuration" : "10분 이내",
-    "created_at" : "2023-03-15 01:19:16:089",
-    "challengeImgUrls" : [ "/images/082a93de-3f50-4164-ba92-3de2775342a9.jpg", "/images/121992a5-db61-42d4-9f8a-7af1d1eb548b.jpg", "/images/04d9eadf-8d9c-42ea-a195-a8a46e8a7e42.jpg" ],
+    "created_at" : "2023-03-15 22:15:53:919",
+    "challengeImgUrls" : [ "/images/c4ad338e-e7ff-42c0-9735-6e069ab9d195.jpg", "/images/759a1234-a6f5-49d5-9aff-b38c4da86b3f.jpg", "/images/930b17be-8522-40a8-baee-82215b0aa4a7.jpg" ],
     "challengeHashtags" : [ ],
     "howManyUsersAreInThisChallenge" : 1,
     "challengeOwnerUser" : {
       "userName" : "홍길동",
       "email" : "test1234@test.com",
-      "userId" : 55
+      "userId" : 53
     }
   }, {
-    "id" : 136,
+    "id" : 96,
     "title" : "제목입니다.8",
     "content" : "내용입니다.8",
     "challengeCategory" : "운동",
     "challengeLocation" : "실내",
     "challengeDuration" : "10분 이내",
-    "created_at" : "2023-03-15 01:19:16:095",
-    "challengeImgUrls" : [ "/images/4eeaf9f3-76f6-4f4a-a2bb-1a2b46ec1c6f.jpg", "/images/8026b1fb-2d42-4aa6-b1c7-212a2c9b4878.jpg", "/images/2f2df086-d6ce-4595-99cd-67ae28802c2d.jpg" ],
+    "created_at" : "2023-03-15 22:15:53:932",
+    "challengeImgUrls" : [ "/images/9bb2bfe4-7b95-4fe7-9647-92aaedb4a9c7.jpg", "/images/d6cf087e-2dd4-4087-8f3b-872ed27d19ef.jpg", "/images/778d4a9c-da9a-4ae9-ba12-6c98c736ed88.jpg" ],
     "challengeHashtags" : [ ],
     "howManyUsersAreInThisChallenge" : 1,
     "challengeOwnerUser" : {
       "userName" : "홍길동",
       "email" : "test1234@test.com",
-      "userId" : 55
+      "userId" : 53
     }
   }, {
-    "id" : 137,
+    "id" : 97,
     "title" : "제목입니다.9",
     "content" : "내용입니다.9",
     "challengeCategory" : "운동",
     "challengeLocation" : "실내",
     "challengeDuration" : "10분 이내",
-    "created_at" : "2023-03-15 01:19:16:102",
-    "challengeImgUrls" : [ "/images/7f9dc36e-ce7f-4167-a9de-05724bbd4730.jpg", "/images/f9b07809-b83a-4bb2-a67a-d836e67f0822.jpg", "/images/1776fd3b-2fba-401a-9237-bae33040c6ae.jpg" ],
+    "created_at" : "2023-03-15 22:15:53:949",
+    "challengeImgUrls" : [ "/images/15381bc2-32d8-4d57-bfb8-bc86a9f035e9.jpg", "/images/80a08d70-f8ce-4e39-b42b-fe76944c558b.jpg", "/images/d3c5bf24-0e29-4c88-9f6e-4f5318fa38a8.jpg" ],
     "challengeHashtags" : [ ],
     "howManyUsersAreInThisChallenge" : 1,
     "challengeOwnerUser" : {
       "userName" : "홍길동",
       "email" : "test1234@test.com",
-      "userId" : 55
+      "userId" : 53
     }
   }, {
-    "id" : 138,
+    "id" : 98,
     "title" : "제목입니다.10",
     "content" : "내용입니다.10",
     "challengeCategory" : "운동",
     "challengeLocation" : "실내",
     "challengeDuration" : "10분 이내",
-    "created_at" : "2023-03-15 01:19:16:109",
-    "challengeImgUrls" : [ "/images/7b0f72a8-7f23-4456-90ee-3e2c88033c5a.jpg", "/images/400c6108-51f6-4411-b2f6-338254d7558f.jpg", "/images/dcccf5c2-b7cb-461d-be35-ab94103bea92.jpg" ],
+    "created_at" : "2023-03-15 22:15:53:968",
+    "challengeImgUrls" : [ "/images/fa24b4ab-3621-4e93-9cae-5260768f4997.jpg", "/images/e733b532-322d-4955-bebc-6dca4282af2b.jpg", "/images/87fd35a4-6795-4046-aecd-4aa941564f53.jpg" ],
     "challengeHashtags" : [ ],
     "howManyUsersAreInThisChallenge" : 1,
     "challengeOwnerUser" : {
       "userName" : "홍길동",
       "email" : "test1234@test.com",
-      "userId" : 55
+      "userId" : 53
     }
   } ],
   "pageable" : {
@@ -1590,9 +1590,9 @@ Content-Length: 5743
     "paged" : true,
     "unpaged" : false
   },
-  "totalElements" : 8,
-  "last" : true,
   "totalPages" : 1,
+  "last" : true,
+  "totalElements" : 8,
   "size" : 20,
   "number" : 0,
   "sort" : {
@@ -1600,8 +1600,8 @@ Content-Length: 5743
     "sorted" : true,
     "unsorted" : false
   },
-  "first" : true,
   "numberOfElements" : 8,
+  "first" : true,
   "empty" : false
 }</code></pre>
 </div>
@@ -1717,136 +1717,136 @@ Host: localhost:8080</code></pre>
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">HTTP/1.1 200 OK
 Content-Type: application/json;charset=UTF-8
-Content-Length: 5743
+Content-Length: 5735
 
 {
   "content" : [ {
-    "id" : 108,
+    "id" : 68,
     "title" : "제목입니다.10",
     "content" : "내용입니다.10",
     "challengeCategory" : "운동",
     "challengeLocation" : "실내",
     "challengeDuration" : "10분 이내",
-    "created_at" : "2023-03-15 01:19:13:639",
-    "challengeImgUrls" : [ "/images/1fa79223-b10b-4995-ac34-54455f7b4ab9.jpg", "/images/92442836-ff88-43ef-8c78-6e2d25cc3f79.jpg", "/images/99887eab-5e10-4b11-9bbe-7b2d6edcbd52.jpg" ],
+    "created_at" : "2023-03-15 22:15:50:800",
+    "challengeImgUrls" : [ "/images/22358260-6e00-4196-8c83-994fe7994a39.jpg", "/images/6e99d840-a387-4be9-b996-e17a829fb7d0.jpg", "/images/b4026c45-7b8d-44b5-a471-850683cd28f7.jpg" ],
     "challengeHashtags" : [ ],
     "howManyUsersAreInThisChallenge" : 1,
     "challengeOwnerUser" : {
       "userName" : "홍길동",
       "email" : "test1234@test.com",
-      "userId" : 28
+      "userId" : 26
     }
   }, {
-    "id" : 107,
+    "id" : 67,
     "title" : "제목입니다.9",
     "content" : "내용입니다.9",
     "challengeCategory" : "운동",
     "challengeLocation" : "실내",
     "challengeDuration" : "10분 이내",
-    "created_at" : "2023-03-15 01:19:13:632",
-    "challengeImgUrls" : [ "/images/7052f6ba-601f-4553-9887-c0c13d1b5ff9.jpg", "/images/073e8c4b-006a-430c-90fd-62c4c3a576c3.jpg", "/images/cc100729-7f22-4df3-8275-c8a83cbbde67.jpg" ],
+    "created_at" : "2023-03-15 22:15:50:792",
+    "challengeImgUrls" : [ "/images/5f75d88a-7c98-4d07-9001-8c84a039f884.jpg", "/images/ea980a06-8095-4934-af95-b10c33a67f1d.jpg", "/images/b449fe76-7017-425c-8ea1-b4fbf6112421.jpg" ],
     "challengeHashtags" : [ ],
     "howManyUsersAreInThisChallenge" : 1,
     "challengeOwnerUser" : {
       "userName" : "홍길동",
       "email" : "test1234@test.com",
-      "userId" : 28
+      "userId" : 26
     }
   }, {
-    "id" : 106,
+    "id" : 66,
     "title" : "제목입니다.8",
     "content" : "내용입니다.8",
     "challengeCategory" : "운동",
     "challengeLocation" : "실내",
     "challengeDuration" : "10분 이내",
-    "created_at" : "2023-03-15 01:19:13:626",
-    "challengeImgUrls" : [ "/images/181bccad-40a1-4b74-b876-0944a423762d.jpg", "/images/b9d80bc3-d108-4ba5-bbaf-68b91522f131.jpg", "/images/5222dcd7-e044-4a03-aabf-30234783fabe.jpg" ],
+    "created_at" : "2023-03-15 22:15:50:784",
+    "challengeImgUrls" : [ "/images/01eb333a-cca6-43e6-8974-fc004310cda6.jpg", "/images/b2472347-3ff4-49ca-b947-e5514df8fb9e.jpg", "/images/38575024-1223-4551-aa20-2710f2b383bb.jpg" ],
     "challengeHashtags" : [ ],
     "howManyUsersAreInThisChallenge" : 1,
     "challengeOwnerUser" : {
       "userName" : "홍길동",
       "email" : "test1234@test.com",
-      "userId" : 28
+      "userId" : 26
     }
   }, {
-    "id" : 105,
+    "id" : 65,
     "title" : "제목입니다.7",
     "content" : "내용입니다.7",
     "challengeCategory" : "운동",
     "challengeLocation" : "실내",
     "challengeDuration" : "10분 이내",
-    "created_at" : "2023-03-15 01:19:13:620",
-    "challengeImgUrls" : [ "/images/055a6545-896f-4bfd-b187-b8a8330ae32a.jpg", "/images/5493785e-488e-450a-a07a-72fe221fdd81.jpg", "/images/d332e502-3738-4cc6-858b-31ad8d2853e3.jpg" ],
+    "created_at" : "2023-03-15 22:15:50:774",
+    "challengeImgUrls" : [ "/images/a91c00d9-2c4c-4f29-8c89-85a9f382eb8a.jpg", "/images/d31b34fd-29e7-46fb-afd3-c82fd5a0778f.jpg", "/images/1f6bb74d-ffa3-4d61-8cd5-b7a3c9a143b9.jpg" ],
     "challengeHashtags" : [ ],
     "howManyUsersAreInThisChallenge" : 1,
     "challengeOwnerUser" : {
       "userName" : "홍길동",
       "email" : "test1234@test.com",
-      "userId" : 28
+      "userId" : 26
     }
   }, {
-    "id" : 104,
+    "id" : 64,
     "title" : "제목입니다.6",
     "content" : "내용입니다.6",
     "challengeCategory" : "운동",
     "challengeLocation" : "실내",
     "challengeDuration" : "10분 이내",
-    "created_at" : "2023-03-15 01:19:13:610",
-    "challengeImgUrls" : [ "/images/6ddf3328-ef18-43ad-9394-d45604deab18.jpg", "/images/24433838-e0c5-4e39-8137-dbad364c873c.jpg", "/images/a61714e5-82fc-4081-85bc-d8d21a3a345f.jpg" ],
+    "created_at" : "2023-03-15 22:15:50:761",
+    "challengeImgUrls" : [ "/images/e5d8df39-6698-415f-954c-6c6f940b8731.jpg", "/images/115e1bb8-1973-45fe-b22d-4ee03a0fe5e7.jpg", "/images/fa6f300b-d4e0-4449-8a1b-304891d2f5c8.jpg" ],
     "challengeHashtags" : [ "tag2", "tag4" ],
     "howManyUsersAreInThisChallenge" : 2,
     "challengeOwnerUser" : {
       "userName" : "홍길동",
       "email" : "test1234@test.com",
-      "userId" : 28
+      "userId" : 26
     }
   }, {
-    "id" : 103,
+    "id" : 63,
     "title" : "제목입니다.5",
     "content" : "내용입니다.5",
     "challengeCategory" : "운동",
     "challengeLocation" : "실내",
     "challengeDuration" : "10분 이내",
-    "created_at" : "2023-03-15 01:19:13:604",
-    "challengeImgUrls" : [ "/images/a620e9d8-6fca-4461-9307-9e54e91f8689.jpg", "/images/69aca5c3-5e8a-497f-88d3-7e2dcb4f52fa.jpg", "/images/f0133555-29dd-4662-b0f3-853c31bca87f.jpg" ],
+    "created_at" : "2023-03-15 22:15:50:752",
+    "challengeImgUrls" : [ "/images/f7b442a8-45ea-453b-b5f6-aa096f35e33e.jpg", "/images/1ba37110-4a41-465d-8706-07e420584652.jpg", "/images/7906c900-f77c-4cd4-bb60-492de31335c0.jpg" ],
     "challengeHashtags" : [ ],
     "howManyUsersAreInThisChallenge" : 1,
     "challengeOwnerUser" : {
       "userName" : "홍길동",
       "email" : "test1234@test.com",
-      "userId" : 28
+      "userId" : 26
     }
   }, {
-    "id" : 102,
+    "id" : 62,
     "title" : "제목입니다.4",
     "content" : "내용입니다.4",
     "challengeCategory" : "운동",
     "challengeLocation" : "실내",
     "challengeDuration" : "10분 이내",
-    "created_at" : "2023-03-15 01:19:13:598",
-    "challengeImgUrls" : [ "/images/21da049c-e9e6-48cf-af69-689f7d6c743e.jpg", "/images/c8f7cfd3-a1e3-4879-9bb8-15c78f20bd17.jpg", "/images/602ac6db-d564-4db9-b0b7-2d35530e70d3.jpg" ],
+    "created_at" : "2023-03-15 22:15:50:743",
+    "challengeImgUrls" : [ "/images/4489ac96-eb7b-45c2-a21b-019cdc4bce28.jpg", "/images/edd2fb59-2547-4a42-9f11-525fc793e90b.jpg", "/images/00765938-b52f-4b30-8d7f-152271cc94ee.jpg" ],
     "challengeHashtags" : [ ],
     "howManyUsersAreInThisChallenge" : 1,
     "challengeOwnerUser" : {
       "userName" : "홍길동",
       "email" : "test1234@test.com",
-      "userId" : 28
+      "userId" : 26
     }
   }, {
-    "id" : 101,
+    "id" : 61,
     "title" : "제목입니다.3",
     "content" : "내용입니다.3",
     "challengeCategory" : "운동",
     "challengeLocation" : "실내",
     "challengeDuration" : "10분 이내",
-    "created_at" : "2023-03-15 01:19:13:593",
-    "challengeImgUrls" : [ "/images/451f8ffb-15df-45d4-8b87-c3069cbec401.jpg", "/images/c28303b9-8726-4f33-ae06-91fbacf6b1a1.jpg", "/images/fea50a2a-7ee0-41f0-95d8-355be6a0279e.jpg" ],
+    "created_at" : "2023-03-15 22:15:50:734",
+    "challengeImgUrls" : [ "/images/90f3a79f-1252-4ddd-8b2a-1362e881833d.jpg", "/images/5baba26c-ff76-4672-8912-3bdbc70b9383.jpg", "/images/c114614b-712f-4140-b86b-5f87ec5495c7.jpg" ],
     "challengeHashtags" : [ ],
     "howManyUsersAreInThisChallenge" : 1,
     "challengeOwnerUser" : {
       "userName" : "홍길동",
       "email" : "test1234@test.com",
-      "userId" : 28
+      "userId" : 26
     }
   } ],
   "pageable" : {
@@ -1861,9 +1861,9 @@ Content-Length: 5743
     "paged" : true,
     "unpaged" : false
   },
-  "totalElements" : 8,
-  "last" : true,
   "totalPages" : 1,
+  "last" : true,
+  "totalElements" : 8,
   "size" : 20,
   "number" : 0,
   "sort" : {
@@ -1871,8 +1871,8 @@ Content-Length: 5743
     "sorted" : true,
     "unsorted" : false
   },
-  "first" : true,
   "numberOfElements" : 8,
+  "first" : true,
   "empty" : false
 }</code></pre>
 </div>
@@ -1977,56 +1977,56 @@ Host: localhost:8080</code></pre>
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">HTTP/1.1 200 OK
 Content-Type: application/json;charset=UTF-8
-Content-Length: 2516
+Content-Length: 2513
 
 {
   "content" : [ {
-    "id" : 109,
+    "id" : 69,
     "title" : "제목입니다.1",
     "content" : "내용입니다.1",
     "challengeCategory" : "공부",
     "challengeLocation" : "실내",
     "challengeDuration" : "10분 이내",
-    "created_at" : "2023-03-15 01:19:14:402",
-    "challengeImgUrls" : [ "/images/22f9e256-f5c6-4254-adf0-52b610b62335.jpg", "/images/b65aa800-f47e-446e-80fb-6d1893493d32.jpg", "/images/3bb7b6b6-5bb4-4806-b590-1b482aaa5e9f.jpg" ],
+    "created_at" : "2023-03-15 22:15:51:655",
+    "challengeImgUrls" : [ "/images/6418b225-c43c-497d-9c32-0fe91686bd88.jpg", "/images/77bfcf79-4d50-42cf-a1b6-303efe0043ba.jpg", "/images/688cf5ef-ba28-46fe-82b5-6afb2ff1001b.jpg" ],
     "challengeHashtags" : [ "tag1", "tag2" ],
     "howManyUsersAreInThisChallenge" : 2,
     "challengeOwnerUser" : {
       "userName" : "홍길동",
       "email" : "test1234@test.com",
-      "userId" : 37
+      "userId" : 35
     }
   }, {
-    "id" : 110,
+    "id" : 70,
     "title" : "제목입니다.2",
     "content" : "내용입니다.2",
     "challengeCategory" : "경제",
     "challengeLocation" : "실외",
     "challengeDuration" : "1시간 이상",
-    "created_at" : "2023-03-15 01:19:14:412",
-    "challengeImgUrls" : [ "/images/b57ecbf3-ac0f-4f22-aeb7-c22407b9a829.jpg", "/images/2cd88dd0-e088-411e-947a-7b646cb6dadb.jpg", "/images/4a4f6746-4026-4c91-9fdc-e9c040a958e9.jpg" ],
+    "created_at" : "2023-03-15 22:15:51:665",
+    "challengeImgUrls" : [ "/images/01b754c8-f78c-4472-833d-337bc6d675ad.jpg", "/images/d2faa4d7-8454-4c16-8be8-6138dc3cdea8.jpg", "/images/6b3a74f9-3470-4646-bc50-aa5cbd416dc2.jpg" ],
     "challengeHashtags" : [ "tag1", "tag2", "tag3" ],
     "howManyUsersAreInThisChallenge" : 5,
     "challengeOwnerUser" : {
       "userName" : "홍길동",
       "email" : "test1234@test.com",
-      "userId" : 37
+      "userId" : 35
     }
   }, {
-    "id" : 114,
+    "id" : 74,
     "title" : "제목입니다.6",
     "content" : "내용입니다.6",
     "challengeCategory" : "운동",
     "challengeLocation" : "실내",
     "challengeDuration" : "10분 이내",
-    "created_at" : "2023-03-15 01:19:14:442",
-    "challengeImgUrls" : [ "/images/8ef58302-8b2f-4cb5-a581-d6b51daa329e.jpg", "/images/20f06b73-65a7-44d6-9a25-df0b33f266a8.jpg", "/images/b98d4564-3957-406a-9166-f053ec8f0719.jpg" ],
+    "created_at" : "2023-03-15 22:15:51:703",
+    "challengeImgUrls" : [ "/images/4cec8eda-2dde-438e-87e8-4182ca85687c.jpg", "/images/b1d1f487-f8c2-4961-9e10-82004d0957d5.jpg", "/images/056e09a0-fd15-4032-9cfc-19ea8d5a6fdd.jpg" ],
     "challengeHashtags" : [ "tag2", "tag4" ],
     "howManyUsersAreInThisChallenge" : 2,
     "challengeOwnerUser" : {
       "userName" : "홍길동",
       "email" : "test1234@test.com",
-      "userId" : 37
+      "userId" : 35
     }
   } ],
   "pageable" : {
@@ -2041,9 +2041,9 @@ Content-Length: 2516
     "paged" : true,
     "unpaged" : false
   },
-  "totalElements" : 3,
-  "last" : true,
   "totalPages" : 1,
+  "last" : true,
+  "totalElements" : 3,
   "size" : 10,
   "number" : 0,
   "sort" : {
@@ -2051,8 +2051,8 @@ Content-Length: 2516
     "sorted" : true,
     "unsorted" : false
   },
-  "first" : true,
   "numberOfElements" : 3,
+  "first" : true,
   "empty" : false
 }</code></pre>
 </div>
@@ -2149,25 +2149,25 @@ Content-Type: application/json;charset=UTF-8
 Content-Length: 1098
 
 [ {
-  "id" : 182,
+  "id" : 142,
   "title" : "제목입니다.3",
   "content" : "내용입니다.3",
-  "challengeImgUrls" : [ "/images/bd7c1e8a-5c39-4773-b520-f6c2c90b7671.jpg", "/images/6ad9171b-f788-44f7-b73d-ccaf9eaa0b5f.jpg", "/images/4932b8b6-5d0c-4d2e-948e-4b84de6a2808.jpg" ]
+  "challengeImgUrls" : [ "/images/05760407-0213-41d6-81d2-03bc948f136a.jpg", "/images/afec7091-ac34-46cf-ac35-b0e12e6017ad.jpg", "/images/9d9896db-cfc2-475a-95d5-f0ff10074152.jpg" ]
 }, {
-  "id" : 183,
+  "id" : 143,
   "title" : "제목입니다.4",
   "content" : "내용입니다.4",
-  "challengeImgUrls" : [ "/images/0668847e-8718-47c8-bd6e-18b35efbabea.jpg", "/images/414f232b-2e43-4f86-a98b-7963543cdb76.jpg", "/images/330d54d2-0872-41d9-b487-853e67409369.jpg" ]
+  "challengeImgUrls" : [ "/images/eb2d0fc1-47e3-48aa-9b21-d3c2072e0e0c.jpg", "/images/3c980937-0d92-4a81-ad60-0ad975078ca0.jpg", "/images/f4032c34-03dc-4f2c-8034-c0efb5d0cf1e.jpg" ]
 }, {
-  "id" : 184,
+  "id" : 144,
   "title" : "제목입니다.5",
   "content" : "내용입니다.5",
-  "challengeImgUrls" : [ "/images/366e713b-88b8-43c8-be5b-01a8d324c151.jpg", "/images/6276c3bf-563a-4126-97a8-533d85ba91c3.jpg", "/images/514046d9-eb54-473e-a42c-c0cfdfbb8b63.jpg" ]
+  "challengeImgUrls" : [ "/images/80c9e270-d552-4d4a-b908-e04a3b1ef9d6.jpg", "/images/c944f4fb-1d1f-4fe3-97ca-7502773a814f.jpg", "/images/f7443762-b7bb-48be-bbc0-74dab429e8a7.jpg" ]
 }, {
-  "id" : 185,
+  "id" : 145,
   "title" : "제목입니다.6",
   "content" : "내용입니다.6",
-  "challengeImgUrls" : [ "/images/c8eb810b-e862-4db0-8420-a4fdf26d2a3e.jpg", "/images/dea23d0e-b58b-4569-9693-13aae6a5910c.jpg", "/images/87d9f3c2-bb40-4003-b6a7-80a119561753.jpg" ]
+  "challengeImgUrls" : [ "/images/b225933c-164f-46c9-854e-9951e0753d55.jpg", "/images/30f573b2-a4a4-40d7-9381-50e793cd4a64.jpg", "/images/6b846d5f-d92c-4c97-9446-70d7e848377d.jpg" ]
 } ]</code></pre>
 </div>
 </div>
@@ -2195,10 +2195,10 @@ Content-Type: application/json;charset=UTF-8
 Content-Length: 276
 
 [ {
-  "id" : 176,
-  "title" : "제목입니다.7",
-  "content" : "내용입니다.7",
-  "challengeImgUrls" : [ "/images/2d0aee37-fc91-47d4-92b6-9c764ce27ef9.jpg", "/images/2e761f07-3391-4707-acbd-2decde4a48d3.jpg", "/images/d7e04171-4ee1-4fa4-928a-72def2cfdd37.jpg" ]
+  "id" : 132,
+  "title" : "제목입니다.3",
+  "content" : "내용입니다.3",
+  "challengeImgUrls" : [ "/images/064470d9-a82f-4d79-a5ef-f6890874b35e.jpg", "/images/0bc63620-61d4-4f21-80cb-6123e09e3bf0.jpg", "/images/0161f6f3-b2de-46c9-bc08-d64b2dc4570b.jpg" ]
 } ]</code></pre>
 </div>
 </div>
@@ -2230,45 +2230,45 @@ Content-Length: 2044
   "hashtagContent" : "tag2",
   "hashtagTagCount" : 3,
   "recommendedChallenges" : [ {
-    "id" : 89,
+    "id" : 49,
     "title" : "제목입니다.1",
     "content" : "내용입니다.1",
-    "challengeImgUrls" : [ "/images/8fb38299-bb30-4e17-ba77-214ed5132c48.jpg", "/images/e4237f69-c809-4926-8793-55a9e3a6bd7f.jpg", "/images/e851bf2a-629e-4832-869e-be761fb0ce26.jpg" ]
+    "challengeImgUrls" : [ "/images/f7a2c1d0-59c6-4513-afaa-31ec24bad401.jpg", "/images/cb37d80e-3d6e-4bda-960f-57b2f4fa79e9.jpg", "/images/d8468647-7545-48e0-88d1-8d6492e9ab78.jpg" ]
   }, {
-    "id" : 90,
+    "id" : 50,
     "title" : "제목입니다.2",
     "content" : "내용입니다.2",
-    "challengeImgUrls" : [ "/images/55c743af-ccc1-471b-bb6b-cfe00a1428d0.jpg", "/images/81eff29a-1927-4a82-980e-6f0cc898f1cf.jpg", "/images/a0b6e10d-f863-452c-bc12-29fc531c0264.jpg" ]
+    "challengeImgUrls" : [ "/images/8853eb27-f85c-458e-89de-bb868e2277ec.jpg", "/images/b56a5e60-6b0d-4542-8503-2c1a9be5bccf.jpg", "/images/d01fbe8f-fe28-4b73-a782-7893caecdbdd.jpg" ]
   }, {
-    "id" : 94,
+    "id" : 54,
     "title" : "제목입니다.6",
     "content" : "내용입니다.6",
-    "challengeImgUrls" : [ "/images/47bda277-bbec-4272-b87b-287717bb92e4.jpg", "/images/d8a1cb14-982b-4e17-ae32-096c22b19d69.jpg", "/images/2290658f-f81b-452e-9672-89105ff419a5.jpg" ]
+    "challengeImgUrls" : [ "/images/243a49b7-69bf-4771-bb7c-fc43715c51b5.jpg", "/images/db519ba6-fae2-42be-818f-3fece73df447.jpg", "/images/f57a5790-c35c-4c48-8272-a12187f555c9.jpg" ]
   } ]
 }, {
   "hashtagId" : 9,
   "hashtagContent" : "tag1",
   "hashtagTagCount" : 2,
   "recommendedChallenges" : [ {
-    "id" : 89,
+    "id" : 49,
     "title" : "제목입니다.1",
     "content" : "내용입니다.1",
-    "challengeImgUrls" : [ "/images/8fb38299-bb30-4e17-ba77-214ed5132c48.jpg", "/images/e4237f69-c809-4926-8793-55a9e3a6bd7f.jpg", "/images/e851bf2a-629e-4832-869e-be761fb0ce26.jpg" ]
+    "challengeImgUrls" : [ "/images/f7a2c1d0-59c6-4513-afaa-31ec24bad401.jpg", "/images/cb37d80e-3d6e-4bda-960f-57b2f4fa79e9.jpg", "/images/d8468647-7545-48e0-88d1-8d6492e9ab78.jpg" ]
   }, {
-    "id" : 90,
+    "id" : 50,
     "title" : "제목입니다.2",
     "content" : "내용입니다.2",
-    "challengeImgUrls" : [ "/images/55c743af-ccc1-471b-bb6b-cfe00a1428d0.jpg", "/images/81eff29a-1927-4a82-980e-6f0cc898f1cf.jpg", "/images/a0b6e10d-f863-452c-bc12-29fc531c0264.jpg" ]
+    "challengeImgUrls" : [ "/images/8853eb27-f85c-458e-89de-bb868e2277ec.jpg", "/images/b56a5e60-6b0d-4542-8503-2c1a9be5bccf.jpg", "/images/d01fbe8f-fe28-4b73-a782-7893caecdbdd.jpg" ]
   } ]
 }, {
   "hashtagId" : 11,
   "hashtagContent" : "tag3",
   "hashtagTagCount" : 1,
   "recommendedChallenges" : [ {
-    "id" : 90,
+    "id" : 50,
     "title" : "제목입니다.2",
     "content" : "내용입니다.2",
-    "challengeImgUrls" : [ "/images/55c743af-ccc1-471b-bb6b-cfe00a1428d0.jpg", "/images/81eff29a-1927-4a82-980e-6f0cc898f1cf.jpg", "/images/a0b6e10d-f863-452c-bc12-29fc531c0264.jpg" ]
+    "challengeImgUrls" : [ "/images/8853eb27-f85c-458e-89de-bb868e2277ec.jpg", "/images/b56a5e60-6b0d-4542-8503-2c1a9be5bccf.jpg", "/images/d01fbe8f-fe28-4b73-a782-7893caecdbdd.jpg" ]
   } ]
 } ]</code></pre>
 </div>
@@ -2336,13 +2336,13 @@ Host: localhost:8080</code></pre>
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">HTTP/1.1 200 OK
 Content-Type: application/json;charset=UTF-8
-Content-Length: 272
+Content-Length: 273
 
 {
-  "id" : 125,
-  "title" : "제목입니다.7",
-  "content" : "내용입니다.7",
-  "challengeImgUrls" : [ "/images/874045c4-1d10-462b-9df5-49f13f817ce2.jpg", "/images/9844fd00-f0a4-4199-850d-65d143c83ec0.jpg", "/images/3b42630f-2d08-49d1-8ec8-db5b4d2fd307.jpg" ]
+  "id" : 88,
+  "title" : "제목입니다.10",
+  "content" : "내용입니다.10",
+  "challengeImgUrls" : [ "/images/ddc33ce9-51a6-4d2f-b01a-b417a199ddae.jpg", "/images/a1da661b-f40b-4dbf-8b4a-f4c387ce50dc.jpg", "/images/c88619d3-3ba6-47e6-9258-5b09be2d6417.jpg" ]
 }</code></pre>
 </div>
 </div>
@@ -2358,9 +2358,9 @@ Content-Length: 272
 <div class="content">
 <div class="listingblock">
 <div class="content">
-<pre class="highlight nowrap"><code class="language-http" data-lang="http">POST /challenge/88 HTTP/1.1
+<pre class="highlight nowrap"><code class="language-http" data-lang="http">POST /challenge/48 HTTP/1.1
 Content-Type: multipart/form-data;charset=UTF-8; boundary=6o2knFse3p53ty9dmcQvWAIx1zInP11uCfbm
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0MTIzNEB0ZXN0LmNvbSIsImlhdCI6MTY3ODgxMDc1MiwiZXhwIjoxNjc4ODI4NzUyfQ.d_5T1fmcpTUKHiUYQYN6eBVjLnVU9-bBsHEE6BjireA
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0MTIzNEB0ZXN0LmNvbSIsImlhdCI6MTY3ODg4NjE0OSwiZXhwIjoxNjc4OTA0MTQ5fQ.50t7pgBeScHDKCnqTRkWetHlvn8jlhzVQ5ixBY8-WsM
 Accept: application/json
 Host: localhost:8080
 
@@ -2532,15 +2532,15 @@ Content-Type: application/json;charset=UTF-8
 Content-Length: 511
 
 {
-  "id" : 88,
+  "id" : 48,
   "title" : "수정된 제목",
   "content" : "수정된 내용",
   "challengeCategory" : "운동",
   "challengeLocation" : "실내",
   "challengeDuration" : "10분 이내",
-  "created_at" : "2023-03-15 01:19:12:277",
-  "updated_at" : "2023-03-15 01:19:12:324",
-  "challengeImgUrls" : [ "/images/43c79376-3a1c-4b91-90d2-098c35810867.updateChallengeImgFiles", "/images/b25f7b15-c10c-4797-a6ba-d4e845b22515.updateChallengeImgFiles" ],
+  "created_at" : "2023-03-15 22:15:49:453",
+  "updated_at" : "2023-03-15 22:15:49:501",
+  "challengeImgUrls" : [ "/images/0af69a42-0512-4360-a391-98c1a1797d6b.updateChallengeImgFiles", "/images/3f47e344-d5b5-479b-abce-34c0e06eb663.updateChallengeImgFiles" ],
   "challengeHashtags" : [ "editTag1", "editTag2" ]
 }</code></pre>
 </div>
@@ -2636,8 +2636,8 @@ Content-Length: 511
 <h4 id="Challenge-챌린지-삭제_http_request">HTTP request</h4>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight nowrap"><code class="language-http" data-lang="http">DELETE /challenge/87 HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0MTIzNEB0ZXN0LmNvbSIsImlhdCI6MTY3ODgxMDc1MiwiZXhwIjoxNjc4ODI4NzUyfQ.d_5T1fmcpTUKHiUYQYN6eBVjLnVU9-bBsHEE6BjireA
+<pre class="highlight nowrap"><code class="language-http" data-lang="http">DELETE /challenge/47 HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0MTIzNEB0ZXN0LmNvbSIsImlhdCI6MTY3ODg4NjE0OSwiZXhwIjoxNjc4OTA0MTQ5fQ.50t7pgBeScHDKCnqTRkWetHlvn8jlhzVQ5ixBY8-WsM
 Accept: application/json
 Host: localhost:8080</code></pre>
 </div>

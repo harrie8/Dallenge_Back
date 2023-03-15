@@ -57,14 +57,14 @@ public class BadgeControllerDocTest extends RestDocsTest {
     @BeforeEach
     void beforeEach() {
         user = testDataSetup.saveUser(USERNAME, EMAIL, PASSWORD);
+        testDataSetup.saveUserBadgeEvaluation(user);
+        testDataSetup.saveBadgesAndUserBadges(user);
         token = generateToken(user);
     }
 
     @Test
     @DisplayName("챌린지 10개 생성 뱃지 테스트")
     void createChallengeCreateBadgeTest() throws Exception {
-        testDataSetup.saveUserBadgeEvaluation(user);
-
         for (int i = 1; i <= 9; i++) {
             Challenge challenge = testDataSetup.챌린지를_생성한다(
                     "제목입니다." + i,
@@ -148,7 +148,6 @@ public class BadgeControllerDocTest extends RestDocsTest {
     @Test
     @DisplayName("챌린지 10개 달성 완료 테스트")
     void createAchievementBadgeTest() throws Exception {
-        testDataSetup.saveUserBadgeEvaluation(user);
         for (int i = 1; i <= 9; i++) {
             Challenge challenge = testDataSetup.챌린지를_생성한다(
                     "제목입니다." + i,
@@ -200,7 +199,6 @@ public class BadgeControllerDocTest extends RestDocsTest {
     @DisplayName("후기 10개 작성 뱃지 테스트")
     void createCommentWriteBadgeTest() throws Exception {
         User otherUser = testDataSetup.saveUser(OTHER_USERNAME, OTHER_EMAIL, PASSWORD);
-        testDataSetup.saveUserBadgeEvaluation(user);
         for (int i = 1; i <= 9; i++) {
             Challenge challenge = testDataSetup.챌린지를_생성한다(
                     "제목입니다." + i,

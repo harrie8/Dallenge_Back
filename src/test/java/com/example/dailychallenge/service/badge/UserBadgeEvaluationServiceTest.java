@@ -9,6 +9,7 @@ import static com.example.dailychallenge.util.fixture.user.UserFixture.USERNAME;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.example.dailychallenge.entity.badge.UserBadge;
 import com.example.dailychallenge.entity.badge.UserBadgeEvaluation;
 import com.example.dailychallenge.entity.challenge.Challenge;
 import com.example.dailychallenge.entity.challenge.UserChallenge;
@@ -17,6 +18,8 @@ import com.example.dailychallenge.repository.badge.BadgeRepository;
 import com.example.dailychallenge.repository.badge.UserBadgeRepository;
 import com.example.dailychallenge.util.ServiceTest;
 import com.example.dailychallenge.util.fixture.TestDataSetup;
+import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -39,6 +42,7 @@ class UserBadgeEvaluationServiceTest extends ServiceTest {
     void beforeEach() {
         user = testDataSetup.saveUser(USERNAME, EMAIL, PASSWORD);
         UserBadgeEvaluation userBadgeEvaluation = testDataSetup.saveUserBadgeEvaluation(user);
+        testDataSetup.saveBadgesAndUserBadges(user);
 
         for (int i = 0; i < 9; i++) {
             챌린지를_생성하고_참여하고_달성한다();
@@ -49,7 +53,7 @@ class UserBadgeEvaluationServiceTest extends ServiceTest {
     }
 
     @Nested
-    @DisplayName("N개 달성 뱃지")
+    @DisplayName("챌린지 N개 달성 뱃지")
     class AchievementBadge {
         @Test
         @DisplayName("생성 테스트")
@@ -58,7 +62,12 @@ class UserBadgeEvaluationServiceTest extends ServiceTest {
 
             userBadgeEvaluationService.createAchievementBadgeIfFollowStandard(user);
 
-            assertEquals("챌린지 10개 달성", badgeRepository.findAll().get(0).getName());
+            assertEquals(15, badgeRepository.findAll().size());
+            List<UserBadge> allByUsersId = userBadgeRepository.findAllByUsersId(user.getId());
+            Optional<UserBadge> optionalUserBadge = allByUsersId.stream()
+                    .filter(userBadge -> userBadge.getStatus().equals(true))
+                    .findFirst();
+            optionalUserBadge.ifPresent(userBadge -> assertEquals("챌린지 10개 달성", userBadge.getBadge().getName()));
         }
 
         @Test
@@ -72,22 +81,8 @@ class UserBadgeEvaluationServiceTest extends ServiceTest {
 
             userBadgeEvaluationService.createAchievementBadgeIfFollowStandard(user);
 
-            assertTrue(badgeRepository.findAll().isEmpty());
-        }
-
-        @Test
-        @DisplayName("삭제 테스트")
-        void deleteTest() {
-            챌린지를_생성하고_참여하고_달성한다();
-            userBadgeEvaluationService.createAchievementBadgeIfFollowStandard(user);
-
-            userBadgeEvaluationService.deleteAchievementBadgeIfFollowStandard(user);
-
-            // User의 userBadge에 cascade가 걸려 있어서 삭제 되지 않았었음
-            UserBadgeEvaluation userBadgeEvaluation = user.getUserBadgeEvaluation();
-            assertEquals(9, userBadgeEvaluation.getNumberOfAchievement());
-            assertEquals(0, badgeRepository.findAll().size());
-            assertEquals(0, userBadgeRepository.findAll().size());
+            assertEquals(15, badgeRepository.findAll().size());
+            assertTrue(userBadgeRepository.findAll().stream().allMatch(userBadge -> userBadge.getStatus().equals(false)));
         }
     }
 
@@ -102,7 +97,12 @@ class UserBadgeEvaluationServiceTest extends ServiceTest {
 
             userBadgeEvaluationService.createChallengeCreateBadgeIfFollowStandard(user);
 
-            assertEquals("챌린지 10개 생성", badgeRepository.findAll().get(0).getName());
+            assertEquals(15, badgeRepository.findAll().size());
+            List<UserBadge> allByUsersId = userBadgeRepository.findAllByUsersId(user.getId());
+            Optional<UserBadge> optionalUserBadge = allByUsersId.stream()
+                    .filter(userBadge -> userBadge.getStatus().equals(true))
+                    .findFirst();
+            optionalUserBadge.ifPresent(userBadge -> assertEquals("챌린지 10개 생성", userBadge.getBadge().getName()));
         }
 
         @Test
@@ -117,23 +117,8 @@ class UserBadgeEvaluationServiceTest extends ServiceTest {
 
             userBadgeEvaluationService.createChallengeCreateBadgeIfFollowStandard(user);
 
-            assertTrue(badgeRepository.findAll().isEmpty());
-        }
-
-        @Test
-        @DisplayName("삭제 테스트")
-        void deleteTest() {
-            Challenge challenge = testDataSetup.챌린지를_생성한다(createChallengeDto(), user);
-            testDataSetup.챌린지에_참가한다(challenge, user);
-            userBadgeEvaluationService.createChallengeCreateBadgeIfFollowStandard(user);
-
-            userBadgeEvaluationService.deleteChallengeCreateBadgeIfFollowStandard(user);
-
-            // User의 userBadge에 cascade가 걸려 있어서 삭제 되지 않았었음
-            UserBadgeEvaluation userBadgeEvaluation = user.getUserBadgeEvaluation();
-            assertEquals(9, userBadgeEvaluation.getNumberOfChallengeCreate());
-            assertEquals(0, badgeRepository.findAll().size());
-            assertEquals(0, userBadgeRepository.findAll().size());
+            assertEquals(15, badgeRepository.findAll().size());
+            assertTrue(userBadgeRepository.findAll().stream().allMatch(userBadge -> userBadge.getStatus().equals(false)));
         }
     }
 
@@ -158,7 +143,12 @@ class UserBadgeEvaluationServiceTest extends ServiceTest {
 
             userBadgeEvaluationService.createCommentWriteBadgeIfFollowStandard(user);
 
-            assertEquals("후기 10개 작성", badgeRepository.findAll().get(0).getName());
+            assertEquals(15, badgeRepository.findAll().size());
+            List<UserBadge> allByUsersId = userBadgeRepository.findAllByUsersId(user.getId());
+            Optional<UserBadge> optionalUserBadge = allByUsersId.stream()
+                    .filter(userBadge -> userBadge.getStatus().equals(true))
+                    .findFirst();
+            optionalUserBadge.ifPresent(userBadge -> assertEquals("후기 10개 작성", userBadge.getBadge().getName()));
         }
 
         @Test
@@ -179,7 +169,8 @@ class UserBadgeEvaluationServiceTest extends ServiceTest {
 
             userBadgeEvaluationService.createCommentWriteBadgeIfFollowStandard(user);
 
-            assertTrue(badgeRepository.findAll().isEmpty());
+            assertEquals(15, badgeRepository.findAll().size());
+            assertTrue(userBadgeRepository.findAll().stream().allMatch(userBadge -> userBadge.getStatus().equals(false)));
         }
     }
 

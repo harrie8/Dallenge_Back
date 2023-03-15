@@ -49,14 +49,14 @@ class BadgeControllerTest extends ControllerTest {
     @BeforeEach
     void beforeEach() {
         user = testDataSetup.saveUser(USERNAME, EMAIL, PASSWORD);
+        testDataSetup.saveUserBadgeEvaluation(user);
+        testDataSetup.saveBadgesAndUserBadges(user);
         requestPostProcessor = getRequestPostProcessor(user);
     }
 
     @Test
     @DisplayName("챌린지 10개 생성 뱃지 테스트")
     void createChallengeCreateBadgeTest() throws Exception {
-        testDataSetup.saveUserBadgeEvaluation(user);
-
         for (int i = 1; i <= 9; i++) {
             Challenge challenge = testDataSetup.챌린지를_생성한다(
                     "제목입니다." + i,
@@ -118,7 +118,6 @@ class BadgeControllerTest extends ControllerTest {
     @Test
     @DisplayName("챌린지 10개 달성 뱃지 테스트")
     void createAchievementBadgeTest() throws Exception {
-        testDataSetup.saveUserBadgeEvaluation(user);
         for (int i = 1; i <= 9; i++) {
             Challenge challenge = testDataSetup.챌린지를_생성한다(
                     "제목입니다." + i,
@@ -160,7 +159,6 @@ class BadgeControllerTest extends ControllerTest {
     @DisplayName("후기 10개 작성 뱃지 테스트")
     void createCommentWriteBadgeTest() throws Exception {
         User otherUser = testDataSetup.saveUser(OTHER_USERNAME, OTHER_EMAIL, PASSWORD);
-        testDataSetup.saveUserBadgeEvaluation(user);
         for (int i = 1; i <= 9; i++) {
             Challenge challenge = testDataSetup.챌린지를_생성한다(
                     "제목입니다." + i,
