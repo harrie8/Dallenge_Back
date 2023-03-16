@@ -22,12 +22,18 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.persistence.EntityNotFoundException;
+
 @Service
 @Transactional
 @RequiredArgsConstructor
 public class CommentService {
     private final CommentRepository commentRepository;
     private final CommentImgService commentImgService;
+
+    public Comment findById(Long id){
+        return commentRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+    }
 
     public Comment saveComment(CommentDto commentDto, List<MultipartFile> commentImgFiles, User user,
                                Challenge challenge) {
@@ -110,15 +116,6 @@ public class CommentService {
         commentRepository.delete(comment);
     }
 
-    public Integer likeUpdate(Long commentId, Integer isLike) {
-        Comment comment = commentRepository.findById(commentId).orElseThrow(CommentNotFound::new);
-        if (isLike==1) {
-            comment.updateLike(true);
-        } else if(isLike == 0){
-            comment.updateLike(false);
-        }
-        return comment.getLikes();
-    }
 
     public Page<ResponseChallengeComment> searchCommentsByChallengeId(Challenge challenge, Pageable pageable) {
 
