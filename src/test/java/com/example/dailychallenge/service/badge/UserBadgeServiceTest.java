@@ -6,6 +6,7 @@ import static com.example.dailychallenge.util.fixture.user.UserFixture.USERNAME;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.example.dailychallenge.dto.BadgeDto;
 import com.example.dailychallenge.entity.badge.Badge;
 import com.example.dailychallenge.entity.badge.UserBadge;
 import com.example.dailychallenge.entity.badge.type.AchievementBadgeType;
@@ -16,9 +17,7 @@ import com.example.dailychallenge.repository.badge.BadgeRepository;
 import com.example.dailychallenge.repository.badge.UserBadgeRepository;
 import com.example.dailychallenge.util.ServiceTest;
 import com.example.dailychallenge.util.fixture.TestDataSetup;
-import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,10 +38,8 @@ class UserBadgeServiceTest extends ServiceTest {
     @DisplayName("유저를 생성할 때 모든 챌린지 생성 뱃지들의 상태가 false인 테스트")
     void allChallengeCreateUserBadgeStatusIsFalseWhenUserCreateTest() {
         User user = testDataSetup.saveUser(USERNAME, EMAIL, PASSWORD);
-        List<String> badgeNames = Arrays.stream(ChallengeCreateBadgeType.values())
-                .map(ChallengeCreateBadgeType::getName)
-                .collect(Collectors.toUnmodifiableList());
-        List<Badge> badges = badgeService.createBadges(badgeNames);
+        List<BadgeDto> badgeDtos = ChallengeCreateBadgeType.getBadgeDtos();
+        List<Badge> badges = badgeService.createBadges(badgeDtos);
 
         userBadgeService.createUserBadges(user, badges);
 
@@ -54,10 +51,8 @@ class UserBadgeServiceTest extends ServiceTest {
     @DisplayName("유저를 생성할 때 모든 챌린지 달성 뱃지들의 상태가 false인 테스트")
     void allAchievementUserBadgeStatusIsFalseWhenUserCreateTest() {
         User user = testDataSetup.saveUser(USERNAME, EMAIL, PASSWORD);
-        List<String> badgeNames = Arrays.stream(AchievementBadgeType.values())
-                .map(AchievementBadgeType::getName)
-                .collect(Collectors.toUnmodifiableList());
-        List<Badge> badges = badgeService.createBadges(badgeNames);
+        List<BadgeDto> badgeDtos = AchievementBadgeType.getBadgeDtos();
+        List<Badge> badges = badgeService.createBadges(badgeDtos);
 
         userBadgeService.createUserBadges(user, badges);
 
@@ -69,10 +64,8 @@ class UserBadgeServiceTest extends ServiceTest {
     @DisplayName("유저를 생성할 때 모든 후기 작성 뱃지들의 상태가 false인 테스트")
     void allCommentWriteUserBadgeStatusIsFalseWhenUserCreateTest() {
         User user = testDataSetup.saveUser(USERNAME, EMAIL, PASSWORD);
-        List<String> badgeNames = Arrays.stream(CommentWriteBadgeType.values())
-                .map(CommentWriteBadgeType::getName)
-                .collect(Collectors.toUnmodifiableList());
-        List<Badge> badges = badgeService.createBadges(badgeNames);
+        List<BadgeDto> badgeDtos = CommentWriteBadgeType.getBadgeDtos();
+        List<Badge> badges = badgeService.createBadges(badgeDtos);
 
         userBadgeService.createUserBadges(user, badges);
 
@@ -84,10 +77,8 @@ class UserBadgeServiceTest extends ServiceTest {
     @DisplayName("유저 ID와 뱃지 이름으로 찾는 테스트")
     void findByUserIdAndBadgeNameTest() {
         User user = testDataSetup.saveUser(USERNAME, EMAIL, PASSWORD);
-        List<String> badgeNames = Arrays.stream(ChallengeCreateBadgeType.values())
-                .map(ChallengeCreateBadgeType::getName)
-                .collect(Collectors.toUnmodifiableList());
-        List<Badge> badges = badgeService.createBadges(badgeNames);
+        List<BadgeDto> badgeDtos = ChallengeCreateBadgeType.getBadgeDtos();
+        List<Badge> badges = badgeService.createBadges(badgeDtos);
         userBadgeService.createUserBadges(user, badges);
 
         UserBadge byUserIdAndBadgeName = userBadgeService.findByUsersIdAndBadgeName(user.getId(), "챌린지 10개 생성");

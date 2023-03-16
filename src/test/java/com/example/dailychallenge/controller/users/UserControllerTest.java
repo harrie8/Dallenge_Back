@@ -6,6 +6,7 @@ import static com.example.dailychallenge.util.fixture.TokenFixture.PASSWORD;
 import static com.example.dailychallenge.util.fixture.TokenFixture.TOKEN_PREFIX;
 import static com.example.dailychallenge.util.fixture.user.UserFixture.USERNAME;
 import static com.example.dailychallenge.util.fixture.user.UserFixture.getRequestPostProcessor;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -19,6 +20,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.example.dailychallenge.dto.ChallengeDto;
 import com.example.dailychallenge.dto.UserDto;
+import com.example.dailychallenge.entity.badge.Badge;
 import com.example.dailychallenge.entity.challenge.Challenge;
 import com.example.dailychallenge.entity.challenge.ChallengeCategory;
 import com.example.dailychallenge.entity.challenge.ChallengeDuration;
@@ -369,7 +371,9 @@ class UserControllerTest {
                 .andExpect(status().isCreated())
                 .andDo(print());
 
-        assertEquals(15, badgeRepository.findAll().size());
+        List<Badge> badges = badgeRepository.findAll();
+        assertEquals(15, badges.size());
+        assertThat(badges).extracting("imgUrl").isNotEmpty();
         assertTrue(userBadgeRepository.findAll().stream().allMatch(userBadge -> userBadge.getStatus().equals(false)));
     }
 

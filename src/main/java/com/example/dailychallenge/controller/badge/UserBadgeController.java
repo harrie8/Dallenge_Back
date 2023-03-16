@@ -23,7 +23,7 @@ public class UserBadgeController {
     private final UserBadgeService userBadgeService;
 
     @GetMapping("/user/badges")
-    public ResponseEntity<ResponseUserBadge> getAllUserBadges(
+    public ResponseEntity<List<ResponseUserBadge>> getAllUserBadges(
             @AuthenticationPrincipal org.springframework.security.core.userdetails.User user) {
 
         String userEmail = user.getUsername();
@@ -31,7 +31,7 @@ public class UserBadgeController {
         Long userId = findUser.getId();
 
         List<UserBadge> userBadges =  userBadgeService.findAllByUserId(userId);
-        ResponseUserBadge responseUserBadges = ResponseUserBadge.create(userBadges);
+        List<ResponseUserBadge> responseUserBadges = ResponseUserBadge.create(userBadges);
 
         return ResponseEntity.status(HttpStatus.OK).body(responseUserBadges);
     }

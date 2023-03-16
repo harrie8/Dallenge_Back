@@ -15,6 +15,7 @@ import com.example.dailychallenge.vo.ResponseChallengeComment;
 import com.example.dailychallenge.vo.ResponseChallengeCommentImg;
 import com.example.dailychallenge.vo.ResponseComment;
 import com.example.dailychallenge.vo.ResponseUserComment;
+import com.example.dailychallenge.vo.badge.ResponseBadge;
 import com.example.dailychallenge.vo.badge.ResponseCommentWriteBadge;
 import java.util.HashMap;
 import java.util.List;
@@ -77,13 +78,13 @@ public class CommentController {
 
         Optional<Badge> optionalBadge = userBadgeEvaluationService.createCommentWriteBadgeIfFollowStandard(user);
         if (optionalBadge.isPresent()) {
-            String createBadgeName = optionalBadge.get().getName();
+            Badge badge = optionalBadge.get();
             ResponseCommentWriteBadge responseCommentWriteBadge = ResponseCommentWriteBadge.builder()
                     .id(comment.getId())
                     .content(comment.getContent())
                     .createdAt(comment.getSpecificCreatedAt())
                     .userId(comment.getUsers().getId())
-                    .createBadgeName(createBadgeName)
+                    .responseBadge(ResponseBadge.create(badge))
                     .build();
             return Optional.of(responseCommentWriteBadge);
         }
