@@ -106,9 +106,9 @@ public class ChallengeController {
 
         Optional<Badge> optionalBadge = userBadgeEvaluationService.createChallengeCreateBadgeIfFollowStandard(user);
         if (optionalBadge.isPresent()) {
-            String createBadgeName = optionalBadge.get().getName();
+            Badge badge = optionalBadge.get();
             ResponseCreateChallengeBadge responseCreateChallengeBadge = ResponseCreateChallengeBadge.create(challenge,
-                    userChallenge, createBadgeName);
+                    userChallenge, badge);
             return Optional.of(responseCreateChallengeBadge);
         }
         return Optional.empty();

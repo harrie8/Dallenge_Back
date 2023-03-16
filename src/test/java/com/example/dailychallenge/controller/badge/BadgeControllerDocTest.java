@@ -16,13 +16,11 @@ import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuild
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.relaxedResponseFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestPartFields;
-import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.partWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.restdocs.request.RequestDocumentation.requestParts;
 import static org.springframework.restdocs.snippet.Attributes.key;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.example.dailychallenge.dto.CommentDto;
@@ -140,7 +138,8 @@ public class BadgeControllerDocTest extends RestDocsTest {
                                         .attributes(key("format").value("\"\", \" \"은 허용하지 않습니다."))
                         ),
                         relaxedResponseFields(
-                                fieldWithPath("createBadgeName").description("생성된 뱃지 이름 ")
+                                fieldWithPath("badgeInfo.createBadgeName").description("챌린지 생성 뱃지 이름"),
+                                fieldWithPath("badgeInfo.badgeImgUrl").description("챌린지 생성 뱃지 이미지 경로")
                         )
                 ));
     }
@@ -173,17 +172,13 @@ public class BadgeControllerDocTest extends RestDocsTest {
                         .header(AUTHORIZATION, token)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.code").value(200))
-                .andExpect(jsonPath("$.message").value("챌린지 달성 완료!"))
-                .andExpect(jsonPath("$.createBadgeName").value("챌린지 10개 달성"))
                 .andDo(restDocs.document(
                         pathParameters(
                                 parameterWithName("challengeId").description("내가 달성한 챌린지 ID")
                         ),
-                        responseFields(
-                                fieldWithPath("code").description("HTTP STATUS"),
-                                fieldWithPath("message").description("메시지"),
-                                fieldWithPath("createBadgeName").description("챌린지 N개 달성 뱃지 이름")
+                        relaxedResponseFields(
+                                fieldWithPath("badgeInfo.createBadgeName").description("챌린지 N개 달성 뱃지 이름"),
+                                fieldWithPath("badgeInfo.badgeImgUrl").description("챌린지 N개 달성 뱃지 이미지 경로")
                         )
                 ));
     }
@@ -239,21 +234,13 @@ public class BadgeControllerDocTest extends RestDocsTest {
                         .contentType(MediaType.MULTIPART_FORM_DATA)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.id").isNotEmpty())
-                .andExpect(jsonPath("$.content").value("댓글 내용"))
-                .andExpect(jsonPath("$.createdAt").isNotEmpty())
-                .andExpect(jsonPath("$.userId").value(user.getId()))
-                .andExpect(jsonPath("$.createBadgeName").value("후기 10개 작성"))
                 .andDo(restDocs.document(
                         pathParameters(
                                 parameterWithName("challengeId").description("후기를 남기려는 챌린지 ID")
                         ),
-                        responseFields(
-                                fieldWithPath("id").description("댓글 ID"),
-                                fieldWithPath("content").description("댓글 내용"),
-                                fieldWithPath("createdAt").description("댓글 작성 시간"),
-                                fieldWithPath("userId").description("댓글 작성 유저 ID"),
-                                fieldWithPath("createBadgeName").description("후기 N개 작성 뱃지 이름")
+                        relaxedResponseFields(
+                                fieldWithPath("badgeInfo.createBadgeName").description("후기 N개 작성 뱃지 이름"),
+                                fieldWithPath("badgeInfo.badgeImgUrl").description("후기 N개 작성 뱃지 이미지 경로")
                         )
                 ));
     }

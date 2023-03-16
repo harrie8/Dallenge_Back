@@ -1,5 +1,6 @@
 package com.example.dailychallenge.vo.badge;
 
+import com.example.dailychallenge.entity.badge.Badge;
 import com.example.dailychallenge.entity.challenge.Challenge;
 import com.example.dailychallenge.entity.challenge.UserChallenge;
 import com.example.dailychallenge.vo.ResponseUser;
@@ -22,13 +23,13 @@ public class ResponseCreateChallengeBadge {
     private List<String> challengeImgUrls;
     private List<String> challengeHashtags;
     private ResponseUser challengeOwnerUser;
-    private String createBadgeName;
+    private ResponseBadge badgeInfo;
 
     @Builder
     public ResponseCreateChallengeBadge(Long id, String title, String content, String challengeCategory,
                                         String challengeLocation, String challengeDuration, String challengeStatus,
                                         List<String> challengeImgUrls, List<String> challengeHashtags,
-                                        ResponseUser responseUser, String createBadgeName) {
+                                        ResponseUser responseUser, ResponseBadge responseBadge) {
 
         this.id = id;
         this.title = title;
@@ -40,12 +41,13 @@ public class ResponseCreateChallengeBadge {
         this.challengeImgUrls = challengeImgUrls;
         this.challengeHashtags = challengeHashtags;
         this.challengeOwnerUser = responseUser;
-        this.createBadgeName = createBadgeName;
+        this.badgeInfo = responseBadge;
     }
 
     public static ResponseCreateChallengeBadge create(Challenge challenge, UserChallenge userChallenge,
-                                                      String createBadgeName) {
+                                                      Badge badge) {
         ResponseUser responseUser = ResponseUser.create(challenge.getUsers());
+        ResponseBadge responseBadge = ResponseBadge.create(badge);
 
         return ResponseCreateChallengeBadge.builder()
                 .id(challenge.getId())
@@ -58,7 +60,7 @@ public class ResponseCreateChallengeBadge {
                 .challengeImgUrls(challenge.getImgUrls())
                 .challengeHashtags(challenge.getHashtags())
                 .responseUser(responseUser)
-                .createBadgeName(createBadgeName)
+                .responseBadge(responseBadge)
                 .build();
     }
 }

@@ -2,6 +2,7 @@ package com.example.dailychallenge.util.fixture;
 
 import static com.example.dailychallenge.util.fixture.challenge.ChallengeImgFixture.createChallengeImgFiles;
 
+import com.example.dailychallenge.dto.BadgeDto;
 import com.example.dailychallenge.dto.ChallengeDto;
 import com.example.dailychallenge.entity.badge.Badge;
 import com.example.dailychallenge.entity.badge.UserBadgeEvaluation;
@@ -163,12 +164,12 @@ public class TestDataSetup {
 
     @Transactional
     public void saveBadgesAndUserBadges(User user) {
-        List<String> challengeCreateBadgeNames = ChallengeCreateBadgeType.getNames();
-        List<String> achievementBadgeNames = AchievementBadgeType.getNames();
-        List<String> commentWriteBadgeNames = CommentWriteBadgeType.getNames();
-        List<Badge> challengeCreateBadges = badgeService.createBadges(challengeCreateBadgeNames);
-        List<Badge> achievementBadges = badgeService.createBadges(achievementBadgeNames);
-        List<Badge> commentWriteBadges = badgeService.createBadges(commentWriteBadgeNames);
+        List<BadgeDto> challengeCreateBadgeDtos = ChallengeCreateBadgeType.getBadgeDtos();
+        List<BadgeDto> achievementBadgeDtos = AchievementBadgeType.getBadgeDtos();
+        List<BadgeDto> commentWriteBadgeDtos = CommentWriteBadgeType.getBadgeDtos();
+        List<Badge> challengeCreateBadges = badgeService.createBadges(challengeCreateBadgeDtos);
+        List<Badge> achievementBadges = badgeService.createBadges(achievementBadgeDtos);
+        List<Badge> commentWriteBadges = badgeService.createBadges(commentWriteBadgeDtos);
         userBadgeService.createUserBadges(user, challengeCreateBadges);
         userBadgeService.createUserBadges(user, achievementBadges);
         userBadgeService.createUserBadges(user, commentWriteBadges);
