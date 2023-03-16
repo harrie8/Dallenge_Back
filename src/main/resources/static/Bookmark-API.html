@@ -449,8 +449,8 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <h4 id="Bookmark-북마크-생성_http_request">HTTP request</h4>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight nowrap"><code class="language-http" data-lang="http">POST /37/bookmark/new HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhQGEuY29tIiwiaWF0IjoxNjc4OTY3MTM2LCJleHAiOjE2Nzg5ODUxMzZ9.4iblWCZY0VMONFK7Kkn9-P8mu3aoBB_fFrDC2dKT_DA
+<pre class="highlight nowrap"><code class="language-http" data-lang="http">POST /77/bookmark/new HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhQGEuY29tIiwiaWF0IjoxNjc4OTY5MjM1LCJleHAiOjE2Nzg5ODcyMzV9.QqYvoJUgCK4CnZNUlBX69z8co2yubt5hfnKVCnK6HkY
 Accept: application/json
 Host: localhost:8080</code></pre>
 </div>
@@ -489,14 +489,14 @@ Host: localhost:8080</code></pre>
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">HTTP/1.1 201 Created
 Content-Type: application/json;charset=UTF-8
-Content-Length: 133
+Content-Length: 134
 
 {
   "id" : 6,
   "title" : "제목입니다.",
-  "createdAt" : "2023-03-16 20:45:36:334",
-  "userId" : 8,
-  "challengeId" : 37
+  "createdAt" : "2023-03-16 21:20:35:592",
+  "userId" : 10,
+  "challengeId" : 77
 }</code></pre>
 </div>
 </div>
@@ -508,8 +508,8 @@ Content-Length: 133
 <h4 id="Bookmark-북마크-삭제_http_request">HTTP request</h4>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight nowrap"><code class="language-http" data-lang="http">DELETE /user/9/bookmark/7 HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0MTIzNEB0ZXN0LmNvbSIsImlhdCI6MTY3ODk2NzEzNiwiZXhwIjoxNjc4OTg1MTM2fQ.EE6CIcBlA0bvGrF5rFxx84tFoNxfcvH-IhE4XZBAtss
+<pre class="highlight nowrap"><code class="language-http" data-lang="http">DELETE /user/11/bookmark/7 HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0MTIzNEB0ZXN0LmNvbSIsImlhdCI6MTY3ODk2OTIzNSwiZXhwIjoxNjc4OTg3MjM1fQ.iBs_bgU_BqtjMEQgSSkglY9RWwHf2PhDjbMTriDDSLQ
 Accept: application/json
 Host: localhost:8080</code></pre>
 </div>
@@ -563,8 +563,8 @@ Host: localhost:8080</code></pre>
 <h4 id="_http_request">HTTP request</h4>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight nowrap"><code class="language-http" data-lang="http">GET /user/6/bookmark HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhQGEuY29tIiwiaWF0IjoxNjc4OTY3MTM1LCJleHAiOjE2Nzg5ODUxMzV9.sggzQyCxKl76nqa4ODgmE2R2Q6lM9gqc4DEWRmLtYsc
+<pre class="highlight nowrap"><code class="language-http" data-lang="http">GET /user/8/bookmark HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhQGEuY29tIiwiaWF0IjoxNjc4OTY5MjM1LCJleHAiOjE2Nzg5ODcyMzV9.QqYvoJUgCK4CnZNUlBX69z8co2yubt5hfnKVCnK6HkY
 Accept: application/json
 Host: localhost:8080</code></pre>
 </div>
@@ -616,33 +616,33 @@ Content-Length: 1237
   "content" : [ {
     "id" : 5,
     "title" : "제목입니다.",
-    "createdAt" : "2023-03-16 20:45:35:760",
-    "userId" : 6,
-    "challengeId" : 36
+    "createdAt" : "2023-03-16 21:20:35:035",
+    "userId" : 8,
+    "challengeId" : 76
   }, {
     "id" : 4,
     "title" : "제목입니다.",
-    "createdAt" : "2023-03-16 20:45:35:748",
-    "userId" : 6,
-    "challengeId" : 35
+    "createdAt" : "2023-03-16 21:20:35:025",
+    "userId" : 8,
+    "challengeId" : 75
   }, {
     "id" : 3,
     "title" : "제목입니다.",
-    "createdAt" : "2023-03-16 20:45:35:735",
-    "userId" : 6,
-    "challengeId" : 34
+    "createdAt" : "2023-03-16 21:20:35:015",
+    "userId" : 8,
+    "challengeId" : 74
   }, {
     "id" : 2,
     "title" : "제목입니다.",
-    "createdAt" : "2023-03-16 20:45:35:724",
-    "userId" : 6,
-    "challengeId" : 33
+    "createdAt" : "2023-03-16 21:20:35:006",
+    "userId" : 8,
+    "challengeId" : 73
   }, {
     "id" : 1,
     "title" : "제목입니다.",
-    "createdAt" : "2023-03-16 20:45:35:708",
-    "userId" : 6,
-    "challengeId" : 32
+    "createdAt" : "2023-03-16 21:20:34:994",
+    "userId" : 8,
+    "challengeId" : 72
   } ],
   "pageable" : {
     "sort" : {
@@ -656,9 +656,9 @@ Content-Length: 1237
     "paged" : true,
     "unpaged" : false
   },
-  "totalElements" : 5,
-  "totalPages" : 1,
   "last" : true,
+  "totalPages" : 1,
+  "totalElements" : 5,
   "size" : 10,
   "number" : 0,
   "sort" : {

@@ -19,6 +19,7 @@ import com.example.dailychallenge.util.RestDocsTest;
 import com.example.dailychallenge.util.fixture.TestDataSetup;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 
@@ -52,8 +53,7 @@ public class UserBadgeControllerDocTest extends RestDocsTest {
         }
     }
 
-    // TODO: 2023-03-15 응답값 변경하기
-//    @Test
+    @Test
     @DisplayName("유저의 모든 뱃지들을 조회하는 테스트")
     void findAllUserBadgesTest() throws Exception {
         testDataSetup.saveUserBadgeEvaluation(user);
@@ -67,8 +67,9 @@ public class UserBadgeControllerDocTest extends RestDocsTest {
                 .andExpect(status().isOk())
                 .andDo(restDocs.document(
                         responseFields(
-                                fieldWithPath("challengeCreateBadgeNames").description("챌린지 N개 생성 뱃지 이름들, 없는 경우 빈 값을 반환합니다."),
-                                fieldWithPath("achievementBadgeNames").description("챌린지 N개 달성 뱃지 이름들, 없는 경우 빈 값을 반환합니다.")
+                                fieldWithPath("[].badgeName").description("뱃지 이름"),
+                                fieldWithPath("[].badgeStatus").description("뱃지 획득 여부 - true: 획득, false: 획득 못함"),
+                                fieldWithPath("[].badgeImgUrl").description("뱃지 이미지 url - ipAddress:port번호/badgeImage/challengeCreate/challengeCreate10.svg로 요청하면 뱃지 이미지가 출력됩니다.")
                         )
                 ));
     }

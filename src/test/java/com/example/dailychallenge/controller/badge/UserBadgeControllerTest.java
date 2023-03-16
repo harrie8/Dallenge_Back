@@ -7,7 +7,6 @@ import static com.example.dailychallenge.util.fixture.TokenFixture.EMAIL;
 import static com.example.dailychallenge.util.fixture.TokenFixture.PASSWORD;
 import static com.example.dailychallenge.util.fixture.user.UserFixture.USERNAME;
 import static com.example.dailychallenge.util.fixture.user.UserFixture.getRequestPostProcessor;
-import static org.hamcrest.Matchers.contains;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -19,6 +18,7 @@ import com.example.dailychallenge.util.ControllerTest;
 import com.example.dailychallenge.util.fixture.TestDataSetup;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.request.RequestPostProcessor;
@@ -54,8 +54,7 @@ class UserBadgeControllerTest extends ControllerTest {
         }
     }
 
-    // TODO: 2023-03-15 응답값 변경하기
-//    @Test
+    @Test
     @DisplayName("유저의 모든 뱃지들을 조회하는 테스트")
     void findAllUserBadgesTest() throws Exception {
         testDataSetup.saveUserBadgeEvaluation(user);
@@ -67,7 +66,20 @@ class UserBadgeControllerTest extends ControllerTest {
                         .with(requestPostProcessor) // 토큰 인증 처리, 입력한 정보로 인증된 사용자 생성
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.challengeCreateBadgeNames[*]", contains("챌린지 10개 생성", "챌린지 15개 생성", "챌린지 20개 생성")))
-                .andExpect(jsonPath("$.achievementBadgeNames[*]", contains("챌린지 10개 달성", "챌린지 20개 달성")));
+                .andExpect(jsonPath("$[0].badgeName").value("챌린지 10개 생성"))
+                .andExpect(jsonPath("$[0].badgeStatus").value(true))
+                .andExpect(jsonPath("$[0].badgeImgUrl").value("badgeImage/challengeCreate/challengeCreate10.svg"))
+                .andExpect(jsonPath("$[1].badgeName").value("챌린지 15개 생성"))
+                .andExpect(jsonPath("$[1].badgeStatus").value(true))
+                .andExpect(jsonPath("$[1].badgeImgUrl").value("badgeImage/challengeCreate/challengeCreate15.svg"))
+                .andExpect(jsonPath("$[2].badgeName").value("챌린지 20개 생성"))
+                .andExpect(jsonPath("$[2].badgeStatus").value(true))
+                .andExpect(jsonPath("$[2].badgeImgUrl").value("badgeImage/challengeCreate/challengeCreate20.svg"))
+                .andExpect(jsonPath("$[3].badgeName").value("챌린지 25개 생성"))
+                .andExpect(jsonPath("$[3].badgeStatus").value(false))
+                .andExpect(jsonPath("$[3].badgeImgUrl").value("badgeImage/challengeCreate/challengeCreate25.svg"))
+                .andExpect(jsonPath("$[4].badgeName").value("챌린지 30개 생성"))
+                .andExpect(jsonPath("$[4].badgeStatus").value(false))
+                .andExpect(jsonPath("$[4].badgeImgUrl").value("badgeImage/challengeCreate/challengeCreate30.svg"));
     }
 }
