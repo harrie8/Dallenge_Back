@@ -5,6 +5,7 @@ import com.example.dailychallenge.entity.challenge.Challenge;
 import com.example.dailychallenge.entity.challenge.ChallengeStatus;
 import com.example.dailychallenge.entity.challenge.UserChallenge;
 import com.example.dailychallenge.entity.users.User;
+import com.example.dailychallenge.exception.userChallenge.ChallengeSuccessDuplicate;
 import com.example.dailychallenge.exception.userChallenge.UserChallengeDuplicate;
 import com.example.dailychallenge.exception.userChallenge.UserChallengeNotFound;
 import com.example.dailychallenge.repository.UserChallengeRepository;
@@ -81,6 +82,9 @@ public class UserChallengeService {
 
     public UserChallenge succeedInChallenge(Long userId, Long challengeId) {
         UserChallenge userChallenge = findByChallengeIdAndUserId(challengeId, userId);
+        if (userChallenge.isChallengeSuccess()) {
+            throw new ChallengeSuccessDuplicate();
+        }
         userChallenge.challengeSuccess();
         return userChallenge;
     }

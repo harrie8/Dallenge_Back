@@ -15,6 +15,7 @@ import com.example.dailychallenge.entity.challenge.Challenge;
 import com.example.dailychallenge.entity.challenge.ChallengeStatus;
 import com.example.dailychallenge.entity.challenge.UserChallenge;
 import com.example.dailychallenge.entity.users.User;
+import com.example.dailychallenge.exception.userChallenge.ChallengeSuccessDuplicate;
 import com.example.dailychallenge.exception.userChallenge.UserChallengeDuplicate;
 import com.example.dailychallenge.repository.ChallengeRepository;
 import com.example.dailychallenge.repository.UserChallengeRepository;
@@ -102,6 +103,17 @@ public class UserChallengeServiceTest extends ServiceTest {
             userChallengeService.saveUserChallenge(challenge, user);
             UserChallenge userChallenge = userChallengeService.succeedInChallenge(user.getId(), challenge.getId());
             assertEquals(userChallenge.getChallengeStatus().getDescription(),"성공");
+        }
+
+        @Test
+        @DisplayName("이미 달성한 챌린지를 달성하려고 하면 오류 발생")
+        void failByDuplicateSucceedInChallenge(){
+            userChallengeService.saveUserChallenge(challenge, user);
+            userChallengeService.succeedInChallenge(user.getId(), challenge.getId());
+
+            Throwable exception = assertThrows(ChallengeSuccessDuplicate.class,
+                    () -> userChallengeService.succeedInChallenge(user.getId(), challenge.getId()));
+            assertEquals("이미 달성한 챌린지입니다.", exception.getMessage());
         }
 
         @Test
