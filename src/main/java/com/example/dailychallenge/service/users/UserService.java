@@ -86,6 +86,10 @@ public class UserService implements UserDetailsService {
         return userRepository.findByEmail(email);
     }
 
+    public Optional<User> findById(Long userId) {
+        return userRepository.findById(userId);
+    }
+
     public void updateUser(User user, RequestUpdateUser requestUpdateUser,
                            MultipartFile userImgFile) {
 

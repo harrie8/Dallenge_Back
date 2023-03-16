@@ -1,6 +1,7 @@
 package com.example.dailychallenge.entity.comment;
 
 import com.example.dailychallenge.entity.BaseEntity;
+import com.example.dailychallenge.entity.Heart;
 import com.example.dailychallenge.entity.challenge.Challenge;
 import com.example.dailychallenge.entity.users.User;
 import java.util.ArrayList;
@@ -29,10 +30,6 @@ public class Comment extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String content;
-    private Integer likes;
-
-    @Transient
-    private List<Long> likePeople = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "challenge_id")
@@ -45,11 +42,12 @@ public class Comment extends BaseEntity {
     @OneToMany(mappedBy = "comment", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CommentImg> commentImgs = new ArrayList<>();
 
+    @OneToMany(mappedBy = "comment", cascade = CascadeType.ALL)
+    private List<Heart> hearts = new ArrayList<>();
 
     @Builder
     public Comment(String content) {
         this.content = content;
-        this.likes = 0;
     }
 
     public void saveCommentUser(User user) {
@@ -76,13 +74,6 @@ public class Comment extends BaseEntity {
 
     public void updateComment(String content){
         this.content = content;
-    }
-    public void updateLike(boolean isLike){
-        if(isLike) {
-            this.likes += 1;
-        } else{
-            this.likes -= 1;
-        }
     }
 
     public List<String> getImgUrls() {

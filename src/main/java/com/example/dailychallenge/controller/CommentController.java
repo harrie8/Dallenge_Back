@@ -9,6 +9,7 @@ import com.example.dailychallenge.exception.users.UserNotFound;
 import com.example.dailychallenge.service.badge.UserBadgeEvaluationService;
 import com.example.dailychallenge.service.challenge.ChallengeService;
 import com.example.dailychallenge.service.comment.CommentService;
+import com.example.dailychallenge.service.HeartService;
 import com.example.dailychallenge.service.users.UserService;
 import com.example.dailychallenge.vo.ResponseChallengeComment;
 import com.example.dailychallenge.vo.ResponseChallengeCommentImg;
@@ -18,6 +19,7 @@ import com.example.dailychallenge.vo.badge.ResponseBadge;
 import com.example.dailychallenge.vo.badge.ResponseCommentWriteBadge;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -44,6 +46,7 @@ public class CommentController {
     private final UserService userService;
     private final ChallengeService challengeService;
     private final UserBadgeEvaluationService userBadgeEvaluationService;
+    private final HeartService heartService;
 
     @PostMapping(value = "/{challengeId}/comment/new")
     public ResponseEntity<Object> createComment(
@@ -119,9 +122,12 @@ public class CommentController {
             @PathVariable("commentId") Long commentId,
             @RequestParam Integer isLike) {
 
-        Integer likeCount = commentService.likeUpdate(commentId, isLike);
-        HashMap<String, Integer> responseMap = new HashMap<>();
-        responseMap.put("isLike", likeCount);
+        heartService.updateHeart(isLike,commentId,user.getUsername());
+        Long heartOfComment = heartService.getHeartOfComment(commentId);
+
+        Map<String, Long> responseMap = new HashMap<>();
+        responseMap.put("isLike", heartOfComment);
+
         return ResponseEntity.status(HttpStatus.OK).body(responseMap);
     }
 
