@@ -1,5 +1,6 @@
 package com.example.dailychallenge.controller;
 
+import com.example.dailychallenge.dto.BadgeDto;
 import com.example.dailychallenge.dto.UserDto;
 import com.example.dailychallenge.entity.badge.Badge;
 import com.example.dailychallenge.entity.badge.type.AchievementBadgeType;
@@ -90,12 +91,12 @@ public class UserController {
     }
 
     private void saveBadges(User savedUser) {
-        List<String> challengeCreateBadgeNames = ChallengeCreateBadgeType.getNames();
-        List<String> achievementBadgeNames = AchievementBadgeType.getNames();
-        List<String> commentWriteBadgeNames = CommentWriteBadgeType.getNames();
-        List<Badge> challengeCreateBadges = badgeService.createBadges(challengeCreateBadgeNames);
-        List<Badge> achievementBadges = badgeService.createBadges(achievementBadgeNames);
-        List<Badge> commentWriteBadges = badgeService.createBadges(commentWriteBadgeNames);
+        List<BadgeDto> challengeCreateBadgeDtos = ChallengeCreateBadgeType.getBadgeDtos();
+        List<BadgeDto> achievementBadgeDtos = AchievementBadgeType.getBadgeDtos();
+        List<BadgeDto> commentWriteBadgeDtos = CommentWriteBadgeType.getBadgeDtos();
+        List<Badge> challengeCreateBadges = badgeService.createBadges(challengeCreateBadgeDtos);
+        List<Badge> achievementBadges = badgeService.createBadges(achievementBadgeDtos);
+        List<Badge> commentWriteBadges = badgeService.createBadges(commentWriteBadgeDtos);
         userBadgeService.createUserBadges(savedUser, challengeCreateBadges);
         userBadgeService.createUserBadges(savedUser, achievementBadges);
         userBadgeService.createUserBadges(savedUser, commentWriteBadges);

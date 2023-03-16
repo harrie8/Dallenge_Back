@@ -447,21 +447,125 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <h3 id="UserBadge-모든-뱃지들-조회">유저의 모든 뱃지들을 조회</h3>
 <div class="sect3">
 <h4 id="UserBadge-모든-뱃지들-조회_http_request">HTTP request</h4>
-<div class="paragraph">
-<p>Snippet http-request not found for operation::user-badge-controller-doc-test/find-all-user-badges-test</p>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight nowrap"><code class="language-http" data-lang="http">GET /user/badges HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0MTIzNEB0ZXN0LmNvbSIsImlhdCI6MTY3ODk2OTIzMywiZXhwIjoxNjc4OTg3MjMzfQ.MlBqrQJntoeySkTTOnD_jhE5cXNQAj4QCJHfJWVXAKM
+Accept: application/json
+Host: localhost:8080</code></pre>
+</div>
 </div>
 </div>
 <div class="sect3">
 <h4 id="UserBadge-모든-뱃지들-조회_http_response">HTTP response</h4>
-<div class="paragraph">
-<p>Snippet http-response not found for operation::user-badge-controller-doc-test/find-all-user-badges-test</p>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight nowrap"><code class="language-http" data-lang="http">HTTP/1.1 200 OK
+Content-Type: application/json;charset=UTF-8
+Content-Length: 2037
+
+[ {
+  "badgeName" : "챌린지 10개 생성",
+  "badgeStatus" : true,
+  "badgeImgUrl" : "badgeImage/challengeCreate/challengeCreate10.svg"
+}, {
+  "badgeName" : "챌린지 15개 생성",
+  "badgeStatus" : true,
+  "badgeImgUrl" : "badgeImage/challengeCreate/challengeCreate15.svg"
+}, {
+  "badgeName" : "챌린지 20개 생성",
+  "badgeStatus" : true,
+  "badgeImgUrl" : "badgeImage/challengeCreate/challengeCreate20.svg"
+}, {
+  "badgeName" : "챌린지 25개 생성",
+  "badgeStatus" : false,
+  "badgeImgUrl" : "badgeImage/challengeCreate/challengeCreate25.svg"
+}, {
+  "badgeName" : "챌린지 30개 생성",
+  "badgeStatus" : false,
+  "badgeImgUrl" : "badgeImage/challengeCreate/challengeCreate30.svg"
+}, {
+  "badgeName" : "챌린지 10개 달성",
+  "badgeStatus" : true,
+  "badgeImgUrl" : "badgeImage/achievement/achievement10.svg"
+}, {
+  "badgeName" : "챌린지 20개 달성",
+  "badgeStatus" : true,
+  "badgeImgUrl" : "badgeImage/achievement/achievement20.svg"
+}, {
+  "badgeName" : "챌린지 30개 달성",
+  "badgeStatus" : false,
+  "badgeImgUrl" : "badgeImage/achievement/achievement30.svg"
+}, {
+  "badgeName" : "챌린지 40개 달성",
+  "badgeStatus" : false,
+  "badgeImgUrl" : "badgeImage/achievement/achievement40.svg"
+}, {
+  "badgeName" : "챌린지 50개 달성",
+  "badgeStatus" : false,
+  "badgeImgUrl" : "badgeImage/achievement/achievement50.svg"
+}, {
+  "badgeName" : "후기 10개 작성",
+  "badgeStatus" : false,
+  "badgeImgUrl" : "badgeImage/comment/comment10.svg"
+}, {
+  "badgeName" : "후기 15개 작성",
+  "badgeStatus" : false,
+  "badgeImgUrl" : "badgeImage/comment/comment15.svg"
+}, {
+  "badgeName" : "후기 20개 작성",
+  "badgeStatus" : false,
+  "badgeImgUrl" : "badgeImage/comment/comment20.svg"
+}, {
+  "badgeName" : "후기 25개 작성",
+  "badgeStatus" : false,
+  "badgeImgUrl" : "badgeImage/comment/comment25.svg"
+}, {
+  "badgeName" : "후기 30개 작성",
+  "badgeStatus" : false,
+  "badgeImgUrl" : "badgeImage/comment/comment30.svg"
+} ]</code></pre>
+</div>
 </div>
 </div>
 <div class="sect3">
 <h4 id="UserBadge-모든-뱃지들-조회_response_fields">Response fields</h4>
-<div class="paragraph">
-<p>Snippet response-fields not found for operation::user-badge-controller-doc-test/find-all-user-badges-test</p>
-</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">필드명</th>
+<th class="tableblock halign-left valign-top">타입</th>
+<th class="tableblock halign-left valign-top">필수값</th>
+<th class="tableblock halign-left valign-top">설명</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].badgeName</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">true</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">뱃지 이름</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].badgeStatus</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Boolean</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">true</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">뱃지 획득 여부 - true: 획득, false: 획득 못함</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].badgeImgUrl</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">true</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">뱃지 이미지 url - ipAddress:port번호/badgeImage/challengeCreate/challengeCreate10.svg로 요청하면 뱃지 이미지가 출력됩니다.</p></td>
+</tr>
+</tbody>
+</table>
 </div>
 </div>
 </div>

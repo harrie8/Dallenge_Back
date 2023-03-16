@@ -12,14 +12,14 @@ public class ResponseCommentWriteBadge {
     private String content;
     private String createdAt;
     private Long userId;
-    private String createBadgeName;
+    private ResponseBadge badgeInfo;
 
     @Builder
-    public ResponseCommentWriteBadge(Long id, String content, String createdAt, Long userId, String createBadgeName) {
+    public ResponseCommentWriteBadge(Long id, String content, String createdAt, Long userId, ResponseBadge responseBadge) {
         this.id = id;
         this.content = content;
         this.createdAt = createdAt;
         this.userId = userId;
-        this.createBadgeName = createBadgeName;
+        this.badgeInfo = responseBadge;
     }
 }

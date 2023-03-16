@@ -12,6 +12,7 @@ import com.example.dailychallenge.service.users.UserService;
 import com.example.dailychallenge.vo.ResponseChallengeByUserChallenge;
 import com.example.dailychallenge.vo.ResponseMessage;
 import com.example.dailychallenge.vo.badge.ResponseAchievementBadgeMessage;
+import com.example.dailychallenge.vo.badge.ResponseBadge;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -97,11 +98,11 @@ public class UserChallengeController {
     private Optional<ResponseAchievementBadgeMessage> isBadgeCreated(User user) {
         Optional<Badge> optionalBadge = userBadgeEvaluationService.createAchievementBadgeIfFollowStandard(user);
         if (optionalBadge.isPresent()) {
-            String createBadgeName = optionalBadge.get().getName();
+            Badge badge = optionalBadge.get();
             ResponseAchievementBadgeMessage responseAchievementBadgeMessage = ResponseAchievementBadgeMessage.builder()
                     .code(200)
                     .message("챌린지 달성 완료!")
-                    .createBadgeName(createBadgeName)
+                    .responseBadge(ResponseBadge.create(badge))
                     .build();
             return Optional.of(responseAchievementBadgeMessage);
         }

@@ -33,6 +33,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.mock.web.MockPart;
@@ -40,6 +41,11 @@ import org.springframework.test.web.servlet.request.RequestPostProcessor;
 import org.springframework.web.multipart.MultipartFile;
 
 class BadgeControllerTest extends ControllerTest {
+    @Value("${defaultBadgeImgLocation}")
+    private String badgeImgLocation;
+    @Value("${badgeImgFileExtension}")
+    private String badgeImgFileExtension;
+
     @Autowired
     private TestDataSetup testDataSetup;
 
@@ -112,7 +118,9 @@ class BadgeControllerTest extends ControllerTest {
                 .andExpect(jsonPath("$.challengeOwnerUser.userName").value(user.getUserName()))
                 .andExpect(jsonPath("$.challengeOwnerUser.email").value(user.getEmail()))
                 .andExpect(jsonPath("$.challengeOwnerUser.userId").value(user.getId()))
-                .andExpect(jsonPath("$.createBadgeName").value("챌린지 10개 생성"));
+                .andExpect(jsonPath("$.badgeInfo.createBadgeName").value("챌린지 10개 생성"))
+                .andExpect(jsonPath("$.badgeInfo.badgeImgUrl").value(
+                        badgeImgLocation + "challengeCreate/challengeCreate10" + badgeImgFileExtension));
     }
 
     @Test
@@ -145,7 +153,9 @@ class BadgeControllerTest extends ControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.code").value(200))
                 .andExpect(jsonPath("$.message").value("챌린지 달성 완료!"))
-                .andExpect(jsonPath("$.createBadgeName").value("챌린지 10개 달성"));
+                .andExpect(jsonPath("$.badgeInfo.createBadgeName").value("챌린지 10개 달성"))
+                .andExpect(jsonPath("$.badgeInfo.badgeImgUrl").value(
+                        badgeImgLocation + "achievement/achievement10" + badgeImgFileExtension));
     }
 
     private MockMultipartFile createMultipartFiles() {
@@ -203,6 +213,8 @@ class BadgeControllerTest extends ControllerTest {
                 .andExpect(jsonPath("$.content").value("댓글 내용"))
                 .andExpect(jsonPath("$.createdAt").isNotEmpty())
                 .andExpect(jsonPath("$.userId").value(user.getId()))
-                .andExpect(jsonPath("$.createBadgeName").value("후기 10개 작성"));
+                .andExpect(jsonPath("$.badgeInfo.createBadgeName").value("후기 10개 작성"))
+                .andExpect(jsonPath("$.badgeInfo.badgeImgUrl").value(
+                        badgeImgLocation + "comment/comment10" + badgeImgFileExtension));
     }
 }
