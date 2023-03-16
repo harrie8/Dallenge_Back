@@ -4,7 +4,9 @@ import static com.example.dailychallenge.util.fixture.TokenFixture.AUTHORIZATION
 import static com.example.dailychallenge.util.fixture.TokenFixture.EMAIL;
 import static com.example.dailychallenge.util.fixture.TokenFixture.PASSWORD;
 import static com.example.dailychallenge.util.fixture.TokenFixture.TOKEN_PREFIX;
+import static com.example.dailychallenge.util.fixture.challenge.ChallengeFixture.createChallengeDto;
 import static com.example.dailychallenge.util.fixture.user.UserFixture.USERNAME;
+import static com.example.dailychallenge.util.fixture.user.UserFixture.createOtherUser;
 import static com.example.dailychallenge.util.fixture.user.UserFixture.getRequestPostProcessor;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.contains;
@@ -43,6 +45,7 @@ import com.example.dailychallenge.vo.RequestUpdateUser;
 import com.example.dailychallenge.vo.RequestUser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -375,6 +378,47 @@ class UserControllerTest {
         assertEquals(15, badges.size());
         assertThat(badges).extracting("imgUrl").isNotEmpty();
         assertTrue(userBadgeRepository.findAll().stream().allMatch(userBadge -> userBadge.getStatus().equals(false)));
+    }
+
+    @Test
+    @DisplayName("내가 진행중인 챌린지들 조회 테스트")
+    public void getInProcessChallenges() throws Exception {
+        User user = userService.saveUser(createUser(), passwordEncoder);
+        User otherUser = userService.saveUser(createOtherUser(), passwordEncoder);
+
+        List<Challenge> challenges = new ArrayList<>();
+        List<UserChallenge> userChallenges = new ArrayList<>();
+        List<Comment> comments = new ArrayList<>();
+        List<CommentImg> commentImgs = new ArrayList<>();
+        for (int i = 0; i < 5; i++) {
+            Challenge otherUserChallenge = testDataSetup.챌린지를_생성한다(createChallengeDto(), otherUser);
+            testDataSetup.챌린지에_참가한다(otherUserChallenge, otherUser);
+            UserChallenge userChallenge = testDataSetup.챌린지에_참가한다(otherUserChallenge, user);
+            Comment comment = testDataSetup.챌린지에_댓글을_단다(otherUserChallenge, user);
+            CommentImg commentImg = testDataSetup.댓글에_이미지를_추가한다(comment);
+
+            challenges.add(otherUserChallenge);
+            userChallenges.add(userChallenge);
+            commentImgs.add(commentImg);
+            comments.add(comment);
+        }
+
+        mockMvc.perform(get("/user/inProgress")
+                        .with(getRequestPostProcessor(user))
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].userId").value(user.getId()))
+                .andExpect(jsonPath("$[0].challengeId").value(challenges.get(0).getId()))
+                .andExpect(jsonPath("$[0].challengeTitle").value(challenges.get(0).getTitle()))
+                .andExpect(jsonPath("$[0].challengeContent").value(challenges.get(0).getContent()))
+                .andExpect(jsonPath("$[0].challengeStatus").value(userChallenges.get(0).getChallengeStatus().toString()))
+                .andExpect(jsonPath("$[0].createdAt").isNotEmpty())
+                .andExpect(jsonPath("$[0].comments[0].commentId").value(comments.get(0).getId()))
+                .andExpect(jsonPath("$[0].comments[0].commentContent").value(comments.get(0).getContent()))
+                .andExpect(jsonPath("$[0].comments[0].commentImgs").value(comments.get(0).getImgUrls()))
+                .andExpect(jsonPath("$[0].comments[0].commentCreatedAt").value(comments.get(0).getMonthDayFormatCreatedAt()))
+                .andExpect(jsonPath("$[0].howManyDaysInProgress").value(1L))
+                .andDo(print());
     }
 
     private String generateToken() {

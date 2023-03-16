@@ -23,6 +23,7 @@ import com.example.dailychallenge.vo.ResponseChallengeByUserChallenge;
 import com.example.dailychallenge.vo.ResponseLoginUser;
 import com.example.dailychallenge.vo.ResponseUser;
 import com.example.dailychallenge.vo.ResponseUserInfo;
+import com.example.dailychallenge.vo.challenge.ResponseInProgressChallenge;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -210,6 +211,16 @@ public class UserController {
         result.sort(Comparator.comparing(ResponseChallengeByUserChallenge::getCreatedAt));
 
         return ResponseEntity.status(HttpStatus.OK).body(result);
+    }
+
+    @GetMapping("/user/inProgress") // 내가 진행중인 챌린지 조회
+    public ResponseEntity<List<ResponseInProgressChallenge>> getInProgressChallenges(
+            @AuthenticationPrincipal org.springframework.security.core.userdetails.User user){
+
+        User getUser = userService.findByEmail(user.getUsername()).orElseThrow(UserNotFound::new);
+        List<ResponseInProgressChallenge> inProgressChallenges = userService.getInProgressChallenges(getUser.getId());
+
+        return ResponseEntity.status(HttpStatus.OK).body(inProgressChallenges);
     }
 
     /**

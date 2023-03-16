@@ -4,7 +4,9 @@ import static com.example.dailychallenge.util.fixture.TokenFixture.AUTHORIZATION
 import static com.example.dailychallenge.util.fixture.TokenFixture.EMAIL;
 import static com.example.dailychallenge.util.fixture.TokenFixture.PASSWORD;
 import static com.example.dailychallenge.util.fixture.TokenFixture.TOKEN_PREFIX;
+import static com.example.dailychallenge.util.fixture.challenge.ChallengeFixture.createChallengeDto;
 import static com.example.dailychallenge.util.fixture.user.UserFixture.USERNAME;
+import static com.example.dailychallenge.util.fixture.user.UserFixture.createOtherUser;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
@@ -36,6 +38,7 @@ import com.example.dailychallenge.entity.challenge.ChallengeDuration;
 import com.example.dailychallenge.entity.challenge.ChallengeLocation;
 import com.example.dailychallenge.entity.challenge.UserChallenge;
 import com.example.dailychallenge.entity.comment.Comment;
+import com.example.dailychallenge.entity.comment.CommentImg;
 import com.example.dailychallenge.entity.users.User;
 import com.example.dailychallenge.exception.users.UserNotFound;
 import com.example.dailychallenge.service.challenge.ChallengeService;
@@ -48,6 +51,7 @@ import com.example.dailychallenge.vo.RequestUpdateUser;
 import com.example.dailychallenge.vo.RequestUser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -446,6 +450,43 @@ public class UserControllerDocTest {
                 .andExpect(status().isOk())
                 .andDo(print())
                 .andDo(document("user-participate-challenge",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(
+                                removeHeaders("Vary", "X-Content-Type-Options", "X-XSS-Protection", "Pragma", "Expires",
+                                        "Cache-Control", "Strict-Transport-Security", "X-Frame-Options"),
+                                prettyPrint())));
+    }
+
+    @Test
+    @DisplayName("내가 진행중인 챌린지들 조회 테스트")
+    public void getInProgressChallenges() throws Exception {
+        User user = userService.saveUser(createUser(), passwordEncoder);
+        User otherUser = userService.saveUser(createOtherUser(), passwordEncoder);
+
+        List<Challenge> challenges = new ArrayList<>();
+        List<UserChallenge> userChallenges = new ArrayList<>();
+        List<Comment> comments = new ArrayList<>();
+        List<CommentImg> commentImgs = new ArrayList<>();
+        for (int i = 0; i < 5; i++) {
+            Challenge otherUserChallenge = testDataSetup.챌린지를_생성한다(createChallengeDto(), otherUser);
+            testDataSetup.챌린지에_참가한다(otherUserChallenge, otherUser);
+            UserChallenge userChallenge = testDataSetup.챌린지에_참가한다(otherUserChallenge, user);
+            Comment comment = testDataSetup.챌린지에_댓글을_단다(otherUserChallenge, user);
+            CommentImg commentImg = testDataSetup.댓글에_이미지를_추가한다(comment);
+
+            challenges.add(otherUserChallenge);
+            userChallenges.add(userChallenge);
+            commentImgs.add(commentImg);
+            comments.add(comment);
+        }
+
+        mockMvc.perform(RestDocumentationRequestBuilders
+                        .get("/user/inProgress")
+                        .header(AUTHORIZATION, generateToken())
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andDo(print())
+                .andDo(document("user-inProgress-challenge",
                         preprocessRequest(prettyPrint()),
                         preprocessResponse(
                                 removeHeaders("Vary", "X-Content-Type-Options", "X-XSS-Protection", "Pragma", "Expires",

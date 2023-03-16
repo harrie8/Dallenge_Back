@@ -14,6 +14,7 @@ import com.example.dailychallenge.repository.UserRepository;
 import com.example.dailychallenge.vo.RequestUpdateUser;
 import com.example.dailychallenge.vo.ResponseChallengeByUserChallenge;
 import com.example.dailychallenge.vo.ResponseUserInfo;
+import com.example.dailychallenge.vo.challenge.ResponseInProgressChallenge;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -172,6 +173,28 @@ public class UserService implements UserDetailsService {
             if (userChallenge.isParticipated()) {
                 res.add(
                         ResponseChallengeByUserChallenge.builder()
+                                .userId(userChallenge.getUsers().getId())
+                                .challengeId(userChallenge.getChallenge().getId())
+                                .challengeTitle(userChallenge.getChallenge().getTitle())
+                                .challengeContent(userChallenge.getChallenge().getContent())
+                                .challengeStatus(userChallenge.getChallengeStatus())
+                                .createdAt(userChallenge.getCreated_at())
+                                .comments(userChallenge.getChallenge().getComments())
+                                .build()
+                );
+            }
+        }
+        return res;
+    }
+
+    public List<ResponseInProgressChallenge> getInProgressChallenges(Long id) {
+        User user = userRepository.findById(id).orElseThrow(UserNotFound::new);
+        List<UserChallenge> userChallenges = user.getUserChallenges();
+        List<ResponseInProgressChallenge> res = new ArrayList<>();
+        for (UserChallenge userChallenge : userChallenges) {
+            if (userChallenge.isParticipated()) {
+                res.add(
+                        ResponseInProgressChallenge.builder()
                                 .userId(userChallenge.getUsers().getId())
                                 .challengeId(userChallenge.getChallenge().getId())
                                 .challengeTitle(userChallenge.getChallenge().getTitle())
