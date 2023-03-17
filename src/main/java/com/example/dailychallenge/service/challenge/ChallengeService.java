@@ -99,6 +99,11 @@ public class ChallengeService {
         Challenge findChallenge = challengeRepository.findById(challengeId).orElseThrow(ChallengeNotFound::new);
         validateOwner(user, findChallenge);
 
+        findChallenge.getUserChallenges().clear();
+        findChallenge.getChallengeHashtags().clear();
+        findChallenge.getComments().clear();
+        findChallenge.getChallengeImgs().clear();
+
         challengeRepository.delete(findChallenge);
     }
 

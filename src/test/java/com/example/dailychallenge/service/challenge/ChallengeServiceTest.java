@@ -324,6 +324,8 @@ public class ChallengeServiceTest extends ServiceTest {
             Challenge savedChallenge = challengeService.saveChallenge(challengeDto, createChallengeImgFiles(), user);
             Long challengeId = savedChallenge.getId();
 
+            entityManager.clear();
+
             challengeService.deleteChallenge(challengeId, user);
 
             assertTrue(challengeRepository.findById(challengeId).isEmpty());

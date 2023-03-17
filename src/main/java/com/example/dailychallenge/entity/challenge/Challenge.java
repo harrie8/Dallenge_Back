@@ -45,19 +45,19 @@ public class Challenge extends BaseEntity {
     @Enumerated(value = EnumType.STRING)
     private ChallengeDuration challengeDuration;
 
-    @OneToMany(mappedBy = "challenge", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "challenge", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ChallengeImg> challengeImgs = new ArrayList<>();
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User users;
 
-    @OneToMany(mappedBy = "challenge", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "challenge", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<UserChallenge> userChallenges = new ArrayList<>();
 
-    @OneToMany(mappedBy = "challenge",cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "challenge",cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ChallengeHashtag> challengeHashtags = new ArrayList<>();
 
-    @OneToMany(mappedBy = "challenge", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "challenge", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Comment> comments = new ArrayList<>();
 
     @Builder

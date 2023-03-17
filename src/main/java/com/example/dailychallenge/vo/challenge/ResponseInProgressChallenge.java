@@ -3,6 +3,7 @@ package com.example.dailychallenge.vo.challenge;
 import com.example.dailychallenge.entity.challenge.ChallengeStatus;
 import com.example.dailychallenge.entity.comment.Comment;
 import com.example.dailychallenge.vo.ResponseCommentInfo;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
@@ -43,7 +44,8 @@ public class ResponseInProgressChallenge {
     }
 
     private Long calculateDays(LocalDateTime createdAt) {
-        LocalDateTime now = LocalDateTime.now();
-        return ChronoUnit.DAYS.between(createdAt, now) + 1L;
+        LocalDate createdDate = createdAt.toLocalDate();
+        LocalDate today = LocalDate.now();
+        return ChronoUnit.DAYS.between(createdDate, today) + 1L;
     }
 }

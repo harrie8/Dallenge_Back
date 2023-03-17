@@ -105,6 +105,11 @@ public class UserService implements UserDetailsService {
     }
 
     public void delete(User user) {
+        user.getChallenges().clear();
+        user.getUserChallenges().clear();
+        user.getComments().clear();
+        user.getUserBadges().clear();
+
         userRepository.delete(user);
     }
 
