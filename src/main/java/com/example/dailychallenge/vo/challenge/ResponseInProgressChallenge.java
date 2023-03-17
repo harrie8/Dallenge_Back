@@ -44,6 +44,6 @@ public class ResponseInProgressChallenge {
 
     private Long calculateDays(LocalDateTime createdAt) {
         LocalDateTime now = LocalDateTime.now();
-        return ChronoUnit.DAYS.between(now, createdAt) + 1L;
+        return ChronoUnit.DAYS.between(createdAt, now) + 1L;
     }
 }

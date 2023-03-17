@@ -215,6 +215,6 @@ class BadgeControllerTest extends ControllerTest {
                 .andExpect(jsonPath("$.userId").value(user.getId()))
                 .andExpect(jsonPath("$.badgeInfo.createBadgeName").value("후기 10개 작성"))
                 .andExpect(jsonPath("$.badgeInfo.badgeImgUrl").value(
-                        badgeImgLocation + "comment/comment10" + badgeImgFileExtension));
+                        badgeImgLocation + "write/comment10" + badgeImgFileExtension));
     }
 }
