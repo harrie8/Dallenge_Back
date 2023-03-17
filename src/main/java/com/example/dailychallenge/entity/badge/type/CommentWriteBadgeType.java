@@ -17,7 +17,7 @@ public enum CommentWriteBadgeType implements BadgeType{
     ;
 
     private final static String CREATE = "작성";
-    private final static String DIRECTORY = "comment/";
+    private final static String DIRECTORY = "write/";
     private final int number;
     private final String imgFileName;
 
