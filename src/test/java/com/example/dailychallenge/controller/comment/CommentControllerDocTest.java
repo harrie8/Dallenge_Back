@@ -28,6 +28,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.example.dailychallenge.dto.ChallengeDto;
 import com.example.dailychallenge.dto.CommentDto;
 import com.example.dailychallenge.dto.UserDto;
+import com.example.dailychallenge.entity.Heart;
 import com.example.dailychallenge.entity.challenge.Challenge;
 import com.example.dailychallenge.entity.challenge.ChallengeCategory;
 import com.example.dailychallenge.entity.challenge.ChallengeDuration;
@@ -35,6 +36,7 @@ import com.example.dailychallenge.entity.challenge.ChallengeLocation;
 import com.example.dailychallenge.entity.comment.Comment;
 import com.example.dailychallenge.entity.users.User;
 import com.example.dailychallenge.exception.users.UserNotFound;
+import com.example.dailychallenge.repository.HeartRepository;
 import com.example.dailychallenge.service.challenge.ChallengeService;
 import com.example.dailychallenge.service.comment.CommentService;
 import com.example.dailychallenge.service.users.UserService;
@@ -90,6 +92,9 @@ public class CommentControllerDocTest {
     protected AuthenticationManager authenticationManager;
     @Autowired
     protected JwtTokenUtil jwtTokenUtil;
+
+    @Autowired
+    private HeartRepository heartRepository;
     @Autowired
     private TestDataSetup testDataSetup;
 
@@ -263,7 +268,7 @@ public class CommentControllerDocTest {
     @DisplayName("좋아요 테스트")
     public void isLikeTest() throws Exception {
         Comment savedComment = createComment();
-        Integer beforeLikes = savedComment.getLikes();
+        int beforeLikes = savedComment.getHearts().size();
         String token = generateToken();
         mockMvc.perform(RestDocumentationRequestBuilders
                         .post("/{commentId}/like?isLike=1", savedComment.getId())
@@ -328,7 +333,65 @@ public class CommentControllerDocTest {
                                 fieldWithPath("content[*].likes").description("댓글 좋아요 갯수"),
                                 fieldWithPath("content[*].createdAt").description("댓글 생성 시간"),
                                 fieldWithPath("content[*].commentImgUrls").description("댓글 이미지들 url"),
-                                fieldWithPath("content[*].commentOwnerUser").description("댓글 소유자 정보")
+                                fieldWithPath("content[*].commentOwnerUser").description("댓글 소유자 정보"),
+                                fieldWithPath("content[*].commentLikeUsersInfo").description("댓글 좋아요한 유저들의 정보")
+                        )
+                ));
+    }
+
+    @Test
+    @DisplayName("특정 챌린지의 댓글들 조회 좋아요 순으로 정렬 테스트")
+    public void searchCommentsByChallengeIdSortByLikes() throws Exception {
+        Challenge challenge = createChallenge();
+        User otherUser = userService.saveUser(createOtherUser(), passwordEncoder);
+        for (int i = 0; i < 5; i++) {
+            List<MultipartFile> commentDtoImgFiles = new ArrayList<>();
+            commentDtoImgFiles.add(createMultipartFiles());
+            CommentDto commentDto = CommentDto.builder()
+                    .content("댓글 내용" + i)
+                    .build();
+            Comment comment = commentService.saveComment(commentDto, commentDtoImgFiles, otherUser, challenge);
+
+            // 좋아요 누르기
+            for (int j = 0; j <= i; j++) {
+                User user = testDataSetup.saveUser("testName" + j, "testEmail" + j + "test.com", PASSWORD);
+                heartRepository.save(Heart.builder()
+                        .comment(comment)
+                        .users(user)
+                        .build());
+            }
+        }
+        Long challengeId = challenge.getId();
+
+        mockMvc.perform(get("/{challengeId}/comment", challengeId)
+                        .param("size", "20")
+                        .param("page", "0")
+                        .param("sort", "likes")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andDo(print())
+                .andDo(document("search-comments-by-challengeId-sort-by-likes",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(
+                                removeHeaders("Vary", "X-Content-Type-Options", "X-XSS-Protection", "Pragma", "Expires",
+                                        "Cache-Control", "Strict-Transport-Security", "X-Frame-Options"),
+                                prettyPrint()),
+                        pathParameters(
+                                parameterWithName("challengeId").description("챌린지 아이디")
+                        ),
+                        requestParameters(
+                                parameterWithName("size").description("기본값: 10").optional(),
+                                parameterWithName("page").description("기본값: 0, 0번부터 시작합니다.").optional(),
+                                parameterWithName("sort").description("기본값: time-내림차순").optional()
+                        ),
+                        relaxedResponseFields(
+                                fieldWithPath("content[*].id").description("댓글 id"),
+                                fieldWithPath("content[*].content").description("댓글 내용"),
+                                fieldWithPath("content[*].likes").description("댓글 좋아요 갯수"),
+                                fieldWithPath("content[*].createdAt").description("댓글 생성 시간"),
+                                fieldWithPath("content[*].commentImgUrls").description("댓글 이미지들 url"),
+                                fieldWithPath("content[*].commentOwnerUser").description("댓글 소유자 정보"),
+                                fieldWithPath("content[*].commentLikeUsersInfo").description("댓글 좋아요한 유저들의 정보")
                         )
                 ));
     }

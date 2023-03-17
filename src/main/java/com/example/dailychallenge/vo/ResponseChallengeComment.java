@@ -3,6 +3,7 @@ package com.example.dailychallenge.vo;
 import com.example.dailychallenge.entity.comment.Comment;
 import com.querydsl.core.annotations.QueryProjection;
 import java.util.List;
+import java.util.stream.Collectors;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,10 +19,12 @@ public class ResponseChallengeComment {
     private String createdAt;
     private List<String> commentImgUrls;
     private ResponseUser commentOwnerUser;
+    private List<ResponseUser> commentLikeUsersInfo;
 
     @Builder
     public ResponseChallengeComment(Long id, String content, Integer likes, String createdAt,
-                                    List<String> commentImgUrls, ResponseUser responseUser) {
+                                    List<String> commentImgUrls, ResponseUser responseUser,
+                                    List<ResponseUser> commentLikeUsersInfo) {
 
         this.id = id;
         this.content = content;
@@ -29,6 +32,7 @@ public class ResponseChallengeComment {
         this.createdAt = createdAt;
         this.commentImgUrls = commentImgUrls;
         this.commentOwnerUser = responseUser;
+        this.commentLikeUsersInfo = commentLikeUsersInfo;
     }
 
     @QueryProjection
@@ -39,5 +43,8 @@ public class ResponseChallengeComment {
         this.createdAt = comment.getSpecificCreatedAt();
         this.commentImgUrls = comment.getImgUrls();
         this.commentOwnerUser = ResponseUser.create(comment.getUsers());
+        this.commentLikeUsersInfo = comment.getHearts().stream()
+                .map(heart -> ResponseUser.create(heart.getUsers()))
+                .collect(Collectors.toUnmodifiableList());
     }
 }

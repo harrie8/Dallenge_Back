@@ -96,6 +96,23 @@ include::{snippets}/search-comments-by-challengeId/http-response.adoc[]
 include::{snippets}/search-comments-by-challengeId/response-fields.adoc[]
 ====
 
+
+[[Comment-특정-챌린지의-댓글-조회-좋아요-순으로-정렬]]
+=== 특정 챌린지의 댓글을 좋아요 순으로 조회
+
+- 좋아요가 가장 많은 순서대로 챌린지를 조회합니다.
+
+operation::search-comments-by-challengeId-sort-by-likes[snippets='http-request,path-parameters,request-parameters']
+
+==== HTTP response
+
+[%collapsible]
+====
+include::{snippets}/search-comments-by-challengeId-sort-by-likes/http-response.adoc[]
+include::{snippets}/search-comments-by-challengeId-sort-by-likes/response-fields.adoc[]
+====
+
+
 [[Comment-특정-유저의-댓글-조회]]
 === 특정 유저의 댓글 조회
 

@@ -140,7 +140,7 @@ public class CommentRepositoryCustomImpl implements CommentRepositoryCustom {
                 return new OrderSpecifier<>(Order.DESC, comment.created_at);
             }
             if (order.getProperty().equals("likes")) {
-                return new OrderSpecifier<>(Order.DESC, comment.likes);
+                return new OrderSpecifier<>(Order.DESC, comment.hearts.size());
             }
         }
         return OrderByNull.getDefault();

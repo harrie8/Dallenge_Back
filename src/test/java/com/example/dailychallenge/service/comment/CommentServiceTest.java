@@ -77,7 +77,7 @@ class CommentServiceTest extends ServiceTest {
 
             assertAll(() -> {
                 assertEquals(commentDto.getContent(), saveComment.getContent());
-                assertEquals(0, saveComment.getLikes());
+                assertEquals(0, saveComment.getHearts().size());
                 assertEquals(challenge, saveComment.getChallenge());
                 assertEquals(savedUser, saveComment.getUsers());
                 assertFalse(saveComment.getCommentImgs().isEmpty());
@@ -96,7 +96,7 @@ class CommentServiceTest extends ServiceTest {
 
             assertAll(() -> {
                 assertEquals(commentDto.getContent(), saveComment.getContent());
-                assertEquals(0, saveComment.getLikes());
+                assertEquals(0, saveComment.getHearts().size());
                 assertEquals(challenge, saveComment.getChallenge());
                 assertEquals(savedUser, saveComment.getUsers());
                 assertTrue(saveComment.getCommentImgs().isEmpty());
@@ -113,7 +113,7 @@ class CommentServiceTest extends ServiceTest {
 
             assertAll(() -> {
                 assertNull(saveComment.getContent());
-                assertEquals(0, saveComment.getLikes());
+                assertEquals(0, saveComment.getHearts().size());
                 assertEquals(challenge, saveComment.getChallenge());
                 assertEquals(savedUser, saveComment.getUsers());
                 assertFalse(saveComment.getCommentImgs().isEmpty());
@@ -158,7 +158,7 @@ class CommentServiceTest extends ServiceTest {
 
             assertAll(() -> {
                 assertEquals(updateCommentDto.getContent(), updateComment.getContent());
-                assertEquals(saveComment.getLikes(), updateComment.getLikes());
+                assertEquals(saveComment.getHearts().size(), updateComment.getHearts().size());
                 assertEquals(challenge.getId(), updateComment.getChallenge().getId());
                 assertEquals(savedUser.getId(), updateComment.getUsers().getId());
                 assertNotEquals(saveComment.getImgUrls(), updateComment.getImgUrls());
@@ -190,7 +190,7 @@ class CommentServiceTest extends ServiceTest {
 
             assertAll(() -> {
                 assertEquals(updateCommentDto.getContent(), updateComment.getContent());
-                assertEquals(saveComment.getLikes(), updateComment.getLikes());
+                assertEquals(saveComment.getHearts().size(), updateComment.getHearts().size());
                 assertEquals(challenge.getId(), updateComment.getChallenge().getId());
                 assertEquals(savedUser.getId(), updateComment.getUsers().getId());
                 assertEquals(saveComment.getImgUrls(), updateComment.getImgUrls());
@@ -220,7 +220,7 @@ class CommentServiceTest extends ServiceTest {
 
             assertAll(() -> {
                 assertEquals(commentDto.getContent(), updateComment.getContent());
-                assertEquals(saveComment.getLikes(), updateComment.getLikes());
+                assertEquals(saveComment.getHearts().size(), updateComment.getHearts().size());
                 assertEquals(challenge.getId(), updateComment.getChallenge().getId());
                 assertEquals(savedUser.getId(), updateComment.getUsers().getId());
                 assertNotEquals(saveComment.getImgUrls(), updateComment.getImgUrls());

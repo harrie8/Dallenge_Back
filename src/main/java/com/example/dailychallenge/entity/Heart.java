@@ -2,11 +2,18 @@ package com.example.dailychallenge.entity;
 
 import com.example.dailychallenge.entity.comment.Comment;
 import com.example.dailychallenge.entity.users.User;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import javax.persistence.*;
 
 @Entity
 @Table(name = "heart")
@@ -29,7 +36,15 @@ public class Heart {
 
     @Builder
     public Heart(Long id, Comment comment, User users) {
-        this.comment = comment;
+        saveComment(comment);
         this.users = users;
+    }
+
+    public void saveComment(Comment comment) {
+        if (comment.getHearts().contains(this)) {
+            comment.getHearts().remove(this);
+        }
+        this.comment = comment;
+        comment.getHearts().add(this);
     }
 }

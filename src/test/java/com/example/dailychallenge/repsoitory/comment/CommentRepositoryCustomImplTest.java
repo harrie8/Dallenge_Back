@@ -6,6 +6,7 @@ import static com.example.dailychallenge.util.fixture.challenge.ChallengeFixture
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
+import com.example.dailychallenge.entity.Heart;
 import com.example.dailychallenge.entity.challenge.Challenge;
 import com.example.dailychallenge.entity.comment.Comment;
 import com.example.dailychallenge.entity.comment.CommentImg;
@@ -13,6 +14,7 @@ import com.example.dailychallenge.entity.users.User;
 import com.example.dailychallenge.repository.ChallengeRepository;
 import com.example.dailychallenge.repository.CommentImgRepository;
 import com.example.dailychallenge.repository.CommentRepository;
+import com.example.dailychallenge.repository.HeartRepository;
 import com.example.dailychallenge.repository.UserRepository;
 import com.example.dailychallenge.util.RepositoryTest;
 import com.example.dailychallenge.vo.ResponseChallengeComment;
@@ -37,6 +39,8 @@ class CommentRepositoryCustomImplTest extends RepositoryTest {
     private UserRepository userRepository;
     @Autowired
     private CommentImgRepository commentImgRepository;
+    @Autowired
+    private HeartRepository heartRepository;
 
     private User savedUser;
     private Challenge challenge;
@@ -94,30 +98,57 @@ class CommentRepositoryCustomImplTest extends RepositoryTest {
     }
 
     @Test
-    @DisplayName("챌린지에 있는 댓글들을 조회하는 테스트")
-    void searchCommentsByChallengeIdTest2() {
+    @DisplayName("챌린지에 있는 댓글들을 좋아요 순으로 조회하는 테스트")
+    void searchCommentsByChallengeIdSortByLikesTest() {
         User otherUser = User.builder()
                 .userName("김철수")
                 .email("a@a.com")
                 .password(PASSWORD)
                 .build();
         userRepository.save(otherUser);
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < 3; i++) {
             Comment comment = Comment.builder()
                     .content("댓글 내용" + i)
                     .build();
             comment.saveCommentChallenge(challenge);
             comment.saveCommentUser(otherUser);
             commentRepository.save(comment);
+
+            // 좋아요 누르기
+            for (int j = 0; j <= i; j++) {
+                User user = User.builder()
+                        .userName("b" + i)
+                        .email("b" + i + "@b.com")
+                        .password(PASSWORD)
+                        .build();
+                userRepository.save(user);
+                heartRepository.save(Heart.builder()
+                        .comment(comment)
+                        .users(user)
+                        .build());
+            }
         }
+
         PageRequest pageRequest = PageRequest.of(0, 10, Sort.by("likes").descending());
-        Challenge otherChallenge = createChallenge();
-        challengeRepository.save(otherChallenge);
 
         Page<ResponseChallengeComment> results = commentRepository.searchCommentsByChallengeId(
-                otherChallenge.getId(), pageRequest);
+                challenge.getId(), pageRequest);
 
-        assertThat(results).extracting("content").isEmpty();
+        assertAll(() -> {
+            assertThat(results).extracting("id").isNotEmpty();
+            assertThat(results).extracting("content")
+                    .containsExactly("댓글 내용2", "댓글 내용1", "댓글 내용0");
+            assertThat(results).extracting("likes").containsExactly(3, 2, 1);
+            assertThat(results).extracting("createdAt").isNotEmpty();
+            assertThat(results).extracting("commentImgUrls").isNotEmpty();
+            assertThat(results).extracting("commentOwnerUser").extracting("userName")
+                    .containsOnly(otherUser.getUserName());
+            assertThat(results).extracting("commentOwnerUser").extracting("email")
+                    .containsOnly(otherUser.getEmail());
+            assertThat(results).extracting("commentOwnerUser").extracting("userId")
+                    .containsOnly(otherUser.getId());
+            assertThat(results).extracting("commentLikeUsersInfo").isNotEmpty();
+        });
     }
 
     @Test
