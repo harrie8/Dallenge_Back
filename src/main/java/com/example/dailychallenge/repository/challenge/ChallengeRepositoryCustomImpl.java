@@ -6,6 +6,7 @@ import static com.example.dailychallenge.entity.challenge.QUserChallenge.userCha
 import com.example.dailychallenge.entity.challenge.ChallengeCategory;
 import com.example.dailychallenge.entity.challenge.ChallengeDuration;
 import com.example.dailychallenge.entity.challenge.ChallengeLocation;
+import com.example.dailychallenge.entity.challenge.QChallenge;
 import com.example.dailychallenge.entity.hashtag.QChallengeHashtag;
 import com.example.dailychallenge.exception.CommonException;
 import com.example.dailychallenge.vo.challenge.QResponseChallenge;
@@ -13,6 +14,8 @@ import com.example.dailychallenge.vo.challenge.QResponseRecommendedChallenge;
 import com.example.dailychallenge.vo.challenge.ResponseChallenge;
 import com.example.dailychallenge.vo.challenge.ResponseRecommendedChallenge;
 import com.querydsl.core.QueryResults;
+import com.querydsl.core.types.Order;
+import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -22,6 +25,7 @@ import javax.persistence.EntityManager;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
 public class ChallengeRepositoryCustomImpl implements
         ChallengeRepositoryCustom {
@@ -50,10 +54,13 @@ public class ChallengeRepositoryCustomImpl implements
         QueryResults<ResponseChallenge> results = queryFactory
                 .select(new QResponseChallenge(challenge))
                 .from(QChallengeHashtag.challengeHashtag)
+                .leftJoin(QChallengeHashtag.challengeHashtag.challenge,challenge)
                 .where(QChallengeHashtag.challengeHashtag.hashtag.content.eq(content))
+                .orderBy(challengesSort(pageable))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetchResults();
+
         List<ResponseChallenge> responseChallenges = results.getResults();
         return new PageImpl<>(responseChallenges,pageable,results.getTotal());
     }
@@ -109,5 +116,17 @@ public class ChallengeRepositoryCustomImpl implements
             throw new CommonException("challengeLocation is Null");
         }
         return challenge.challengeLocation.eq(challengeLocation);
+    }
+
+    private OrderSpecifier<?> challengesSort(Pageable pageable) {
+        if (pageable.getSort().isEmpty()) {
+            return OrderByNull.getDefault();
+        }
+        for (Sort.Order order : pageable.getSort()) {
+            if (order.getProperty().equals("popular")) {
+                return new OrderSpecifier<>(Order.DESC, challenge.userChallenges.size());
+            }
+        }
+        return OrderByNull.getDefault();
     }
 }
