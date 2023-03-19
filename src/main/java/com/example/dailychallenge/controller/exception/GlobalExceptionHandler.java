@@ -9,6 +9,7 @@ import com.example.dailychallenge.exception.bookmark.BookmarkNotFound;
 import com.example.dailychallenge.exception.challenge.ChallengeCategoryNotFound;
 import com.example.dailychallenge.exception.challenge.ChallengeNotFound;
 import com.example.dailychallenge.exception.comment.CommentCreateNotValid;
+import com.example.dailychallenge.exception.comment.CommentDateNotValid;
 import com.example.dailychallenge.exception.comment.CommentImgNotFound;
 import com.example.dailychallenge.exception.comment.CommentNotFound;
 import com.example.dailychallenge.exception.hashtag.HashTagNotFound;
@@ -159,6 +160,17 @@ public class GlobalExceptionHandler {
         final ResponseError responseError = ResponseError.builder()
                 .code(commentCreateNotValid.getStatusCode())
                 .message(commentCreateNotValid.getMessage())
+                .build();
+
+        return ResponseEntity.status(responseError.getCode()).body(responseError);
+    }
+
+    @ExceptionHandler(CommentDateNotValid.class)
+    protected ResponseEntity<ResponseError> handlerCommentDateNotValid(
+            CommentDateNotValid commentDateNotValid) {
+        final ResponseError responseError = ResponseError.builder()
+                .code(commentDateNotValid.getStatusCode())
+                .message(commentDateNotValid.getMessage())
                 .build();
 
         return ResponseEntity.status(responseError.getCode()).body(responseError);

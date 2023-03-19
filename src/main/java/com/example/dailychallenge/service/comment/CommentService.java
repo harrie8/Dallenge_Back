@@ -13,6 +13,9 @@ import com.example.dailychallenge.repository.CommentRepository;
 import com.example.dailychallenge.vo.ResponseChallengeComment;
 import com.example.dailychallenge.vo.ResponseChallengeCommentImg;
 import com.example.dailychallenge.vo.ResponseUserComment;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -144,5 +147,17 @@ public class CommentService {
         if (!comment.isValidChallenge(challengeId)) {
             throw new AuthorizationException();
         }
+    }
+
+    public boolean isTodayComment(Long challengeId,Long userId){
+        LocalDate today = LocalDate.now();
+        List<Comment> commentList = commentRepository.findByUsers_IdAndChallenge_Id(userId,challengeId);
+
+        for (Comment comment : commentList) {
+            if (today.isEqual(comment.getCreated_at().toLocalDate())) {
+                return true;
+            }
+        }
+        return false;
     }
 }
