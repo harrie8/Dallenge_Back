@@ -119,18 +119,34 @@ include::{snippets}/challenge-controller-doc-test/search-challenges-by-condition
 [[Challenge-해시태그로-챌린지들-검색]]
 === 해시태그로 챌린지들 검색
 
+==== popular 정렬
+====
+
+- popular는 내림차순 정렬합니다.
+
+operation::challenge-controller-doc-test/search-challenges-by-hashtag-sort-by-popular-test[snippets='http-request,request-parameters']
+
+.HTTP Response
+[%collapsible]
+=====
+include::{snippets}/challenge-controller-doc-test/search-challenges-by-hashtag-sort-by-popular-test/http-response.adoc[]
+include::{snippets}/challenge-controller-doc-test/search-challenges-by-hashtag-sort-by-popular-test/response-fields.adoc[]
+=====
+
+====
+
 ==== time 정렬
 ====
 
 - time은 오름차순 정렬합니다.
 
-operation::challenge-controller-doc-test/search-challenges-by-hashtag-test[snippets='http-request,request-parameters']
+operation::challenge-controller-doc-test/search-challenges-by-hashtag-sort-by-time-test[snippets='http-request,request-parameters']
 
 .HTTP Response
 [%collapsible]
 =====
-include::{snippets}/challenge-controller-doc-test/search-challenges-by-hashtag-test/http-response.adoc[]
-include::{snippets}/challenge-controller-doc-test/search-challenges-by-hashtag-test/response-fields.adoc[]
+include::{snippets}/challenge-controller-doc-test/search-challenges-by-hashtag-sort-by-time-test/http-response.adoc[]
+include::{snippets}/challenge-controller-doc-test/search-challenges-by-hashtag-sort-by-time-test/response-fields.adoc[]
 =====
 
 ====

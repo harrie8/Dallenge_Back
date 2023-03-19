@@ -333,8 +333,8 @@ public class ChallengeControllerDocTest extends RestDocsTest {
     }
 
     @Test
-    @DisplayName("해시태그로 검색한 챌린지 조회 테스트")
-    void searchChallengesByHashtagTest() throws Exception {
+    @DisplayName("해시태그로 검색한 챌린지 조회 테스트 - 시간순")
+    void searchChallengesByHashtagSortByTimeTest() throws Exception {
         initData();
 
         mockMvc.perform(get("/challenge/hashtag")
@@ -370,9 +370,59 @@ public class ChallengeControllerDocTest extends RestDocsTest {
                         requestParameters(
                                 parameterWithName("size").description("기본값: 10").optional(),
                                 parameterWithName("page").description("기본값: 0, 0번부터 시작합니다.").optional(),
-                                parameterWithName("content").description("챌린지를 검색할 해시태그 내용(1개)")
-//                                parameterWithName("sort").description("기본값: time으로 정렬합니다.")
-//                                        .optional()
+                                parameterWithName("content").description("챌린지를 검색할 해시태그 내용(1개)"),
+                                parameterWithName("sort").description("기본값: time 정렬, popular/time 중 택1")
+                                        .optional()
+                        ),
+                        relaxedResponseFields(
+                                fieldWithPath("totalElements").description("DB에 있는 전체 Challenge 개수"),
+                                fieldWithPath("totalPages").description("만들 수 있는 page 개수")
+                        )
+                ));
+    }
+
+    @Test
+    @DisplayName("해시태그로 검색한 챌린지 조회 테스트 - 인기순")
+    void searchChallengesByHashtagSortByPopularTest() throws Exception {
+        initData();
+
+        mockMvc.perform(get("/challenge/hashtag")
+                        .param("size", "10")
+                        .param("page", "0")
+                        .param("content", "tag2")
+                        .param("sort","popular")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content[*].title", contains(
+                        "제목입니다.2", "제목입니다.1", "제목입니다.6")))
+                .andExpect(jsonPath("$.content[*].content", contains(
+                        "내용입니다.2", "내용입니다.1", "내용입니다.6")))
+                .andExpect(jsonPath("$.content[*].challengeCategory",
+                        hasItems(ECONOMY.getDescription(), STUDY.getDescription(),
+                                WORKOUT.getDescription())))
+                .andExpect(jsonPath("$.content[*].challengeLocation",
+                        hasItems(OUTDOOR.getDescription(),
+                                INDOOR.getDescription())))
+                .andExpect(jsonPath("$.content[*].challengeDuration",
+                        hasItems(OVER_ONE_HOUR.getDescription(),
+                                WITHIN_TEN_MINUTES.getDescription())))
+                .andExpect(jsonPath("$.content[*].challengeImgUrls",
+                        hasItems(hasItem(startsWith("/images/")))))
+                .andExpect(jsonPath("$.content[*].howManyUsersAreInThisChallenge",
+                        contains(5, 2, 2)))
+                .andExpect(jsonPath("$.content[*].challengeOwnerUser.userName",
+                        hasItem(user.getUserName())))
+                .andExpect(jsonPath("$.content[*].challengeOwnerUser.email",
+                        hasItem(user.getEmail())))
+                .andExpect(jsonPath("$.content[*].challengeOwnerUser.userId",
+                        hasItem(user.getId().intValue())))
+                .andDo(restDocs.document(
+                        requestParameters(
+                                parameterWithName("size").description("기본값: 10").optional(),
+                                parameterWithName("page").description("기본값: 0, 0번부터 시작합니다.").optional(),
+                                parameterWithName("content").description("챌린지를 검색할 해시태그 내용(1개)"),
+                                parameterWithName("sort").description("기본값: time 정렬, popular/time 중 택1")
+                                        .optional()
                         ),
                         relaxedResponseFields(
                                 fieldWithPath("totalElements").description("DB에 있는 전체 Challenge 개수"),
