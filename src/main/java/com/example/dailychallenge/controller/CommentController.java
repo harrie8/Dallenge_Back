@@ -1,12 +1,10 @@
 package com.example.dailychallenge.controller;
 
 import com.example.dailychallenge.dto.CommentDto;
-import com.example.dailychallenge.entity.Heart;
 import com.example.dailychallenge.entity.badge.Badge;
 import com.example.dailychallenge.entity.challenge.Challenge;
 import com.example.dailychallenge.entity.comment.Comment;
 import com.example.dailychallenge.entity.users.User;
-import com.example.dailychallenge.exception.comment.CommentDateNotValid;
 import com.example.dailychallenge.exception.users.UserNotFound;
 import com.example.dailychallenge.service.badge.UserBadgeEvaluationService;
 import com.example.dailychallenge.service.challenge.ChallengeService;
@@ -60,9 +58,7 @@ public class CommentController {
         User findUser = userService.findByEmail(user.getUsername()).orElseThrow(UserNotFound::new);
         Challenge challenge = challengeService.findById(challengeId);
 
-        if(commentService.isTodayComment(challengeId, findUser.getId())){
-            throw new CommentDateNotValid();
-        }
+        commentService.checkCommentDateDuplicate(challengeId, findUser.getId());
 
         Comment comment = commentService.saveComment(commentDto, commentImgFiles, findUser, challenge);
 

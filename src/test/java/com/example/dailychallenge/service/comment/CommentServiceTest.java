@@ -19,6 +19,7 @@ import com.example.dailychallenge.entity.comment.Comment;
 import com.example.dailychallenge.entity.users.User;
 import com.example.dailychallenge.exception.AuthorizationException;
 import com.example.dailychallenge.exception.comment.CommentCreateNotValid;
+import com.example.dailychallenge.exception.comment.CommentDateDuplicateCheck;
 import com.example.dailychallenge.repository.CommentRepository;
 import com.example.dailychallenge.service.challenge.ChallengeService;
 import com.example.dailychallenge.service.users.UserService;
@@ -129,6 +130,20 @@ class CommentServiceTest extends ServiceTest {
             Throwable exception = assertThrows(CommentCreateNotValid.class,
                     () -> commentService.saveComment(commentDto, commentImgFiles, savedUser, challenge));
             assertEquals("댓글은 내용 또는 이미지가 필요합니다.", exception.getMessage());
+        }
+
+        @Test
+        @DisplayName("오늘 챌린지에 댓글 2회 이상 등록 시 예외 발생")
+        void failByCommentDateDuplicate(){
+            CommentDto commentDto = CommentDto.builder()
+                    .content("댓글 내용")
+                    .build();
+            List<MultipartFile> commentImgFiles = List.of(createMultipartFiles());
+            commentService.saveComment(commentDto, commentImgFiles, savedUser, challenge);
+
+            Throwable exception = assertThrows(CommentDateDuplicateCheck.class,
+                    () -> commentService.checkCommentDateDuplicate(challenge.getId(),savedUser.getId()));
+            assertEquals("오늘은 해당 챌린지에 더이상 댓글을 작성할 수 없습니다.", exception.getMessage());
         }
     }
 

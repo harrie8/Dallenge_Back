@@ -8,6 +8,7 @@ import com.example.dailychallenge.entity.comment.CommentImg;
 import com.example.dailychallenge.entity.users.User;
 import com.example.dailychallenge.exception.AuthorizationException;
 import com.example.dailychallenge.exception.comment.CommentCreateNotValid;
+import com.example.dailychallenge.exception.comment.CommentDateDuplicateCheck;
 import com.example.dailychallenge.exception.comment.CommentNotFound;
 import com.example.dailychallenge.repository.CommentRepository;
 import com.example.dailychallenge.vo.ResponseChallengeComment;
@@ -15,7 +16,6 @@ import com.example.dailychallenge.vo.ResponseChallengeCommentImg;
 import com.example.dailychallenge.vo.ResponseUserComment;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -149,15 +149,14 @@ public class CommentService {
         }
     }
 
-    public boolean isTodayComment(Long challengeId,Long userId){
+    public void checkCommentDateDuplicate(Long challengeId, Long userId){
         LocalDate today = LocalDate.now();
         List<Comment> commentList = commentRepository.findByUsers_IdAndChallenge_Id(userId,challengeId);
 
         for (Comment comment : commentList) {
             if (today.isEqual(comment.getCreated_at().toLocalDate())) {
-                return true;
+                throw new CommentDateDuplicateCheck();
             }
         }
-        return false;
     }
 }

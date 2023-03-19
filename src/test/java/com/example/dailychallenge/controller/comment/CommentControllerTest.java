@@ -10,6 +10,8 @@ import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.startsWith;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -28,6 +30,7 @@ import com.example.dailychallenge.entity.challenge.ChallengeDuration;
 import com.example.dailychallenge.entity.challenge.ChallengeLocation;
 import com.example.dailychallenge.entity.comment.Comment;
 import com.example.dailychallenge.entity.users.User;
+import com.example.dailychallenge.exception.comment.CommentDateDuplicateCheck;
 import com.example.dailychallenge.exception.users.UserNotFound;
 import com.example.dailychallenge.repository.HeartRepository;
 import com.example.dailychallenge.service.challenge.ChallengeService;
@@ -150,6 +153,33 @@ class CommentControllerTest extends ControllerTest {
                     .andExpect(status().isBadRequest())
                     .andExpect(jsonPath("$.code").value(400))
                     .andExpect(jsonPath("$.message").value("댓글의 내용은 비어서는 안 됩니다."));
+        }
+
+        @Test
+        @DisplayName("오늘 챌린지에 댓글 중복 작성 시 예외 발생")
+        void failByCommentDateDuplicate() throws Exception {
+            Challenge challenge = createChallenge();
+            User user = challenge.getUsers();
+
+            CommentDto commentDto = CommentDto.builder()
+                    .content("댓글 내용")
+                    .build();
+            List<MultipartFile> commentImgFiles = List.of(createMultipartFiles());
+            commentService.saveComment(commentDto, commentImgFiles, user, challenge);
+            MockMultipartFile mockCommentDto = new MockMultipartFile("commentDto",
+                    "commentDto",
+                    "application/json", objectMapper.writeValueAsString(commentDto).getBytes(UTF_8));
+
+            mockMvc.perform(multipart("/{challengeId}/comment/new", challenge.getId())
+                            .file(mockCommentDto)
+                            .part(new MockPart("commentImgFiles", "commentImgFiles", createMultipartFiles().getBytes()))
+                            .part(new MockPart("commentImgFiles", "commentImgFiles", createMultipartFiles().getBytes()))
+                            .with(user(userService.loadUserByUsername(EMAIL)))
+                            .contentType(MediaType.MULTIPART_FORM_DATA)
+                            .accept(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isBadRequest())
+                    .andExpect(jsonPath("$.code").value(400))
+                    .andExpect(jsonPath("$.message").value("오늘은 해당 챌린지에 더이상 댓글을 작성할 수 없습니다."));
         }
     }
 
