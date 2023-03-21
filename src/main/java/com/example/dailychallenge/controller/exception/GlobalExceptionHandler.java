@@ -16,6 +16,7 @@ import com.example.dailychallenge.exception.hashtag.HashTagNotFound;
 import com.example.dailychallenge.exception.hashtag.HashtagDtoBlank;
 import com.example.dailychallenge.exception.userChallenge.ChallengeSuccessDuplicate;
 import com.example.dailychallenge.exception.userChallenge.UserChallengeDuplicate;
+import com.example.dailychallenge.exception.userChallenge.UserChallengeNotFound;
 import com.example.dailychallenge.exception.users.UserDuplicateCheck;
 import com.example.dailychallenge.exception.users.UserDuplicateNotCheck;
 import com.example.dailychallenge.exception.users.UserImgNotFound;
@@ -270,6 +271,17 @@ public class GlobalExceptionHandler {
         final ResponseError responseError = ResponseError.builder()
                 .code(challengeSuccessDuplicate.getStatusCode())
                 .message(challengeSuccessDuplicate.getMessage())
+                .build();
+
+        return ResponseEntity.status(responseError.getCode()).body(responseError);
+    }
+
+    @ExceptionHandler(UserChallengeNotFound.class)
+    protected ResponseEntity<ResponseError> handlerUserChallengeNotFound(
+            UserChallengeNotFound userChallengeNotFound) {
+        final ResponseError responseError = ResponseError.builder()
+                .code(userChallengeNotFound.getStatusCode())
+                .message(userChallengeNotFound.getMessage())
                 .build();
 
         return ResponseEntity.status(responseError.getCode()).body(responseError);
