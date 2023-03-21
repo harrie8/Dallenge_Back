@@ -66,20 +66,20 @@ class UserBadgeControllerTest extends ControllerTest {
                         .with(requestPostProcessor) // 토큰 인증 처리, 입력한 정보로 인증된 사용자 생성
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].badgeName").value("챌린지 10개 생성"))
+                .andExpect(jsonPath("$[0].badgeName").value("챌린지 10개 달성"))
                 .andExpect(jsonPath("$[0].badgeStatus").value(true))
-                .andExpect(jsonPath("$[0].badgeImgUrl").value("badgeImage/challengeCreate/challengeCreate10.svg"))
-                .andExpect(jsonPath("$[1].badgeName").value("챌린지 15개 생성"))
+                .andExpect(jsonPath("$[0].badgeImgUrl").value("badgeImage/achievement/achievement10.svg"))
+                .andExpect(jsonPath("$[1].badgeName").value("챌린지 20개 달성"))
                 .andExpect(jsonPath("$[1].badgeStatus").value(true))
-                .andExpect(jsonPath("$[1].badgeImgUrl").value("badgeImage/challengeCreate/challengeCreate15.svg"))
-                .andExpect(jsonPath("$[2].badgeName").value("챌린지 20개 생성"))
-                .andExpect(jsonPath("$[2].badgeStatus").value(true))
-                .andExpect(jsonPath("$[2].badgeImgUrl").value("badgeImage/challengeCreate/challengeCreate20.svg"))
-                .andExpect(jsonPath("$[3].badgeName").value("챌린지 25개 생성"))
+                .andExpect(jsonPath("$[1].badgeImgUrl").value("badgeImage/achievement/achievement20.svg"))
+                .andExpect(jsonPath("$[2].badgeName").value("챌린지 30개 달성"))
+                .andExpect(jsonPath("$[2].badgeStatus").value(false))
+                .andExpect(jsonPath("$[2].badgeImgUrl").value("badgeImage/achievement/achievement30.svg"))
+                .andExpect(jsonPath("$[3].badgeName").value("챌린지 40개 달성"))
                 .andExpect(jsonPath("$[3].badgeStatus").value(false))
-                .andExpect(jsonPath("$[3].badgeImgUrl").value("badgeImage/challengeCreate/challengeCreate25.svg"))
-                .andExpect(jsonPath("$[4].badgeName").value("챌린지 30개 생성"))
+                .andExpect(jsonPath("$[3].badgeImgUrl").value("badgeImage/achievement/achievement40.svg"))
+                .andExpect(jsonPath("$[4].badgeName").value("챌린지 50개 달성"))
                 .andExpect(jsonPath("$[4].badgeStatus").value(false))
-                .andExpect(jsonPath("$[4].badgeImgUrl").value("badgeImage/challengeCreate/challengeCreate30.svg"));
+                .andExpect(jsonPath("$[4].badgeImgUrl").value("badgeImage/achievement/achievement50.svg"));
     }
 }

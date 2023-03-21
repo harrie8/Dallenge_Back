@@ -92,15 +92,15 @@ public class UserController {
     }
 
     private void saveBadges(User savedUser) {
-        List<BadgeDto> challengeCreateBadgeDtos = ChallengeCreateBadgeType.getBadgeDtos();
         List<BadgeDto> achievementBadgeDtos = AchievementBadgeType.getBadgeDtos();
         List<BadgeDto> commentWriteBadgeDtos = CommentWriteBadgeType.getBadgeDtos();
-        List<Badge> challengeCreateBadges = badgeService.createBadges(challengeCreateBadgeDtos);
+        List<BadgeDto> challengeCreateBadgeDtos = ChallengeCreateBadgeType.getBadgeDtos();
         List<Badge> achievementBadges = badgeService.createBadges(achievementBadgeDtos);
         List<Badge> commentWriteBadges = badgeService.createBadges(commentWriteBadgeDtos);
-        userBadgeService.createUserBadges(savedUser, challengeCreateBadges);
+        List<Badge> challengeCreateBadges = badgeService.createBadges(challengeCreateBadgeDtos);
         userBadgeService.createUserBadges(savedUser, achievementBadges);
         userBadgeService.createUserBadges(savedUser, commentWriteBadges);
+        userBadgeService.createUserBadges(savedUser, challengeCreateBadges);
     }
 
     @PostMapping("/user/login")

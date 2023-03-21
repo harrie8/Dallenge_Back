@@ -10,10 +10,10 @@ import java.util.stream.Collectors;
 public enum CommentWriteBadgeType implements BadgeType{
 
     WROTE_10(10, "comment10"),
-    WROTE_15(15, "comment15"),
     WROTE_20(20, "comment20"),
-    WROTE_25(25, "comment25"),
     WROTE_30(30, "comment30"),
+    WROTE_40(40, "comment40"),
+    WROTE_50(50, "comment50"),
     ;
 
     private final static String CREATE = "작성";

@@ -164,14 +164,14 @@ public class TestDataSetup {
 
     @Transactional
     public void saveBadgesAndUserBadges(User user) {
-        List<BadgeDto> challengeCreateBadgeDtos = ChallengeCreateBadgeType.getBadgeDtos();
         List<BadgeDto> achievementBadgeDtos = AchievementBadgeType.getBadgeDtos();
         List<BadgeDto> commentWriteBadgeDtos = CommentWriteBadgeType.getBadgeDtos();
-        List<Badge> challengeCreateBadges = badgeService.createBadges(challengeCreateBadgeDtos);
+        List<BadgeDto> challengeCreateBadgeDtos = ChallengeCreateBadgeType.getBadgeDtos();
         List<Badge> achievementBadges = badgeService.createBadges(achievementBadgeDtos);
         List<Badge> commentWriteBadges = badgeService.createBadges(commentWriteBadgeDtos);
-        userBadgeService.createUserBadges(user, challengeCreateBadges);
+        List<Badge> challengeCreateBadges = badgeService.createBadges(challengeCreateBadgeDtos);
         userBadgeService.createUserBadges(user, achievementBadges);
         userBadgeService.createUserBadges(user, commentWriteBadges);
+        userBadgeService.createUserBadges(user, challengeCreateBadges);
     }
 }
