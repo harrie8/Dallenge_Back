@@ -2,7 +2,6 @@ package com.example.dailychallenge.vo.badge;
 
 import com.example.dailychallenge.entity.badge.Badge;
 import com.example.dailychallenge.entity.badge.UserBadge;
-import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.Builder;
@@ -35,7 +34,6 @@ public class ResponseUserBadge {
                             .badgeImgUrl(badge.getImgUrl())
                             .build();
                 })
-                .sorted(Comparator.comparing(o -> o.badgeImgUrl)) // 일단 url을 기준으로 정렬한다
                 .collect(Collectors.toUnmodifiableList());
     }
 }
