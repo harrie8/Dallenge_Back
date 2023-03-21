@@ -450,7 +450,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div class="listingblock">
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">POST /77/bookmark/new HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhQGEuY29tIiwiaWF0IjoxNjc5MjE1MjE1LCJleHAiOjE2NzkyMzMyMTV9.jdXn84k5r_yC90m_ibGpj7OOntKPkzIaBmqvmViT0_4
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhQGEuY29tIiwiaWF0IjoxNjc5MzgxODQzLCJleHAiOjE2NzkzOTk4NDN9.bn1Owv_OOOgTmtuHrC0D9goShKRNFEktwK6LmTWCUuw
 Accept: application/json
 Host: localhost:8080</code></pre>
 </div>
@@ -489,14 +489,16 @@ Host: localhost:8080</code></pre>
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">HTTP/1.1 201 Created
 Content-Type: application/json;charset=UTF-8
-Content-Length: 134
+Content-Length: 362
 
 {
   "id" : 6,
   "title" : "제목입니다.",
-  "createdAt" : "2023-03-19 17:40:15:797",
+  "createdAt" : "2023-03-21 15:57:23:466",
   "userId" : 10,
-  "challengeId" : 77
+  "challengeId" : 77,
+  "challengeContent" : "내용입니다.",
+  "challengeImgUrls" : [ "/images/92da43dc-4d87-4f0a-bc9a-35df88d818db.jpg", "/images/2c01283a-195f-42cb-a61a-e6134ba9b989.jpg", "/images/75da650f-7221-4b39-99f0-b1107a69e825.jpg" ]
 }</code></pre>
 </div>
 </div>
@@ -509,7 +511,7 @@ Content-Length: 134
 <div class="listingblock">
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">DELETE /user/11/bookmark/7 HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0MTIzNEB0ZXN0LmNvbSIsImlhdCI6MTY3OTIxNTIxNiwiZXhwIjoxNjc5MjMzMjE2fQ.VjvD6U4zHuOW8I1z9PhKeREt2LMh2Zl8PNhHsk6NGBk
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0MTIzNEB0ZXN0LmNvbSIsImlhdCI6MTY3OTM4MTg0MywiZXhwIjoxNjc5Mzk5ODQzfQ.v7p_fgNyAwFqHkw-e8hxyqv1imO87RrSj1FdwXOoZXg
 Accept: application/json
 Host: localhost:8080</code></pre>
 </div>
@@ -564,7 +566,7 @@ Host: localhost:8080</code></pre>
 <div class="listingblock">
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">GET /user/8/bookmark HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhQGEuY29tIiwiaWF0IjoxNjc5MjE1MjE1LCJleHAiOjE2NzkyMzMyMTV9.jdXn84k5r_yC90m_ibGpj7OOntKPkzIaBmqvmViT0_4
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhQGEuY29tIiwiaWF0IjoxNjc5MzgxODQzLCJleHAiOjE2NzkzOTk4NDN9.bn1Owv_OOOgTmtuHrC0D9goShKRNFEktwK6LmTWCUuw
 Accept: application/json
 Host: localhost:8080</code></pre>
 </div>
@@ -610,39 +612,49 @@ Host: localhost:8080</code></pre>
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">HTTP/1.1 200 OK
 Content-Type: application/json;charset=UTF-8
-Content-Length: 1237
+Content-Length: 2397
 
 {
   "content" : [ {
     "id" : 5,
     "title" : "제목입니다.",
-    "createdAt" : "2023-03-19 17:40:15:084",
+    "createdAt" : "2023-03-21 15:57:22:940",
     "userId" : 8,
-    "challengeId" : 76
+    "challengeId" : 76,
+    "challengeContent" : "내용입니다.",
+    "challengeImgUrls" : [ "/images/cbcb38b6-fd70-4727-acdc-1e4286e73dc1.jpg", "/images/7c8ba192-6eac-4dd2-b47e-18c99b723191.jpg", "/images/43628522-58df-4594-8a2a-fa43e7cd6c32.jpg" ]
   }, {
     "id" : 4,
     "title" : "제목입니다.",
-    "createdAt" : "2023-03-19 17:40:15:073",
+    "createdAt" : "2023-03-21 15:57:22:932",
     "userId" : 8,
-    "challengeId" : 75
+    "challengeId" : 75,
+    "challengeContent" : "내용입니다.",
+    "challengeImgUrls" : [ "/images/9d03a3b8-a1b2-43a6-9052-3245485e6795.jpg", "/images/048ceb78-f4ea-4046-ad92-cd534c446b4a.jpg", "/images/cd1c5cb1-8588-4b97-9570-5dab2cc8e041.jpg" ]
   }, {
     "id" : 3,
     "title" : "제목입니다.",
-    "createdAt" : "2023-03-19 17:40:15:061",
+    "createdAt" : "2023-03-21 15:57:22:923",
     "userId" : 8,
-    "challengeId" : 74
+    "challengeId" : 74,
+    "challengeContent" : "내용입니다.",
+    "challengeImgUrls" : [ "/images/de840cf4-07e5-439c-8be9-863e06a5239d.jpg", "/images/65b4ba03-3a77-4eb3-9e2e-bc5af1c15f72.jpg", "/images/ae2d5813-598a-4684-bd51-7a2b04029ff6.jpg" ]
   }, {
     "id" : 2,
     "title" : "제목입니다.",
-    "createdAt" : "2023-03-19 17:40:15:050",
+    "createdAt" : "2023-03-21 15:57:22:914",
     "userId" : 8,
-    "challengeId" : 73
+    "challengeId" : 73,
+    "challengeContent" : "내용입니다.",
+    "challengeImgUrls" : [ "/images/e596b7df-e1e7-4f57-b17c-858923126d41.jpg", "/images/80a96097-0e03-4b56-8126-44a30b5dce7b.jpg", "/images/ed26a578-3013-49a0-b461-b7a13c4f0d45.jpg" ]
   }, {
     "id" : 1,
     "title" : "제목입니다.",
-    "createdAt" : "2023-03-19 17:40:15:032",
+    "createdAt" : "2023-03-21 15:57:22:902",
     "userId" : 8,
-    "challengeId" : 72
+    "challengeId" : 72,
+    "challengeContent" : "내용입니다.",
+    "challengeImgUrls" : [ "/images/ce447964-4515-433e-8fb1-34a92774b8a6.jpg", "/images/a55b28e1-7aae-4a29-9be1-e26c164d29a8.jpg", "/images/44534748-1dab-40d8-b3b1-565cada0c0e7.jpg" ]
   } ],
   "pageable" : {
     "sort" : {
@@ -651,14 +663,14 @@ Content-Length: 1237
       "unsorted" : false
     },
     "offset" : 0,
-    "pageSize" : 10,
     "pageNumber" : 0,
-    "paged" : true,
-    "unpaged" : false
+    "pageSize" : 10,
+    "unpaged" : false,
+    "paged" : true
   },
   "totalElements" : 5,
-  "totalPages" : 1,
   "last" : true,
+  "totalPages" : 1,
   "size" : 10,
   "number" : 0,
   "sort" : {
@@ -718,6 +730,18 @@ Content-Length: 1237
 <td class="tableblock halign-left valign-top"><p class="tableblock">true</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">챌린지 ID</p></td>
 </tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>content[*].challengeContent</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">true</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">챌린지 내용</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>content[*].challengeImgUrls</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Array</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">true</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">챌린지 이미지들</p></td>
+</tr>
 </tbody>
 </table>
 </div>
@@ -729,7 +753,7 @@ Content-Length: 1237
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2023-02-18 17:42:26 +0900
+Last updated 2023-02-16 00:42:48 +0900
 </div>
 </div>
 </body>

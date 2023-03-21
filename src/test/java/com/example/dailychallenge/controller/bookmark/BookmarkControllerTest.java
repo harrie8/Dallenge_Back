@@ -62,7 +62,9 @@ class BookmarkControllerTest extends ControllerTest {
                 .andExpect(jsonPath("$.title").value(challenge.getTitle()))
                 .andExpect(jsonPath("$.createdAt").isNotEmpty())
                 .andExpect(jsonPath("$.userId").value(otherUser.getId()))
-                .andExpect(jsonPath("$.challengeId").value(challenge.getId()));
+                .andExpect(jsonPath("$.challengeId").value(challenge.getId()))
+                .andExpect(jsonPath("$.challengeContent").value(challenge.getContent()))
+                .andExpect(jsonPath("$.challengeImgUrls").value(challenge.getImgUrls()));
     }
 
     @Test

@@ -44,6 +44,8 @@ public class BookmarkController {
                 .createdAt(bookmark.getFormattedCreatedAt())
                 .userId(bookmark.getUsers().getId())
                 .challengeId(bookmark.getChallenge().getId())
+                .challengeContent(bookmark.getChallenge().getContent())
+                .challengeImgUrls(bookmark.getChallenge().getImgUrls())
                 .build();
 
         return ResponseEntity.status(HttpStatus.CREATED).body(responseBookmark);
