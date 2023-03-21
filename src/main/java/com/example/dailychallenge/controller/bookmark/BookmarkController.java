@@ -50,7 +50,7 @@ public class BookmarkController {
     }
 
     @DeleteMapping("/user/{userId}/bookmark/{bookmarkId}")
-    public ResponseEntity<Void> deleteComment(
+    public ResponseEntity<Void> deleteBookmark(
             @AuthenticationPrincipal org.springframework.security.core.userdetails.User user,
             @PathVariable Long userId,
             @PathVariable Long bookmarkId){

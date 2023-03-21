@@ -22,7 +22,6 @@ import com.example.dailychallenge.service.bookmark.BookmarkService;
 import com.example.dailychallenge.util.ControllerTest;
 import com.example.dailychallenge.util.fixture.TestDataSetup;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -84,17 +83,16 @@ class BookmarkControllerTest extends ControllerTest {
     public void searchBookmarksByUserIdTest() throws Exception {
         User otherUser = testDataSetup.saveUser(OTHER_USERNAME, OTHER_EMAIL, PASSWORD);
 
-        List<Long> otherChallengeIds = new ArrayList<>();
+        List<Challenge> otherChallenges = new ArrayList<>();
         for (int i = 0; i < 5; i++) {
             Challenge otherChallenge = testDataSetup.챌린지를_생성한다(createChallengeDto(), user);
             testDataSetup.챌린지에_참가한다(otherChallenge, user);
-            otherChallengeIds.add(otherChallenge.getId());
+            otherChallenges.add(otherChallenge);
 
             Thread.sleep(1);
             bookmarkService.saveBookmark(otherUser, otherChallenge);
         }
         Long otherUserId = otherUser.getId();
-        otherChallengeIds.sort(Comparator.reverseOrder());
 
         mockMvc.perform(get("/user/{userId}/bookmark", otherUserId)
                         .with(getRequestPostProcessor(otherUser))
@@ -108,8 +106,16 @@ class BookmarkControllerTest extends ControllerTest {
                 .andExpect(jsonPath("$.content[*].userId",
                         hasItems(otherUser.getId().intValue())))
                 .andExpect(jsonPath("$.content[*].challengeId",
-                        hasItems(otherChallengeIds.get(0).intValue(), otherChallengeIds.get(1).intValue(),
-                                otherChallengeIds.get(2).intValue(), otherChallengeIds.get(3).intValue(),
-                                otherChallengeIds.get(4).intValue())));
+                        hasItems(otherChallenges.get(4).getId().intValue(), otherChallenges.get(3).getId().intValue(),
+                                otherChallenges.get(2).getId().intValue(), otherChallenges.get(1).getId().intValue(),
+                                otherChallenges.get(0).getId().intValue())))
+                .andExpect(jsonPath("$.content[*].challengeContent",
+                        hasItems(otherChallenges.get(4).getContent(), otherChallenges.get(3).getContent(),
+                                otherChallenges.get(2).getContent(), otherChallenges.get(1).getContent(),
+                                otherChallenges.get(0).getContent())))
+                .andExpect(jsonPath("$.content[*].challengeImgUrls",
+                        hasItems(otherChallenges.get(4).getImgUrls(), otherChallenges.get(3).getImgUrls(),
+                                otherChallenges.get(2).getImgUrls(), otherChallenges.get(1).getImgUrls(),
+                                otherChallenges.get(0).getImgUrls())));
     }
 }
