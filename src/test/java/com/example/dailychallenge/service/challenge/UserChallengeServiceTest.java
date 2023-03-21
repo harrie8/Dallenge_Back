@@ -22,6 +22,7 @@ import com.example.dailychallenge.repository.UserChallengeRepository;
 import com.example.dailychallenge.util.ServiceTest;
 import com.example.dailychallenge.util.fixture.TestDataSetup;
 import com.example.dailychallenge.vo.ResponseChallengeByUserChallenge;
+import java.time.LocalDate;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -148,5 +149,25 @@ public class UserChallengeServiceTest extends ServiceTest {
         userChallengeService.challengeLeave(challenge.getId(), user.getId());
 
         assertTrue(userChallengeRepository.findById(userChallenge.getId()).isEmpty());
+    }
+
+    @Test
+    @DisplayName("챌린지를 달성하면 일주일 동안 챌린지 달성을 변경한다")
+    void succeedInChallengeWithUpdateWeeklyAchievement(){
+        userChallengeService.saveUserChallenge(challenge, user);
+
+        UserChallenge userChallenge = userChallengeService.succeedInChallenge(user.getId(), challenge.getId());
+
+        String weeklyAchievement = userChallenge.getWeeklyAchievement();
+        String[] split = weeklyAchievement.split(",");
+        int todayNumber = LocalDate.now().getDayOfWeek().getValue() - 1;
+        for (int i = 0; i < split.length; i++) {
+            String actual = split[i];
+            if (i == todayNumber) {
+                assertEquals("true", actual);
+                continue;
+            }
+            assertEquals("false", actual);
+        }
     }
 }

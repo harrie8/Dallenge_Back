@@ -17,6 +17,7 @@ import static org.springframework.restdocs.operation.preprocess.Preprocessors.pr
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.removeHeaders;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.relaxedResponseFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestPartFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
@@ -491,7 +492,12 @@ public class UserControllerDocTest {
                         preprocessResponse(
                                 removeHeaders("Vary", "X-Content-Type-Options", "X-XSS-Protection", "Pragma", "Expires",
                                         "Cache-Control", "Strict-Transport-Security", "X-Frame-Options"),
-                                prettyPrint())));
+                                prettyPrint()),
+                        relaxedResponseFields(
+                                fieldWithPath("[].howManyDaysInProgress").description("챌린지에 참여한 날부터 오늘까지의 연속일수"),
+                                fieldWithPath("[].weeklyAchievement").description("주간 챌린지 달성 여부")
+                        ))
+                );
     }
 
     private String generateToken() {

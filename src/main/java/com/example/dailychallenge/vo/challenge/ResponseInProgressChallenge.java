@@ -25,12 +25,13 @@ public class ResponseInProgressChallenge {
     private LocalDateTime createdAt;
     private List<ResponseCommentInfo> comments;
     private Long howManyDaysInProgress;
+    private List<Boolean> weeklyAchievement;
 
     @Builder
     public ResponseInProgressChallenge(Long userId, Long challengeId, String challengeTitle,
                                        String challengeContent, ChallengeStatus challengeStatus,
-                                       LocalDateTime createdAt, List<Comment> comments) {
-
+                                       LocalDateTime createdAt, List<Comment> comments,
+                                       List<Boolean> weeklyAchievement) {
         this.userId = userId;
         this.challengeId = challengeId;
         this.challengeTitle = challengeTitle;
@@ -41,6 +42,7 @@ public class ResponseInProgressChallenge {
             this.comments = ResponseCommentInfo.convert(comments);
         }
         this.howManyDaysInProgress = calculateDays(createdAt);
+        this.weeklyAchievement = weeklyAchievement;
     }
 
     private Long calculateDays(LocalDateTime createdAt) {

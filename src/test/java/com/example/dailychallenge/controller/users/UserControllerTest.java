@@ -418,6 +418,7 @@ class UserControllerTest {
                 .andExpect(jsonPath("$[0].comments[0].commentImgs").value(comments.get(0).getImgUrls()))
                 .andExpect(jsonPath("$[0].comments[0].commentCreatedAt").value(comments.get(0).getMonthDayFormatCreatedAt()))
                 .andExpect(jsonPath("$[0].howManyDaysInProgress").value(1L))
+                .andExpect(jsonPath("$[0].weeklyAchievement").isArray())
                 .andDo(print());
     }
 

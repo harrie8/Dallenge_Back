@@ -27,32 +27,11 @@ public class UserBadgeEvaluationService {
     }
 
     @Transactional
-    public Optional<Badge> createChallengeCreateBadgeIfFollowStandard(User user) {
-        UserBadgeEvaluation userBadgeEvaluation = user.getUserBadgeEvaluation();
-
-        userBadgeEvaluation.addNumberOfChallengeCreate();
-        Integer numberOfChallengeCreate = userBadgeEvaluation.getNumberOfChallengeCreate();
-
-        Optional<ChallengeCreateBadgeType> optionalChallengeCreateBadgeType = ChallengeCreateBadgeType
-                .findByNumber(numberOfChallengeCreate);
-        if (optionalChallengeCreateBadgeType.isPresent()) {
-            Long userId = user.getId();
-            String badgeName = optionalChallengeCreateBadgeType.get().getName();
-            UserBadge userBadge = userBadgeService.findByUsersIdAndBadgeName(userId, badgeName);
-            userBadge.setStatusToTrue();
-            Badge badge = userBadge.getBadge();
-            return Optional.of(badge);
-        }
-        return Optional.empty();
-    }
-
-    @Transactional
     public Optional<Badge> createAchievementBadgeIfFollowStandard(User user) {
         UserBadgeEvaluation userBadgeEvaluation = user.getUserBadgeEvaluation();
 
         userBadgeEvaluation.addNumberOfAchievement();
         Integer numberOfAchievement = userBadgeEvaluation.getNumberOfAchievement();
-
         Optional<AchievementBadgeType> optionalAchievementBadgeType = AchievementBadgeType
                 .findByNumber(numberOfAchievement);
         if (optionalAchievementBadgeType.isPresent()) {
@@ -67,12 +46,30 @@ public class UserBadgeEvaluationService {
     }
 
     @Transactional
+    public Optional<Badge> createChallengeCreateBadgeIfFollowStandard(User user) {
+        UserBadgeEvaluation userBadgeEvaluation = user.getUserBadgeEvaluation();
+
+        userBadgeEvaluation.addNumberOfChallengeCreate();
+        Integer numberOfChallengeCreate = userBadgeEvaluation.getNumberOfChallengeCreate();
+        Optional<ChallengeCreateBadgeType> optionalChallengeCreateBadgeType = ChallengeCreateBadgeType
+                .findByNumber(numberOfChallengeCreate);
+        if (optionalChallengeCreateBadgeType.isPresent()) {
+            Long userId = user.getId();
+            String badgeName = optionalChallengeCreateBadgeType.get().getName();
+            UserBadge userBadge = userBadgeService.findByUsersIdAndBadgeName(userId, badgeName);
+            userBadge.setStatusToTrue();
+            Badge badge = userBadge.getBadge();
+            return Optional.of(badge);
+        }
+        return Optional.empty();
+    }
+
+    @Transactional
     public Optional<Badge> createCommentWriteBadgeIfFollowStandard(User user) {
         UserBadgeEvaluation userBadgeEvaluation = user.getUserBadgeEvaluation();
 
         userBadgeEvaluation.addNumberOfCommentWrite();
         Integer numberOfCommentWrite = userBadgeEvaluation.getNumberOfCommentWrite();
-
         Optional<CommentWriteBadgeType> optionalCommentWriteBadgeType = CommentWriteBadgeType
                 .findByNumber(numberOfCommentWrite);
         if (optionalCommentWriteBadgeType.isPresent()) {

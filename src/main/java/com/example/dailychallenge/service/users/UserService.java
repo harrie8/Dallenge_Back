@@ -211,6 +211,7 @@ public class UserService implements UserDetailsService {
                                 .challengeStatus(userChallenge.getChallengeStatus())
                                 .createdAt(userChallenge.getCreated_at())
                                 .comments(userChallenge.getChallenge().getComments())
+                                .weeklyAchievement(userChallenge.converWeeklyChallengeToList())
                                 .build()
                 );
             }

@@ -58,12 +58,4 @@ public class UserBadgeEvaluation extends BaseEntity {
     public void addNumberOfCommentWrite() {
         this.numberOfCommentWrite++;
     }
-
-    public void subtractNumberOfAchievement() {
-        this.numberOfAchievement--;
-    }
-
-    public void subtractNumberOfChallengeCreate() {
-        this.numberOfChallengeCreate--;
-    }
 }

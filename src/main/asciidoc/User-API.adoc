@@ -124,6 +124,8 @@ include::{snippets}/user-inProgress-challenge/http-request.adoc[]
 
 include::{snippets}/user-inProgress-challenge/http-response.adoc[]
 
+include::{snippets}/user-inProgress-challenge/response-fields.adoc[]
+
 
 [[UserChallenge-오늘-수행한-챌린지-조회]]
 === 내가 오늘 수행한 챌린지 조회

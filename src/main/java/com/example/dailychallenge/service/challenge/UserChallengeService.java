@@ -12,6 +12,7 @@ import com.example.dailychallenge.repository.UserChallengeRepository;
 import com.example.dailychallenge.vo.ResponseChallengeByUserChallenge;
 import com.example.dailychallenge.vo.challenge.ResponseChallenge;
 import com.example.dailychallenge.vo.challenge.ResponseUserChallenge;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -86,6 +87,7 @@ public class UserChallengeService {
             throw new ChallengeSuccessDuplicate();
         }
         userChallenge.challengeSuccess();
+        userChallenge.updateWeeklyAchievement(LocalDate.now());
         return userChallenge;
     }
 
@@ -122,6 +124,14 @@ public class UserChallengeService {
         List<UserChallenge> userChallenges = userChallengeRepository.findAll();
         for (UserChallenge userChallenge : userChallenges) {
             userChallenge.resetChallengeStatus();
+        }
+    }
+
+    @Scheduled(cron = "0 0 0 ? * MON")
+    public void resetWeeklyAchievement(){
+        List<UserChallenge> userChallenges = userChallengeRepository.findAll();
+        for (UserChallenge userChallenge : userChallenges) {
+            userChallenge.resetWeeklyAchievement();
         }
     }
 }

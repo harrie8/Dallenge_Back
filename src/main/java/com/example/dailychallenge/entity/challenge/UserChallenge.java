@@ -2,6 +2,11 @@ package com.example.dailychallenge.entity.challenge;
 
 import com.example.dailychallenge.entity.BaseEntity;
 import com.example.dailychallenge.entity.users.User;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -19,6 +24,9 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 public class UserChallenge extends BaseEntity {
+    private static final Boolean NOT_ACHIEVED = false;
+    private static final Boolean ACHIEVED = true;
+    private static final String DELIMITER = ",";
 
     @Id
     @Column(name = "user_challenge_id")
@@ -30,6 +38,9 @@ public class UserChallenge extends BaseEntity {
     private ChallengeStatus challengeStatus;
 
     private boolean isParticipated;
+
+    @Column(nullable = false)
+    private String weeklyAchievement;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
@@ -45,6 +56,7 @@ public class UserChallenge extends BaseEntity {
         this.users = users;
         this.challenge = challenge;
         this.isParticipated = false;
+        this.weeklyAchievement = "false,false,false,false,false,false,false"; // 월요일부터 일요일 순서
     }
 
     public void setUser(User users) {
@@ -83,5 +95,26 @@ public class UserChallenge extends BaseEntity {
 
     public boolean isChallengeSuccess() {
         return this.challengeStatus == ChallengeStatus.SUCCESS;
+    }
+
+    public List<Boolean> converWeeklyChallengeToList() {
+       return new ArrayList<>(Arrays.stream(weeklyAchievement.split(","))
+                .map(Boolean::valueOf)
+                .collect(Collectors.toUnmodifiableList()));
+    }
+
+    public void updateWeeklyAchievement(LocalDate date) {
+        int dayNumber = date.getDayOfWeek().getValue() - 1; // 월요일 0, 일요일 6
+        List<Boolean> week = converWeeklyChallengeToList();
+        if (week.get(dayNumber) == NOT_ACHIEVED) {
+            week.set(dayNumber, ACHIEVED);
+        }
+        weeklyAchievement = week.stream()
+                .map(String::valueOf)
+                .collect(Collectors.joining(","));
+    }
+
+    public void resetWeeklyAchievement(){
+        this.weeklyAchievement = "false,false,false,false,false,false,false";
     }
 }
