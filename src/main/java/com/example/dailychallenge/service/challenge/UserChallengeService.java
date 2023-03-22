@@ -5,6 +5,7 @@ import com.example.dailychallenge.entity.challenge.Challenge;
 import com.example.dailychallenge.entity.challenge.ChallengeStatus;
 import com.example.dailychallenge.entity.challenge.UserChallenge;
 import com.example.dailychallenge.entity.users.User;
+import com.example.dailychallenge.exception.userChallenge.ChallengePauseDuplicate;
 import com.example.dailychallenge.exception.userChallenge.ChallengeSuccessDuplicate;
 import com.example.dailychallenge.exception.userChallenge.UserChallengeDuplicate;
 import com.example.dailychallenge.exception.userChallenge.UserChallengeNotFound;
@@ -93,7 +94,11 @@ public class UserChallengeService {
 
     public UserChallenge pauseChallenge(Long userId, Long challengeId) {
         UserChallenge userChallenge = findByChallengeIdAndUserId(challengeId, userId);
+        if (userChallenge.isChallengePause()) {
+            throw new ChallengePauseDuplicate();
+        }
         userChallenge.challengePause();
+        userChallenge.updateWeeklyAchievementToFalse(LocalDate.now());
         return userChallenge;
     }
 

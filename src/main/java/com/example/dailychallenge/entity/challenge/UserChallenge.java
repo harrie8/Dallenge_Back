@@ -97,6 +97,10 @@ public class UserChallenge extends BaseEntity {
         return this.challengeStatus == ChallengeStatus.SUCCESS;
     }
 
+    public boolean isChallengePause() {
+        return this.challengeStatus == ChallengeStatus.PAUSE;
+    }
+
     public List<Boolean> converWeeklyChallengeToList() {
        return new ArrayList<>(Arrays.stream(weeklyAchievement.split(","))
                 .map(Boolean::valueOf)
@@ -108,6 +112,17 @@ public class UserChallenge extends BaseEntity {
         List<Boolean> week = converWeeklyChallengeToList();
         if (week.get(dayNumber) == NOT_ACHIEVED) {
             week.set(dayNumber, ACHIEVED);
+        }
+        weeklyAchievement = week.stream()
+                .map(String::valueOf)
+                .collect(Collectors.joining(","));
+    }
+
+    public void updateWeeklyAchievementToFalse(LocalDate date) {
+        int dayNumber = date.getDayOfWeek().getValue() - 1; // 월요일 0, 일요일 6
+        List<Boolean> week = converWeeklyChallengeToList();
+        if (week.get(dayNumber) == ACHIEVED) {
+            week.set(dayNumber, NOT_ACHIEVED);
         }
         weeklyAchievement = week.stream()
                 .map(String::valueOf)

@@ -14,6 +14,7 @@ import com.example.dailychallenge.exception.comment.CommentImgNotFound;
 import com.example.dailychallenge.exception.comment.CommentNotFound;
 import com.example.dailychallenge.exception.hashtag.HashTagNotFound;
 import com.example.dailychallenge.exception.hashtag.HashtagDtoBlank;
+import com.example.dailychallenge.exception.userChallenge.ChallengePauseDuplicate;
 import com.example.dailychallenge.exception.userChallenge.ChallengeSuccessDuplicate;
 import com.example.dailychallenge.exception.userChallenge.UserChallengeDuplicate;
 import com.example.dailychallenge.exception.userChallenge.UserChallengeNotFound;
@@ -282,6 +283,17 @@ public class GlobalExceptionHandler {
         final ResponseError responseError = ResponseError.builder()
                 .code(userChallengeNotFound.getStatusCode())
                 .message(userChallengeNotFound.getMessage())
+                .build();
+
+        return ResponseEntity.status(responseError.getCode()).body(responseError);
+    }
+
+    @ExceptionHandler(ChallengePauseDuplicate.class)
+    protected ResponseEntity<ResponseError> handlerChallengePauseDuplicate(
+            ChallengePauseDuplicate challengePauseDuplicate) {
+        final ResponseError responseError = ResponseError.builder()
+                .code(challengePauseDuplicate.getStatusCode())
+                .message(challengePauseDuplicate.getMessage())
                 .build();
 
         return ResponseEntity.status(responseError.getCode()).body(responseError);
