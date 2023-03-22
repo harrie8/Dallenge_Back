@@ -40,12 +40,12 @@ public class BookmarkController {
 
         ResponseBookmark responseBookmark = ResponseBookmark.builder()
                 .id(bookmark.getId())
-                .title(bookmark.getChallenge().getTitle())
+                .title(challenge.getTitle())
                 .createdAt(bookmark.getFormattedCreatedAt())
-                .userId(bookmark.getUsers().getId())
-                .challengeId(bookmark.getChallenge().getId())
-                .challengeContent(bookmark.getChallenge().getContent())
-                .challengeImgUrls(bookmark.getChallenge().getImgUrls())
+                .userId(findUser.getId())
+                .challengeId(challenge.getId())
+                .challengeContent(challenge.getContent())
+                .challengeImgUrls(challenge.getImgUrls())
                 .build();
 
         return ResponseEntity.status(HttpStatus.CREATED).body(responseBookmark);

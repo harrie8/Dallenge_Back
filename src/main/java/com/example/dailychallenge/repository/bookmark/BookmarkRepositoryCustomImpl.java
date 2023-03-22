@@ -35,6 +35,7 @@ public class BookmarkRepositoryCustomImpl implements BookmarkRepositoryCustom {
                 .select(new QResponseBookmark(bookmark))
                 .from(bookmark)
                 .leftJoin(bookmark.users, user)
+                .leftJoin(bookmark.challenge, challenge)
                 .where(userIdEq(userId))
                 .orderBy(bookmarkSort(pageable))
                 .offset(pageable.getOffset())
@@ -45,6 +46,7 @@ public class BookmarkRepositoryCustomImpl implements BookmarkRepositoryCustom {
                 .select(bookmark)
                 .from(bookmark)
                 .leftJoin(bookmark.users, user)
+                .leftJoin(bookmark.challenge, challenge)
                 .where(userIdEq(userId))
                 .fetch()
                 .size();
