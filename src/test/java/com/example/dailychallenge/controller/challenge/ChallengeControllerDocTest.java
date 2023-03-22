@@ -210,7 +210,6 @@ public class ChallengeControllerDocTest extends RestDocsTest {
         Long challenge1Id = challenge1.getId();
 
         mockMvc.perform(get("/challenge/{challengeId}", challenge1Id)
-                        .header(AUTHORIZATION, token)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.responseChallenge.title").value(challenge1.getTitle()))

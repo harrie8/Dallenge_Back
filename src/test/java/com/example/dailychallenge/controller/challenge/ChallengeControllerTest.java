@@ -185,7 +185,6 @@ class ChallengeControllerTest extends ControllerTest {
         Long challenge1Id = challenge1.getId();
 
         mockMvc.perform(get("/challenge/{challengeId}", challenge1Id)
-                        .with(requestPostProcessor)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.responseChallenge.title").value(challenge1.getTitle()))
