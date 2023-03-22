@@ -23,13 +23,13 @@ public class ResponseCreateChallengeBadge {
     private List<String> challengeImgUrls;
     private List<String> challengeHashtags;
     private ResponseUser challengeOwnerUser;
-    private ResponseBadge badgeInfo;
+    private ResponseCreateBadge badgeInfo;
 
     @Builder
     public ResponseCreateChallengeBadge(Long id, String title, String content, String challengeCategory,
                                         String challengeLocation, String challengeDuration, String challengeStatus,
                                         List<String> challengeImgUrls, List<String> challengeHashtags,
-                                        ResponseUser responseUser, ResponseBadge responseBadge) {
+                                        ResponseUser responseUser, ResponseCreateBadge responseCreateBadge) {
 
         this.id = id;
         this.title = title;
@@ -41,13 +41,13 @@ public class ResponseCreateChallengeBadge {
         this.challengeImgUrls = challengeImgUrls;
         this.challengeHashtags = challengeHashtags;
         this.challengeOwnerUser = responseUser;
-        this.badgeInfo = responseBadge;
+        this.badgeInfo = responseCreateBadge;
     }
 
     public static ResponseCreateChallengeBadge create(Challenge challenge, UserChallenge userChallenge,
                                                       Badge badge) {
         ResponseUser responseUser = ResponseUser.create(challenge.getUsers());
-        ResponseBadge responseBadge = ResponseBadge.create(badge);
+        ResponseCreateBadge responseCreateBadge = ResponseCreateBadge.create(badge);
 
         return ResponseCreateChallengeBadge.builder()
                 .id(challenge.getId())
@@ -60,7 +60,7 @@ public class ResponseCreateChallengeBadge {
                 .challengeImgUrls(challenge.getImgUrls())
                 .challengeHashtags(challenge.getHashtags())
                 .responseUser(responseUser)
-                .responseBadge(responseBadge)
+                .responseCreateBadge(responseCreateBadge)
                 .build();
     }
 }

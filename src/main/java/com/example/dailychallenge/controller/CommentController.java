@@ -6,17 +6,17 @@ import com.example.dailychallenge.entity.challenge.Challenge;
 import com.example.dailychallenge.entity.comment.Comment;
 import com.example.dailychallenge.entity.users.User;
 import com.example.dailychallenge.exception.users.UserNotFound;
+import com.example.dailychallenge.service.HeartService;
 import com.example.dailychallenge.service.badge.UserBadgeEvaluationService;
 import com.example.dailychallenge.service.challenge.ChallengeService;
 import com.example.dailychallenge.service.comment.CommentService;
-import com.example.dailychallenge.service.HeartService;
 import com.example.dailychallenge.service.users.UserService;
 import com.example.dailychallenge.vo.ResponseChallengeComment;
 import com.example.dailychallenge.vo.ResponseChallengeCommentImg;
 import com.example.dailychallenge.vo.ResponseComment;
 import com.example.dailychallenge.vo.ResponseUserComment;
-import com.example.dailychallenge.vo.badge.ResponseBadge;
 import com.example.dailychallenge.vo.badge.ResponseCommentWriteBadge;
+import com.example.dailychallenge.vo.badge.ResponseCreateBadge;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -87,7 +87,7 @@ public class CommentController {
                     .content(comment.getContent())
                     .createdAt(comment.getSpecificCreatedAt())
                     .userId(comment.getUsers().getId())
-                    .responseBadge(ResponseBadge.create(badge))
+                    .responseCreateBadge(ResponseCreateBadge.create(badge))
                     .build();
             return Optional.of(responseCommentWriteBadge);
         }

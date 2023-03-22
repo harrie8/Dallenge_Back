@@ -11,6 +11,7 @@ import static com.example.dailychallenge.util.fixture.user.UserFixture.OTHER_EMA
 import static com.example.dailychallenge.util.fixture.user.UserFixture.OTHER_USERNAME;
 import static com.example.dailychallenge.util.fixture.user.UserFixture.USERNAME;
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.multipart;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
@@ -36,7 +37,6 @@ import com.example.dailychallenge.util.fixture.TestDataSetup;
 import com.example.dailychallenge.vo.challenge.RequestCreateChallenge;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,8 +52,7 @@ public class BadgeControllerDocTest extends RestDocsTest {
     private User user;
     private String token;
 
-    @BeforeEach
-    void beforeEach() {
+    private void initData() {
         user = testDataSetup.saveUser(USERNAME, EMAIL, PASSWORD);
         testDataSetup.saveUserBadgeEvaluation(user);
         testDataSetup.saveBadgesAndUserBadges(user);
@@ -63,6 +62,8 @@ public class BadgeControllerDocTest extends RestDocsTest {
     @Test
     @DisplayName("챌린지 10개 생성 뱃지 테스트")
     void createChallengeCreateBadgeTest() throws Exception {
+        initData();
+
         for (int i = 1; i <= 9; i++) {
             Challenge challenge = testDataSetup.챌린지를_생성한다(
                     "제목입니다." + i,
@@ -147,6 +148,8 @@ public class BadgeControllerDocTest extends RestDocsTest {
     @Test
     @DisplayName("챌린지 10개 달성 완료 테스트")
     void createAchievementBadgeTest() throws Exception {
+        initData();
+
         for (int i = 1; i <= 9; i++) {
             Challenge challenge = testDataSetup.챌린지를_생성한다(
                     "제목입니다." + i,
@@ -193,6 +196,8 @@ public class BadgeControllerDocTest extends RestDocsTest {
     @Test
     @DisplayName("후기 10개 작성 뱃지 테스트")
     void createCommentWriteBadgeTest() throws Exception {
+        initData();
+
         User otherUser = testDataSetup.saveUser(OTHER_USERNAME, OTHER_EMAIL, PASSWORD);
         for (int i = 1; i <= 9; i++) {
             Challenge challenge = testDataSetup.챌린지를_생성한다(
@@ -241,6 +246,21 @@ public class BadgeControllerDocTest extends RestDocsTest {
                         relaxedResponseFields(
                                 fieldWithPath("badgeInfo.createBadgeName").description("후기 N개 작성 뱃지 이름"),
                                 fieldWithPath("badgeInfo.badgeImgUrl").description("후기 N개 작성 뱃지 이미지 경로")
+                        )
+                ));
+    }
+
+    @Test
+    @DisplayName("모든 뱃지 조회 테스트")
+    void getAllBadgesTest() throws Exception {
+        mockMvc.perform(get("/badges")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andDo(restDocs.document(
+                        relaxedResponseFields(
+                                fieldWithPath("[].badgeName").description("뱃지 이름"),
+                                fieldWithPath("[].badgeStatus").description("뱃지 획득 여부 - true: 획득, false: 획득 못함"),
+                                fieldWithPath("[].badgeImgUrl").description("뱃지 이미지 url - ipAddress:port번호/badgeImage/challengeCreate/challengeCreate10.svg로 요청하면 뱃지 이미지가 출력됩니다.")
                         )
                 ));
     }

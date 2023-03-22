@@ -12,7 +12,7 @@ import com.example.dailychallenge.service.users.UserService;
 import com.example.dailychallenge.vo.ResponseChallengeByUserChallenge;
 import com.example.dailychallenge.vo.ResponseMessage;
 import com.example.dailychallenge.vo.badge.ResponseAchievementBadgeMessage;
-import com.example.dailychallenge.vo.badge.ResponseBadge;
+import com.example.dailychallenge.vo.badge.ResponseCreateBadge;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -102,7 +102,7 @@ public class UserChallengeController {
             ResponseAchievementBadgeMessage responseAchievementBadgeMessage = ResponseAchievementBadgeMessage.builder()
                     .code(200)
                     .message("챌린지 달성 완료!")
-                    .responseBadge(ResponseBadge.create(badge))
+                    .responseCreateBadge(ResponseCreateBadge.create(badge))
                     .build();
             return Optional.of(responseAchievementBadgeMessage);
         }

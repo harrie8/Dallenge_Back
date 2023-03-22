@@ -35,3 +35,12 @@ operation::badge-controller-doc-test/create-achievement-badge-test[snippets='htt
 - HTTP Request는 챌린지 달성과 같습니다.
 
 operation::badge-controller-doc-test/create-comment-write-badge-test[snippets='http-request,http-response,response-fields']
+
+
+[[Badge-모든-뱃들을-조회]]
+== 모든 뱃지들을 조회
+
+[[Badge-모든-뱃지들-조회]]
+=== 모든 뱃지들을 조회
+
+operation::badge-controller-doc-test/get-all-badges-test[snippets='http-request,http-response,response-fields']

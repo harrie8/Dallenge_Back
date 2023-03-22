@@ -61,6 +61,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.
                 authorizeRequests()
                 .antMatchers(HttpMethod.GET, "/challenge/{challengeId:[\\d+]}").permitAll()
+                .antMatchers(HttpMethod.GET, "/badges").permitAll()
                 .antMatchers("/user/{userId:[\\d+]}/**", "/user/challenge", "/user/participate", "/user/done",
                         "/challenge/new", "/challenge/{challengeId:[\\d+]}/**",
                         "/{challengeId:[\\d+]}/comment/new", "/{challengeId:[\\d+]}/comment/{\\d+}").authenticated()

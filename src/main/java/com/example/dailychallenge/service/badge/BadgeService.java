@@ -2,6 +2,9 @@ package com.example.dailychallenge.service.badge;
 
 import com.example.dailychallenge.dto.BadgeDto;
 import com.example.dailychallenge.entity.badge.Badge;
+import com.example.dailychallenge.entity.badge.type.AchievementBadgeType;
+import com.example.dailychallenge.entity.badge.type.ChallengeCreateBadgeType;
+import com.example.dailychallenge.entity.badge.type.CommentWriteBadgeType;
 import com.example.dailychallenge.repository.badge.BadgeRepository;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -32,5 +35,18 @@ public class BadgeService {
 
     public List<Badge> findAll() {
         return badgeRepository.findAll();
+    }
+
+    public List<Badge> getAll() {
+        List<Badge> badges = badgeRepository.findAll();
+        if (badges.isEmpty()) {
+            List<BadgeDto> achievementBadgeDtos = AchievementBadgeType.getBadgeDtos();
+            List<BadgeDto> commentWriteBadgeDtos = CommentWriteBadgeType.getBadgeDtos();
+            List<BadgeDto> challengeCreateBadgeDtos = ChallengeCreateBadgeType.getBadgeDtos();
+            badges.addAll(createBadges(achievementBadgeDtos));
+            badges.addAll(createBadges(commentWriteBadgeDtos));
+            badges.addAll(createBadges(challengeCreateBadgeDtos));
+        }
+        return badges;
     }
 }

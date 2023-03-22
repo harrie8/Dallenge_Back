@@ -10,12 +10,12 @@ public class ResponseAchievementBadgeMessage {
 
     private Integer code;
     private String message;
-    private ResponseBadge badgeInfo;
+    private ResponseCreateBadge badgeInfo;
 
     @Builder
-    public ResponseAchievementBadgeMessage(Integer code, String message, ResponseBadge responseBadge) {
+    public ResponseAchievementBadgeMessage(Integer code, String message, ResponseCreateBadge responseCreateBadge) {
         this.code = code;
         this.message = message;
-        this.badgeInfo = responseBadge;
+        this.badgeInfo = responseCreateBadge;
     }
 }
