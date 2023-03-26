@@ -116,7 +116,7 @@ public class UserController {
             ));
             if (auth.isAuthenticated()) {
                 UserDetails userDetails = userService.loadUserByUsername(requestLogin.getEmail());
-                String token = jwtTokenUtil.generateToken(userDetails);
+                String token = jwtTokenUtil.generateToken(userDetails.getUsername());
                 User user = userService.findByEmail(requestLogin.getEmail()).orElseThrow(UserNotFound::new);
 
                 ResponseLoginUser responseLoginUser = mapper.map(user, ResponseLoginUser.class);

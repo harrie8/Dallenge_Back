@@ -33,6 +33,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private final CustomOAuth2UserService customOAuth2UserService;
     private final JwtExceptionFilter jwtExceptionFilter;
     private final AuthenticationEntryPointImpl authenticationEntryPointImpl;
+    private final OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler;
 
     @Bean
     @Override
@@ -70,7 +71,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .anyRequest().permitAll()
                 .and()
                 .oauth2Login()
-                .defaultSuccessUrl("/api/user")
+                .successHandler(oAuth2LoginSuccessHandler)
+//                .defaultSuccessUrl("/")
                 .userInfoEndpoint()
                 .userService(customOAuth2UserService);
 
