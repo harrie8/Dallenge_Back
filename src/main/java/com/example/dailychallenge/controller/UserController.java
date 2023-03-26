@@ -1,6 +1,7 @@
 package com.example.dailychallenge.controller;
 
 import com.example.dailychallenge.dto.BadgeDto;
+import com.example.dailychallenge.dto.EmailDto;
 import com.example.dailychallenge.dto.UserDto;
 import com.example.dailychallenge.entity.badge.Badge;
 import com.example.dailychallenge.entity.badge.type.AchievementBadgeType;
@@ -14,8 +15,10 @@ import com.example.dailychallenge.exception.users.UserPasswordCheck;
 import com.example.dailychallenge.service.badge.BadgeService;
 import com.example.dailychallenge.service.badge.UserBadgeEvaluationService;
 import com.example.dailychallenge.service.badge.UserBadgeService;
+import com.example.dailychallenge.service.email.EmailService;
 import com.example.dailychallenge.service.users.UserService;
 import com.example.dailychallenge.utils.JwtTokenUtil;
+import com.example.dailychallenge.utils.RandomPasswordGenerator;
 import com.example.dailychallenge.vo.RequestLogin;
 import com.example.dailychallenge.vo.RequestUpdateUser;
 import com.example.dailychallenge.vo.RequestUser;
@@ -65,6 +68,7 @@ public class UserController {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final JwtTokenUtil jwtTokenUtil;
+    private final EmailService emailService;
 
     @PostMapping("/user/new")
     public ResponseEntity createUser(@RequestBody @Valid RequestUser requestUser) throws Exception {
@@ -221,6 +225,24 @@ public class UserController {
         List<ResponseInProgressChallenge> inProgressChallenges = userService.getInProgressChallenges(getUser.getId());
 
         return ResponseEntity.status(HttpStatus.OK).body(inProgressChallenges);
+    }
+
+    @PostMapping("/user/resetPassword") // 비밀번호 초기화 url
+    public ResponseEntity<String> resetUserPassword(@RequestParam String email) {
+        User user = userService.findByEmail(email).orElseThrow(UserNotFound::new);
+        Long userId = user.getId();
+        String randomPassword = RandomPasswordGenerator.generate(10);
+
+        userService.changePassword(userId, randomPassword, passwordEncoder);
+
+        EmailDto emailDto = EmailDto.builder()
+                .to(user.getEmail())
+                .subject(user.getUserName())
+                .message(randomPassword)
+                .build();
+        emailService.sendMail(emailDto);
+
+        return ResponseEntity.status(HttpStatus.OK).body("비밀번호가 임의의 문자열로 초기화되었습니다.");
     }
 
     /**

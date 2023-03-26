@@ -83,7 +83,7 @@ class UserServiceTest {
 
     @Test
     @DisplayName("회원가입 테스트")
-    public void saveUserTest() throws Exception {
+    public void saveUserTest() {
         UserDto userDto = createUser();
         User savedUser = userService.saveUser(userDto,passwordEncoder);
 
@@ -98,7 +98,7 @@ class UserServiceTest {
 
     @Test
     @DisplayName("회원 정보 수정 테스트")
-    public void updateUserTest() throws Exception {
+    public void updateUserTest() {
         User savedUser = userService.saveUser(createUser(), passwordEncoder);
         MultipartFile multipartFile = createMultipartFiles();
         RequestUpdateUser requestUpdateUser = RequestUpdateUser.builder()
@@ -132,7 +132,7 @@ class UserServiceTest {
 
     @Test
     @DisplayName("회원 중복 에러 테스트")
-    public void duplicateUserTest() throws Exception {
+    public void duplicateUserTest() {
         User savedUser = userService.saveUser(createUser(), passwordEncoder);
         assertThatThrownBy(() -> userService.validateDuplicateUser(savedUser.getEmail()))
                 .isInstanceOf(UserDuplicateNotCheck.class)
@@ -141,7 +141,7 @@ class UserServiceTest {
 
     @Test
     @DisplayName("비밀번호 검증 테스트")
-    public void checkUserPassword() throws Exception {
+    public void checkUserPassword() {
         User savedUser = userService.saveUser(createUser(), passwordEncoder);
 
         assertTrue(userService.checkPassword(savedUser.getId(), "1234", passwordEncoder));
@@ -150,7 +150,7 @@ class UserServiceTest {
 
     @Test
     @DisplayName("비밀번호 변경 테스트")
-    public void changeUserPassword() throws Exception {
+    public void changeUserPassword() {
         User savedUser = userService.saveUser(createUser(), passwordEncoder);
         userService.changePassword(savedUser.getId(), "12345",passwordEncoder);
 
@@ -175,7 +175,7 @@ class UserServiceTest {
 
         @Test
         @DisplayName("EMAIL이 존재하지 않는 예외 발생")
-        public void failByNotExistUser() throws Exception {
+        public void failByNotExistUser() {
             User savedUser = userService.saveUser(createUser(), passwordEncoder);
             String notExistUserEmail = savedUser.getEmail() + "error";
             Long userId = savedUser.getId();
@@ -187,7 +187,7 @@ class UserServiceTest {
 
         @Test
         @DisplayName("권한이 없는 경우 예외 발생")
-        public void failByAuthorization() throws Exception {
+        public void failByAuthorization() {
             User savedUser = userService.saveUser(createUser(), passwordEncoder);
             User otherSavedUser = userService.saveUser(createOtherUser(), passwordEncoder);
             String otherSavedUserEmail = otherSavedUser.getEmail();
