@@ -71,7 +71,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.transaction.annotation.Transactional;
@@ -82,7 +81,6 @@ import org.springframework.web.multipart.MultipartFile;
 @AutoConfigureMockMvc
 @AutoConfigureRestDocs(uriScheme = "https", uriHost = "api.dailychallenge.com", uriPort = 443)
 @ExtendWith(RestDocumentationExtension.class)
-@TestPropertySource(locations = "classpath:application-test.properties")
 @Import({TestDataSetup.class})
 public class UserControllerDocTest {
     @Autowired
@@ -498,6 +496,28 @@ public class UserControllerDocTest {
                                 fieldWithPath("[].weeklyAchievement").description("주간 챌린지 달성 여부")
                         ))
                 );
+    }
+
+    @Test
+    @DisplayName("비밀번호 초기화 테스트")
+    public void resetUserPassword() throws Exception {
+        User user = userService.saveUser(createUser(), passwordEncoder);
+
+        mockMvc.perform(RestDocumentationRequestBuilders
+                        .post("/user/resetPassword?email=" + user.getEmail())
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andDo(print())
+                .andDo(document("user-reset-password",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(
+                                removeHeaders("Vary", "X-Content-Type-Options", "X-XSS-Protection", "Pragma", "Expires",
+                                        "Cache-Control", "Strict-Transport-Security", "X-Frame-Options"),
+                                prettyPrint()),
+                        requestParameters(
+                                parameterWithName("email").description("유저 이메일")
+                        )
+                ));
     }
 
     private String generateToken() {
