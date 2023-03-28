@@ -4,6 +4,8 @@ import com.example.dailychallenge.entity.social.GoogleUser;
 import com.example.dailychallenge.entity.social.ProviderUser;
 import com.example.dailychallenge.entity.users.User;
 import com.example.dailychallenge.repository.UserRepository;
+import com.example.dailychallenge.service.badge.UserBadgeEvaluationService;
+import com.example.dailychallenge.service.badge.UserBadgeService;
 import com.example.dailychallenge.service.users.UserService;
 import java.util.Optional;
 import lombok.Getter;
@@ -21,6 +23,10 @@ public abstract class AbstractOAuth2UserService {
     private UserRepository userRepository;
     @Autowired
     private UserService userService;
+    @Autowired
+    private UserBadgeService userBadgeService;
+    @Autowired
+    private UserBadgeEvaluationService userBadgeEvaluationService;
 
     public void register(ProviderUser providerUser, OAuth2UserRequest userRequest) {
 
@@ -28,7 +34,9 @@ public abstract class AbstractOAuth2UserService {
 
         if(user.isEmpty()){ // db에 user 정보가 없는 경우, db에 저장
             String registrationId = userRequest.getClientRegistration().getRegistrationId();
-            userService.saveSocialUser(registrationId,providerUser);
+            User savedUser = userService.saveSocialUser(registrationId, providerUser);
+            userBadgeEvaluationService.createUserBadgeEvaluation(savedUser);
+            userBadgeService.saveUserBadges(savedUser);
         }
     }
 

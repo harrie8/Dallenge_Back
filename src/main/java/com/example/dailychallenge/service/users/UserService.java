@@ -113,7 +113,7 @@ public class UserService implements UserDetailsService {
         userRepository.delete(user);
     }
 
-    public void saveSocialUser(String registrationId, ProviderUser providerUser){
+    public User saveSocialUser(String registrationId, ProviderUser providerUser){
         User user = User.builder()
                 .userName(providerUser.getUserName())
                 .email(providerUser.getEmail())
@@ -121,7 +121,7 @@ public class UserService implements UserDetailsService {
                 .registrationId(registrationId)
                 .build();
 
-        userRepository.save(user);
+        return userRepository.save(user);
     }
 
     public void validateDuplicateUser(String email) {

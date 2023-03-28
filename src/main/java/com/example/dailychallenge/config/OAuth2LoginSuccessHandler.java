@@ -50,14 +50,16 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
 
             User findUser = userService.findByEmail(email).orElseThrow(UserNotFound::new);
             ResponseLoginUser responseLoginUser = new ResponseLoginUser();
-            responseLoginUser.setUserId(findUser.getId());
-            responseLoginUser.setUserName(email);
+            responseLoginUser.setUserName(findUser.getUserName());
             responseLoginUser.setToken(accessToken);
+            responseLoginUser.setUserId(findUser.getId());
 
             String result = objectMapper.writeValueAsString(responseLoginUser);
             response.getWriter().write(result);
+
         } catch (Exception e) {
             e.printStackTrace();
+            throw e;
         }
     }
 
