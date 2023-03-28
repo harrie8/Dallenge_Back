@@ -80,32 +80,31 @@ public class UserController {
         responseUser.setUserId(savedUser.getId());
 
         userBadgeEvaluationService.createUserBadgeEvaluation(savedUser);
-
-        saveUserBadges(savedUser);
+        userBadgeService.saveUserBadges(savedUser);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(responseUser);
     }
 
-    private void saveUserBadges(User savedUser) {
-       List<Badge> badges = badgeService.findAll();
-        if (badges.isEmpty()) {
-            saveBadges(savedUser);
-            return;
-        }
-        userBadgeService.createUserBadges(savedUser, badges);
-    }
-
-    private void saveBadges(User savedUser) {
-        List<BadgeDto> achievementBadgeDtos = AchievementBadgeType.getBadgeDtos();
-        List<BadgeDto> commentWriteBadgeDtos = CommentWriteBadgeType.getBadgeDtos();
-        List<BadgeDto> challengeCreateBadgeDtos = ChallengeCreateBadgeType.getBadgeDtos();
-        List<Badge> achievementBadges = badgeService.createBadges(achievementBadgeDtos);
-        List<Badge> commentWriteBadges = badgeService.createBadges(commentWriteBadgeDtos);
-        List<Badge> challengeCreateBadges = badgeService.createBadges(challengeCreateBadgeDtos);
-        userBadgeService.createUserBadges(savedUser, achievementBadges);
-        userBadgeService.createUserBadges(savedUser, commentWriteBadges);
-        userBadgeService.createUserBadges(savedUser, challengeCreateBadges);
-    }
+//    private void saveUserBadges(User savedUser) {
+//       List<Badge> badges = badgeService.findAll();
+//        if (badges.isEmpty()) {
+//            saveBadges(savedUser);
+//            return;
+//        }
+//        userBadgeService.createUserBadges(savedUser, badges);
+//    }
+//
+//    private void saveBadges(User savedUser) {
+//        List<BadgeDto> achievementBadgeDtos = AchievementBadgeType.getBadgeDtos();
+//        List<BadgeDto> commentWriteBadgeDtos = CommentWriteBadgeType.getBadgeDtos();
+//        List<BadgeDto> challengeCreateBadgeDtos = ChallengeCreateBadgeType.getBadgeDtos();
+//        List<Badge> achievementBadges = badgeService.createBadges(achievementBadgeDtos);
+//        List<Badge> commentWriteBadges = badgeService.createBadges(commentWriteBadgeDtos);
+//        List<Badge> challengeCreateBadges = badgeService.createBadges(challengeCreateBadgeDtos);
+//        userBadgeService.createUserBadges(savedUser, achievementBadges);
+//        userBadgeService.createUserBadges(savedUser, commentWriteBadges);
+//        userBadgeService.createUserBadges(savedUser, challengeCreateBadges);
+//    }
 
     @PostMapping("/user/login")
     public ResponseEntity<?> loginUser(@RequestBody @Valid RequestLogin requestLogin) {
