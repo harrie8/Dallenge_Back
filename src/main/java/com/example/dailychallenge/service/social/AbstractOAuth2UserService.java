@@ -1,6 +1,7 @@
 package com.example.dailychallenge.service.social;
 
 import com.example.dailychallenge.entity.social.GoogleUser;
+import com.example.dailychallenge.entity.social.KakaoUser;
 import com.example.dailychallenge.entity.social.ProviderUser;
 import com.example.dailychallenge.entity.users.User;
 import com.example.dailychallenge.repository.UserRepository;
@@ -11,6 +12,7 @@ import java.util.Optional;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
+import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
@@ -45,6 +47,8 @@ public abstract class AbstractOAuth2UserService {
 
         if (registrationId.equals("google")) { // 소셜 로그인 중 google 인 경우
             return new GoogleUser(oAuth2User, clientRegistration);
+        } else if (registrationId.equals("kakao")) {
+            return new KakaoUser(oAuth2User, clientRegistration);
         }
         return null;
     }
