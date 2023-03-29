@@ -65,7 +65,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.POST, "/user/resetPassword").permitAll()
                 .antMatchers("/user/{userId:[\\d+]}/**", "/user/challenge", "/user/participate", "/user/done",
                         "/challenge/new", "/challenge/{challengeId:[\\d+]}/**",
-                        "/{challengeId:[\\d+]}/comment/new", "/{challengeId:[\\d+]}/comment/{\\d+}").authenticated()
+                        "/{challengeId:[\\d+]}/comment/new", "/{challengeId:[\\d+]}/comment/{\\d+}",
+                        "/{challengeId:[\\d+]}/bookmark/new").authenticated()
 //                .antMatchers("/user/login","/user/new","/**.html","/images/**","/","/token/**","/login/**","/oauth2/**","/api/user").permitAll()
                 .anyRequest().permitAll()
                 .and()
