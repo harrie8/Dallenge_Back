@@ -66,7 +66,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/user/{userId:[\\d+]}/**", "/user/challenge", "/user/participate", "/user/done",
                         "/challenge/new", "/challenge/{challengeId:[\\d+]}/**",
                         "/{challengeId:[\\d+]}/comment/new", "/{challengeId:[\\d+]}/comment/{\\d+}",
-                        "/{challengeId:[\\d+]}/bookmark/new").authenticated()
+                        "/{challengeId:[\\d+]}/bookmark/new", "/user/badges").authenticated()
 //                .antMatchers("/user/login","/user/new","/**.html","/images/**","/","/token/**","/login/**","/oauth2/**","/api/user").permitAll()
                 .anyRequest().permitAll()
                 .and()
