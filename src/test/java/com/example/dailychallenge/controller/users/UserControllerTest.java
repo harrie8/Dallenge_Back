@@ -37,10 +37,10 @@ import com.example.dailychallenge.exception.users.UserPasswordCheck;
 import com.example.dailychallenge.repository.badge.BadgeRepository;
 import com.example.dailychallenge.repository.badge.UserBadgeRepository;
 import com.example.dailychallenge.service.challenge.ChallengeService;
-import com.example.dailychallenge.service.challenge.UserChallengeService;
 import com.example.dailychallenge.service.users.UserService;
 import com.example.dailychallenge.util.fixture.TestDataSetup;
 import com.example.dailychallenge.utils.JwtTokenUtil;
+import com.example.dailychallenge.vo.RequestChangePassword;
 import com.example.dailychallenge.vo.RequestUpdateUser;
 import com.example.dailychallenge.vo.RequestUser;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -79,8 +79,6 @@ class UserControllerTest {
     private UserService userService;
     @Autowired
     private ChallengeService challengeService;
-    @Autowired
-    private UserChallengeService userChallengeService;
     @Autowired
     private BadgeRepository badgeRepository;
     @Autowired
@@ -293,14 +291,23 @@ class UserControllerTest {
     @DisplayName("비밀번호 변경 테스트")
     public void changeUserPassword() throws Exception {
         User user = userService.saveUser(createUser(), passwordEncoder);
+
+        RequestChangePassword requestChangePassword = RequestChangePassword.builder()
+                .oldPassword("1234")
+                .newPassword("12345")
+                .build();
+        String json = objectMapper.writeValueAsString(requestChangePassword);
+
         mockMvc.perform(post("/user/{userId}/change",user.getId())
                         .header(AUTHORIZATION, generateToken())
                         .contentType(MediaType.APPLICATION_JSON)
-                        .param("oldPassword","1234")
-                        .param("newPassword","12345")
+                        .content(json)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andDo(print());
+
+        boolean isPasswordChanged = passwordEncoder.matches(requestChangePassword.getNewPassword(), user.getPassword());
+        assertTrue(isPasswordChanged);
     }
 
     @Test
