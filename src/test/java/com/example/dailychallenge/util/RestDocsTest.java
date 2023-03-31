@@ -85,7 +85,7 @@ public class RestDocsTest {
                     true, true, true, true,
                     new ArrayList<>()
             );
-            return TOKEN_PREFIX + jwtTokenUtil.generateToken(userDetails);
+            return TOKEN_PREFIX + jwtTokenUtil.generateToken(userDetails.getUsername());
         }
 
         throw new IllegalArgumentException("token 생성 오류");

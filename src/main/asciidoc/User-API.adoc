@@ -82,7 +82,7 @@ include::{snippets}/user-change-password/http-request.adoc[]
 ====
 include::{snippets}/user-change-password/path-parameters.adoc[]
 
-include::{snippets}/user-change-password/request-parameters.adoc[]
+include::{snippets}/user-change-password/request-fields.adoc[]
 ====
 
 include::{snippets}/user-change-password/http-response.adoc[]

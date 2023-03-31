@@ -47,6 +47,7 @@ import com.example.dailychallenge.service.challenge.UserChallengeService;
 import com.example.dailychallenge.service.users.UserService;
 import com.example.dailychallenge.util.fixture.TestDataSetup;
 import com.example.dailychallenge.utils.JwtTokenUtil;
+import com.example.dailychallenge.vo.RequestChangePassword;
 import com.example.dailychallenge.vo.RequestLogin;
 import com.example.dailychallenge.vo.RequestUpdateUser;
 import com.example.dailychallenge.vo.RequestUser;
@@ -354,10 +355,18 @@ public class UserControllerDocTest {
     @DisplayName("비밀번호 변경 테스트")
     public void changeUserPassword() throws Exception {
         User user = userService.saveUser(createUser(), passwordEncoder);
+
+        RequestChangePassword requestChangePassword = RequestChangePassword.builder()
+                .oldPassword("1234")
+                .newPassword("12345")
+                .build();
+        String json = objectMapper.writeValueAsString(requestChangePassword);
+
         mockMvc.perform(RestDocumentationRequestBuilders
-                        .post("/user/{userId}/change?oldPassword=1234&newPassword=12345", user.getId())
+                        .post("/user/{userId}/change", user.getId())
                         .header(AUTHORIZATION, generateToken())
                         .contentType(MediaType.APPLICATION_JSON)
+                        .content(json)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andDo(print())
@@ -367,9 +376,9 @@ public class UserControllerDocTest {
                                 removeHeaders("Vary", "X-Content-Type-Options", "X-XSS-Protection", "Pragma", "Expires",
                                         "Cache-Control", "Strict-Transport-Security", "X-Frame-Options"),
                                 prettyPrint()),
-                        requestParameters(
-                                parameterWithName("oldPassword").description("기존 비밀번호"),
-                                parameterWithName("newPassword").description("변경할 비밀번호")
+                        requestFields(
+                                fieldWithPath("oldPassword").description("기존 비밀번호"),
+                                fieldWithPath("newPassword").description("변경할 비밀번호")
                         ),
                         pathParameters(
                                 parameterWithName("userId").description("회원 ID")
@@ -525,7 +534,7 @@ public class UserControllerDocTest {
                 new UsernamePasswordAuthenticationToken(EMAIL, PASSWORD));
         if (auth.isAuthenticated()) {
             UserDetails userDetails = userService.loadUserByUsername(EMAIL);
-            return TOKEN_PREFIX + jwtTokenUtil.generateToken(userDetails);
+            return TOKEN_PREFIX + jwtTokenUtil.generateToken(userDetails.getUsername());
         }
 
         throw new IllegalArgumentException("token 생성 오류");

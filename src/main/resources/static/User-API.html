@@ -513,12 +513,12 @@ Host: api.dailychallenge.com
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">HTTP/1.1 201 Created
 Content-Type: application/json
-Content-Length: 79
+Content-Length: 77
 
 {
   "userName" : "GilDong",
   "email" : "test@test.com",
-  "userId" : 154
+  "userId" : 2
 }</code></pre>
 </div>
 </div>
@@ -587,11 +587,11 @@ Host: api.dailychallenge.com
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">HTTP/1.1 200 OK
 Content-Type: application/json
-Content-Length: 215
+Content-Length: 213
 
 {
-  "userId" : 153,
-  "token" : "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0MTIzNEB0ZXN0LmNvbSIsImlhdCI6MTY3OTQ5MzI4OSwiZXhwIjoxNjc5NTExMjg5fQ.KygX7MReq1jYvW9WZyOU0QkzStfGUAahxESubgTgHzw",
+  "userId" : 1,
+  "token" : "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0MTIzNEB0ZXN0LmNvbSIsImlhdCI6MTY4MDE4Mjg2MiwiZXhwIjoxNjgwMjAwODYyfQ.5lP3-J_zI_ZVzj8LoMIhu-KJINxpA0QI6ONbWGoLqhg",
   "userName" : "홍길동"
 }</code></pre>
 </div>
@@ -603,9 +603,9 @@ Content-Length: 215
 <h4 id="_http_request">HTTP request</h4>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight nowrap"><code class="language-http" data-lang="http">POST /user/157 HTTP/1.1
+<pre class="highlight nowrap"><code class="language-http" data-lang="http">POST /user/6 HTTP/1.1
 Content-Type: multipart/form-data;charset=UTF-8; boundary=6o2knFse3p53ty9dmcQvWAIx1zInP11uCfbm
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0MTIzNEB0ZXN0LmNvbSIsImlhdCI6MTY3OTQ5MzI5MCwiZXhwIjoxNjc5NTExMjkwfQ.bLoTiQzNag6SA8EKOrNWFJsmdw77Zq2MXU9SutmhdpA
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0MTIzNEB0ZXN0LmNvbSIsImlhdCI6MTY4MDE4Mjg2MywiZXhwIjoxNjgwMjAwODYzfQ.1ZWlqgl6t3HlrbbxSs7RmEyqqnUMCqxa6TtU0lLO-dA
 Accept: application/json
 Host: api.dailychallenge.com
 
@@ -716,9 +716,9 @@ Content-Type: image/jpg
 <h4 id="User-회원-삭제_http_request">HTTP request</h4>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight nowrap"><code class="language-http" data-lang="http">DELETE /user/163 HTTP/1.1
+<pre class="highlight nowrap"><code class="language-http" data-lang="http">DELETE /user/12 HTTP/1.1
 Content-Type: application/json;charset=UTF-8
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0MTIzNEB0ZXN0LmNvbSIsImlhdCI6MTY3OTQ5MzI5MSwiZXhwIjoxNjc5NTExMjkxfQ.eRQetdg9UfBcbx-e8PVTgOjHG2HGvCHivnYE0xxet4Y
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0MTIzNEB0ZXN0LmNvbSIsImlhdCI6MTY4MDE4Mjg2NCwiZXhwIjoxNjgwMjAwODY0fQ.gGdJFiIqIMVgcrk2GsONvTZg_wuEg8_V4-pf3DUel6U
 Accept: application/json
 Host: api.dailychallenge.com</code></pre>
 </div>
@@ -812,9 +812,9 @@ Content-Length: 36
 <h3 id="User-회원-비밀번호-검증">회원 비밀번호 검증</h3>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight nowrap"><code class="language-http" data-lang="http">POST /user/165/check?password=1234 HTTP/1.1
+<pre class="highlight nowrap"><code class="language-http" data-lang="http">POST /user/14/check?password=1234 HTTP/1.1
 Content-Type: application/json;charset=UTF-8
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0MTIzNEB0ZXN0LmNvbSIsImlhdCI6MTY3OTQ5MzI5MSwiZXhwIjoxNjc5NTExMjkxfQ.eRQetdg9UfBcbx-e8PVTgOjHG2HGvCHivnYE0xxet4Y
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0MTIzNEB0ZXN0LmNvbSIsImlhdCI6MTY4MDE4Mjg2NCwiZXhwIjoxNjgwMjAwODY0fQ.gGdJFiIqIMVgcrk2GsONvTZg_wuEg8_V4-pf3DUel6U
 Accept: application/json
 Host: api.dailychallenge.com</code></pre>
 </div>
@@ -861,11 +861,17 @@ Content-Length: 45
 <h3 id="User-회원-비밀번호-변경">회원 비밀번호 변경</h3>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight nowrap"><code class="language-http" data-lang="http">POST /user/160/change?oldPassword=1234&amp;newPassword=12345 HTTP/1.1
+<pre class="highlight nowrap"><code class="language-http" data-lang="http">POST /user/9/change HTTP/1.1
 Content-Type: application/json;charset=UTF-8
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0MTIzNEB0ZXN0LmNvbSIsImlhdCI6MTY3OTQ5MzI5MCwiZXhwIjoxNjc5NTExMjkwfQ.bLoTiQzNag6SA8EKOrNWFJsmdw77Zq2MXU9SutmhdpA
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0MTIzNEB0ZXN0LmNvbSIsImlhdCI6MTY4MDE4Mjg2MywiZXhwIjoxNjgwMjAwODYzfQ.1ZWlqgl6t3HlrbbxSs7RmEyqqnUMCqxa6TtU0lLO-dA
 Accept: application/json
-Host: api.dailychallenge.com</code></pre>
+Content-Length: 58
+Host: api.dailychallenge.com
+
+{
+  "oldPassword" : "1234",
+  "newPassword" : "12345"
+}</code></pre>
 </div>
 </div>
 <div class="sect3">
@@ -896,32 +902,9 @@ Host: api.dailychallenge.com</code></pre>
 </tr>
 </tbody>
 </table>
-<table class="tableblock frame-all grid-all stretch">
-<colgroup>
-<col style="width: 33.3333%;">
-<col style="width: 33.3333%;">
-<col style="width: 33.3334%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-top">파라미터</th>
-<th class="tableblock halign-left valign-top">필수여부</th>
-<th class="tableblock halign-left valign-top">설명</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>oldPassword</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">true</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">기존 비밀번호</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>newPassword</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">true</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">변경할 비밀번호</p></td>
-</tr>
-</tbody>
-</table>
+<div class="paragraph">
+<p>Unresolved directive in User-API.adoc - include::..\..\..\target\generated-snippets/user-change-password/request-parameters.adoc[]</p>
+</div>
 </div>
 </div>
 <div class="listingblock">
@@ -939,8 +922,8 @@ Content-Length: 38
 <h3 id="User-회원-정보-조회">회원 정보 조회</h3>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight nowrap"><code class="language-http" data-lang="http">GET /user/164 HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0MTIzNEB0ZXN0LmNvbSIsImlhdCI6MTY3OTQ5MzI5MSwiZXhwIjoxNjc5NTExMjkxfQ.eRQetdg9UfBcbx-e8PVTgOjHG2HGvCHivnYE0xxet4Y
+<pre class="highlight nowrap"><code class="language-http" data-lang="http">GET /user/13 HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0MTIzNEB0ZXN0LmNvbSIsImlhdCI6MTY4MDE4Mjg2NCwiZXhwIjoxNjgwMjAwODY0fQ.gGdJFiIqIMVgcrk2GsONvTZg_wuEg8_V4-pf3DUel6U
 Accept: application/json
 Host: api.dailychallenge.com</code></pre>
 </div>
@@ -985,7 +968,7 @@ Content-Length: 186
   "email" : "test1234@test.com",
   "userName" : "홍길동",
   "info" : "회원 정보를 입력해주세요.",
-  "imageUrl" : "/images/859c37e5-fd05-47d6-912c-2cdf03c6f9d6.png"
+  "imageUrl" : "/images/d2ff51c6-976a-4a48-969b-a4c3792a8290.png"
 }</code></pre>
 </div>
 </div>
@@ -996,7 +979,7 @@ Content-Length: 186
 <div class="listingblock">
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">GET /user/challenge HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0MTIzNEB0ZXN0LmNvbSIsImlhdCI6MTY3OTQ5MzI5MCwiZXhwIjoxNjc5NTExMjkwfQ.bLoTiQzNag6SA8EKOrNWFJsmdw77Zq2MXU9SutmhdpA
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0MTIzNEB0ZXN0LmNvbSIsImlhdCI6MTY4MDE4Mjg2NCwiZXhwIjoxNjgwMjAwODY0fQ.gGdJFiIqIMVgcrk2GsONvTZg_wuEg8_V4-pf3DUel6U
 Accept: application/json
 Host: api.dailychallenge.com</code></pre>
 </div>
@@ -1005,15 +988,15 @@ Host: api.dailychallenge.com</code></pre>
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">HTTP/1.1 200 OK
 Content-Type: application/json
-Content-Length: 238
+Content-Length: 234
 
 [ {
-  "userId" : 161,
-  "challengeId" : 129,
+  "userId" : 10,
+  "challengeId" : 7,
   "challengeTitle" : "제목입니다.",
   "challengeContent" : "내용입니다.",
   "challengeStatus" : "TRYING",
-  "createdAt" : "2023-03-22T22:54:50.8601307",
+  "createdAt" : "2023-03-30T22:27:44.094276",
   "comments" : [ ]
 } ]</code></pre>
 </div>
@@ -1024,7 +1007,7 @@ Content-Length: 238
 <div class="listingblock">
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">GET /user/participate HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0MTIzNEB0ZXN0LmNvbSIsImlhdCI6MTY3OTQ5MzI4OSwiZXhwIjoxNjc5NTExMjg5fQ.KygX7MReq1jYvW9WZyOU0QkzStfGUAahxESubgTgHzw
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0MTIzNEB0ZXN0LmNvbSIsImlhdCI6MTY4MDE4Mjg2MywiZXhwIjoxNjgwMjAwODYzfQ.1ZWlqgl6t3HlrbbxSs7RmEyqqnUMCqxa6TtU0lLO-dA
 Accept: application/json
 Host: api.dailychallenge.com</code></pre>
 </div>
@@ -1033,25 +1016,25 @@ Host: api.dailychallenge.com</code></pre>
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">HTTP/1.1 200 OK
 Content-Type: application/json
-Content-Length: 525
+Content-Length: 519
 
 [ {
-  "userId" : 156,
-  "challengeId" : 123,
+  "userId" : 5,
+  "challengeId" : 1,
   "challengeTitle" : "제목입니다.",
   "challengeContent" : "내용입니다.",
   "challengeStatus" : "TRYING",
-  "createdAt" : "2023-03-22T22:54:49.8651284",
+  "createdAt" : "2023-03-30T22:27:43.1018349",
   "comments" : [ {
-    "commentId" : 62,
+    "commentId" : 1,
     "commentContent" : "content",
     "commentImgs" : [ "images/abcdefg.jpg", "images/abcdefg.jpg" ],
-    "commentCreatedAt" : "03/22"
+    "commentCreatedAt" : "03/30"
   }, {
-    "commentId" : 63,
+    "commentId" : 2,
     "commentContent" : "",
     "commentImgs" : [ ],
-    "commentCreatedAt" : "03/22"
+    "commentCreatedAt" : "03/30"
   } ]
 } ]</code></pre>
 </div>
@@ -1062,7 +1045,7 @@ Content-Length: 525
 <div class="listingblock">
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">GET /user/inProgress HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0MTIzNEB0ZXN0LmNvbSIsImlhdCI6MTY3OTQ5MzI5MCwiZXhwIjoxNjc5NTExMjkwfQ.bLoTiQzNag6SA8EKOrNWFJsmdw77Zq2MXU9SutmhdpA
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0MTIzNEB0ZXN0LmNvbSIsImlhdCI6MTY4MDE4Mjg2MywiZXhwIjoxNjgwMjAwODYzfQ.1ZWlqgl6t3HlrbbxSs7RmEyqqnUMCqxa6TtU0lLO-dA
 Accept: application/json
 Host: api.dailychallenge.com</code></pre>
 </div>
@@ -1071,80 +1054,80 @@ Host: api.dailychallenge.com</code></pre>
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">HTTP/1.1 200 OK
 Content-Type: application/json
-Content-Length: 2462
+Content-Length: 2436
 
 [ {
-  "userId" : 158,
-  "challengeId" : 124,
+  "userId" : 7,
+  "challengeId" : 2,
   "challengeTitle" : "제목입니다.",
   "challengeContent" : "내용입니다.",
   "challengeStatus" : "TRYING",
-  "createdAt" : "2023-03-22T22:54:50.2921335",
+  "createdAt" : "2023-03-30T22:27:43.5338678",
   "comments" : [ {
-    "commentId" : 64,
+    "commentId" : 3,
     "commentContent" : "content",
     "commentImgs" : [ "images/abcdefg.jpg" ],
-    "commentCreatedAt" : "03/22"
+    "commentCreatedAt" : "03/30"
   } ],
   "howManyDaysInProgress" : 1,
   "weeklyAchievement" : [ false, false, false, false, false, false, false ]
 }, {
-  "userId" : 158,
-  "challengeId" : 125,
+  "userId" : 7,
+  "challengeId" : 3,
   "challengeTitle" : "제목입니다.",
   "challengeContent" : "내용입니다.",
   "challengeStatus" : "TRYING",
-  "createdAt" : "2023-03-22T22:54:50.2991348",
+  "createdAt" : "2023-03-30T22:27:43.5378683",
   "comments" : [ {
-    "commentId" : 65,
+    "commentId" : 4,
     "commentContent" : "content",
     "commentImgs" : [ "images/abcdefg.jpg" ],
-    "commentCreatedAt" : "03/22"
+    "commentCreatedAt" : "03/30"
   } ],
   "howManyDaysInProgress" : 1,
   "weeklyAchievement" : [ false, false, false, false, false, false, false ]
 }, {
-  "userId" : 158,
-  "challengeId" : 126,
+  "userId" : 7,
+  "challengeId" : 4,
   "challengeTitle" : "제목입니다.",
   "challengeContent" : "내용입니다.",
   "challengeStatus" : "TRYING",
-  "createdAt" : "2023-03-22T22:54:50.3061299",
+  "createdAt" : "2023-03-30T22:27:43.5418689",
   "comments" : [ {
-    "commentId" : 66,
+    "commentId" : 5,
     "commentContent" : "content",
     "commentImgs" : [ "images/abcdefg.jpg" ],
-    "commentCreatedAt" : "03/22"
+    "commentCreatedAt" : "03/30"
   } ],
   "howManyDaysInProgress" : 1,
   "weeklyAchievement" : [ false, false, false, false, false, false, false ]
 }, {
-  "userId" : 158,
-  "challengeId" : 127,
+  "userId" : 7,
+  "challengeId" : 5,
   "challengeTitle" : "제목입니다.",
   "challengeContent" : "내용입니다.",
   "challengeStatus" : "TRYING",
-  "createdAt" : "2023-03-22T22:54:50.3141283",
+  "createdAt" : "2023-03-30T22:27:43.5488697",
   "comments" : [ {
-    "commentId" : 67,
+    "commentId" : 6,
     "commentContent" : "content",
     "commentImgs" : [ "images/abcdefg.jpg" ],
-    "commentCreatedAt" : "03/22"
+    "commentCreatedAt" : "03/30"
   } ],
   "howManyDaysInProgress" : 1,
   "weeklyAchievement" : [ false, false, false, false, false, false, false ]
 }, {
-  "userId" : 158,
-  "challengeId" : 128,
+  "userId" : 7,
+  "challengeId" : 6,
   "challengeTitle" : "제목입니다.",
   "challengeContent" : "내용입니다.",
   "challengeStatus" : "TRYING",
-  "createdAt" : "2023-03-22T22:54:50.3201286",
+  "createdAt" : "2023-03-30T22:27:43.552869",
   "comments" : [ {
-    "commentId" : 68,
+    "commentId" : 7,
     "commentContent" : "content",
     "commentImgs" : [ "images/abcdefg.jpg" ],
-    "commentCreatedAt" : "03/22"
+    "commentCreatedAt" : "03/30"
   } ],
   "howManyDaysInProgress" : 1,
   "weeklyAchievement" : [ false, false, false, false, false, false, false ]
@@ -1189,7 +1172,7 @@ Content-Length: 2462
 <div class="listingblock">
 <div class="content">
 <pre class="highlight nowrap"><code class="language-http" data-lang="http">GET /user/done HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0MTIzNEB0ZXN0LmNvbSIsImlhdCI6MTY3OTQ5MzI4MywiZXhwIjoxNjc5NTExMjgzfQ.K4nZ6GHDMH2gJlS46WVOKrZCEDoFvcq_x25Hg0W58Qw
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0MTIzNEB0ZXN0LmNvbSIsImlhdCI6MTY4MDE4Mjg1NSwiZXhwIjoxNjgwMjAwODU1fQ.mGETzDkibsUUquevKVzJZbrnez6M5gRzmoL94dN_B5o
 Accept: application/json
 Host: localhost:8080</code></pre>
 </div>
@@ -1209,9 +1192,58 @@ Content-Length: 240
   "challengeTitle" : "제목입니다.1",
   "challengeContent" : "내용입니다.1",
   "challengeStatus" : "SUCCESS",
-  "createdAt" : "2023-03-22T22:54:43.8198155",
+  "createdAt" : "2023-03-30T22:27:35.2445586",
   "comments" : null
 } ]</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="User-회원-비밀번호-초기화">회원 비밀번호 초기화</h3>
+<div class="sect3">
+<h4 id="User-회원-비밀번호-초기화_http_request">HTTP request</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight nowrap"><code class="language-http" data-lang="http">POST /user/resetPassword?email=test1234@test.com HTTP/1.1
+Accept: application/json
+Host: api.dailychallenge.com</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="User-회원-비밀번호-초기화_request_parameters">Request parameters</h4>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">파라미터</th>
+<th class="tableblock halign-left valign-top">필수여부</th>
+<th class="tableblock halign-left valign-top">설명</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>email</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">true</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">유저 이메일</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect3">
+<h4 id="User-회원-비밀번호-초기화_http_response">HTTP response</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight nowrap"><code class="language-http" data-lang="http">HTTP/1.1 200 OK
+Content-Type: application/json
+Content-Length: 64
+
+비밀번호가 임의의 문자열로 초기화되었습니다.</code></pre>
 </div>
 </div>
 </div>
@@ -1221,7 +1253,7 @@ Content-Length: 240
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2023-03-21 16:15:35 +0900
+Last updated 2023-03-26 15:31:38 +0900
 </div>
 </div>
 </body>

@@ -1,12 +1,7 @@
 package com.example.dailychallenge.controller;
 
-import com.example.dailychallenge.dto.BadgeDto;
 import com.example.dailychallenge.dto.EmailDto;
 import com.example.dailychallenge.dto.UserDto;
-import com.example.dailychallenge.entity.badge.Badge;
-import com.example.dailychallenge.entity.badge.type.AchievementBadgeType;
-import com.example.dailychallenge.entity.badge.type.ChallengeCreateBadgeType;
-import com.example.dailychallenge.entity.badge.type.CommentWriteBadgeType;
 import com.example.dailychallenge.entity.users.User;
 import com.example.dailychallenge.exception.users.UserDuplicateCheck;
 import com.example.dailychallenge.exception.users.UserLoginFailure;
@@ -19,6 +14,7 @@ import com.example.dailychallenge.service.email.EmailService;
 import com.example.dailychallenge.service.users.UserService;
 import com.example.dailychallenge.utils.JwtTokenUtil;
 import com.example.dailychallenge.utils.RandomPasswordGenerator;
+import com.example.dailychallenge.vo.RequestChangePassword;
 import com.example.dailychallenge.vo.RequestLogin;
 import com.example.dailychallenge.vo.RequestUpdateUser;
 import com.example.dailychallenge.vo.RequestUser;
@@ -173,12 +169,13 @@ public class UserController {
 
     @PostMapping("/user/{userId}/change") // 비밀번호 변경 url
     public ResponseEntity<?> changeUserPassword(@PathVariable("userId") Long userId,
-                                               @RequestParam String oldPassword,
-                                               @RequestParam String newPassword) {
+                                                @RequestBody @Valid RequestChangePassword requestChangePassword) {
+        String oldPassword = requestChangePassword.getOldPassword();
         if (!userService.checkPassword(userId, oldPassword, passwordEncoder)) {
             throw new UserPasswordCheck();
         }
-        userService.changePassword(userId,newPassword,passwordEncoder);
+        String newPassword = requestChangePassword.getNewPassword();
+        userService.changePassword(userId, newPassword, passwordEncoder);
         return ResponseEntity.status(HttpStatus.OK).body("비밀번호가 변경되었습니다.");
     }
 

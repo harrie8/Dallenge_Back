@@ -532,7 +532,7 @@ public class CommentControllerDocTest {
                 new UsernamePasswordAuthenticationToken(EMAIL, PASSWORD));
         if (auth.isAuthenticated()) {
             UserDetails userDetails = userService.loadUserByUsername(EMAIL);
-            return TOKEN_PREFIX + jwtTokenUtil.generateToken(userDetails);
+            return TOKEN_PREFIX + jwtTokenUtil.generateToken(userDetails.getUsername());
         }
 
         throw new IllegalArgumentException("token 생성 오류");
