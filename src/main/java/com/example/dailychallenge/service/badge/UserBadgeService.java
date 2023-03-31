@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class UserBadgeService {
     private final UserBadgeRepository userBadgeRepository;
     private final BadgeService badgeService;
