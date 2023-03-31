@@ -4,6 +4,8 @@ import com.example.dailychallenge.entity.social.GoogleUser;
 import com.example.dailychallenge.entity.social.OAuth2ProviderUser;
 import com.example.dailychallenge.entity.social.ProviderUser;
 import com.example.dailychallenge.entity.users.User;
+import com.example.dailychallenge.exception.users.UserDuplicateCheck;
+import com.example.dailychallenge.exception.users.UserDuplicateNotCheck;
 import com.example.dailychallenge.exception.users.UserNotFound;
 import com.example.dailychallenge.repository.UserRepository;
 import com.example.dailychallenge.service.social.CustomOAuth2UserService;
@@ -13,6 +15,7 @@ import com.example.dailychallenge.vo.ResponseLoginUser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.json.simple.JSONObject;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
@@ -48,15 +51,30 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
             response.setContentType("application/json");
             response.setCharacterEncoding("utf-8");
 
+            log.info(request.getRequestURI());
+            String[] uri = request.getRequestURI().split("/");
+            String currentReg = uri[uri.length - 1];
+
             User findUser = userService.findByEmail(email).orElseThrow(UserNotFound::new);
-            ResponseLoginUser responseLoginUser = new ResponseLoginUser();
-            responseLoginUser.setUserName(findUser.getUserName());
-            responseLoginUser.setToken(accessToken);
-            responseLoginUser.setUserId(findUser.getId());
+            if (!findUser.getRegistrationId().equals(currentReg)) { // 아이디 중복 체크
+                UserDuplicateCheck error = new UserDuplicateCheck();
+                Map<String, String> resultMap = new HashMap<>();
 
-            String result = objectMapper.writeValueAsString(responseLoginUser);
-            response.getWriter().write(result);
+                resultMap.put("message", error.getMessage());
+                resultMap.put("code", Integer.toString(error.getStatusCode()));
 
+                JSONObject jsonObject = new JSONObject(resultMap);
+                String result = objectMapper.writeValueAsString(jsonObject);
+                response.getWriter().write(result);
+            } else {
+                ResponseLoginUser responseLoginUser = new ResponseLoginUser();
+                responseLoginUser.setUserName(findUser.getUserName());
+                responseLoginUser.setToken(accessToken);
+                responseLoginUser.setUserId(findUser.getId());
+
+                String result = objectMapper.writeValueAsString(responseLoginUser);
+                response.getWriter().write(result);
+            }
         } catch (Exception e) {
             e.printStackTrace();
             throw e;

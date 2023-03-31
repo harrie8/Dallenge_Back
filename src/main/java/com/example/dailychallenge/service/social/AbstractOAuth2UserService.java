@@ -33,13 +33,14 @@ public abstract class AbstractOAuth2UserService {
     public void register(ProviderUser providerUser, OAuth2UserRequest userRequest) {
 
         Optional<User> user = userRepository.findByEmail(providerUser.getEmail());
+        String registrationId = userRequest.getClientRegistration().getRegistrationId();
 
         if(user.isEmpty()){ // db에 user 정보가 없는 경우, db에 저장
-            String registrationId = userRequest.getClientRegistration().getRegistrationId();
             User savedUser = userService.saveSocialUser(registrationId, providerUser);
             userBadgeEvaluationService.createUserBadgeEvaluation(savedUser);
             userBadgeService.saveUserBadges(savedUser);
         }
+
     }
 
     public ProviderUser providerUser(ClientRegistration clientRegistration, OAuth2User oAuth2User) {
