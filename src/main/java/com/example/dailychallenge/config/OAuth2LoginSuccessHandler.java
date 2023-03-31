@@ -56,7 +56,7 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
             String currentReg = uri[uri.length - 1];
 
             User findUser = userService.findByEmail(email).orElseThrow(UserNotFound::new);
-            if (!findUser.getRegistrationId().equals(currentReg)) { // 아이디 중복 체크
+            if (findUser.getRegistrationId() == null || !findUser.getRegistrationId().equals(currentReg)) { // 아이디 중복 체크
                 UserDuplicateCheck error = new UserDuplicateCheck();
                 Map<String, String> resultMap = new HashMap<>();
 
