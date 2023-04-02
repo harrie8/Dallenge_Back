@@ -22,12 +22,14 @@ import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -67,13 +69,21 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
                 String result = objectMapper.writeValueAsString(jsonObject);
                 response.getWriter().write(result);
             } else {
-                ResponseLoginUser responseLoginUser = new ResponseLoginUser();
-                responseLoginUser.setUserName(findUser.getUserName());
-                responseLoginUser.setToken(accessToken);
-                responseLoginUser.setUserId(findUser.getId());
+//                ResponseLoginUser responseLoginUser = new ResponseLoginUser();
+//                responseLoginUser.setUserName(findUser.getUserName());
+//                responseLoginUser.setToken(accessToken);
+//                responseLoginUser.setUserId(findUser.getId());
+//
+//                String result = objectMapper.writeValueAsString(responseLoginUser);
+//                response.getWriter().write(result);
 
-                String result = objectMapper.writeValueAsString(responseLoginUser);
-                response.getWriter().write(result);
+                response.sendRedirect(UriComponentsBuilder.fromUriString("http://localhost:3000/login/callback")
+                        .queryParam("userName", findUser.getUserName())
+                        .queryParam("userId", findUser.getId())
+                        .queryParam("accessToken", accessToken)
+                        .build()
+                        .encode(StandardCharsets.UTF_8)
+                        .toUriString());
             }
         } catch (Exception e) {
             e.printStackTrace();
