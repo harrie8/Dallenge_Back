@@ -3,11 +3,11 @@ package com.example.dailychallenge.controller;
 import com.example.dailychallenge.dto.EmailDto;
 import com.example.dailychallenge.dto.UserDto;
 import com.example.dailychallenge.entity.users.User;
+import com.example.dailychallenge.exception.users.SocialUserCanNotDoAnythingRelatedToPassword;
 import com.example.dailychallenge.exception.users.UserDuplicateCheck;
 import com.example.dailychallenge.exception.users.UserLoginFailure;
 import com.example.dailychallenge.exception.users.UserNotFound;
 import com.example.dailychallenge.exception.users.UserPasswordCheck;
-import com.example.dailychallenge.service.badge.BadgeService;
 import com.example.dailychallenge.service.badge.UserBadgeEvaluationService;
 import com.example.dailychallenge.service.badge.UserBadgeService;
 import com.example.dailychallenge.service.email.EmailService;
@@ -59,7 +59,6 @@ public class UserController {
 
     private final UserService userService;
     private final UserBadgeEvaluationService userBadgeEvaluationService;
-    private final BadgeService badgeService;
     private final UserBadgeService userBadgeService;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
@@ -80,27 +79,6 @@ public class UserController {
 
         return ResponseEntity.status(HttpStatus.CREATED).body(responseUser);
     }
-
-//    private void saveUserBadges(User savedUser) {
-//       List<Badge> badges = badgeService.findAll();
-//        if (badges.isEmpty()) {
-//            saveBadges(savedUser);
-//            return;
-//        }
-//        userBadgeService.createUserBadges(savedUser, badges);
-//    }
-//
-//    private void saveBadges(User savedUser) {
-//        List<BadgeDto> achievementBadgeDtos = AchievementBadgeType.getBadgeDtos();
-//        List<BadgeDto> commentWriteBadgeDtos = CommentWriteBadgeType.getBadgeDtos();
-//        List<BadgeDto> challengeCreateBadgeDtos = ChallengeCreateBadgeType.getBadgeDtos();
-//        List<Badge> achievementBadges = badgeService.createBadges(achievementBadgeDtos);
-//        List<Badge> commentWriteBadges = badgeService.createBadges(commentWriteBadgeDtos);
-//        List<Badge> challengeCreateBadges = badgeService.createBadges(challengeCreateBadgeDtos);
-//        userBadgeService.createUserBadges(savedUser, achievementBadges);
-//        userBadgeService.createUserBadges(savedUser, commentWriteBadges);
-//        userBadgeService.createUserBadges(savedUser, challengeCreateBadges);
-//    }
 
     @PostMapping("/user/login")
     public ResponseEntity<?> loginUser(@RequestBody @Valid RequestLogin requestLogin) {
@@ -161,6 +139,10 @@ public class UserController {
     @PostMapping("/user/{userId}/check") // 비밀번호 검증 url
     public ResponseEntity<String> checkUserPassword(@PathVariable("userId") Long userId,
                                                     @RequestParam String password) {
+        if (userService.isSocialUser(userId)) {
+            throw new SocialUserCanNotDoAnythingRelatedToPassword();
+        }
+
         if (!userService.checkPassword(userId, password, passwordEncoder)) {
             throw new UserPasswordCheck();
         }
@@ -170,6 +152,10 @@ public class UserController {
     @PostMapping("/user/{userId}/change") // 비밀번호 변경 url
     public ResponseEntity<?> changeUserPassword(@PathVariable("userId") Long userId,
                                                 @RequestBody @Valid RequestChangePassword requestChangePassword) {
+        if (userService.isSocialUser(userId)) {
+            throw new SocialUserCanNotDoAnythingRelatedToPassword();
+        }
+
         String oldPassword = requestChangePassword.getOldPassword();
         if (!userService.checkPassword(userId, oldPassword, passwordEncoder)) {
             throw new UserPasswordCheck();
@@ -225,6 +211,10 @@ public class UserController {
 
     @PostMapping("/user/resetPassword") // 비밀번호 초기화 url
     public ResponseEntity<String> resetUserPassword(@RequestParam String email) {
+        if (userService.isSocialUser(email)) {
+            throw new SocialUserCanNotDoAnythingRelatedToPassword();
+        }
+
         User user = userService.findByEmail(email).orElseThrow(UserNotFound::new);
         Long userId = user.getId();
         String randomPassword = RandomPasswordGenerator.generate(10);

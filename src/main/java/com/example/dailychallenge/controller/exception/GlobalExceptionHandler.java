@@ -18,6 +18,7 @@ import com.example.dailychallenge.exception.userChallenge.ChallengePauseDuplicat
 import com.example.dailychallenge.exception.userChallenge.ChallengeSuccessDuplicate;
 import com.example.dailychallenge.exception.userChallenge.UserChallengeDuplicate;
 import com.example.dailychallenge.exception.userChallenge.UserChallengeNotFound;
+import com.example.dailychallenge.exception.users.SocialUserCanNotDoAnythingRelatedToPassword;
 import com.example.dailychallenge.exception.users.UserDuplicateCheck;
 import com.example.dailychallenge.exception.users.UserDuplicateNotCheck;
 import com.example.dailychallenge.exception.users.UserImgNotFound;
@@ -294,6 +295,17 @@ public class GlobalExceptionHandler {
         final ResponseError responseError = ResponseError.builder()
                 .code(challengePauseDuplicate.getStatusCode())
                 .message(challengePauseDuplicate.getMessage())
+                .build();
+
+        return ResponseEntity.status(responseError.getCode()).body(responseError);
+    }
+
+    @ExceptionHandler(SocialUserCanNotDoAnythingRelatedToPassword.class)
+    protected ResponseEntity<ResponseError> handlerSocialUserCanNotDoAnythingRelatedToPassword(
+            SocialUserCanNotDoAnythingRelatedToPassword socialUserCanNotDoAnythingRelatedToPassword) {
+        final ResponseError responseError = ResponseError.builder()
+                .code(socialUserCanNotDoAnythingRelatedToPassword.getStatusCode())
+                .message(socialUserCanNotDoAnythingRelatedToPassword.getMessage())
                 .build();
 
         return ResponseEntity.status(responseError.getCode()).body(responseError);

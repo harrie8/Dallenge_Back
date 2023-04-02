@@ -90,4 +90,12 @@ public class User extends BaseEntity {
     public boolean isSameId(Long userId) {
         return id.equals(userId);
     }
+
+    public boolean isValidRegistrationId() {
+        if (registrationId == null) {
+            return false;
+        }
+
+        return registrationId.equals("google") || registrationId.equals("kakao");
+    }
 }

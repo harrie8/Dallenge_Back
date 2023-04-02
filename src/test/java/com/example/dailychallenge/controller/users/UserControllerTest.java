@@ -31,9 +31,11 @@ import com.example.dailychallenge.entity.challenge.UserChallenge;
 import com.example.dailychallenge.entity.comment.Comment;
 import com.example.dailychallenge.entity.comment.CommentImg;
 import com.example.dailychallenge.entity.users.User;
+import com.example.dailychallenge.exception.users.SocialUserCanNotDoAnythingRelatedToPassword;
 import com.example.dailychallenge.exception.users.UserDuplicateCheck;
 import com.example.dailychallenge.exception.users.UserDuplicateNotCheck;
 import com.example.dailychallenge.exception.users.UserPasswordCheck;
+import com.example.dailychallenge.repository.UserRepository;
 import com.example.dailychallenge.repository.badge.BadgeRepository;
 import com.example.dailychallenge.repository.badge.UserBadgeRepository;
 import com.example.dailychallenge.service.challenge.ChallengeService;
@@ -77,6 +79,8 @@ class UserControllerTest {
     private PasswordEncoder passwordEncoder;
     @Autowired
     private UserService userService;
+    @Autowired
+    private UserRepository userRepository;
     @Autowired
     private ChallengeService challengeService;
     @Autowired
@@ -288,6 +292,28 @@ class UserControllerTest {
     }
 
     @Test
+    @DisplayName("소셜 유저 비밀번호 검증 에러 테스트")
+    public void checkSocialUserPasswordError() throws Exception {
+        User user = userRepository.save(User.builder()
+                .email(EMAIL)
+                .password(passwordEncoder.encode(PASSWORD))
+                .userName(USERNAME)
+                .registrationId("google")
+                .build());
+
+        mockMvc.perform(post("/user/{userId}/check", user.getId())
+                        .header(AUTHORIZATION, generateToken())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .param("password", "12345")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().is4xxClientError())
+                .andExpect(result ->
+                        assertTrue(result.getResolvedException().getClass().isAssignableFrom(
+                                SocialUserCanNotDoAnythingRelatedToPassword.class)))
+                .andDo(print());
+    }
+
+    @Test
     @DisplayName("비밀번호 변경 테스트")
     public void changeUserPassword() throws Exception {
         User user = userService.saveUser(createUser(), passwordEncoder);
@@ -308,6 +334,34 @@ class UserControllerTest {
 
         boolean isPasswordChanged = passwordEncoder.matches(requestChangePassword.getNewPassword(), user.getPassword());
         assertTrue(isPasswordChanged);
+    }
+
+    @Test
+    @DisplayName("소셜 유저 비밀번호 변경 에러 테스트")
+    public void changeSocialUserPasswordError() throws Exception {
+        User user = userRepository.save(User.builder()
+                .email(EMAIL)
+                .password(passwordEncoder.encode(PASSWORD))
+                .userName(USERNAME)
+                .registrationId("google")
+                .build());
+
+        RequestChangePassword requestChangePassword = RequestChangePassword.builder()
+                .oldPassword("1234")
+                .newPassword("12345")
+                .build();
+        String json = objectMapper.writeValueAsString(requestChangePassword);
+
+        mockMvc.perform(post("/user/{userId}/change",user.getId())
+                        .header(AUTHORIZATION, generateToken())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().is4xxClientError())
+                .andExpect(result ->
+                        assertTrue(result.getResolvedException().getClass().isAssignableFrom(
+                                SocialUserCanNotDoAnythingRelatedToPassword.class)))
+                .andDo(print());
     }
 
     @Test
@@ -426,6 +480,39 @@ class UserControllerTest {
                 .andExpect(jsonPath("$[0].comments[0].commentCreatedAt").value(comments.get(0).getMonthDayFormatCreatedAt()))
                 .andExpect(jsonPath("$[0].howManyDaysInProgress").value(1L))
                 .andExpect(jsonPath("$[0].weeklyAchievement").isArray())
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("유저 비밀번호 초기화 테스트")
+    public void resetUserPassword() throws Exception {
+        User user = userService.saveUser(createUser(), passwordEncoder);
+
+        mockMvc.perform(post("/user/resetPassword?email=" + user.getEmail())
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andDo(print());
+
+        boolean isPasswordChanged = !passwordEncoder.matches(PASSWORD, user.getPassword());
+        assertTrue(isPasswordChanged);
+    }
+
+    @Test
+    @DisplayName("소셜 유저 비밀번호 초기화 에러 테스트")
+    public void resetSocialUserPasswordError() throws Exception {
+        User user = userRepository.save(User.builder()
+                .email(EMAIL)
+                .password(passwordEncoder.encode(PASSWORD))
+                .userName(USERNAME)
+                .registrationId("google")
+                .build());
+
+        mockMvc.perform(post("/user/resetPassword?email=" + user.getEmail())
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().is4xxClientError())
+                .andExpect(result ->
+                        assertTrue(result.getResolvedException().getClass().isAssignableFrom(
+                                SocialUserCanNotDoAnythingRelatedToPassword.class)))
                 .andDo(print());
     }
 

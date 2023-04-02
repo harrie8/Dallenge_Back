@@ -28,6 +28,8 @@ import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -303,5 +305,26 @@ class UserServiceTest {
         assertEquals(comments.get(0).getMonthDayFormatCreatedAt(),
                 result.get(0).getComments().get(0).getCommentCreatedAt());
         assertEquals(1L, result.get(0).getHowManyDaysInProgress());
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+            "google, true",
+            "kakao, true",
+            " , false"
+    })
+    @DisplayName("소셜 유저인지 확인하는 테스트")
+    void isSocialUserTest(String registrationId, boolean expect) {
+        User user = User.builder()
+                .email("test@test.com")
+                .password("123")
+                .userName("test")
+                .registrationId(registrationId)
+                .build();
+        userRepository.save(user);
+
+        boolean isSocialUser = userService.isSocialUser("test@test.com");
+
+        assertEquals(expect, isSocialUser);
     }
 }

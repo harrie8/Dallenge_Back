@@ -232,4 +232,16 @@ public class UserService implements UserDetailsService {
     public void validateUser(String loginUserEmail, Long userId) {
         getValidateUser(loginUserEmail, userId);
     }
+
+    public boolean isSocialUser(Long userId) {
+        User user = userRepository.findById(userId).orElseThrow(UserNotFound::new);
+
+        return user.getRegistrationId() != null && user.isValidRegistrationId();
+    }
+
+    public boolean isSocialUser(String email) {
+        User user = userRepository.findByEmail(email).orElseThrow(UserNotFound::new);
+
+        return user.isValidRegistrationId();
+    }
 }
