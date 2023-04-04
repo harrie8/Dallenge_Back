@@ -121,7 +121,13 @@ public class UserService implements UserDetailsService {
                 .registrationId(registrationId)
                 .build();
 
-        return userRepository.save(user);
+        User saveUser = userRepository.save(user);
+
+        UserImg userImg = new UserImg();
+        userImg.saveUser(saveUser);
+        userImgService.saveUserImg(userImg, createDefaultMultipartFile());
+
+        return saveUser;
     }
 
     public void validateDuplicateUser(String email) {
