@@ -1,37 +1,26 @@
 package com.example.dailychallenge.config;
 
-import com.example.dailychallenge.entity.social.GoogleUser;
-import com.example.dailychallenge.entity.social.OAuth2ProviderUser;
-import com.example.dailychallenge.entity.social.ProviderUser;
 import com.example.dailychallenge.entity.users.User;
 import com.example.dailychallenge.exception.users.UserDuplicateCheck;
-import com.example.dailychallenge.exception.users.UserDuplicateNotCheck;
 import com.example.dailychallenge.exception.users.UserNotFound;
-import com.example.dailychallenge.repository.UserRepository;
-import com.example.dailychallenge.service.social.CustomOAuth2UserService;
 import com.example.dailychallenge.service.users.UserService;
 import com.example.dailychallenge.utils.JwtTokenUtil;
-import com.example.dailychallenge.vo.ResponseLoginUser;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.json.simple.JSONObject;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
-import org.springframework.security.oauth2.core.user.OAuth2User;
-import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
-import org.springframework.stereotype.Component;
-import org.springframework.web.util.UriComponentsBuilder;
-
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.json.simple.JSONObject;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.stereotype.Component;
+import org.springframework.web.util.UriComponentsBuilder;
 
 @Slf4j
 @Component
@@ -57,8 +46,11 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
             String[] uri = request.getRequestURI().split("/");
             String currentReg = uri[uri.length - 1];
 
-            User findUser = userService.findByEmail(email).orElseThrow(UserNotFound::new);
+            User findUser = userService.findByEmailAndRegistrationId(email, currentReg).orElseThrow(UserNotFound::new);
             if (findUser.getRegistrationId() == null || !findUser.getRegistrationId().equals(currentReg)) { // 아이디 중복 체크
+                log.warn("findUser.getRegistrationId()={}", findUser.getRegistrationId());
+                log.warn("currentReg={}", currentReg);
+
                 UserDuplicateCheck error = new UserDuplicateCheck();
                 Map<String, String> resultMap = new HashMap<>();
 

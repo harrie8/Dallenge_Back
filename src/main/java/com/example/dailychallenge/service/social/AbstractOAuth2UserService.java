@@ -12,7 +12,6 @@ import java.util.Optional;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
-import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
@@ -32,8 +31,8 @@ public abstract class AbstractOAuth2UserService {
 
     public void register(ProviderUser providerUser, OAuth2UserRequest userRequest) {
 
-        Optional<User> user = userRepository.findByEmail(providerUser.getEmail());
         String registrationId = userRequest.getClientRegistration().getRegistrationId();
+        Optional<User> user = userRepository.findByEmailAndRegistrationId(providerUser.getEmail(), registrationId);
 
         if(user.isEmpty()){ // db에 user 정보가 없는 경우, db에 저장
             User savedUser = userService.saveSocialUser(registrationId, providerUser);
