@@ -45,8 +45,8 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
             log.info(request.getRequestURI());
             String[] uri = request.getRequestURI().split("/");
             String currentReg = uri[uri.length - 1];
+            User findUser = userService.findByEmail(email).orElseThrow(UserNotFound::new);
 
-            User findUser = userService.findByEmailAndRegistrationId(email, currentReg).orElseThrow(UserNotFound::new);
             if (findUser.getRegistrationId() == null || !findUser.getRegistrationId().equals(currentReg)) { // 아이디 중복 체크
                 log.warn("findUser.getRegistrationId()={}", findUser.getRegistrationId());
                 log.warn("currentReg={}", currentReg);
@@ -61,15 +61,7 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
                 String result = objectMapper.writeValueAsString(jsonObject);
                 response.getWriter().write(result);
             } else {
-//                ResponseLoginUser responseLoginUser = new ResponseLoginUser();
-//                responseLoginUser.setUserName(findUser.getUserName());
-//                responseLoginUser.setToken(accessToken);
-//                responseLoginUser.setUserId(findUser.getId());
-//
-//                String result = objectMapper.writeValueAsString(responseLoginUser);
-//                response.getWriter().write(result);
-
-                response.sendRedirect(UriComponentsBuilder.fromUriString("http://localhost:3000/login/callback")
+                response.sendRedirect(UriComponentsBuilder.fromUriString("http://dallenge.s3-website.ap-northeast-2.amazonaws.com/login/callback")
                         .queryParam("userName", findUser.getUserName())
                         .queryParam("userId", findUser.getId())
                         .queryParam("accessToken", accessToken)

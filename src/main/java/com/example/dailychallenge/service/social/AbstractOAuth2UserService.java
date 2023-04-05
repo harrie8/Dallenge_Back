@@ -32,7 +32,7 @@ public abstract class AbstractOAuth2UserService {
     public void register(ProviderUser providerUser, OAuth2UserRequest userRequest) {
 
         String registrationId = userRequest.getClientRegistration().getRegistrationId();
-        Optional<User> user = userRepository.findByEmailAndRegistrationId(providerUser.getEmail(), registrationId);
+        Optional<User> user = userRepository.findByEmail(providerUser.getEmail());
 
         if(user.isEmpty()){ // db에 user 정보가 없는 경우, db에 저장
             User savedUser = userService.saveSocialUser(registrationId, providerUser);
