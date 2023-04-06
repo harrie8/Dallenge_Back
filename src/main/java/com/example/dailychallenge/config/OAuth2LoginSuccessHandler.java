@@ -52,14 +52,13 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
                 log.warn("currentReg={}", currentReg);
 
                 UserDuplicateCheck error = new UserDuplicateCheck();
-                Map<String, String> resultMap = new HashMap<>();
 
-                resultMap.put("message", error.getMessage());
-                resultMap.put("code", Integer.toString(error.getStatusCode()));
-
-                JSONObject jsonObject = new JSONObject(resultMap);
-                String result = objectMapper.writeValueAsString(jsonObject);
-                response.getWriter().write(result);
+                response.sendRedirect(UriComponentsBuilder.fromUriString("http://dallenge.s3-website.ap-northeast-2.amazonaws.com/login/callback")
+                        .queryParam("code", Integer.toString(error.getStatusCode()))
+                        .queryParam("message", error.getMessage())
+                        .build()
+                        .encode(StandardCharsets.UTF_8)
+                        .toUriString());
             } else {
                 response.sendRedirect(UriComponentsBuilder.fromUriString("http://dallenge.s3-website.ap-northeast-2.amazonaws.com/login/callback")
                         .queryParam("userName", findUser.getUserName())
@@ -74,5 +73,4 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
             throw e;
         }
     }
-
 }
